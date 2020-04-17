@@ -1,0 +1,5 @@
+deployer: "0x3"
+sender: ["0x1"]
+psender: "0x1"
+solcArgs: "--allow-paths=. openzeppelin-eth=/src/node_modules/openzeppelin-eth zos-lib=/src/node_modules/zos-lib"
+dashboard: false

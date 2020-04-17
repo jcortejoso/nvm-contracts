@@ -1,0 +1,10 @@
+.editorconfig
+.eslintrc
+.git
+.gitignore
+.soliumignore
+.soliumrc.json
+.travis.yml
+node_modules/
+build/
+coverage/

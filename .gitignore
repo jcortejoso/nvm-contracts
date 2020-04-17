@@ -1,0 +1,54 @@
+# JetBrains tools
+.idea/
+zos/
+files
+
+# Symbolic Execution Results
+test/verification/manticore/results/*
+
+# Development
+artifacts/*.development.json
+!artifacts/EscrowComputeExecutionTemplate.development.json
+!artifacts/EscrowAccessSecretStoreTemplate.development.json
+artifacts/*.spree.json
+
+# Build / Travis
+build/
+node_modules/
+dist
+ganache-cli.log
+
+# Test / Coverage
+coverage*
+scTopics
+allFiredEvents
+
+# Mac / Apple
+.DS_Store
+
+# Python related
+keeper_contracts.egg-info
+venv
+.python-version
+.eggs/
+
+# Maven related
+target/
+dependency-reduced-pom.xml
+
+# ZeppelinOS related
+zos.dev-*.json
+!zos.dev-8995.json
+!zos.dev-2199.json
+!zos.dev-846353.json
+!zos.dev-100.json
+.zos.session
+.zos.lock
+zos.json
+wallets.json
+
+# Security report files
+mythrilReport.md
+securifyReport.txt
+KeeperContracts.png
+slitherReport.txt
