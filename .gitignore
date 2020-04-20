@@ -27,7 +27,7 @@ allFiredEvents
 .DS_Store
 
 # Python related
-keeper_contracts.egg-info
+nevermind_contracts.egg-info/
 venv
 .python-version
 .eggs/

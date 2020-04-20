@@ -23,11 +23,11 @@
   - [Networks](#networks)
      - [Testnets](#testnets)
         - [Integration Testnet](#integration-testnet)
-        - [Nile Testnet](#nile-testnet)
+        - [Staging Testnet](#staging-testnet)
         - [Kovan Testnet](#kovan-testnet)
      - [Mainnets](#mainnets)
         - [Ethereum Mainnet](#ethereum-mainnet)
-        - [Pacific Mainnet](#pacific-mainnet)
+        - [Live Mainnet](#live-mainnet)
         - [xDai](#xdai)
   - [Packages](#packages)
   - [Documentation](#documentation)
@@ -140,9 +140,9 @@ The contract addresses deployed on Ocean's `Integration` Test Network:
 
 
 
-#### Nile Testnet
+#### Staging Testnet
 
-The contract addresses deployed on Ocean's `Nile` Test Network:
+The contract addresses deployed on Ocean's `Staging` Test Network:
 
 | Contract                          | Version | Address                                      |
 |-----------------------------------|---------|----------------------------------------------|
@@ -196,9 +196,9 @@ The contract addresses deployed on Kovan testnet:
 
 ### Mainnets
 
-### Pacific Mainnet
+### Live Mainnet
 
-The contract addresses deployed on `Pacific` Mainnet:
+The contract addresses deployed on `Live` Mainnet:
 
 | Contract                          | Version | Address                                      |
 |-----------------------------------|---------|----------------------------------------------|
@@ -290,10 +290,10 @@ Install the `keeper-contracts` `npm` package.
 npm install @keyko-io/nevermind-contracts
 ```
 
-Load the ABI of the `OceanToken` contract on the `nile` network:
+Load the ABI of the `OceanToken` contract on the `staging` network:
 
 ```javascript
-const OceanToken = require('@keyko-io/nevermind-contracts/artifacts/OceanToken.nile.json')
+const OceanToken = require('@keyko-io/nevermind-contracts/artifacts/OceanToken.staging.json')
 ```
 
 The structure of the `artifacts` is:
