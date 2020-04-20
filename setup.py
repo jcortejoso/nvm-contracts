@@ -26,7 +26,7 @@ for df in data_files:
     print(df)
 
 setup(
-    author="leucothia",
+    author="keyko-io",
     author_email='root@keyko.io',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

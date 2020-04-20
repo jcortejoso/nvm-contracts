@@ -21,7 +21,7 @@ To `propose` a new template, a user should define the template as follows:
 - `condition types`: a set of condition addresses in which each condition type refers the condition contract address.
 For example a `WhitelistingCondition` has an address `0x5b4c3B48062bDCa9DaA5441c5F5A9D557bFE3356`
 on [Pacific network](https://submarine.oceanprotocol.com/). For more about the current deployed conditions,
-please refer to this [section](../README.md#pacific-mainnet)
+please refer to this [section](../README.md#live-mainnet)
 - `actor Type Ids`: set of actor types. Template MUST hold set of actor types > 2 (e.g `provider`, `consumer`, `marketplace`, `publisher`, `curator`, etc).
 User can define new actor type using `registerTemplateActorType` or use the existing types by providing their Ids.
 
@@ -42,21 +42,21 @@ The template owner (the same template proposal) or the OPF can revoke the templa
 
 ### Get Template
 
-The `generateId` method in `TemplateStoreManager.sol` allows anyone to get the bytes32 template Id. Using this template Id, users 
-can get the template details by calling `getTemplate`. 
+The `generateId` method in `TemplateStoreManager.sol` allows anyone to get the bytes32 template Id. Using this template Id, users
+can get the template details by calling `getTemplate`.
 
 
 
 ### Built-in Templates
 
-The following templates `Escrow Access Secret Store template` and `Escrow Compute Execution template` are built-in 
+The following templates `Escrow Access Secret Store template` and `Escrow Compute Execution template` are built-in
 templates. Check out the details below:
 
 
 #### Pacific Network
 
 ```
-consumer actor type Id: 0xd4af56a6cb216435050293f7c860ecd82c7b78b5ce1cf71dcb725bc26a5c8cab 
+consumer actor type Id: 0xd4af56a6cb216435050293f7c860ecd82c7b78b5ce1cf71dcb725bc26a5c8cab
 provider actor type Id: 0x91c78f343fa4753a18a7ecaff5a0d85cfa864839d839601256f8f00300358578
 EscrowAccessSecretStoreTemplate Id: 0xff52b4c00ceacf1cfd7296af9569da77db4e9ae9b3d42a3022516b9c1adca8de
 EscrowComputeExecutionTemplate Id: 0x05261cb95061becaa852abcba43e8fe7f3edafcaa1cedf1606c08bed0a6cfa70
@@ -67,7 +67,7 @@ Is Escrow Compute Execution template approved ? true
 #### Nile Network
 
 ```
-consumer actor type Id: 0xd4af56a6cb216435050293f7c860ecd82c7b78b5ce1cf71dcb725bc26a5c8cab 
+consumer actor type Id: 0xd4af56a6cb216435050293f7c860ecd82c7b78b5ce1cf71dcb725bc26a5c8cab
 provider actor type Id: 0x91c78f343fa4753a18a7ecaff5a0d85cfa864839d839601256f8f00300358578
 EscrowAccessSecretStoreTemplate Id: 0xff52b4c00ceacf1cfd7296af9569da77db4e9ae9b3d42a3022516b9c1adca8de
 EscrowComputeExecutionTemplate Id: 0x05261cb95061becaa852abcba43e8fe7f3edafcaa1cedf1606c08bed0a6cfa70

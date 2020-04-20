@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.oceanprotocol</groupId>
-  <artifactId>keeper-contracts</artifactId>
+  <groupId>io.keyko</groupId>
+  <artifactId>nevermind-contracts</artifactId>
   <packaging>jar</packaging>
   <version>0.13.2</version>
-  <name>Keeper Contracts</name>
+  <name>Nevermind Contracts</name>
   <description>Integration of TCRs, CPM and Ocean Tokens in Solidity</description>
-  <url>https://github.com/oceanprotocol/keeper-contracts</url>
+  <url>https://github.com/keykoio/nevermind-contracts</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -19,7 +19,7 @@
     </license>
   </licenses>
   <properties>
-    <final-name>keeper-contracts</final-name>
+    <final-name>nevermind-contracts</final-name>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
@@ -27,14 +27,14 @@
     <developer>
       <name>Root@Keyko</name>
       <email>root@keyko.io</email>
-      <organization>Ocean Protocol</organization>
-      <organizationUrl>https://www.oceanprotocol.com</organizationUrl>
+      <organization>Keyko</organization>
+      <organizationUrl>https://www.keyko.io</organizationUrl>
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git://github.com/oceanprotocol/keeper-contracts.git</connection>
-    <developerConnection>scm:git:ssh://oceanprotocol/keeper-contracts.git</developerConnection>
-    <url>https://github.com/oceanprotocol/keeper-contracts/tree/master</url>
+    <connection>scm:git:git://github.com/keyko-io/nevermind-contracts.git</connection>
+    <developerConnection>scm:git:ssh://keyko-io/nevermind-contracts.git</developerConnection>
+    <url>https://github.com/keyko-io/nevermind-contracts/tree/master</url>
   </scm>
   <profiles>
     <!-- Activate using the release property: mvn clean install -Prelease -->

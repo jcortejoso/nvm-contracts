@@ -59,17 +59,17 @@ module.exports = {
         // integration the ocean testnet
         integration: {
             provider: () => setupWallet(
-                url || 'https://integration.dev-ocean.com'
+                url || 'https://integration.keyko.com'
             ),
             network_id: 0x897, // 2199
             gas: 6000000,
             gasPrice: 10000,
             from: '0x90eE7A30339D05E07d9c6e65747132933ff6e624'
         },
-        // nile the ocean beta network
-        nile: {
+        // staging the ocean beta network
+        staging: {
             provider: () => setupWallet(
-                url || 'https://nile.dev-ocean.com'
+                url || 'https://staging.keyko.com'
             ),
             network_id: 0x2323, // 8995
             gas: 6000000,
@@ -103,10 +103,10 @@ module.exports = {
             gas: 7 * 1000000,
             gasPrice: utils.toWei('8', 'gwei')
         },
-        // pacific the ethereum mainnet
-        pacific: {
+        // live the ethereum mainnet
+        live: {
             provider: () => setupWallet(
-                url || 'https://pacific.oceanprotocol.com'
+                url || 'https://live.keyko.com'
             ),
             network_id: 0xCEA11, // 846353
             from: '0xba3e0ec852dc24ca7f454ea545d40b1462501711',
