@@ -9,28 +9,28 @@
 [![Docker Build Status](https://img.shields.io/docker/build/keyko-io/nevermind-contracts.svg)](https://hub.docker.com/r/keyko-io/nevermind-contracts/)
 [![Build Status](https://api.travis-ci.com/oceanprotocol/keeper-contracts.svg?branch=master)](https://travis-ci.com/oceanprotocol/keeper-contracts)
 
+Table of Contents
+=================
 
-## Table of Contents
+   * [Nevermind Smart Contracts](#nevermind-smart-contracts)
+      * [Table of Contents](#table-of-contents)
+      * [Get Started](#get-started)
+         * [Docker](#docker)
+         * [Local development](#local-development)
+      * [Testing](#testing)
+         * [Code Linting](#code-linting)
+      * [Networks](#networks)
+         * [Testnets](#testnets)
+            * [Integration Testnet](#integration-testnet)
+            * [Staging Testnet](#staging-testnet)
+         * [Mainnets](#mainnets)
+         * [Live Mainnet](#live-mainnet)
+      * [Packages](#packages)
+      * [Documentation](#documentation)
+      * [Prior Art](#prior-art)
+      * [Attribution](#attribution)
+      * [License](#license)
 
-  - [Get Started](#get-started)
-     - [Docker](#docker)
-     - [Local development](#local-development)
-  - [Testing](#testing)
-     - [Code Linting](#code-linting)
-  - [Networks](#networks)
-     - [Testnets](#testnets)
-        - [Integration Testnet](#integration-testnet)
-        - [Staging Testnet](#staging-testnet)
-        - [Kovan Testnet](#kovan-testnet)
-     - [Mainnets](#mainnets)
-        - [Ethereum Mainnet](#ethereum-mainnet)
-        - [Live Mainnet](#live-mainnet)
-        - [xDai](#xdai)
-  - [Packages](#packages)
-  - [Documentation](#documentation)
-  - [Contributing](#contributing)
-  - [Prior Art](#prior-art)
-  - [License](#license)
 
 ---
 
@@ -196,7 +196,7 @@ This project builds on top of the work done in open source projects:
 - [zeppelinos/zos](https://github.com/zeppelinos/zos)
 - [OpenZeppelin/openzeppelin-eth](https://github.com/OpenZeppelin/openzeppelin-eth)
 
-##Attribution
+## Attribution
 
 This project is based in the Ocean Protocol [Keeper Contracts](https://github.com/oceanprotocol/keeper-contracts).
 It keeps the same Apache v2 License and adds some improvements.
