@@ -1,5 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
+export LC_ALL=en_US.UTF-8
 ## Generating web3j stubs
 
 shopt -s nullglob # Avoid literal evaluation if not files
@@ -16,5 +18,3 @@ do
 done
 
 rm -rf ./tmp/
-
-mvn clean install

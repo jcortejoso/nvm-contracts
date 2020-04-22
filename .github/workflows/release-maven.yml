@@ -1,0 +1,36 @@
+name: Maven Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Java and Maven
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Generating Stubs
+        run: |
+          curl -L https://get.web3j.io | sh
+          source ~/.web3j/source.sh
+          scripts/maven.sh
+          ls -R src/main/java/
+
+      - name: Release Maven package
+        uses: samuelmeuli/action-maven-publish@v1
+        env:
+          GPG_TTY: $(tty)
+        with:
+          maven_goals_phases: "clean package deploy"
+          gpg_private_key: ${{ secrets.gpg_private_key }}
+          gpg_passphrase: ${{ secrets.gpg_passphrase }}
+          nexus_username: ${{ secrets.nexus_username }}
+          nexus_password: ${{ secrets.nexus_password }}

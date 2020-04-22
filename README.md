@@ -6,8 +6,11 @@
 > [keyko.io](https://keyko.io)
 
 
-[![Docker Build Status](https://img.shields.io/docker/build/keyko-io/nevermind-contracts.svg)](https://hub.docker.com/r/keyko-io/nevermind-contracts/)
-[![Build Status](https://api.travis-ci.com/oceanprotocol/keeper-contracts.svg?branch=master)](https://travis-ci.com/oceanprotocol/keeper-contracts)
+[![Docker Build Status](https://img.shields.io/docker/build/keyko-io/nevermind-contracts.svg)](https://hub.docker.com/r/keykoio/nevermind-contracts/)
+![NPM Package](https://github.com/keyko-io/nevermind-contracts/workflows/NPM%20Release/badge.svg)
+![Pypi Package](https://github.com/keyko-io/nevermind-contracts/workflows/Pypi%20Release/badge.svg)
+![Maven Package](https://github.com/keyko-io/nevermind-contracts/workflows/Maven%20Release/badge.svg)
+
 
 Table of Contents
 =================
