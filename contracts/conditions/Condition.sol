@@ -4,7 +4,6 @@ pragma solidity 0.5.6;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 import './ConditionStoreManager.sol';
-import '../interfaces/ICondition.sol';
 import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
 /**
  * @title Condition
@@ -22,7 +21,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  *      https://github.com/oceanprotocol/OEPs/issues/133
  *      TODO: update the OEP link
  */
-contract Condition is Ownable, ICondition {
+contract Condition is Ownable {
 
     ConditionStoreManager internal conditionStoreManager;
 

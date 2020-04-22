@@ -18,36 +18,13 @@ Documentation:
 
 ## Variables
 
-### internal templateListDeprecated
-
 ### internal templateList
-
-### internal templateActorTypeList
-
-## Events
-
-###  TemplateProposed
-Parameters:
-* bytes32 Id
-* string name
-* address[] conditionTypes
-* bytes32[] actorTypeIds
-
-###  TemplateApproved
-Parameters:
-* bytes32 Id
-* bool state
-
-###  TemplateRevoked
-Parameters:
-* bytes32 Id
-* bool state
 
 ## Modifiers
 
 ### internal onlyOwnerOrTemplateOwner
 Parameters:
-* bytes32 _id
+* address _id
 
 ## Functions
 
@@ -63,18 +40,7 @@ Documentation:
 Parameters:
 * address _owner
 
-### public generateId
-Parameters:
-* string templateName
-
 ### external proposeTemplate
-Parameters:
-* address _id
-* address[] _conditionTypes
-* bytes32[] _actorTypeIds
-* string name
-
-### public proposeTemplate
 
 Documentation:
 
@@ -84,10 +50,7 @@ Documentation:
        the template contract address
 ```
 Parameters:
-* bytes32 _id
-* address[] _conditionTypes
-* bytes32[] _actorTypeIds
-* string name
+* address _id
 
 ### external approveTemplate
 
@@ -100,7 +63,7 @@ Documentation:
        manager owner (i.e OPNF) can approve this template.
 ```
 Parameters:
-* bytes32 _id
+* address _id
 
 ### external revokeTemplate
 
@@ -114,15 +77,7 @@ Documentation:
        can revoke this template.
 ```
 Parameters:
-* bytes32 _id
-
-### external registerTemplateActorType
-Parameters:
-* string _actorType
-
-### external deregisterTemplateActorType
-Parameters:
-* bytes32 _Id
+* address _id
 
 ### external getTemplate
 
@@ -136,42 +91,7 @@ Documentation:
        last updated at.
 ```
 Parameters:
-* bytes32 _id
-
-### external getTemplateActorTypeIds
-
-Documentation:
-
-```
-@notice 
-     
-```
-
-### external getTemplateActorTypeId
-Parameters:
-* string actorType
-
-### external getTemplateActorTypeValue
-
-Documentation:
-
-```
-@notice 
-     
-```
-Parameters:
-* bytes32 _Id
-
-### external getTemplateActorTypeState
-
-Documentation:
-
-```
-@notice 
-     
-```
-Parameters:
-* bytes32 _Id
+* address _id
 
 ### external getTemplateListSize
 
@@ -182,25 +102,15 @@ Documentation:
 @return number of templates
 ```
 
-### external isTemplateIdApproved
-
-Documentation:
-
-```
-@notice isTemplateIdApproved check whether the template is approved
-@param _id bytes32 unique template identifier which is basically
-       the template contract address.
-@return true if the template is approved
-```
-Parameters:
-* bytes32 _id
-
 ### external isTemplateApproved
 
 Documentation:
 
 ```
-@notice THIS METHOD HAS BEEN DEPRECATED, PLEASE DON'T USE IT.
+@notice isTemplateApproved check whether the template is approved
+@param _id unique template identifier which is basically
+       the template contract address.
+@return true if the template is approved
 ```
 Parameters:
 * address _id

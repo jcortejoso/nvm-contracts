@@ -1,6 +1,6 @@
 
 # contract: AgreementTemplate
-## (DEPRECATED)
+
 Documentation:
 ```
 @title Agreement Template

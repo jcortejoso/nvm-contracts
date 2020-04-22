@@ -1,6 +1,6 @@
 {
   "name": "@keyko-io/nevermind-contracts",
-  "version": "0.13.2",
+  "version": "0.12.7",
   "description": "Nevermind implementation of Ocean Protocol in Solidity",
   "bugs": {
     "url": "https://github.com/keyko-io/nevermind-contracts/issues"
@@ -17,7 +17,6 @@
     "audit:kovan": "export NETWORK=kovan&&npm run audit -- --network kovan",
     "audit:mainnet": "export NETWORK=mainnet&&npm run audit -- --network mainnet",
     "audit:live": "export NETWORK=live&&npm run audit -- --network live",
-    "audit:xdai": "export NETWORK=xdai&&npm run audit -- --network xdai",
     "deploy": "npx truffle exec ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js",
     "deploy:development": "export NETWORK=development&&npm run deploy -- --network development --testnet true",
     "deploy:spree": "export NETWORK=spree&&npm run deploy -- --network spree --testnet true",
@@ -44,8 +43,7 @@
     "doc:addresses": "node scripts/contracts/get-addresses.js",
     "doc:copyright": "scripts/add-spdx.sh",
     "clean": "npm run clean:build && npm run clean:coverage && npm run clean:zos",
-    "clean:tmp": "mkdir tmp && cp ./artifacts/EscrowAccessSecretStoreTemplate.development.json ./artifacts/EscrowComputeExecutionTemplate.development.json ./tmp/",
-    "clean:build": "npm run clean:tmp ; rm -rf ./build/ ./artifacts/*.development.json ./artifacts/*.spree.json; mv ./tmp/* ./artifacts/; rm -rf ./tmp",
+    "clean:build": "rm -rf ./build/ ./artifacts/*.development.json ./artifacts/*.spree.json",
     "clean:coverage": "rm -rf ./coverage/ ./coverageEnv/ ./coverage.json",
     "clean:zos": "rm -rf ./zos.json ./zos.dev-8996.json ./.zos.session ./wallets.json zos/",
     "lint": "npm run lint:eslint && npm run lint:ethlint",
@@ -71,27 +69,26 @@
     "type": "git",
     "url": "git+https://github.com/keyko-io/nevermind-contracts.git"
   },
-  "author": "Keyko",
+  "author": "Ocean Protocol",
   "license": "Apache-2.0",
   "devDependencies": {
     "@oceanprotocol/dori": "~0.5.1",
-    "@oceanprotocol/multisigwallet": "git+https://github.com/oceanprotocol/MultiSigWalletContracts.git#v2.0.4",
     "bignumber.js": "^9.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^6.8.0",
+    "eslint": "^6.4.0",
     "eslint-config-oceanprotocol": "^1.5.0",
-    "glob": "^7.1.6",
-    "mathjs": "~6.6.0",
+    "glob": "^7.1.4",
+    "mathjs": "~6.2.2",
     "openzeppelin-eth": "^2.2.0",
     "solidity-coverage": "0.6.3",
     "solium": "^1.2.5",
     "solium-plugin-security": "^0.1.1",
-    "truffle": "5.1.22",
+    "truffle": "5.0.42",
     "truffle-contract": "~4.0.31",
     "truffle-hdwallet-provider": "~1.0.17",
-    "web3": "1.2.6",
+    "web3": "1.2.1",
     "web3-provider-engine": "~15.0.3",
-    "yargs": "~15.3.0"
+    "yargs": "~14.2.0"
   }
 }

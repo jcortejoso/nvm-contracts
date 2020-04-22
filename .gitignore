@@ -8,8 +8,6 @@ test/verification/manticore/results/*
 
 # Development
 artifacts/*.development.json
-!artifacts/EscrowComputeExecutionTemplate.development.json
-!artifacts/EscrowAccessSecretStoreTemplate.development.json
 artifacts/*.spree.json
 
 # Build / Travis
@@ -29,19 +27,15 @@ allFiredEvents
 # Python related
 nevermind_contracts.egg-info/
 venv
+target/
 .python-version
 .eggs/
-
-# Maven related
-target/
-dependency-reduced-pom.xml
 
 # ZeppelinOS related
 zos.dev-*.json
 !zos.dev-8995.json
 !zos.dev-2199.json
 !zos.dev-846353.json
-!zos.dev-100.json
 .zos.session
 .zos.lock
 zos.json

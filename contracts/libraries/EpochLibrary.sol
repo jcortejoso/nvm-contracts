@@ -113,7 +113,6 @@ library EpochLibrary {
    /**
     * @notice getEpochTimeOut
     * @param _self is the Epoch storage pointer
-    * @return uint256 of EpochTimeOut 
     */
     function getEpochTimeOut(
         Epoch storage _self
@@ -128,7 +127,6 @@ library EpochLibrary {
     /**
     * @notice getEpochTimeLock
     * @param _self is the Epoch storage pointer
-    * @return uint256 of EpochTimeLock 
     */
     function getEpochTimeLock(
         Epoch storage _self

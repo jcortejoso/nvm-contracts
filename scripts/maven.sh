@@ -1,11 +1,9 @@
 #!/bin/bash
 
-## Copying and formatting artifacts
+## Generating web3j stubs
 
 shopt -s nullglob # Avoid literal evaluation if not files
-
 mkdir ./tmp/
-rm -rf ./target/
 
 for file in artifacts/*.development.json
 do
@@ -13,8 +11,10 @@ do
     tmpFile=${tmpFile//.development/}
 
     cp $file ./tmp/${tmpFile}
+
+    web3j truffle generate --javaTypes ./tmp/${tmpFile} -o src/main/java -p io.keyko.nevermind.contracts
 done
 
-mvn clean install
-
 rm -rf ./tmp/
+
+mvn clean install

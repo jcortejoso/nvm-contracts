@@ -49,7 +49,7 @@ Documentation:
 ```
 @notice fulfill check whether address is whitelisted
 in order to fulfill the condition. This method will be 
-called by anyone in this whitelist. 
+called by any one in this whitelist. 
 @param _agreementId SEA agreement identifier
 @param _listAddress list contract address
 @param _item item in the list

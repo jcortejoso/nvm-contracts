@@ -141,18 +141,8 @@ It will output the current proxy addresses in the `README` friendly format.
 ## Trigger CI
 
 - Commit the missing changes to the feature branch.
-```bash
-git commit -m 'v0.2.5'
-git push
-```
 - Tag the last commit with the new version number ie. `v0.2.5`
-```bash
-git tag -a v0.2.5
-```
 - Push the feature branch to GitHub.
-```bash
-git push --tags
-```
 - Make a pull request from the just-pushed branch to `develop` branch.
 - Wait for all the tests to pass!
 - Merge the pull request into the `develop` branch.
@@ -163,12 +153,12 @@ The release itself is done by `travis` based on the tagged commit.
 
 It will deploy the following components:
 
-- [npm](https://www.npmjs.com/package/@keyko-io/nevermind-contracts)
+- [npm](https://www.npmjs.com/package/@oceanprotocol/keeper-contracts)
 - [pypi](https://pypi.org/project/keeper-contracts/)
 - [maven](https://search.maven.org/artifact/com.oceanprotocol/keeper-contracts/)
 - [docker](https://cloud.docker.com/u/oceanprotocol/repository/docker/oceanprotocol/keeper-contracts)
 
-The npm, pypi and maven packages contain the contract artifacts for the contracts already deployed in different networks (such as `Pacific`, `Integration`, `Nile`, or `Kovan`).
+The npm, pypi and maven packages contain the contract artifacts for the contracts already deployed in different networks (such as `Pacific`, `Duero`, `Nile`, or `Kovan`).
 The docker image generated contains the contracts and script ready to be used to deploy the contracts to a network. It is used for deploying the contracts in the local network `Spree` in [oceanprotocol/barge](https://github.com/oceanprotocol/barge)
 
 Once the new version is tagged and released, you can edit the `Releases` section of GitHub with the information and changes about the new version (in the future, these will come from the changelog):

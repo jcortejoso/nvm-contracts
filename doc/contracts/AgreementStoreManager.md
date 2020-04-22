@@ -22,27 +22,6 @@ Documentation:
 
 ### internal didRegistry
 
-### internal agreementActors
-
-### internal templateIdAddressToBytes32
-
-### internal agreementActorsList
-
-## Events
-
-###  AgreementCreated
-Parameters:
-* bytes32 agreementId
-* bytes32 did
-* address createdBy
-* uint256 createdAt
-
-###  AgreementActorAdded
-Parameters:
-* bytes32 agreementId
-* address actor
-* bytes32 actorType
-
 ## Functions
 
 ### public initialize
@@ -68,12 +47,16 @@ Parameters:
 Documentation:
 
 ```
-@dev THIS METHOD HAS BEEN DEPRECATED PLEASE DON'T USE IT.
-     WE KEEP THIS METHOD INTERFACE TO AVOID ANY CONTRACT 
-     UPGRADEABILITY ISSUES IN THE FUTURE.
-     THE NEW METHOD DON'T ACCEPT CONDITIONS, INSTEAD IT USES 
-     TEMPLATE ID. FOR MORE INFORMATION PLEASE REFER TO THE BELOW LINK
-     https://github.com/oceanprotocol/keeper-contracts/pull/623
+@dev Create a new agreement.
+     The agreement will create conditions of conditionType with conditionId.
+     Only "approved" templates can access this function.
+@param _id is the ID of the new agreement. Must be unique.
+@param _did is the bytes32 DID of the asset. The DID must be registered beforehand.
+@param _conditionTypes is a list of addresses that point to Condition contracts.
+@param _conditionIds is a list of bytes32 content-addressed Condition IDs
+@param _timeLocks is a list of uint time lock values associated to each Condition
+@param _timeOuts is a list of uint time out values associated to each Condition
+@return the size of the agreement list after the create action.
 ```
 Parameters:
 * bytes32 _id
@@ -82,34 +65,6 @@ Parameters:
 * bytes32[] _conditionIds
 * uint256[] _timeLocks
 * uint256[] _timeOuts
-
-### public createAgreement
-
-Documentation:
-
-```
-@dev Create a new agreement.
-     The agreement will create conditions of conditionType with conditionId.
-     Only "approved" templates can access this function.
-@param _id is the ID of the new agreement. Must be unique.
-@param _did is the bytes32 DID of the asset. The DID must be registered beforehand.
-@param _templateId template ID.
-@param _conditionIds is a list of bytes32 content-addressed Condition IDs
-@param _timeLocks is a list of uint time lock values associated to each Condition
-@param _timeOuts is a list of uint time out values associated to each Condition
-@param _actors array includes actor address such as consumer, provider, publisher, or verifier, ect.
-For each template, the actors array order should follow the same order in templateStoreManager 
-actor types definition.
-@return the size of the agreement list after the create action.
-```
-Parameters:
-* bytes32 _id
-* bytes32 _did
-* bytes32 _templateId
-* bytes32[] _conditionIds
-* uint256[] _timeLocks
-* uint256[] _timeOuts
-* address[] _actors
 
 ### external getAgreement
 
@@ -124,32 +79,6 @@ Documentation:
 ```
 Parameters:
 * bytes32 _id
-
-### external getAgreementActors
-
-Documentation:
-
-```
-@dev getAgreementActors for a given agreement Id retrieves actors addresses list 
-@param _id is the ID of the agreement.
-@return agreement actors list of addresses
-```
-Parameters:
-* bytes32 _id
-
-### external getActorType
-
-Documentation:
-
-```
-@dev getActorType for a given agreement Id, and actor address retrieves actors type  
-@param _id is the ID of the agreement
-@param _actor agreement actor address
-@return agreement actor type
-```
-Parameters:
-* bytes32 _id
-* address _actor
 
 ### external getAgreementDIDOwner
 
@@ -220,7 +149,7 @@ Documentation:
 @return the agreement IDs for a given DID
 ```
 Parameters:
-* bytes32 _templateId
+* address _templateId
 
 ### public getDIDRegistryAddress
 
@@ -231,15 +160,3 @@ Documentation:
 used by other contracts or any EOA.
 @return the DIDRegistry address
 ```
-
-### private convertBytes32ToAddress
-
-Documentation:
-
-```
-@dev convertBytes32ToAddress 
-@param input a 32 bytes input
-@return bytes 20 output
-```
-Parameters:
-* bytes32 input

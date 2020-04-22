@@ -275,7 +275,7 @@ contract('Threshold Condition', (accounts) => {
                         from: createRole
                     }
                 ),
-                'Invalid Update Role'
+                'Invalid UpdateRole'
             )
         })
 
