@@ -15,7 +15,6 @@ jobs:
     - name: Pre-install
       run: |
         npm install -g ganache-cli@~6.4.4 greenkeeper-lockfile codacy-coverage
-        pyenv global system 3.6.7
     - name: Run tests
       run: |
         npm run lint
