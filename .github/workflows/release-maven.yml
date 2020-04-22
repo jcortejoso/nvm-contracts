@@ -17,6 +17,17 @@ jobs:
         with:
           java-version: 11
 
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+      - name: Pre-install
+        run: |
+          npm i
+      - name: Generate Artifacts
+        run: |
+          npm run clean
+          npm run compile
+
       - name: Generating Stubs
         run: |
           curl -L https://get.web3j.io | sh
