@@ -2032,7 +2032,7 @@
     }
   },
   "proxies": {
-    "@keyko-io/nevermind-contracts/DIDRegistry": [
+    "@oceanprotocol/keeper-contracts/DIDRegistry": [
       {
         "address": "0x9254f7c8f1176C685871E7A8A99E11e96775F488",
         "version": "v0.8.6",
@@ -2040,7 +2040,7 @@
         "admin": "0xA18999a10D9e7d8116c406D284fa31541e019177"
       }
     ],
-    "@keyko-io/nevermind-contracts/OceanToken": [
+    "@oceanprotocol/keeper-contracts/OceanToken": [
       {
         "address": "0xB57C4D626548eB8AC0B82b086721516493E2908d",
         "version": "v0.8.6",
@@ -2048,7 +2048,7 @@
         "admin": "0xA18999a10D9e7d8116c406D284fa31541e019177"
       }
     ],
-    "@keyko-io/nevermind-contracts/Dispenser": [
+    "@oceanprotocol/keeper-contracts/Dispenser": [
       {
         "address": "0x5B92243133094210F504dF6B9D54fD70E7B281DC",
         "version": "v0.8.6",
@@ -2056,7 +2056,7 @@
         "admin": "0xA18999a10D9e7d8116c406D284fa31541e019177"
       }
     ],
-    "@keyko-io/nevermind-contracts/ConditionStoreManager": [
+    "@oceanprotocol/keeper-contracts/ConditionStoreManager": [
       {
         "address": "0xA5f5BaB34DE3782A71D37d0B334217Ded341cd64",
         "version": "v0.8.6",
@@ -2064,7 +2064,7 @@
         "admin": "0xA18999a10D9e7d8116c406D284fa31541e019177"
       }
     ],
-    "@keyko-io/nevermind-contracts/TemplateStoreManager": [
+    "@oceanprotocol/keeper-contracts/TemplateStoreManager": [
       {
         "address": "0xD20307e2620Bb8a60991f43c52b64f981103A829",
         "version": "v0.8.6",
@@ -2072,7 +2072,7 @@
         "admin": "0xA18999a10D9e7d8116c406D284fa31541e019177"
       }
     ],
-    "@keyko-io/nevermind-contracts/SignCondition": [
+    "@oceanprotocol/keeper-contracts/SignCondition": [
       {
         "address": "0x7B8B2756de9Ab474ddbCc87047117a2A16419194",
         "version": "v0.8.6",
@@ -2080,7 +2080,7 @@
         "admin": "0xA18999a10D9e7d8116c406D284fa31541e019177"
       }
     ],
-    "@keyko-io/nevermind-contracts/HashLockCondition": [
+    "@oceanprotocol/keeper-contracts/HashLockCondition": [
       {
         "address": "0x11ef2D50868c1f1063ba0141aCD53691A0293c25",
         "version": "v0.8.6",
@@ -2088,7 +2088,7 @@
         "admin": "0xA18999a10D9e7d8116c406D284fa31541e019177"
       }
     ],
-    "@keyko-io/nevermind-contracts/AgreementStoreManager": [
+    "@oceanprotocol/keeper-contracts/AgreementStoreManager": [
       {
         "address": "0x412d4F57425b41FE027e06b9f37D569dcAE2eAa4",
         "version": "v0.8.6",
@@ -2096,7 +2096,7 @@
         "admin": "0xA18999a10D9e7d8116c406D284fa31541e019177"
       }
     ],
-    "@keyko-io/nevermind-contracts/LockRewardCondition": [
+    "@oceanprotocol/keeper-contracts/LockRewardCondition": [
       {
         "address": "0x2a2A2C5fF51C5f1c84547FC7a194c00F82763432",
         "version": "v0.8.6",
@@ -2104,7 +2104,7 @@
         "admin": "0xA18999a10D9e7d8116c406D284fa31541e019177"
       }
     ],
-    "@keyko-io/nevermind-contracts/EscrowReward": [
+    "@oceanprotocol/keeper-contracts/EscrowReward": [
       {
         "address": "0xa182ff844c71803Bf767c3AB4180B3bfFADa6B2B",
         "version": "v0.8.6",
@@ -2112,7 +2112,7 @@
         "admin": "0xA18999a10D9e7d8116c406D284fa31541e019177"
       }
     ],
-    "@keyko-io/nevermind-contracts/AccessSecretStoreCondition": [
+    "@oceanprotocol/keeper-contracts/AccessSecretStoreCondition": [
       {
         "address": "0x9Ee06Ac392FE11f1933a51B48D1d07dd97f1dec7",
         "version": "v0.8.6",
@@ -2120,7 +2120,7 @@
         "admin": "0xA18999a10D9e7d8116c406D284fa31541e019177"
       }
     ],
-    "@keyko-io/nevermind-contracts/EscrowAccessSecretStoreTemplate": [
+    "@oceanprotocol/keeper-contracts/EscrowAccessSecretStoreTemplate": [
       {
         "address": "0xe0Afe9a948f9Fa39524c8d29a98d75409018ABf0",
         "version": "v0.8.6",

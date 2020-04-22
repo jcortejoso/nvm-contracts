@@ -4,7 +4,7 @@
   <groupId>io.keyko.nevermind</groupId>
   <artifactId>contracts</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <name>Nevermind Contracts</name>
   <description>Nevermind Data Plarform Smart Contracts in Solidity</description>
   <url>https://github.com/keyko-io/nevermind-contracts</url>
@@ -93,7 +93,6 @@
         <configuration>
           <finalName>nevermind-contracts-${project.version}</finalName>
           <descriptors>
-            <descriptor>src/assembly/artifacts.xml</descriptor>
             <descriptor>src/assembly/dependency.xml</descriptor>
           </descriptors>
           <attach>false</attach>
