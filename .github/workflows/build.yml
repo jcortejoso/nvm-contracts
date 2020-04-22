@@ -14,6 +14,7 @@ jobs:
         node-version: '10.x'
     - name: Pre-install
       run: |
+        npm i
         npm install -g ganache-cli@~6.4.4 greenkeeper-lockfile codacy-coverage
     - name: Run tests
       run: |
