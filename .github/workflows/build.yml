@@ -17,7 +17,6 @@ jobs:
         npm i
         npm install -g ganache-cli@~6.4.4 greenkeeper-lockfile codacy-coverage
         ganache-cli > ganache-cli.log &
-        greenkeeper-lockfile-update
     - name: Run tests
       run: |
         npm run lint
@@ -27,6 +26,4 @@ jobs:
         npm run test:echidna
         npm run deploy:development -- --deeper-clean
         git status
-    - name: Post run
-      run: |
-        greenkeeper-lockfile-upload
+
