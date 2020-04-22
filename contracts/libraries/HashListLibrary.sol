@@ -103,7 +103,7 @@ library HashListLibrary {
         );
     
         uint256 oldValueIndex = _self.indices[oldValue];
-        _self.values[oldValueIndex.sub(1)] = newValue;
+        _self.values[oldValueIndex - 1] = newValue;
         _self.indices[newValue] = oldValueIndex;
         delete _self.indices[oldValue];
         return true;
@@ -161,7 +161,7 @@ library HashListLibrary {
             index <= _self.values.length,
             'Index is out of range'
         );
-        return _self.values[index.sub(1)];
+        return _self.values[index - 1];
     }
     
     /**
@@ -196,13 +196,13 @@ library HashListLibrary {
             'Invalid indices'
         );
         
-        bytes32 lastIndexValue = _self.values[_self.values.length.sub(1)];
+        bytes32 lastIndexValue = _self.values[_self.values.length - 1];
         require(
             _self.indices[lastIndexValue] != _self.values.length,
             'List is already indexed'
         );
         
-        bytes32 endIndexValue = _self.values[to.sub(1)];
+        bytes32 endIndexValue = _self.values[to - 1];
         require(
             _self.indices[endIndexValue] != to,
             'Values already are indexed, try different indices'
@@ -258,7 +258,7 @@ library HashListLibrary {
         view
         returns(bool)
     {
-        bytes32 lastIndexValue = _self.values[_self.values.length.sub(1)];
+        bytes32 lastIndexValue = _self.values[_self.values.length - 1];
         if(_self.indices[lastIndexValue] == _self.values.length)
             return true;
         return false;
@@ -342,8 +342,8 @@ library HashListLibrary {
         private
         returns(bool)
     {
-        for(uint256 i = from.sub(1); i < to; i++)
-            _self.indices[_self.values[i]] = i.add(1);
+        for(uint256 i = from - 1; i < to; i++)
+            _self.indices[_self.values[i]] = i + 1;
         return true;
     }
 }

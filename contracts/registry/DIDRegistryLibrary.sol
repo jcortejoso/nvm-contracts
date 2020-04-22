@@ -135,12 +135,6 @@ library DIDRegistryLibrary {
             _newOwner != address(0),
             'Invalid new DID owner address'
         );
-
-        require(
-            _newOwner != _self.didRegisters[_did].owner,
-            'New Owner is already a DID owner'
-        );
-
         _self.didRegisters[_did].owner = _newOwner;
     }
     

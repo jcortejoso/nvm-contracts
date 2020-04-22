@@ -78,7 +78,6 @@ Documentation:
 ```
 @notice getEpochTimeOut
 @param _self is the Epoch storage pointer
-@return uint256 of EpochTimeOut 
 ```
 Parameters:
 * struct EpochLibrary.Epoch _self
@@ -90,7 +89,6 @@ Documentation:
 ```
 @notice getEpochTimeLock
 @param _self is the Epoch storage pointer
-@return uint256 of EpochTimeLock 
 ```
 Parameters:
 * struct EpochLibrary.Epoch _self

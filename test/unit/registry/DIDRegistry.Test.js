@@ -388,65 +388,6 @@ contract('DIDRegistry', (accounts) => {
                 'Invalid DID owner'
             )
         })
-
-        it('should reject to transfer a DID ownership to the old DID owner', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
-            const checksum = testUtils.generateId()
-            const didOwner = accounts[2]
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
-            await didRegistry.registerAttribute(
-                did,
-                checksum,
-                providers,
-                value,
-                {
-                    from: didOwner
-                }
-            )
-
-            // act & assert
-            await assert.isRejected(
-                didRegistry.transferDIDOwnership(
-                    did,
-                    didOwner,
-                    {
-                        from: didOwner
-                    }
-
-                ),
-                'New Owner is already a DID owner'
-            )
-        })
-
-        it('should reject to transfer a DID ownership in case of invalid new owner address', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
-            const checksum = testUtils.generateId()
-            const didOwner = accounts[2]
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
-            await didRegistry.registerAttribute(
-                did,
-                checksum,
-                providers,
-                value,
-                {
-                    from: didOwner
-                }
-            )
-
-            // act & assert
-            await assert.isRejected(
-                didRegistry.transferDIDOwnership(
-                    did,
-                    constants.address.zero,
-                    {
-                        from: didOwner
-                    }
-                ),
-                'Invalid new DID owner address'
-            )
-        })
     })
 
     describe('grantPermissions', () => {

@@ -1,6 +1,6 @@
 
 # contract: EscrowAccessSecretStoreTemplate
-## (DEPRECATED)
+
 Documentation:
 ```
 @title Agreement Template

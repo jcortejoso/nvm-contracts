@@ -112,15 +112,7 @@ module.exports = {
             from: '0xba3e0ec852dc24ca7f454ea545d40b1462501711',
             gas: 6 * 1000000,
             gasPrice: utils.toWei('10', 'mwei')
-        },
-        xdai: {
-            provider: () => setupWallet(
-                url || 'https://dai.poa.network/'
-            ),
-            network_id: 0x64,
-            from: '0x177381C1c803a981bCE3E678aD5B4F74e69AE7D5'
         }
-
     },
     compilers: {
         solc: {

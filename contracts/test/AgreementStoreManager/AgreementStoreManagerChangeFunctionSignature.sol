@@ -12,27 +12,23 @@ contract AgreementStoreManagerChangeFunctionSignature is
     function createAgreement(
         bytes32 _id,
         bytes32 _did,
-        bytes32 _templateId,
+        address[] memory _conditionTypes,
         bytes32[] memory _conditionIds,
         uint[] memory _timeLocks,
         uint[] memory _timeOuts,
-        address[] memory _actors
+        address _sender
     )
         public
         returns (uint size)
     {
         require(
-            msg.sender == _actors[0],
+            msg.sender == _sender,
             'Invalid sender address, should fail in function signature check'
         );
         require(
-            templateStoreManager.isTemplateIdApproved(_templateId) == true,
+            templateStoreManager.isTemplateApproved(msg.sender) == true,
             'Template not Approved'
         );
-        address[] memory _conditionTypes;
-        
-        (,,,,_conditionTypes,) = templateStoreManager.getTemplate(_templateId);
-        
         require(
             _conditionIds.length == _conditionTypes.length &&
             _timeLocks.length == _conditionTypes.length &&

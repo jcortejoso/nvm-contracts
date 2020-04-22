@@ -7,6 +7,7 @@ const contracts = [
     'EpochLibrary',
     'Condition',
     'Reward',
+    'AgreementTemplate',
     'DIDRegistryLibrary',
     'AgreementStoreLibrary',
     'TemplateStoreLibrary',
@@ -17,6 +18,7 @@ const contracts = [
     'LockRewardCondition',
     'AccessSecretStoreCondition',
     'EscrowReward',
+    'EscrowAccessSecretStoreTemplate',
     'OceanToken',
     'Dispenser',
     'DIDRegistry',
@@ -26,7 +28,8 @@ const contracts = [
     'WhitelistingCondition',
     'HashLists',
     'ThresholdCondition',
-    'ComputeExecutionCondition'
+    'ComputeExecutionCondition',
+    'EscrowComputeExecutionTemplate'
 ]
 
 contracts.forEach((contractName) => {

@@ -101,7 +101,6 @@ contract DIDRegistry is Ownable {
      *
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @param _checksum includes a one-way HASH calculated using the DDO content.
-     * @param _providers list of provider addresses that can provide the services associated with the DID
      * @param _value refers to the attribute value, limited to 2048 bytes.
      * @return the size of the registry after the register action.
      */

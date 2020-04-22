@@ -16,7 +16,8 @@ const {
     upgrade
 } = require('./Upgrader')
 
-const TemplateStoreManager = artifacts.require('TemplateStoreManager')
+const AgreementStoreManager = artifacts.require('AgreementStoreManager')
+
 const AgreementStoreManagerChangeFunctionSignature =
     artifacts.require('AgreementStoreManagerChangeFunctionSignature')
 const AgreementStoreManagerChangeInStorage =
@@ -28,45 +29,27 @@ const AgreementStoreManagerExtraFunctionality =
 const AgreementStoreManagerWithBug = artifacts.require('AgreementStoreManagerWithBug')
 
 contract('AgreementStoreManager', (accounts) => {
-    let agreementStoreManagerAddress,
-        templateStoreManagerAddress
+    let agreementStoreManagerAddress
 
     const verbose = false
     const approver = accounts[3]
 
     async function setupTest({
         agreementId = constants.bytes32.one,
-        templateId = constants.bytes32.two,
         conditionIds = [constants.address.dummy],
         did = constants.did[0],
         conditionTypes = [constants.address.dummy],
         timeLocks = [0],
-        timeOuts = [2],
-        owner = accounts[0],
-        actorTypeIds = []
+        timeOuts = [2]
     } = {}) {
-        const templateStoreManager = await TemplateStoreManager.at(templateStoreManagerAddress)
-        const computeExecutionConditionId = constants.bytes32.one
-        const LockRewardConditionId = constants.bytes32.two
-        const EscrowRewardConditionId = constants.bytes32.three
-
-        conditionIds = [
-            LockRewardConditionId,
-            computeExecutionConditionId,
-            EscrowRewardConditionId
-        ]
-
-        templateId = await templateStoreManager.generateId('EscrowAccessSecretStoreTemplate')
-
+        await AgreementStoreManager.at(agreementStoreManagerAddress)
         return {
             did,
             agreementId,
             conditionIds,
+            conditionTypes,
             timeLocks,
-            timeOuts,
-            actorTypeIds,
-            templateId,
-            templateStoreManager
+            timeOuts
         }
     }
 
@@ -76,21 +59,16 @@ contract('AgreementStoreManager', (accounts) => {
                 web3,
                 artifacts,
                 contracts: [
+                    'DIDRegistry',
                     'ConditionStoreManager',
                     'TemplateStoreManager',
-                    'AgreementStoreManager',
-                    'LockRewardCondition',
-                    'AccessSecretStoreCondition',
-                    'EscrowReward',
-                    'OceanToken',
-                    'DIDRegistry',
-                    'ComputeExecutionCondition'
+                    'AgreementStoreManager'
                 ],
                 verbose
             })
 
             agreementStoreManagerAddress = addressBook.AgreementStoreManager
-            templateStoreManagerAddress = addressBook.TemplateStoreManager
+            assert(agreementStoreManagerAddress)
         })
 
         it('Should be possible to fix/add a bug', async () => {
@@ -108,7 +86,6 @@ contract('AgreementStoreManager', (accounts) => {
                 approver,
                 verbose
             )
-
             const AgreementStoreManagerWithBugInstance =
                 await AgreementStoreManagerWithBug.at(agreementStoreManagerAddress)
 
@@ -124,9 +101,9 @@ contract('AgreementStoreManager', (accounts) => {
                 did,
                 agreementId,
                 conditionIds,
+                conditionTypes,
                 timeLocks,
-                timeOuts,
-                templateId
+                timeOuts
             } = await setupTest()
 
             const taskBook = await upgrade({
@@ -150,11 +127,11 @@ contract('AgreementStoreManager', (accounts) => {
                 AgreementStoreManagerChangeFunctionSignatureInstance.createAgreement(
                     agreementId,
                     did,
-                    templateId,
+                    conditionTypes,
                     conditionIds,
                     timeLocks,
                     timeOuts,
-                    [accounts[1]],
+                    accounts[7],
                     { from: accounts[8] }
                 ),
                 'Invalid sender address, should fail in function signature check'
@@ -193,9 +170,9 @@ contract('AgreementStoreManager', (accounts) => {
                 did,
                 agreementId,
                 conditionIds,
+                conditionTypes,
                 timeLocks,
-                timeOuts,
-                templateId
+                timeOuts
             } = await setupTest()
 
             const taskBook = await upgrade({
@@ -219,11 +196,11 @@ contract('AgreementStoreManager', (accounts) => {
                 AgreementStoreManagerChangeInStorageAndLogicInstance.createAgreement(
                     agreementId,
                     did,
-                    templateId,
+                    conditionTypes,
                     conditionIds,
                     timeLocks,
                     timeOuts,
-                    [accounts[8]],
+                    accounts[8],
                     { from: accounts[7] }
                 ),
                 'Invalid sender address, should fail in function signature check'

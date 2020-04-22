@@ -31,15 +31,7 @@ library AgreementStoreLibrary {
         mapping(address => bytes32[]) templateIdToAgreementIds;
         bytes32[] agreementIds;
     }
-    
-    struct AgreementActors {
-        mapping(bytes32 => mapping(address => bytes32)) AgreementActor;
-    }
-    
-    struct AgreementActorsList {
-        mapping(bytes32 => address[]) ActorsList;
-    }
-    
+
     /**
      * @dev create new agreement
      *      checks whether the agreement Id exists, creates new agreement 
@@ -78,84 +70,5 @@ library AgreementStoreLibrary {
         _self.didToAgreementIds[_did].push(_id);
         _self.templateIdToAgreementIds[_templateId].push(_id);
         return _self.agreementIds.length;
-    }
-    
-    /**
-     * @dev setActorType set a mapping between actors and their types.
-     * The stored type is the hash of the string format of an actor type 
-     * (consumer, provider, verifier, publisher, curator, etc).
-     * @param _self is AgreementActors storage pointer
-     * @param _id agreement identifier
-     * @param _actor actor address
-     * @param _actorType actor type hash
-     */
-    function setActorType(
-        AgreementActors storage _self,
-        bytes32 _id,
-        address _actor,
-        bytes32 _actorType
-    )
-        internal
-    {
-        require(
-            _self.AgreementActor[_id][_actor] == bytes32(0) && 
-            _actor != address(0),
-            'Actor already exists'
-        );
-        _self.AgreementActor[_id][_actor] = _actorType;
-    }
-
-    /**
-     * @dev getActorType for a given agreement Id, returns the actor type
-     * @param _self is AgreementActors storage pointer
-     * @param _id agreement identifier
-     * @param _actor actor address
-     * @return bytes32 actor type
-     */
-    function getActorType(
-        AgreementActors storage _self,
-        bytes32 _id,
-        address _actor
-    )
-        internal
-        view
-        returns ( bytes32 actorType )
-    {
-        actorType = _self.AgreementActor[_id][_actor];
-    }
-    
-    /**
-     * @dev setActors associate actor addresses to an agreement
-     * @param _self is AgreementActorsList storage pointer
-     * @param _id agreement identifier
-     * @param _actors array of actor addresses
-     */
-    function setActors(
-        AgreementActorsList storage _self,
-        bytes32 _id,
-        address[] memory _actors
-    )
-        internal
-    {
-        _self.ActorsList[_id] = _actors;
-    }
-    
-    /**
-     * @dev getActors actor addresses for an agreement
-     * @param _self is AgreementActorsList storage pointer
-     * @param _id agreement identifier
-     * @return _actors array of actor addresses
-     */
-    function getActors(
-        AgreementActorsList storage _self,
-        bytes32 _id
-    )
-        internal
-        view
-        returns ( 
-            address[] memory _actors
-        )
-    {
-        return _self.ActorsList[_id];
     }
 }

@@ -1,6 +1,6 @@
 
 # contract: EscrowComputeExecutionTemplate
-## (DEPRECATED)
+
 Documentation:
 ```
 @title Service Execution Template

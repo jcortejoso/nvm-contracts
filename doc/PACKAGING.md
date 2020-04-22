@@ -7,13 +7,13 @@ It allows to import those ABI's from different languages enabling an easier inte
 ## Javascript (NPM)
 
 NPM packages are published as part of the **Ocean Protocol** [NPM organization](https://www.npmjs.com/org/oceanprotocol).
-**Travis** is configured to release a new version of the **@keyko-io/nevermind-contracts** NPM library after tagging.
+**Travis** is configured to release a new version of the **@oceanprotocol/keeper-contracts** NPM library after tagging.
 
 Versions of the library must be modified in the **package.json** file.
 
 ```json
 {
-  "name": "@keyko-io/nevermind-contracts",
+  "name": "@oceanprotocol/keeper-contracts",
   "version": "0.0.2",
 
   ..
