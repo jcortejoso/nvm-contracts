@@ -18,6 +18,7 @@ jobs:
         npm install -g ganache-cli@~6.4.4 greenkeeper-lockfile codacy-coverage
     - name: Run tests
       run: |
+        ganache-cli &
         npm run lint
         npm run clean
         npm run compile
