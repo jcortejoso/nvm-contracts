@@ -19,8 +19,6 @@ jobs:
     - name: Run tests
       run: |
         npm run lint
-        npm run test:cover
-        npm run test:report-coverage
         npm run clean
         npm run compile
         npm run test:upgrade
