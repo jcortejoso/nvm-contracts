@@ -46,3 +46,6 @@ mythrilReport.md
 securifyReport.txt
 KeeperContracts.png
 slitherReport.txt
+
+*.iml
+.idea/
