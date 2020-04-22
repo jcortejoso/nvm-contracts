@@ -4,7 +4,7 @@
   <groupId>io.keyko</groupId>
   <artifactId>nevermind-contracts</artifactId>
   <packaging>jar</packaging>
-  <version>0.12.7</version>
+  <version>0.1.0</version>
   <name>Nevermind Contracts</name>
   <description>Integration of TCRs, CPM and Ocean Tokens in Solidity</description>
   <url>https://github.com/keyko-io/nevermind-contracts</url>
