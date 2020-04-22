@@ -1,0 +1,27 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Pre-install
+      run:
+        - npm install -g npm
+        - npm install -g ganache-cli@~6.4.4 greenkeeper-lockfile codacy-coverage
+        - pyenv global system 3.6.7
+    - name: Run tests
+      run:
+        - npm run lint
+        - npm run test:cover
+        - npm run test:report-coverage
+        - npm run clean
+        - npm run compile
+        - npm run test:upgrade
+        - npm run test:echidna
+        - npm run deploy:development -- --deeper-clean
+        - git status

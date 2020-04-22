@@ -7,6 +7,7 @@
 
 
 [![Docker Build Status](https://img.shields.io/docker/build/keyko-io/nevermind-contracts.svg)](https://hub.docker.com/r/keykoio/nevermind-contracts/)
+![Build](https://github.com/keyko-io/nevermind-contracts/workflows/Build/badge.svg)
 ![NPM Package](https://github.com/keyko-io/nevermind-contracts/workflows/NPM%20Release/badge.svg)
 ![Pypi Package](https://github.com/keyko-io/nevermind-contracts/workflows/Pypi%20Release/badge.svg)
 ![Maven Package](https://github.com/keyko-io/nevermind-contracts/workflows/Maven%20Release/badge.svg)
