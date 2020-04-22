@@ -7,10 +7,11 @@ export LC_ALL=en_US.UTF-8
 shopt -s nullglob # Avoid literal evaluation if not files
 mkdir ./tmp/
 
-for file in artifacts/*.development.json
+#for file in artifacts/*.development.json
+for file in build/contracts/*.json
 do
     tmpFile=$(basename $file)
-    tmpFile=${tmpFile//.development/}
+    #tmpFile=${tmpFile//.development/}
 
     cp $file ./tmp/${tmpFile}
 

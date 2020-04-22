@@ -49,3 +49,4 @@ slitherReport.txt
 
 *.iml
 .idea/
+src/main/java/*

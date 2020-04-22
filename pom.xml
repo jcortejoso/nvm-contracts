@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <version>0.1.0</version>
   <name>Nevermind Contracts</name>
-  <description>Integration of TCRs, CPM and Ocean Tokens in Solidity</description>
+  <description>Nevermind Data Plarform Smart Contracts in Solidity</description>
   <url>https://github.com/keyko-io/nevermind-contracts</url>
   <licenses>
     <license>
@@ -91,7 +91,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.1.0</version>
         <configuration>
-          <finalName>ocean-contracts-${project.version}</finalName>
+          <finalName>nevermind-contracts-${project.version}</finalName>
           <descriptors>
             <descriptor>src/assembly/artifacts.xml</descriptor>
             <descriptor>src/assembly/dependency.xml</descriptor>
