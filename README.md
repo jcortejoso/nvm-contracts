@@ -28,7 +28,7 @@ Table of Contents
             * [Integration Testnet](#integration-testnet)
             * [Staging Testnet](#staging-testnet)
          * [Mainnets](#mainnets)
-         * [Live Mainnet](#live-mainnet)
+         * [Production Mainnet](#production-mainnet)
       * [Packages](#packages)
       * [Documentation](#documentation)
       * [Prior Art](#prior-art)
@@ -136,9 +136,9 @@ The contract addresses deployed on Nevermind `Staging` Test Network:
 
 ### Mainnets
 
-### Live Mainnet
+### Production Mainnet
 
-The contract addresses deployed on `Live` Mainnet:
+The contract addresses deployed on `Production` Mainnet:
 
 | Contract                          | Version | Address                                      |
 |-----------------------------------|---------|----------------------------------------------|
