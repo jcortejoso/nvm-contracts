@@ -41,31 +41,31 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 - run `npm run clean` to clean the work dir.
 - run `npm run compile` to compile the contracts.
 
-#### Nile
+#### Staging
 
-- Copy the wallet file for `nile`
-  - `cp wallets_nile.json wallets.json`
-- run `export MNEMONIC=<your nile mnemonic>`. You will find them in the password manager.
+- Copy the wallet file for `staging`
+  - `cp wallets_staging.json wallets.json`
+- run `export MNEMONIC=<your staging mnemonic>`. You will find them in the password manager.
 
 ##### Deploy the whole application
 
-- To deploy all contracts run `npm run deploy:nile`
+- To deploy all contracts run `npm run deploy:staging`
 
 ##### Deploy a single contracts
 
-- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:nile -- OceanToken Dispenser`will deploy `OceanToken` and `Dispenser`.
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:staging -- OceanToken Dispenser`will deploy `OceanToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
-- To upgrade all contracts run `npm run upgrade:nile`
+- To upgrade all contracts run `npm run upgrade:staging`
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:nile -- OceanToken`. For upgrading the `OceanToken` contract.
+- To upgrade a single contract run `npm run upgrade:staging -- OceanToken`. For upgrading the `OceanToken` contract.
 
 ##### Persist artifacts
 
-- Commit all changes in `artifacts/*.nile.json`
+- Commit all changes in `artifacts/*.staging.json`
 
 #### Kovan
 
@@ -158,14 +158,14 @@ It will deploy the following components:
 - [maven](https://search.maven.org/artifact/com.oceanprotocol/keeper-contracts/)
 - [docker](https://cloud.docker.com/u/oceanprotocol/repository/docker/oceanprotocol/keeper-contracts)
 
-The npm, pypi and maven packages contain the contract artifacts for the contracts already deployed in different networks (such as `Pacific`, `Duero`, `Nile`, or `Kovan`).
+The npm, pypi and maven packages contain the contract artifacts for the contracts already deployed in different networks (such as `Production`, `Staging`, `Testing`, or `Spree`).
 The docker image generated contains the contracts and script ready to be used to deploy the contracts to a network. It is used for deploying the contracts in the local network `Spree` in [oceanprotocol/barge](https://github.com/oceanprotocol/barge)
 
 Once the new version is tagged and released, you can edit the `Releases` section of GitHub with the information and changes about the new version (in the future, these will come from the changelog):
 
 ## Audit
 
-To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:nile` to get a list of all the current transactions and their current status.
+To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:staging` to get a list of all the current transactions and their current status.
 
 ```text
  Wallet: 0x24EB26D4042a2AB576E7E39b87c3f33f276AeF92

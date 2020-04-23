@@ -4,9 +4,9 @@ This documents explains in detail how [keeper-contracts](https://github.com/ocea
 
 ## Quickstart
 
-The first step to work with `zos` is to install dependencies then initialize the project. Then compile contracts and add contracts to the project. 
+The first step to work with `zos` is to install dependencies then initialize the project. Then compile contracts and add contracts to the project.
 Finally push the contracts into the network and create the  upgradable instances. Once the contracts are deployed they can be tested and upgraded.
-Also we change the proxy administrator to a MultiSignature wallet to approve upgrades.  We are going to use [dori](https://github.com/oceanprotocol/dori) in order to perform 
+Also we change the proxy administrator to a MultiSignature wallet to approve upgrades.  We are going to use [dori](https://github.com/oceanprotocol/dori) in order to perform
 any future deployments/upgrades.
 
 ## Details
@@ -16,7 +16,7 @@ Here we provide more details into each step of the initial deploy and the approa
 
 ## Roles
 
-Before going into more details about the deployment. We should differentiate between different roles in the system which 
+Before going into more details about the deployment. We should differentiate between different roles in the system which
 govern the upgradeability in keeper-contracts.
 
 Roles are defined as follows:
@@ -36,8 +36,8 @@ ownerWallet: represented as the owner from wallets.json
 - **OwnerWallet**: One instance of the multi sig wallet, defined as `owner`. This wallet will be assigned as the owner of all the contracts. It can be used to call specific functions in the contracts ie. change the configuration.
 
 ## Deploy & Upgrade
-`zos` does not support migrations, hence all the initial configuration should be performed with a [dori](https://github.com/oceanprotocol/dori). 
-Contract constructors are ignored so the initial setup of the contract should be made in a [`initialize`](https://docs.zeppelinos.org/docs/advanced.html#initializers-vs-constructors) 
+`zos` does not support migrations, hence all the initial configuration should be performed with a [dori](https://github.com/oceanprotocol/dori).
+Contract constructors are ignored so the initial setup of the contract should be made in a [`initialize`](https://docs.zeppelinos.org/docs/advanced.html#initializers-vs-constructors)
 function that will be executed only once after the initial deployment.
 
 ### 1. Configuration
@@ -60,7 +60,7 @@ function that will be executed only once after the initial deployment.
 ]
 ```
 
-Moreover for each network, [dori](https://github.com/oceanprotocol/dori) needs to detect the roles and their addresses from a pre-defined wallets config file. 
+Moreover for each network, [dori](https://github.com/oceanprotocol/dori) needs to detect the roles and their addresses from a pre-defined wallets config file.
 The following configuration should be an example for `wallets-<NETWORK_NAME>.json`:
 
 ```json
@@ -87,32 +87,32 @@ $ npm run compile #to compile the contracts
 
 ### 3. Deploy & Upgrade
 
-The following steps shows how to perform contracts deployment and upgrade on `Nile` and `Kovan` networks. 
+The following steps shows how to perform contracts deployment and upgrade on `Nile` and `Kovan` networks.
 #### Nile
 
-- Copy the wallet file for `nile` 
-  - `cp wallets_nile.json wallets.json`
-- run `export MNEMONIC=<your nile mnemonic>`. You will find them in the password manager.
+- Copy the wallet file for `staging`
+  - `cp wallets_staging.json wallets.json`
+- run `export MNEMONIC=<your staging mnemonic>`. You will find them in the password manager.
 
 ##### Deploy the whole application
 
-- To deploy all contracts run `npm run deploy:nile`
+- To deploy all contracts run `npm run deploy:staging`
 
 ##### Deploy a single contracts
 
-- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:nile -- OceanToken Dispenser`will deploy `OceanToken` and `Dispenser`.
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:staging -- OceanToken Dispenser`will deploy `OceanToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
-- To upgrade all contracts run `npm run upgrade:nile`
+- To upgrade all contracts run `npm run upgrade:staging`
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:nile -- OceanToken`. For upgrading the `OceanToken` contract.
+- To upgrade a single contract run `npm run upgrade:staging -- OceanToken`. For upgrading the `OceanToken` contract.
 
 ##### Persist artifacts
 
-- Commit all changes in `artifacts/*.nile.json`
+- Commit all changes in `artifacts/*.staging.json`
 
 #### Kovan
 
@@ -155,22 +155,22 @@ All upgrades of the contracts have to be approved by the `upgrader` wallet confi
 
 ### 5. Audit Contracts
 
-To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:nile` to get a list of all the current transactions and their current status. 
+To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:staging` to get a list of all the current transactions and their current status.
 
 ```text
  Wallet: 0x24EB26D4042a2AB576E7E39b87c3f33f276AeF92
 
- Transaction ID: 64 
- Destination: 0xfA16d26e9F4fffC6e40963B281a0bB08C31ed40C 
- Contract: EscrowAccessSecretStoreTemplate 
- Data is `upgradeTo` call: true 
- Confirmed from: 0x7A13E1aD23546c9b804aDFd13e9AcB184EfCAF58 
+ Transaction ID: 64
+ Destination: 0xfA16d26e9F4fffC6e40963B281a0bB08C31ed40C
+ Contract: EscrowAccessSecretStoreTemplate
+ Data is `upgradeTo` call: true
+ Confirmed from: 0x7A13E1aD23546c9b804aDFd13e9AcB184EfCAF58
  Executed: false
 ```
 
 ### 6. Documentation
 - Update the addresses in the `README.md`
-- run `node ./scripts/contracts/get-addresses.js <network name>` 
+- run `node ./scripts/contracts/get-addresses.js <network name>`
 
 It will output the current proxy addresses in the `README` friendly format.
 

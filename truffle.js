@@ -103,10 +103,10 @@ module.exports = {
             gas: 7 * 1000000,
             gasPrice: utils.toWei('8', 'gwei')
         },
-        // live the ethereum mainnet
-        live: {
+        // production mainnet
+        production: {
             provider: () => setupWallet(
-                url || 'https://live.keyko.com'
+                url || 'https://production.keyko.com'
             ),
             network_id: 0xCEA11, // 846353
             from: '0xba3e0ec852dc24ca7f454ea545d40b1462501711',
