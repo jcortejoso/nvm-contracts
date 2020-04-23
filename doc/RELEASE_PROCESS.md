@@ -41,7 +41,7 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 - run `npm run clean` to clean the work dir.
 - run `npm run compile` to compile the contracts.
 
-#### Nile
+#### Staging
 
 - Copy the wallet file for `staging`
   - `cp wallets_staging.json wallets.json`
