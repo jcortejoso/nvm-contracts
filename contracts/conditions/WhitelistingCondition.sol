@@ -1,7 +1,5 @@
 pragma solidity 0.5.6;
-// Copyright BigchainDB GmbH and Ocean Protocol contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+
 
 import '../Common.sol';
 import './Condition.sol';
@@ -10,7 +8,7 @@ import '../interfaces/IList.sol';
 import 'openzeppelin-eth/contracts/cryptography/ECDSA.sol';
 /**
  * @title Whitelisting Condition
- * @author Ocean Protocol Team
+ * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the Whitelisting Condition
  *      TODO: documentation

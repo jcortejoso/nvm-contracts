@@ -1,11 +1,9 @@
 pragma solidity 0.5.6;
-// Copyright BigchainDB GmbH and Ocean Protocol contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+
 
 /**
  * @title DID Registry Library
- * @author Ocean Protocol Team
+ * @author Keyko & Ocean Protocol
  *
  * @dev All function calls are currently implemented without side effects
  */

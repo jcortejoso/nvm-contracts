@@ -1,14 +1,12 @@
 pragma solidity 0.5.6;
-// Copyright BigchainDB GmbH and Ocean Protocol contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+
 
 import './DIDRegistryLibrary.sol';
 import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
 
 /**
  * @title DID Registry
- * @author Ocean Protocol Team
+ * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the DID Registry.
  *      https://github.com/oceanprotocol/OEPs/tree/master/7#registry

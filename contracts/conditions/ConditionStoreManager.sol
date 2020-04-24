@@ -1,7 +1,5 @@
 pragma solidity 0.5.6;
-// Copyright BigchainDB GmbH and Ocean Protocol contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+
 
 import '../Common.sol';
 import '../libraries/EpochLibrary.sol';
@@ -11,7 +9,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
 
 /**
  * @title Condition Store Manager
- * @author Ocean Protocol Team
+ * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the Condition Store Manager.
  *

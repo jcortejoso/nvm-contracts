@@ -1,7 +1,5 @@
 pragma solidity 0.5.6;
-// Copyright BigchainDB GmbH and Ocean Protocol contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+
 
 import 'openzeppelin-eth/contracts/token/ERC20/ERC20Capped.sol';
 import 'openzeppelin-eth/contracts/token/ERC20/ERC20Detailed.sol';
@@ -9,7 +7,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
 
 /**
  * @title Ocean Protocol ERC20 Token Contract
- * @author Ocean Protocol Team
+ * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the Ocean Token.
  *      Ocean Token is ERC20 token

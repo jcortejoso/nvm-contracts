@@ -1,13 +1,11 @@
 pragma solidity 0.5.6;
-// Copyright BigchainDB GmbH and Ocean Protocol contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+
 
 import 'openzeppelin-eth/contracts/math/SafeMath.sol';
 
 /**
  * @title Hash List library
- * @author Ocean Protocol Team
+ * @author Keyko & Ocean Protocol
  * @dev Implementation of the basic functionality of list of hash values.
  * This library allows other contracts to build and maintain lists
  * and also preserves the privacy of the data by accepting only hashed 

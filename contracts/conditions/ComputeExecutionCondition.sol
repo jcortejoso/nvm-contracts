@@ -1,7 +1,5 @@
 pragma solidity 0.5.6;
-// Copyright BigchainDB GmbH and Ocean Protocol contributors
-// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
-// Code is Apache-2.0 and docs are CC-BY-4.0
+
 
 
 import './Condition.sol';
@@ -10,7 +8,7 @@ import '../agreements/AgreementStoreManager.sol';
 
 /**
  * @title Compute Execution Condition
- * @author Ocean Protocol Team
+ * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the Compute Execution Condition
  *      This condition is meant to be a signal in which triggers
