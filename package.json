@@ -1,11 +1,11 @@
 {
-  "name": "@keyko-io/nevermind-contracts",
-  "version": "0.1.3",
-  "description": "Nevermind implementation of Ocean Protocol in Solidity",
+  "name": "@keyko-io/nevermined-contracts",
+  "version": "0.2.0",
+  "description": "Nevermined implementation of Ocean Protocol in Solidity",
   "bugs": {
-    "url": "https://github.com/keyko-io/nevermind-contracts/issues"
+    "url": "https://github.com/keyko-io/nevermined-contracts/issues"
   },
-  "homepage": "https://github.com/keyko-io/nevermind-contracts#readme",
+  "homepage": "https://github.com/keyko-io/nevermined-contracts#readme",
   "main": "README.md",
   "scripts": {
     "compile": "truffle compile",
@@ -64,7 +64,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/keyko-io/nevermind-contracts.git"
+    "url": "git+https://github.com/keyko-io/nevermined-contracts.git"
   },
   "author": "Ocean Protocol",
   "license": "Apache-2.0",

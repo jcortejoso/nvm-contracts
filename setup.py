@@ -44,13 +44,13 @@ setup(
     long_description=readme,
     long_description_content_type='text/markdown',
     include_package_data=True,
-    keywords='nevermind-contracts',
-    name='nevermind-contracts',
+    keywords='nevermined-contracts',
+    name='nevermined-contracts',
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/keyko-io/nevermind-contracts',
-    version='0.1.3',
+    url='https://github.com/keyko-io/nevermined-contracts',
+    version='0.2.0',
     zip_safe=False,
 )
 

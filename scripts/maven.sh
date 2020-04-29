@@ -15,7 +15,7 @@ do
 
     cp $file ./tmp/${tmpFile}
 
-    web3j truffle generate --javaTypes ./tmp/${tmpFile} -o src/main/java -p io.keyko.nevermind.contracts
+    web3j truffle generate --javaTypes ./tmp/${tmpFile} -o src/main/java -p io.keyko.nevermined.contracts
 done
 
 rm -rf ./tmp/

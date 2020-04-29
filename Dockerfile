@@ -12,10 +12,10 @@ RUN apk add --no-cache --update\
       make\
       python
 
-COPY . /nevermind-contracts
-WORKDIR /nevermind-contracts
+COPY . /nevermined-contracts
+WORKDIR /nevermined-contracts
 
 RUN npm install -g npm
 RUN npm install
 
-ENTRYPOINT ["/nevermind-contracts/scripts/keeper.sh"]
+ENTRYPOINT ["/nevermined-contracts/scripts/keeper.sh"]
