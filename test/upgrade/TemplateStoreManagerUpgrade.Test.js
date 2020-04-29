@@ -8,7 +8,7 @@ const constants = require('../helpers/constants.js')
 
 const {
     confirmUpgrade
-} = require('@oceanprotocol/dori')
+} = require('@keyko-io/contract-tools')
 
 const {
     deploy,

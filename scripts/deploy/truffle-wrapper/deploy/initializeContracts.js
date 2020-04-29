@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const { zosCreate } = require('@oceanprotocol/dori')
+const { zosCreate } = require('@keyko-io/contract-tools')
 
 async function initializeContracts({
     contracts,

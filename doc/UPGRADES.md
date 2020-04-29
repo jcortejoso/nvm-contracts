@@ -6,7 +6,7 @@ This documents explains in detail how [keeper-contracts](https://github.com/ocea
 
 The first step to work with `zos` is to install dependencies then initialize the project. Then compile contracts and add contracts to the project.
 Finally push the contracts into the network and create the  upgradable instances. Once the contracts are deployed they can be tested and upgraded.
-Also we change the proxy administrator to a MultiSignature wallet to approve upgrades.  We are going to use [dori](https://github.com/oceanprotocol/dori) in order to perform
+Also we change the proxy administrator to a MultiSignature wallet to approve upgrades.  We are going to use the [Nevermined Contract Tools](https://github.com/keyko-io/nevermined-contract-tools) in order to perform
 any future deployments/upgrades.
 
 ## Details
@@ -36,13 +36,13 @@ ownerWallet: represented as the owner from wallets.json
 - **OwnerWallet**: One instance of the multi sig wallet, defined as `owner`. This wallet will be assigned as the owner of all the contracts. It can be used to call specific functions in the contracts ie. change the configuration.
 
 ## Deploy & Upgrade
-`zos` does not support migrations, hence all the initial configuration should be performed with a [dori](https://github.com/oceanprotocol/dori).
+`zos` does not support migrations, hence all the initial configuration should be performed with [Nevermined Contract Tools](https://github.com/keyko-io/nevermined-contract-tools).
 Contract constructors are ignored so the initial setup of the contract should be made in a [`initialize`](https://docs.zeppelinos.org/docs/advanced.html#initializers-vs-constructors)
 function that will be executed only once after the initial deployment.
 
 ### 1. Configuration
 
-[Dori](https://github.com/oceanprotocol/dori) checks the `contracts.json` in order to detect the current contracts that are going to be deployed:
+[Nevermined Contract Tools](https://github.com/keyko-io/nevermined-contract-tools) checks the `contracts.json` in order to detect the current contracts that are going to be deployed:
 
 ```json
 [
@@ -60,7 +60,7 @@ function that will be executed only once after the initial deployment.
 ]
 ```
 
-Moreover for each network, [dori](https://github.com/oceanprotocol/dori) needs to detect the roles and their addresses from a pre-defined wallets config file.
+Moreover for each network, [Nevermined Contract Tools](https://github.com/keyko-io/nevermined-contract-tools) needs to detect the roles and their addresses from a pre-defined wallets config file.
 The following configuration should be an example for `wallets-<NETWORK_NAME>.json`:
 
 ```json

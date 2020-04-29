@@ -5,7 +5,7 @@ const setupContracts = require('../../scripts/deploy/truffle-wrapper/deploy/setu
 const {
     upgradeContracts,
     deployContracts
-} = require('@oceanprotocol/dori')
+} = require('@keyko-io/contract-tools')
 
 const deploy = async function({
     web3,

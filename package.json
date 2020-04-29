@@ -1,6 +1,6 @@
 {
   "name": "@keyko-io/nevermined-contracts",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Nevermined implementation of Ocean Protocol in Solidity",
   "bugs": {
     "url": "https://github.com/keyko-io/nevermined-contracts/issues"
@@ -69,7 +69,7 @@
   "author": "Ocean Protocol",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@oceanprotocol/dori": "~0.5.1",
+    "@keyko-io/contract-tools": "~0.1.0",
     "bignumber.js": "^9.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",

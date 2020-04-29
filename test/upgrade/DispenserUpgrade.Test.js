@@ -12,7 +12,7 @@ const {
     submitTransaction,
     confirmTransaction,
     loadWallet
-} = require('@oceanprotocol/dori')
+} = require('@keyko-io/contract-tools')
 
 const {
     deploy,
