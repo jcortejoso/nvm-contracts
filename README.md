@@ -1,22 +1,22 @@
 [![banner](https://raw.githubusercontent.com/keyko-io/assets/master/images/logo/small/keyko_logo@2x-100.jpg)](https://keyko.io)
 
-# Nevermind Smart Contracts
+# Nevermined Smart Contracts
 
-> 💧 Nevermind implementation of Ocean Protocol in Solidity
+> 💧 Nevermined implementation of Ocean Protocol in Solidity
 > [keyko.io](https://keyko.io)
 
 
-[![Docker Build Status](https://img.shields.io/docker/build/keyko-io/nevermind-contracts.svg)](https://hub.docker.com/r/keykoio/nevermind-contracts/)
-![Build](https://github.com/keyko-io/nevermind-contracts/workflows/Build/badge.svg)
-![NPM Package](https://github.com/keyko-io/nevermind-contracts/workflows/NPM%20Release/badge.svg)
-![Pypi Package](https://github.com/keyko-io/nevermind-contracts/workflows/Pypi%20Release/badge.svg)
-![Maven Package](https://github.com/keyko-io/nevermind-contracts/workflows/Maven%20Release/badge.svg)
+[![Docker Build Status](https://img.shields.io/docker/build/keyko-io/nevermined-contracts.svg)](https://hub.docker.com/r/keykoio/nevermined-contracts/)
+![Build](https://github.com/keyko-io/nevermined-contracts/workflows/Build/badge.svg)
+![NPM Package](https://github.com/keyko-io/nevermined-contracts/workflows/NPM%20Release/badge.svg)
+![Pypi Package](https://github.com/keyko-io/nevermined-contracts/workflows/Pypi%20Release/badge.svg)
+![Maven Package](https://github.com/keyko-io/nevermined-contracts/workflows/Maven%20Release/badge.svg)
 
 
 Table of Contents
 =================
 
-   * [Nevermind Smart Contracts](#nevermind-smart-contracts)
+   * [Nevermined Smart Contracts](#nevermined-smart-contracts)
       * [Table of Contents](#table-of-contents)
       * [Get Started](#get-started)
          * [Docker](#docker)
@@ -40,12 +40,12 @@ Table of Contents
 
 ## Get Started
 
-For local development of `nevermind-contracts` you can either use Docker, or setup the development environment on your machine.
+For local development of `nevermined-contracts` you can either use Docker, or setup the development environment on your machine.
 
 ### Docker
 
-The simplest way to get started with is using the [Nevermind Tools](https://github.com/keyko-io/nevermind-tools),
-a docker compose application to run all the Nevermind stack.
+The simplest way to get started with is using the [Nevermined Tools](https://github.com/keyko-io/nevermined-tools),
+a docker compose application to run all the Nevermined stack.
 
 ### Local development
 
@@ -59,8 +59,8 @@ Note: For MacOS, make sure to have `node@10` installed.
 Clone the project and install all dependencies:
 
 ```bash
-git clone git@github.com:keyko-io/nevermind-contracts.git
-cd nevermind-contracts/
+git clone git@github.com:keyko-io/nevermined-contracts.git
+cd nevermined-contracts/
 
 # install dependencies
 npm i
@@ -117,7 +117,7 @@ Code style is enforced through the CI test process, builds will fail if there're
 
 #### Integration Testnet
 
-The contract addresses deployed on Nevermind `Integration` Test Network:
+The contract addresses deployed on Nevermined `Integration` Test Network:
 
 | Contract                          | Version | Address                                      |
 |-----------------------------------|---------|----------------------------------------------|
@@ -126,7 +126,7 @@ The contract addresses deployed on Nevermind `Integration` Test Network:
 
 #### Staging Testnet
 
-The contract addresses deployed on Nevermind `Staging` Test Network:
+The contract addresses deployed on Nevermined `Staging` Test Network:
 
 | Contract                          | Version | Address                                      |
 |-----------------------------------|---------|----------------------------------------------|
@@ -152,27 +152,27 @@ Using these packages helps to avoid compiling the Smart Contracts and copying th
 The packages provided currently are:
 
 * JavaScript `npm` package - As part of the [@keyko-io npm organization](https://www.npmjs.com/settings/keyko-io/packages),
-  the [npm nevermind-contracts package](https://www.npmjs.com/package/@keyko-io/nevermind-contracts) provides the ABI's
+  the [npm nevermined-contracts package](https://www.npmjs.com/package/@keyko-io/nevermined-contracts) provides the ABI's
   to be imported from your `JavaScript` code.
-* Python `Pypi` package - The [Pypi nevermind-contracts package](https://pypi.org/project/nevermind-contracts/) provides
+* Python `Pypi` package - The [Pypi nevermined-contracts package](https://pypi.org/project/nevermined-contracts/) provides
   the same ABI's to be used from `Python`.
-* Java `Maven` package - The [Maven nevermind-contracts package](https://search.maven.org/artifact/io.keyko/nevermind-contracts)
+* Java `Maven` package - The [Maven nevermined-contracts package](https://search.maven.org/artifact/io.keyko/nevermined-contracts)
   provides the same ABI's to be used from `Java`.
 
 The packages contains all the content from the `doc/` and `artifacts/` folders.
 
 In `JavaScript` they can be used like this:
 
-Install the `nevermind-contracts` `npm` package.
+Install the `nevermined-contracts` `npm` package.
 
 ```bash
-npm install @keyko-io/nevermind-contracts
+npm install @keyko-io/nevermined-contracts
 ```
 
 Load the ABI of the `OceanToken` contract on the `staging` network:
 
 ```javascript
-const OceanToken = require('@keyko-io/nevermind-contracts/artifacts/OceanToken.staging.json')
+const OceanToken = require('@keyko-io/nevermined-contracts/artifacts/OceanToken.staging.json')
 ```
 
 The structure of the `artifacts` is:

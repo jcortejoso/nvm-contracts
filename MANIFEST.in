@@ -1,1 +1,1 @@
-include nevermind-contracts/contracts/*.json
+include nevermined-contracts/contracts/*.json

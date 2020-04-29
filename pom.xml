@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>io.keyko.nevermind</groupId>
+  <groupId>io.keyko.nevermined</groupId>
   <artifactId>contracts</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.3</version>
-  <name>Nevermind Contracts</name>
-  <description>Nevermind Data Plarform Smart Contracts in Solidity</description>
-  <url>https://github.com/keyko-io/nevermind-contracts</url>
+  <version>0.2.0</version>
+  <name>Nevermined Contracts</name>
+  <description>Nevermined Data Plarform Smart Contracts in Solidity</description>
+  <url>https://github.com/keyko-io/nevermined-contracts</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -16,7 +16,7 @@
     </license>
   </licenses>
   <properties>
-    <final-name>nevermind-contracts</final-name>
+    <final-name>nevermined-contracts</final-name>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
@@ -40,9 +40,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git://github.com/keyko-io/nevermind-contracts.git</connection>
-    <developerConnection>scm:git:ssh://keyko-io/nevermind-contracts.git</developerConnection>
-    <url>https://github.com/keyko-io/nevermind-contracts/tree/master</url>
+    <connection>scm:git:git://github.com/keyko-io/nevermined-contracts.git</connection>
+    <developerConnection>scm:git:ssh://keyko-io/nevermined-contracts.git</developerConnection>
+    <url>https://github.com/keyko-io/nevermined-contracts/tree/master</url>
   </scm>
 
   <dependencies>
@@ -91,7 +91,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.1.0</version>
         <configuration>
-          <finalName>nevermind-contracts-${project.version}</finalName>
+          <finalName>nevermined-contracts-${project.version}</finalName>
           <descriptors>
             <descriptor>src/assembly/dependency.xml</descriptor>
           </descriptors>
