@@ -7,7 +7,7 @@ chai.use(chaiAsPromised)
 
 const {
     confirmUpgrade
-} = require('@oceanprotocol/dori')
+} = require('@keyko-io/contract-tools')
 
 const {
     deploy,

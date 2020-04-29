@@ -1,6 +1,6 @@
 const {
     getAddresses
-} = require('@oceanprotocol/dori')
+} = require('@keyko-io/contract-tools')
 const network = process.argv[2]
 
 getAddresses({

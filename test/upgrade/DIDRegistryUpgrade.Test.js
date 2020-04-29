@@ -10,7 +10,7 @@ const testUtils = require('../helpers/utils.js')
 
 const {
     confirmUpgrade
-} = require('@oceanprotocol/dori')
+} = require('@keyko-io/contract-tools')
 
 const {
     deploy,
