@@ -1,7 +1,7 @@
 History
 =======
 
-v0.9.0 (Mar 29, 2019)
+v0.2.0 (April, 2020)
 -------------------------
 
-* Stable version of the zos deployment scripts
+* Nevermined
