@@ -6,7 +6,7 @@
 > [keyko.io](https://keyko.io)
 
 
-[![Docker Build Status](https://img.shields.io/docker/build/keyko-io/nevermined-contracts.svg)](https://hub.docker.com/r/keykoio/nevermined-contracts/)
+[![Docker Build Status](https://img.shields.io/docker/cloud/build/keykoio/nevermined-contracts.svg)](https://hub.docker.com/r/keykoio/nevermined-contracts/)
 ![Build](https://github.com/keyko-io/nevermined-contracts/workflows/Build/badge.svg)
 ![NPM Package](https://github.com/keyko-io/nevermined-contracts/workflows/NPM%20Release/badge.svg)
 ![Pypi Package](https://github.com/keyko-io/nevermined-contracts/workflows/Pypi%20Release/badge.svg)
