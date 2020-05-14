@@ -15,7 +15,6 @@ RUN apk add --no-cache --update\
 COPY . /nevermined-contracts
 WORKDIR /nevermined-contracts
 
-RUN npm install -g npm
-RUN npm install
+RUN yarn
 
 ENTRYPOINT ["/nevermined-contracts/scripts/keeper.sh"]
