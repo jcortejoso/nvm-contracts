@@ -35,7 +35,6 @@
     "test:cover": "export NETWORK='coverage' && solidity-coverage",
     "test:echidna": "./test/verification/echidna/echidna.sh",
     "test:manticore": "./test/verification/manticore/run.sh",
-    "test:report-coverage": "cat ./coverage/lcov.info | codacy-coverage --token b95545c0da4b45848cc5eef363c2711e  --prefix ./",
     "doc:contracts": "node scripts/contracts/doc-generator.js",
     "doc:addresses": "node scripts/contracts/get-addresses.js",
     "doc:copyright": "scripts/add-spdx.sh",
@@ -69,23 +68,29 @@
   "author": "Ocean Protocol",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@keyko-io/contract-tools": "~0.1.0",
+    "@keyko-io/contract-tools": "~0.2.0",
     "bignumber.js": "^9.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^6.4.0",
+    "eslint": "^7.0.0",
     "eslint-config-oceanprotocol": "^1.5.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-standard": "^4.0.1",
     "glob": "^7.1.4",
-    "mathjs": "~6.2.2",
+    "mathjs": "~7.0.0",
     "openzeppelin-eth": "^2.2.0",
     "solidity-coverage": "0.6.3",
     "solium": "^1.2.5",
     "solium-plugin-security": "^0.1.1",
-    "truffle": "5.0.42",
+    "truffle": "5.1.25",
     "truffle-contract": "~4.0.31",
     "truffle-hdwallet-provider": "~1.0.17",
-    "web3": "1.2.1",
+    "web3": "1.2.7",
     "web3-provider-engine": "~15.0.3",
-    "yargs": "~14.2.0"
+    "yargs": "~15.3.1"
+  },
+  "resolutions": {
+    "@keyko-io/contract-tools/zos/zos-lib": "2.2.3"
   }
 }

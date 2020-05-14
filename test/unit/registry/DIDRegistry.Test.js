@@ -202,7 +202,7 @@ contract('DIDRegistry', (accounts) => {
             )
             assert.strictEqual(
                 storedDIDRegister.blockNumberUpdated.toNumber(),
-                blockNumber.toNumber()
+                blockNumber.toNumber() + 1
             )
 
             const getDIDRegisterIds = await didRegistry.getDIDRegisterIds()

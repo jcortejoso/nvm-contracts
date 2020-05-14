@@ -14,16 +14,15 @@ jobs:
         node-version: '10.x'
     - name: Pre-install
       run: |
-        npm i
-        npm install -g ganache-cli@~6.4.4 greenkeeper-lockfile codacy-coverage
-        ganache-cli > ganache-cli.log &
+        yarn
+        npx ganache-cli@~6.9.1 > ganache-cli.log &
     - name: Run tests
       run: |
-        npm run lint
-        npm run clean
-        npm run compile
-        npm run test:upgrade
-        npm run test:echidna
-        npm run deploy:development -- --deeper-clean
+        yarn lint
+        yarn clean
+        yarn compile
+        yarn test:fast
+        yarn test:upgrade
+        yarn test:echidna
+        yarn deploy:development --deeper-clean
         git status
-

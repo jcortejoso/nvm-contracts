@@ -117,7 +117,7 @@ contract('TemplateStoreManager', (accounts) => {
             expect(storedTemplate.lastUpdatedBy)
                 .to.equal(accounts[0])
             expect(storedTemplate.blockNumberUpdated.toNumber())
-                .to.equal(blockNumber.toNumber())
+                .to.equal(blockNumber.toNumber() + 1)
         })
     })
 
@@ -138,7 +138,7 @@ contract('TemplateStoreManager', (accounts) => {
             expect(storedTemplate.state.toNumber())
                 .to.equal(constants.template.state.revoked)
             expect(storedTemplate.blockNumberUpdated.toNumber())
-                .to.equal(blockNumber.toNumber())
+                .to.equal(blockNumber.toNumber() + 1)
         })
 
         it('successful approve should not revoke if not owner', async () => {

@@ -22,11 +22,11 @@ jobs:
           node-version: '10.x'
       - name: Pre-install
         run: |
-          npm i
+          yarn
       - name: Generate Artifacts
         run: |
-          npm run clean
-          npm run compile
+          yarn clean
+          yarn compile
 
       - name: Generating Stubs
         run: |
