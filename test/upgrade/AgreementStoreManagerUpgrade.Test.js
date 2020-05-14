@@ -54,7 +54,7 @@ contract('AgreementStoreManager', (accounts) => {
     }
 
     describe('Test upgradability for AgreementStoreManager', () => {
-        beforeEach('Load wallet each time', async function() {
+        beforeEach('Load wallet each time', async () => {
             const addressBook = await deploy({
                 web3,
                 artifacts,
