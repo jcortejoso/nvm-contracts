@@ -33,8 +33,8 @@ contract('Dispenser', (accounts) => {
         OceanTokenAddress,
         DispenserAddress
 
-    const requester = accounts[2]
-    const approver = accounts[3]
+    const requester = accounts[1]
+    const approver = accounts[2]
 
     const verbose = false
 
@@ -148,7 +148,7 @@ contract('Dispenser', (accounts) => {
             const result =
                 await DispenserChangeFunctionSignatureInstance.setMinPeriod(
                     requestedAmount,
-                    accounts[1]
+                    requester
                 )
 
             testUtils.assertEmitted(result, 1, 'DispenserChangeFunctionSignatureEvent')
@@ -215,7 +215,7 @@ contract('Dispenser', (accounts) => {
             )
             const result = await DispenserChangeInStorageAndLogicInstance.setMinPeriod(
                 requestedAmount,
-                accounts[1]
+                requester
             )
 
             testUtils.assertEmitted(result, 1, 'DispenserChangeFunctionSignatureEvent')

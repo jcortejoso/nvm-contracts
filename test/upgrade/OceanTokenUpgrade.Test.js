@@ -24,7 +24,7 @@ contract('OceanToken', (accounts) => {
     let OceanTokenAddress
 
     const verbose = false
-    const approver = accounts[3]
+    const approver = accounts[2]
 
     async function setupTest() {
         await OceanToken.at(OceanTokenAddress)

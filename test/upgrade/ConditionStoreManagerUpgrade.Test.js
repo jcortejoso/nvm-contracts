@@ -52,6 +52,7 @@ contract('ConditionStoreManager', (accounts) => {
         )
 
         conditionStoreManagerAddress = addressBook.ConditionStoreManager
+        assert(conditionStoreManagerAddress)
     })
 
     async function setupTest({

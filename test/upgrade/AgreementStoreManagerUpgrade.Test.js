@@ -32,7 +32,7 @@ contract('AgreementStoreManager', (accounts) => {
     let agreementStoreManagerAddress
 
     const verbose = false
-    const approver = accounts[3]
+    const approver = accounts[2]
 
     async function setupTest({
         agreementId = constants.bytes32.one,
