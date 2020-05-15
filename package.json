@@ -71,7 +71,7 @@
   "author": "Ocean Protocol",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@keyko-io/contract-tools": "~0.2.0",
+    "@keyko-io/contract-tools": "~0.2.1",
     "bignumber.js": "^9.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
@@ -86,7 +86,7 @@
     "solidity-coverage": "0.6.3",
     "solium": "^1.2.5",
     "solium-plugin-security": "^0.1.1",
-    "truffle": "5.1.25",
+    "truffle": "5.1.26",
     "truffle-contract": "~4.0.31",
     "truffle-hdwallet-provider": "~1.0.17",
     "web3": "1.2.7",
