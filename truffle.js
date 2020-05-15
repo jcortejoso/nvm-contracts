@@ -87,10 +87,10 @@ module.exports = {
         // rinkeby the ethereum testnet
         rinkeby: {
             provider: () => setupWallet(
-                url || `https://rinkeby.infura.io/v2/${process.env.INFURA_TOKEN}`
+                url || `https://rinkeby.infura.io/v3/${process.env.INFURA_TOKEN}`
             ),
             network_id: 0x4, // 4
-            from: '0x2C63bf697f74C72CFB727Fb5eB8e6266cE341e13'
+            from: '0x73943d14131268F23b721E668911bCDDEcA9da62'
         },
         // mainnet the ethereum mainnet
         mainnet: {
