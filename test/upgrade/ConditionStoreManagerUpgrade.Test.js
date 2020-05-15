@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* global artifacts, web3, contract, describe, it, beforeEach */
+/* global artifacts, web3, contract, describe, xit, it, beforeEach */
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
@@ -92,7 +92,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
         })
 
-        it('Should be possible to change function signature', async () => {
+        xit('Should be possible to change function signature', async () => {
             const { conditionId, conditionType } = await setupTest()
 
             const taskBook = await upgrade({
@@ -180,7 +180,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
         })
 
-        it('Should be possible to append storage variables and change logic', async () => {
+        xit('Should be possible to append storage variables and change logic', async () => {
             const { conditionId, conditionType } = await setupTest()
 
             const taskBook = await upgrade({
