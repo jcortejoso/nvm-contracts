@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* global artifacts, web3, contract, describe, it, beforeEach */
+/* global artifacts, web3, contract, describe, xit, it, beforeEach */
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
@@ -76,7 +76,7 @@ contract('Dispenser', (accounts) => {
             )
         })
 
-        it('Should be possible to fix/add a bug', async () => {
+        xit('Should be possible to fix/add a bug', async () => {
             await setupTest()
 
             const taskBook = await upgrade({
