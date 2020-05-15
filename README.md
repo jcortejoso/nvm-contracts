@@ -115,6 +115,32 @@ Code style is enforced through the CI test process, builds will fail if there're
 
 ### Testnets
 
+#### Rinkeby Testnet
+
+The contract addresses deployed on Nevermined `Rinkeby` Test Network:
+
+| Contract                          | Version | Address                                      |
+|-----------------------------------|---------|----------------------------------------------|
+| AccessSecretStoreCondition        | v0.3.0  | `0x82109B64b5e57F7646d3E7E7b68bE7baA2A7b152` |
+| AgreementStoreManager             | v0.3.0  | `0xEaa29506a228Eb6C7d23297596Ec676192eFA52C` |
+| ComputeExecutionCondition         | v0.3.0  | `0x68fE91112540F9C0Ba2588A635A5B426f72e9528` |
+| ConditionStoreManager             | v0.3.0  | `0x667D172EEE7ab400DF16535CA70159fE8662451B` |
+| DIDRegistry                       | v0.3.0  | `0x7830042602f1D4772672e783A636f699b82b7C2B` |
+| DIDRegistryLibrary                | v0.3.0  | `0x6243456044f8D82692cBb4D2C7234c5baC682680` |
+| Dispenser                         | v0.3.0  | `0x5aDDCAF59Ac69e43BD2850cC549ad3EeA7884393` |
+| EpochLibrary                      | v0.3.0  | `0xaC297F7262116c17a9524E71833eB107Aa649AE7` |
+| EscrowAccessSecretStoreTemplate   | v0.3.0  | `0x4ec51839ed4eDa844f99Ae3d6D324E487aA8f95d` |
+| EscrowComputeExecutionTemplate    | v0.3.0  | `0x253bABB1702864680b5c0Dcd6084086F42903659` |
+| EscrowReward                      | v0.3.0  | `0xa56be8E65F6830f6aA856f09213F3ff6d51e3Af6` |
+| HashLockCondition                 | v0.3.0  | `0x4c1dF193b745ECC6159d9bf1d3DB1b13845B4D80` |
+| LockRewardCondition               | v0.3.0  | `0x0af287B7e8EdA92fFeD6E2bC1cc739bdC5ffd285` |
+| OceanToken                        | v0.3.0  | `0x5f5cbAea5A58176264E14a5403fc5b2A008787c1` |
+| SignCondition                     | v0.3.0  | `0xcD8602A94e17DedF9AF9f4c388B6ec8838bF058d` |
+| TemplateStoreManager              | v0.3.0  | `0x87c7639cFaA6eb05B928A6d5fe8DE0Ecc3b4935D` |
+| ThresholdCondition                | v0.3.0  | `0x503dac337B9e3605f3eC27dF72281f82818878cD` |
+| WhitelistingCondition             | v0.3.0  | `0xfEC4D80C8F0d62F0e64E323684D94e4128c9898a` |
+
+
 #### Integration Testnet
 
 The contract addresses deployed on Nevermined `Integration` Test Network:
@@ -131,7 +157,6 @@ The contract addresses deployed on Nevermined `Staging` Test Network:
 | Contract                          | Version | Address                                      |
 |-----------------------------------|---------|----------------------------------------------|
 | -                                 | -       | -                                            |
-
 
 
 ### Mainnets

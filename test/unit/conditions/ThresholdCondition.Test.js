@@ -27,7 +27,7 @@ contract('Threshold Condition', (accounts) => {
         owner = accounts[1],
         fulfillInputConditions = true,
         includeRandomInputConditions = false,
-        MaxNConditions = 1000
+        MaxNConditions = 50
     } = {}) {
         const epochLibrary = await EpochLibrary.new()
         await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
@@ -521,7 +521,7 @@ contract('Threshold Condition', (accounts) => {
                 thresholdCondition.address
             )
 
-            await thresholdCondition.methods['fulfill(bytes32,bytes32[],uint256)'](
+            await thresholdCondition.fulfill(
                 agreementId,
                 randomConditions,
                 threshold,

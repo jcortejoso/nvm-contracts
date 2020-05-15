@@ -69,6 +69,7 @@ contract('DIDRegistry', (accounts) => {
             })
 
             DIDRegistryProxyAddress = addressBook.DIDRegistry
+            assert(DIDRegistryProxyAddress)
         })
 
         it('Should be possible to fix/add a bug', async () => {

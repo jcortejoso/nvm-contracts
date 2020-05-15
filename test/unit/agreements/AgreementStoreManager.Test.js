@@ -474,7 +474,7 @@ contract('AgreementStoreManager', (accounts) => {
             expect(storedAgreement.lastUpdatedBy)
                 .to.equal(templateId)
             expect(storedAgreement.blockNumberUpdated.toNumber())
-                .to.equal(blockNumber.toNumber())
+                .to.equal(blockNumber.toNumber() + 1)
         })
 
         it('should get multiple agreements for same did & template', async () => {

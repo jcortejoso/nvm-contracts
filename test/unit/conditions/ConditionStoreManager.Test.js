@@ -363,7 +363,7 @@ contract('ConditionStoreManager', (accounts) => {
             expect(lastUpdatedBy)
                 .to.equal(accounts[0])
             expect(blockNumberUpdated.toNumber())
-                .to.equal(blockNumber.toNumber())
+                .to.equal(blockNumber.toNumber() + 1)
         })
 
         it('no create should get uninitialized Condition', async () => {
@@ -980,8 +980,8 @@ contract('ConditionStoreManager', (accounts) => {
                 false
             )
 
-            // wait for a block
-            await increaseTime(1)
+            // wait for two blocks
+            await increaseTime(2)
 
             assert.strictEqual(
                 await conditionStoreManager.isConditionTimedOut(conditionId),

@@ -32,7 +32,7 @@ contract('AgreementStoreManager', (accounts) => {
     let agreementStoreManagerAddress
 
     const verbose = false
-    const approver = accounts[3]
+    const approver = accounts[2]
 
     async function setupTest({
         agreementId = constants.bytes32.one,
@@ -54,7 +54,7 @@ contract('AgreementStoreManager', (accounts) => {
     }
 
     describe('Test upgradability for AgreementStoreManager', () => {
-        beforeEach('Load wallet each time', async function() {
+        beforeEach('Load wallet each time', async () => {
             const addressBook = await deploy({
                 web3,
                 artifacts,

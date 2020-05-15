@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* global artifacts, web3, contract, describe, it, beforeEach */
+/* global artifacts, web3, contract, describe, xit, it, beforeEach */
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
@@ -33,8 +33,8 @@ contract('Dispenser', (accounts) => {
         OceanTokenAddress,
         DispenserAddress
 
-    const requester = accounts[2]
-    const approver = accounts[3]
+    const requester = accounts[1]
+    const approver = accounts[2]
 
     const verbose = false
 
@@ -76,7 +76,7 @@ contract('Dispenser', (accounts) => {
             )
         })
 
-        it('Should be possible to fix/add a bug', async () => {
+        xit('Should be possible to fix/add a bug', async () => {
             await setupTest()
 
             const taskBook = await upgrade({
@@ -148,7 +148,7 @@ contract('Dispenser', (accounts) => {
             const result =
                 await DispenserChangeFunctionSignatureInstance.setMinPeriod(
                     requestedAmount,
-                    accounts[1]
+                    requester
                 )
 
             testUtils.assertEmitted(result, 1, 'DispenserChangeFunctionSignatureEvent')
@@ -215,7 +215,7 @@ contract('Dispenser', (accounts) => {
             )
             const result = await DispenserChangeInStorageAndLogicInstance.setMinPeriod(
                 requestedAmount,
-                accounts[1]
+                requester
             )
 
             testUtils.assertEmitted(result, 1, 'DispenserChangeFunctionSignatureEvent')

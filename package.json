@@ -1,6 +1,6 @@
 {
   "name": "@keyko-io/nevermined-contracts",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "description": "Nevermined implementation of Ocean Protocol in Solidity",
   "bugs": {
     "url": "https://github.com/keyko-io/nevermined-contracts/issues"
@@ -12,18 +12,21 @@
     "audit": "npx truffle exec ./scripts/deploy/truffle-wrapper/auditWrapper.js",
     "audit:development": "export NETWORK=development&&npm run audit -- --network development",
     "audit:spree": "export NETWORK=spree&&npm run audit -- --network spree",
+    "audit:rinkeby": "export NETWORK=rinkeby&&npm run audit -- --network rinkeby",
     "audit:integration": "export NETWORK=integration&&npm run audit -- --network integration",
     "audit:staging": "export NETWORK=staging&&npm run audit -- --network staging",
     "audit:production": "export NETWORK=production&&npm run audit -- --network production",
     "deploy": "npx truffle exec ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js",
     "deploy:development": "export NETWORK=development&&npm run deploy -- --network development --testnet true",
     "deploy:spree": "export NETWORK=spree&&npm run deploy -- --network spree --testnet true",
+    "deploy:rinkeby": "export NETWORK=rinkeby&&npm run deploy -- --network rinkeby --testnet true",
     "deploy:integration": "export NETWORK=integration&&npm run deploy -- --network integration --testnet true",
     "deploy:staging": "export NETWORK=staging&&npm run deploy -- --network staging --testnet true",
     "deploy:production": "export NETWORK=production&&npm run deploy -- --network production",
     "upgrade": "npx truffle exec ./scripts/deploy/truffle-wrapper/upgradeContractsWrapper.js",
     "upgrade:development": "export NETWORK=development&&npm run upgrade -- --network development --testnet true",
     "upgrade:spree": "export NETWORK=spree&&npm run upgrade -- --network spree --testnet true",
+    "upgrade:rinkeby": "export NETWORK=rinkeby&&npm run upgrade -- --network rinkeby --testnet true",
     "upgrade:integration": "export NETWORK=integration&&npm run upgrade -- --network integration --testnet true",
     "upgrade:staging": "export NETWORK=staging&&npm run upgrade -- --network staging --testnet true",
     "upgrade:production": "export NETWORK=production&&npm run upgrade -- --network production",
@@ -35,7 +38,6 @@
     "test:cover": "export NETWORK='coverage' && solidity-coverage",
     "test:echidna": "./test/verification/echidna/echidna.sh",
     "test:manticore": "./test/verification/manticore/run.sh",
-    "test:report-coverage": "cat ./coverage/lcov.info | codacy-coverage --token b95545c0da4b45848cc5eef363c2711e  --prefix ./",
     "doc:contracts": "node scripts/contracts/doc-generator.js",
     "doc:addresses": "node scripts/contracts/get-addresses.js",
     "doc:copyright": "scripts/add-spdx.sh",
@@ -69,23 +71,29 @@
   "author": "Ocean Protocol",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@keyko-io/contract-tools": "~0.1.0",
+    "@keyko-io/contract-tools": "~0.2.1",
     "bignumber.js": "^9.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^6.4.0",
+    "eslint": "^7.0.0",
     "eslint-config-oceanprotocol": "^1.5.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-standard": "^4.0.1",
     "glob": "^7.1.4",
-    "mathjs": "~6.2.2",
+    "mathjs": "~7.0.0",
     "openzeppelin-eth": "^2.2.0",
     "solidity-coverage": "0.6.3",
     "solium": "^1.2.5",
     "solium-plugin-security": "^0.1.1",
-    "truffle": "5.0.42",
+    "truffle": "5.1.26",
     "truffle-contract": "~4.0.31",
     "truffle-hdwallet-provider": "~1.0.17",
-    "web3": "1.2.1",
+    "web3": "1.2.7",
     "web3-provider-engine": "~15.0.3",
-    "yargs": "~14.2.0"
+    "yargs": "~15.3.1"
+  },
+  "resolutions": {
+    "@keyko-io/contract-tools/zos/zos-lib": "2.2.3"
   }
 }
