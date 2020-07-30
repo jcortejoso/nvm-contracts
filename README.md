@@ -2,7 +2,7 @@
 
 # Nevermined Smart Contracts
 
-> 💧 Nevermined implementation of Ocean Protocol in Solidity
+> 💧 Nevermined implementation of Nevermined in Solidity
 > [keyko.io](https://keyko.io)
 
 
@@ -52,7 +52,7 @@ a docker compose application to run all the Nevermined stack.
 As a pre-requisite, you need:
 
 - Node.js
-- npm
+- yarn
 
 Note: For MacOS, make sure to have `node@10` installed.
 
@@ -62,47 +62,46 @@ Clone the project and install all dependencies:
 git clone git@github.com:keyko-io/nevermined-contracts.git
 cd nevermined-contracts/
 
-# install dependencies
-npm i
-
-# install RPC client globally
-npm install -g ganache-cli
+Install dependencies:
+```bash
+yarn
 ```
 
 Compile the solidity contracts:
-
 ```bash
-npm run compile
+yarn compile
 ```
 
 In a new terminal, launch an Ethereum RPC client, e.g. [ganache-cli](https://github.com/trufflesuite/ganache-cli):
 
 ```bash
-ganache-cli
+npx ganache-cli@~6.9.1 > ganache-cli.log &
 ```
 
 Switch back to your other terminal and deploy the contracts:
 
 ```bash
-npm run deploy:development
+yarn test:fast
+```
 
-# for redeployment run this instead
-npm run clean
-npm run compile
-npm run deploy:development
+For redeployment run this instead
+```bash
+yarn clean
+yarn compile
+yarn test:fast
 ```
 
 Upgrade contracts [**optional**]:
 ```bash
-npm run upgrade
+yarn upgrade
 ```
 
 ## Testing
 
-Run tests with `npm run test`, e.g.:
+Run tests with `yarn test`, e.g.:
 
 ```bash
-npm run test -- test/unit/agreements/AgreementStoreManager.Test.js
+yarn test test/unit/agreements/AgreementStoreManager.Test.js
 ```
 
 ### Code Linting
@@ -110,6 +109,10 @@ npm run test -- test/unit/agreements/AgreementStoreManager.Test.js
 Linting is setup for `JavaScript` with [ESLint](https://eslint.org) & Solidity with [Ethlint](https://github.com/duaraghav8/Ethlint).
 
 Code style is enforced through the CI test process, builds will fail if there're any linting errors.
+
+```bash
+yarn lint
+```
 
 ## Networks
 
@@ -172,11 +175,11 @@ The contract addresses deployed on `Production` Mainnet:
 
 ## Packages
 
-To facilitate the integration of the Ocean Protocol's `keeper-contracts` there are `Python`, `JavaScript` and `Java` packages ready to be integrated. Those libraries include the Smart Contract ABI's.
+To facilitate the integration of `nevermined-contracts` there are `Python`, `JavaScript` and `Java` packages ready to be integrated. Those libraries include the Smart Contract ABI's.
 Using these packages helps to avoid compiling the Smart Contracts and copying the ABI's manually to your project. In that way the integration is cleaner and easier.
 The packages provided currently are:
 
-* JavaScript `npm` package - As part of the [@keyko-io npm organization](https://www.npmjs.com/settings/keyko-io/packages),
+* JavaScript `NPM` package - As part of the [@keyko-io npm organization](https://www.npmjs.com/settings/keyko-io/packages),
   the [npm nevermined-contracts package](https://www.npmjs.com/package/@keyko-io/nevermined-contracts) provides the ABI's
   to be imported from your `JavaScript` code.
 * Python `Pypi` package - The [Pypi nevermined-contracts package](https://pypi.org/project/nevermined-contracts/) provides
@@ -249,4 +252,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
-
