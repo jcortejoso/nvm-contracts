@@ -1,9 +1,9 @@
-[![banner](https://raw.githubusercontent.com/keyko-io/assets/master/images/logo/small/keyko_logo@2x-100.jpg)](https://keyko.io)
+[![banner](https://raw.githubusercontent.com/keyko-io/assets/master/images/logo/nevermined_logo_1.png)](https://nevermined.io)
 
 # Nevermined Smart Contracts
 
 > 💧 Nevermined implementation of Nevermined in Solidity
-> [keyko.io](https://keyko.io)
+> [nevermined.io](https://nevermined.io)
 
 
 [![Docker Build Status](https://img.shields.io/docker/cloud/build/keykoio/nevermined-contracts.svg)](https://hub.docker.com/r/keykoio/nevermined-contracts/)
