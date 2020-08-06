@@ -2,7 +2,7 @@
 
 # Nevermined Smart Contracts
 
-> 💧 Nevermined implementation of Nevermined in Solidity
+> 💧 Smart Contracts implementation of Nevermined in Solidity 
 > [nevermined.io](https://nevermined.io)
 
 
