@@ -3,7 +3,7 @@ pragma solidity 0.5.6;
 
 import '../Condition.sol';
 import '../ConditionStoreManager.sol';
-import '../../OceanToken.sol';
+import 'openzeppelin-eth/contracts/token/ERC20/ERC20.sol';
 
 /**
  * @title Reward
