@@ -6,7 +6,7 @@ pragma solidity 0.5.6;
 
 
 import './Condition.sol';
-import '../OceanToken.sol';
+import 'openzeppelin-eth/contracts/token/ERC20/ERC20.sol';
 
 /**
  * @title Lock Reward Condition
@@ -20,7 +20,7 @@ import '../OceanToken.sol';
  */
 contract LockRewardCondition is Condition {
 
-    OceanToken private token;
+    IERC20 private token;
 
     event Fulfilled(
         bytes32 indexed _agreementId,
@@ -55,7 +55,7 @@ contract LockRewardCondition is Condition {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        token = OceanToken(_tokenAddress);
+        token = ERC20(_tokenAddress);
     }
 
    /**

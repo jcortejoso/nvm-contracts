@@ -50,7 +50,7 @@ contract EscrowReward is Reward {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        token = OceanToken(_tokenAddress);
+        token = ERC20(_tokenAddress);
     }
 
    /**
