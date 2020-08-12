@@ -195,10 +195,10 @@ Install the `nevermined-contracts` `npm` package.
 npm install @keyko-io/nevermined-contracts
 ```
 
-Load the ABI of the `OceanToken` contract on the `staging` network:
+Load the ABI of the `NeverminedToken` contract on the `staging` network:
 
 ```javascript
-const OceanToken = require('@keyko-io/nevermined-contracts/artifacts/OceanToken.staging.json')
+const NeverminedToken = require('@keyko-io/nevermined-contracts/artifacts/NeverminedToken.staging.json')
 ```
 
 The structure of the `artifacts` is:

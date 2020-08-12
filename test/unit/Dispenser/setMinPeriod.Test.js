@@ -7,7 +7,7 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const Dispenser = artifacts.require('Dispenser')
-const TestToken = artifacts.require('TestToken')
+const NeverminedToken = artifacts.require('NeverminedToken')
 
 contract('Dispenser', (accounts) => {
     const owner = accounts[0]
@@ -15,7 +15,7 @@ contract('Dispenser', (accounts) => {
     let dispenser
 
     beforeEach(async () => {
-        const token = await TestToken.new()
+        const token = await NeverminedToken.new()
         dispenser = await Dispenser.new()
         await dispenser.initialize(token.address, owner)
     })

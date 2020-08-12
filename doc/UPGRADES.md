@@ -99,7 +99,7 @@ The following steps shows how to perform contracts deployment and upgrade on `Ni
 
 ##### Deploy a single contracts
 
-- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:staging -- TestToken Dispenser`will deploy `TestToken` and `Dispenser`.
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:staging -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
@@ -107,7 +107,7 @@ The following steps shows how to perform contracts deployment and upgrade on `Ni
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:staging -- TestToken`. For upgrading the `TestToken` contract.
+- To upgrade a single contract run `npm run upgrade:staging -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
 
 ##### Persist artifacts
 
@@ -125,7 +125,7 @@ The following steps shows how to perform contracts deployment and upgrade on `Ni
 
 ##### Deploy a single contracts
 
-- To deploy a single contracts you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:kovan -- TestToken Dispenser` will deploy `TestToken` and `Dispenser`.
+- To deploy a single contracts you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:kovan -- NeverminedToken Dispenser` will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
@@ -133,7 +133,7 @@ The following steps shows how to perform contracts deployment and upgrade on `Ni
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:kovan -- TestToken`. For upgrading the `TestToken` contract.
+- To upgrade a single contract run `npm run upgrade:kovan -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
 
 ##### Persist artifacts
 

@@ -5,7 +5,7 @@ const BN = require('bignumber.js')
 
 const network = process.env.NETWORK || 'development'
 // eslint-disable-next-line security/detect-non-literal-require
-const tokenArtifact = require(`../../artifacts/TestToken.${network}.json`)
+const tokenArtifact = require(`../../artifacts/NeverminedToken.${network}.json`)
 const Token = contract({ abi: tokenArtifact.abi })
 
 async function calculate(

@@ -6,10 +6,10 @@ const AgreementStoreLibrary = artifacts.require('AgreementStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
-const TestToken = artifacts.require('TestToken')
+const NeverminedToken = artifacts.require('NeverminedToken')
 
 const deployManagers = async function(deployer, owner) {
-    const token = await TestToken.new({ from: deployer })
+    const token = await NeverminedToken.new({ from: deployer })
     await token.initialize(owner, owner)
 
     const didRegistryLibrary = await DIDRegistryLibrary.new()

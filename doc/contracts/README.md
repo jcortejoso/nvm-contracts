@@ -32,7 +32,7 @@ There are several folders and each includes solidity source files for each modul
         - [EpochLibrary](EpochLibrary.md)
         - [HashListLibrary](HashListLibrary.md)
     - [Token](#)
-        - [Test Token](TestToken.md)
+        - [Nevermined Token](NeverminedToken.md)
         - [Dispenser](Dispenser.md)
     - [Interfaces](#)
         - [ISecret Store](ISecretStore.md)

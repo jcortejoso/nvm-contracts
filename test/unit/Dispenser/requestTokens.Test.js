@@ -8,7 +8,7 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const Dispenser = artifacts.require('Dispenser')
-const TestToken = artifacts.require('TestToken')
+const NeverminedToken = artifacts.require('NeverminedToken')
 
 contract('Dispenser', (accounts) => {
     let dispenser
@@ -19,7 +19,7 @@ contract('Dispenser', (accounts) => {
 
     beforeEach(async () => {
         // deploy and init ocean token
-        token = await TestToken.new()
+        token = await NeverminedToken.new()
         await token.initialize(deployer, deployer)
 
         // deploy and init dispenser

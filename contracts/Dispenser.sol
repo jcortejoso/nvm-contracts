@@ -3,7 +3,7 @@ pragma solidity 0.5.6;
 
 import 'openzeppelin-eth/contracts/math/SafeMath.sol';
 import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
-import './TestToken.sol';
+import './NeverminedToken.sol';
 
 /**
  * @title Ocean Protocol Dispenser Contract
@@ -29,7 +29,7 @@ contract Dispenser is Ownable {
     uint256 internal minPeriod;
     uint256 internal scale;
 
-    TestToken public token;
+    NeverminedToken public token;
 
     event RequestFrequencyExceeded(
         address indexed requester,
@@ -69,7 +69,7 @@ contract Dispenser is Ownable {
         // init total mint amount
         totalMintAmount = 0;
         // instantiate Token contract
-        token = TestToken(_tokenAddress);
+        token = NeverminedToken(_tokenAddress);
 
         scale = 10 ** uint256(token.decimals());
         maxAmount = uint256(1000).mul(scale);

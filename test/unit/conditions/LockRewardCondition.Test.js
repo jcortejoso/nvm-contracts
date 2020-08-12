@@ -8,7 +8,7 @@ chai.use(chaiAsPromised)
 
 const EpochLibrary = artifacts.require('EpochLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
-const TestToken = artifacts.require('TestToken')
+const NeverminedToken = artifacts.require('NeverminedToken')
 const LockRewardCondition = artifacts.require('LockRewardCondition')
 
 const constants = require('../../helpers/constants.js')
@@ -36,7 +36,7 @@ contract('LockRewardCondition', (accounts) => {
             { from: owner }
         )
 
-        const token = await TestToken.new()
+        const token = await NeverminedToken.new()
         await token.initialize(owner, owner)
 
         const lockRewardCondition = await LockRewardCondition.new()
@@ -64,7 +64,7 @@ contract('LockRewardCondition', (accounts) => {
             await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
             const conditionStoreManager = await ConditionStoreManager.new()
-            const token = await TestToken.new()
+            const token = await NeverminedToken.new()
             const lockRewardCondition = await LockRewardCondition.new()
 
             await lockRewardCondition.initialize(

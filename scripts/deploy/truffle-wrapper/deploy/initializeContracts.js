@@ -40,9 +40,9 @@ async function initializeContracts({
     }
 
     // testnet only!
-    if (contracts.indexOf('TestToken') > -1) {
-        addressBook.TestToken = zosCreate({
-            contract: 'TestToken',
+    if (contracts.indexOf('NeverminedToken') > -1) {
+        addressBook.NeverminedToken = zosCreate({
+            contract: 'NeverminedToken',
             network,
             args: [
                 roles.ownerWallet,
@@ -52,7 +52,7 @@ async function initializeContracts({
         })
 
         // propagate the token address it is used somewhere else
-        proxies.Token = addressBook.TestToken
+        proxies.Token = addressBook.NeverminedToken
     }
 
     // testnet only!
