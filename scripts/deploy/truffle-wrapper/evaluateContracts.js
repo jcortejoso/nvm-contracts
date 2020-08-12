@@ -2,6 +2,7 @@
 // List of contracts
 // eslint-disable-next-line security/detect-non-literal-require
 const contractNames = require(`${process.env.PWD}/contracts.json`)
+const { argv } = require('yargs')
 
 function evaluateContracts({
     contracts,
@@ -13,7 +14,10 @@ function evaluateContracts({
         contracts = contractNames
 
         // if we are on a testnet, add dispenser
-        if (testnet && contracts.indexOf('NeverminedToken') < 0) {
+        if (
+            (testnet || argv["with-token"]) &&
+            contracts.indexOf('NeverminedToken') < 0
+        ) {
             // deploy the NeverminedTokens if we are in a testnet
             contracts.push('NeverminedToken')
         }
