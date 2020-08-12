@@ -22,7 +22,7 @@ async function initializeContracts({
     // Only use this if you know what you do, otherwise it can break the contracts deployed
     const proxies = {
         // if the application should be deployed with another token set the address here!
-        Token: '0xc778417e063141139fce010982780140aa0cd5ab'
+        // Token: '0xc778417e063141139fce010982780140aa0cd5ab'
     }
 
     // returns either the address from the address book or the address of the manual set proxies
