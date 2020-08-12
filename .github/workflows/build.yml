@@ -23,6 +23,5 @@ jobs:
         yarn compile
         yarn test:fast
         yarn test:upgrade
-        yarn test:echidna
         yarn deploy:development --deeper-clean
         git status

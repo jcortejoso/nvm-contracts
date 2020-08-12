@@ -36,7 +36,6 @@
     "test:fast": "truffle test $(find ./test/unit/ -name '*.js') $(find ./test/int/ -name '*.js')",
     "test:upgrade": "truffle test $(find ./test/upgrade/ -name '*.js')",
     "test:cover": "export NETWORK='coverage' && solidity-coverage",
-    "test:echidna": "./test/verification/echidna/echidna.sh",
     "test:manticore": "./test/verification/manticore/run.sh",
     "doc:contracts": "node scripts/contracts/doc-generator.js",
     "doc:addresses": "node scripts/contracts/get-addresses.js",
