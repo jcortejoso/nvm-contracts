@@ -13,6 +13,12 @@ function evaluateContracts({
         contracts = contractNames
 
         // if we are on a testnet, add dispenser
+        if (testnet && contracts.indexOf('TestToken') < 0) {
+            // deploy the TestToken if we are in a testnet
+            contracts.push('TestToken')
+        }
+
+        // if we are on a testnet, add dispenser
         if (testnet && contracts.indexOf('Dispenser') < 0) {
             // deploy the Dispenser if we are in a testnet
             contracts.push('Dispenser')

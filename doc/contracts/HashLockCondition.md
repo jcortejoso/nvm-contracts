@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Hash Lock Condition
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Hash Lock Condition
  *      For more information, please refer the following link
      https://github.com/oceanprotocol/OEPs/issues/122

@@ -8,7 +8,7 @@ chai.use(chaiAsPromised)
 
 const EpochLibrary = artifacts.require('EpochLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
-const OceanToken = artifacts.require('OceanToken')
+const TestToken = artifacts.require('TestToken')
 const LockRewardCondition = artifacts.require('LockRewardCondition')
 
 const constants = require('../../helpers/constants.js')
@@ -36,20 +36,20 @@ contract('LockRewardCondition', (accounts) => {
             { from: owner }
         )
 
-        const oceanToken = await OceanToken.new()
-        await oceanToken.initialize(owner, owner)
+        const token = await TestToken.new()
+        await token.initialize(owner, owner)
 
         const lockRewardCondition = await LockRewardCondition.new()
 
         await lockRewardCondition.initialize(
             owner,
             conditionStoreManager.address,
-            oceanToken.address,
+            token.address,
             { from: createRole }
         )
         return {
             lockRewardCondition,
-            oceanToken,
+            token,
             conditionStoreManager,
             conditionId,
             conditionType,
@@ -64,28 +64,28 @@ contract('LockRewardCondition', (accounts) => {
             await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
             const conditionStoreManager = await ConditionStoreManager.new()
-            const oceanToken = await OceanToken.new()
+            const token = await TestToken.new()
             const lockRewardCondition = await LockRewardCondition.new()
 
             await lockRewardCondition.initialize(
                 accounts[0],
                 conditionStoreManager.address,
-                oceanToken.address,
+                token.address,
                 { from: accounts[0] })
         })
     })
 
     describe('fulfill non existing condition', () => {
         it('should not fulfill if conditions do not exist', async () => {
-            const { lockRewardCondition, oceanToken, owner } = await setupTest()
+            const { lockRewardCondition, token, owner } = await setupTest()
 
             const agreementId = constants.bytes32.one
             const rewardAddress = accounts[2]
             const sender = accounts[0]
             const amount = 10
 
-            await oceanToken.mint(sender, amount, { from: owner })
-            await oceanToken.approve(
+            await token.mint(sender, amount, { from: owner })
+            await token.approve(
                 lockRewardCondition.address,
                 amount,
                 { from: sender })
@@ -101,7 +101,7 @@ contract('LockRewardCondition', (accounts) => {
         it('should fulfill if conditions exist for account address', async () => {
             const {
                 lockRewardCondition,
-                oceanToken,
+                token,
                 conditionStoreManager,
                 owner
             } = await setupTest()
@@ -118,8 +118,8 @@ contract('LockRewardCondition', (accounts) => {
                 conditionId,
                 lockRewardCondition.address)
 
-            await oceanToken.mint(sender, amount, { from: owner })
-            await oceanToken.approve(
+            await token.mint(sender, amount, { from: owner })
+            await token.approve(
                 lockRewardCondition.address,
                 amount,
                 { from: sender })
@@ -127,7 +127,7 @@ contract('LockRewardCondition', (accounts) => {
             const result = await lockRewardCondition.fulfill(agreementId, rewardAddress, amount)
             const { state } = await conditionStoreManager.getCondition(conditionId)
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
-            const rewardBalance = await getBalance(oceanToken, rewardAddress)
+            const rewardBalance = await getBalance(token, rewardAddress)
             assert.strictEqual(rewardBalance, amount)
 
             testUtils.assertEmitted(result, 1, 'Fulfilled')
@@ -163,7 +163,7 @@ contract('LockRewardCondition', (accounts) => {
         it('not approved should fail to fulfill if conditions exist', async () => {
             const {
                 lockRewardCondition,
-                oceanToken,
+                token,
                 conditionStoreManager,
                 owner
             } = await setupTest()
@@ -180,7 +180,7 @@ contract('LockRewardCondition', (accounts) => {
                 conditionId,
                 lockRewardCondition.address)
 
-            await oceanToken.mint(sender, amount, { from: owner })
+            await token.mint(sender, amount, { from: owner })
 
             await assert.isRejected(
                 lockRewardCondition.fulfill(agreementId, rewardAddress, amount),
@@ -191,7 +191,7 @@ contract('LockRewardCondition', (accounts) => {
         it('right transfer should fail to fulfill if conditions already fulfilled', async () => {
             const {
                 lockRewardCondition,
-                oceanToken,
+                token,
                 conditionStoreManager,
                 owner
             } = await setupTest()
@@ -209,8 +209,8 @@ contract('LockRewardCondition', (accounts) => {
                 lockRewardCondition.address
             )
 
-            await oceanToken.mint(sender, amount, { from: owner })
-            await oceanToken.approve(
+            await token.mint(sender, amount, { from: owner })
+            await token.approve(
                 lockRewardCondition.address,
                 amount,
                 { from: sender }
@@ -236,7 +236,7 @@ contract('LockRewardCondition', (accounts) => {
         it('should fail to fulfill if conditions has different type ref', async () => {
             const {
                 lockRewardCondition,
-                oceanToken,
+                token,
                 conditionStoreManager,
                 owner,
                 createRole
@@ -261,8 +261,8 @@ contract('LockRewardCondition', (accounts) => {
                 { from: owner }
             )
 
-            await oceanToken.mint(sender, amount, { from: owner })
-            await oceanToken.approve(
+            await token.mint(sender, amount, { from: owner })
+            await token.approve(
                 lockRewardCondition.address,
                 amount,
                 { from: sender })

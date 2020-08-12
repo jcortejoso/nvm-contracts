@@ -8,7 +8,7 @@ chai.use(chaiAsPromised)
 
 const EpochLibrary = artifacts.require('EpochLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
-const OceanToken = artifacts.require('OceanToken')
+const TestToken = artifacts.require('TestToken')
 const LockRewardCondition = artifacts.require('LockRewardCondition')
 const EscrowReward = artifacts.require('EscrowReward')
 
@@ -37,14 +37,14 @@ contract('EscrowReward constructor', (accounts) => {
             { from: owner }
         )
 
-        const oceanToken = await OceanToken.new()
-        await oceanToken.initialize(owner, owner)
+        const token = await TestToken.new()
+        await token.initialize(owner, owner)
 
         const lockRewardCondition = await LockRewardCondition.new()
         await lockRewardCondition.initialize(
             owner,
             conditionStoreManager.address,
-            oceanToken.address,
+            token.address,
             { from: owner }
         )
 
@@ -52,14 +52,14 @@ contract('EscrowReward constructor', (accounts) => {
         await escrowReward.initialize(
             owner,
             conditionStoreManager.address,
-            oceanToken.address,
+            token.address,
             { from: createRole }
         )
 
         return {
             escrowReward,
             lockRewardCondition,
-            oceanToken,
+            token,
             conditionStoreManager,
             conditionId,
             conditionType,
@@ -74,13 +74,13 @@ contract('EscrowReward constructor', (accounts) => {
             await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
             const conditionStoreManager = await ConditionStoreManager.new()
-            const oceanToken = await OceanToken.new()
+            const token = await TestToken.new()
 
             const escrowReward = await EscrowReward.new()
             await escrowReward.initialize(
                 accounts[0],
                 conditionStoreManager.address,
-                oceanToken.address,
+                token.address,
                 { from: accounts[0] }
             )
         })
@@ -116,7 +116,7 @@ contract('EscrowReward constructor', (accounts) => {
             const {
                 escrowReward,
                 lockRewardCondition,
-                oceanToken,
+                token,
                 conditionStoreManager,
                 owner
             } = await setupTest()
@@ -152,16 +152,16 @@ contract('EscrowReward constructor', (accounts) => {
                 conditionId,
                 escrowReward.address)
 
-            await oceanToken.mint(sender, amount, { from: owner })
-            await oceanToken.approve(
+            await token.mint(sender, amount, { from: owner })
+            await token.approve(
                 lockRewardCondition.address,
                 amount,
                 { from: sender })
 
             await lockRewardCondition.fulfill(agreementId, escrowReward.address, amount)
 
-            assert.strictEqual(await getBalance(oceanToken, lockRewardCondition.address), 0)
-            assert.strictEqual(await getBalance(oceanToken, escrowReward.address), amount)
+            assert.strictEqual(await getBalance(token, lockRewardCondition.address), 0)
+            assert.strictEqual(await getBalance(token, escrowReward.address), amount)
 
             const result = await escrowReward.fulfill(
                 agreementId,
@@ -183,14 +183,14 @@ contract('EscrowReward constructor', (accounts) => {
             expect(eventArgs._receiver).to.equal(receiver)
             expect(eventArgs._amount.toNumber()).to.equal(amount)
 
-            assert.strictEqual(await getBalance(oceanToken, escrowReward.address), 0)
-            assert.strictEqual(await getBalance(oceanToken, receiver), amount)
+            assert.strictEqual(await getBalance(token, escrowReward.address), 0)
+            assert.strictEqual(await getBalance(token, receiver), amount)
 
-            await oceanToken.mint(sender, amount, { from: owner })
-            await oceanToken.approve(escrowReward.address, amount, { from: sender })
-            await oceanToken.transfer(escrowReward.address, amount, { from: sender })
+            await token.mint(sender, amount, { from: owner })
+            await token.approve(escrowReward.address, amount, { from: sender })
+            await token.transfer(escrowReward.address, amount, { from: sender })
 
-            assert.strictEqual(await getBalance(oceanToken, escrowReward.address), amount)
+            assert.strictEqual(await getBalance(token, escrowReward.address), amount)
             await assert.isRejected(
                 escrowReward.fulfill(agreementId, amount, receiver, sender, lockConditionId, releaseConditionId),
                 constants.condition.state.error.invalidStateTransition
@@ -200,7 +200,7 @@ contract('EscrowReward constructor', (accounts) => {
             const {
                 escrowReward,
                 lockRewardCondition,
-                oceanToken,
+                token,
                 conditionStoreManager,
                 owner
             } = await setupTest()
@@ -236,16 +236,16 @@ contract('EscrowReward constructor', (accounts) => {
                 conditionId,
                 escrowReward.address)
 
-            await oceanToken.mint(sender, amount, { from: owner })
-            await oceanToken.approve(
+            await token.mint(sender, amount, { from: owner })
+            await token.approve(
                 lockRewardCondition.address,
                 amount,
                 { from: sender })
 
             await lockRewardCondition.fulfill(agreementId, escrowReward.address, amount)
 
-            assert.strictEqual(await getBalance(oceanToken, lockRewardCondition.address), 0)
-            assert.strictEqual(await getBalance(oceanToken, escrowReward.address), amount)
+            assert.strictEqual(await getBalance(token, lockRewardCondition.address), 0)
+            assert.strictEqual(await getBalance(token, escrowReward.address), amount)
 
             await assert.isRejected(
                 escrowReward.fulfill(
@@ -263,7 +263,7 @@ contract('EscrowReward constructor', (accounts) => {
             const {
                 escrowReward,
                 lockRewardCondition,
-                oceanToken,
+                token,
                 conditionStoreManager,
                 owner
             } = await setupTest()
@@ -299,16 +299,16 @@ contract('EscrowReward constructor', (accounts) => {
                 conditionId,
                 escrowReward.address)
 
-            await oceanToken.mint(sender, amount, { from: owner })
-            await oceanToken.approve(
+            await token.mint(sender, amount, { from: owner })
+            await token.approve(
                 lockRewardCondition.address,
                 amount,
                 { from: sender })
 
             await lockRewardCondition.fulfill(agreementId, escrowReward.address, amount)
 
-            assert.strictEqual(await getBalance(oceanToken, lockRewardCondition.address), 0)
-            assert.strictEqual(await getBalance(oceanToken, escrowReward.address), amount)
+            assert.strictEqual(await getBalance(token, lockRewardCondition.address), 0)
+            assert.strictEqual(await getBalance(token, escrowReward.address), amount)
 
             await assert.isRejected(
                 escrowReward.fulfill(
@@ -329,7 +329,7 @@ contract('EscrowReward constructor', (accounts) => {
             const {
                 escrowReward,
                 lockRewardCondition,
-                oceanToken,
+                token,
                 conditionStoreManager,
                 owner
             } = await setupTest()
@@ -351,15 +351,15 @@ contract('EscrowReward constructor', (accounts) => {
                 escrowReward.address)
 
             /* simulate a real environment by giving the EscrowReward contract a bunch of tokens: */
-            await oceanToken.mint(escrowReward.address, 100, { from: owner })
+            await token.mint(escrowReward.address, 100, { from: owner })
 
             const lockConditionId = conditionLockId
             const releaseConditionId = conditionLockId
 
             /* fulfill the lock condition */
 
-            await oceanToken.mint(sender, amount, { from: owner })
-            await oceanToken.approve(
+            await token.mint(sender, amount, { from: owner })
+            await token.approve(
                 lockRewardCondition.address,
                 amount,
                 { from: sender })
@@ -403,7 +403,7 @@ contract('EscrowReward constructor', (accounts) => {
 
             /* make sure the EscrowReward contract didn't get drained */
             assert.notStrictEqual(
-                (await oceanToken.balanceOf(escrowReward.address)).toNumber(),
+                (await token.balanceOf(escrowReward.address)).toNumber(),
                 0
             )
         })

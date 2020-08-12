@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Condition Store Manager
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Condition Store Manager.
  *      Condition store manager is responsible for enforcing the 
      the business logic behind creating/updating the condition state

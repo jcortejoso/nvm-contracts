@@ -1,12 +1,12 @@
 
-# contract: OceanToken
+# contract: TestToken
 
 Documentation:
 ```
-@title Ocean Protocol ERC20 Token Contract
-@author Ocean Protocol Team
- * @dev Implementation of the Ocean Token.
-     Ocean Token is ERC20 token
+@title Test Token Contract
+@author Keyko
+ * @dev Implementation of a Test Token.
+     Test Token is an ERC20 token only for testing purposes
 ```
 
 ## Functions
@@ -16,7 +16,7 @@ Documentation:
 Documentation:
 
 ```
-@dev OceanToken Initializer
+@dev TestToken Initializer
      Runs only on initial contract creation.
 @param _owner refers to the owner of the contract
 @param _initialMinter is the first token minter added

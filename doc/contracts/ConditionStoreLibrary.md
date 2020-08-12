@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Condition Store Library
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Condition Store Library.
      
      Condition is a key component in the service execution agreement. 

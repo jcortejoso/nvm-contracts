@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Common functions
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
 ```
 
 ## Functions

@@ -55,7 +55,6 @@ function that will be executed only once after the initial deployment.
   "AccessSecretStoreCondition",
   "EscrowReward",
   "EscrowAccessSecretStoreTemplate",
-  "OceanToken",
   "DIDRegistry"
 ]
 ```
@@ -100,7 +99,7 @@ The following steps shows how to perform contracts deployment and upgrade on `Ni
 
 ##### Deploy a single contracts
 
-- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:staging -- OceanToken Dispenser`will deploy `OceanToken` and `Dispenser`.
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:staging -- TestToken Dispenser`will deploy `TestToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
@@ -108,7 +107,7 @@ The following steps shows how to perform contracts deployment and upgrade on `Ni
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:staging -- OceanToken`. For upgrading the `OceanToken` contract.
+- To upgrade a single contract run `npm run upgrade:staging -- TestToken`. For upgrading the `TestToken` contract.
 
 ##### Persist artifacts
 
@@ -126,7 +125,7 @@ The following steps shows how to perform contracts deployment and upgrade on `Ni
 
 ##### Deploy a single contracts
 
-- To deploy a single contracts you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:kovan -- OceanToken Dispenser` will deploy `OceanToken` and `Dispenser`.
+- To deploy a single contracts you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:kovan -- TestToken Dispenser` will deploy `TestToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
@@ -134,7 +133,7 @@ The following steps shows how to perform contracts deployment and upgrade on `Ni
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:kovan -- OceanToken`. For upgrading the `OceanToken` contract.
+- To upgrade a single contract run `npm run upgrade:kovan -- TestToken`. For upgrading the `TestToken` contract.
 
 ##### Persist artifacts
 

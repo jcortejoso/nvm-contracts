@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title HashLists contract
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
 @dev Hash lists contract is a sample list contract in which uses 
      HashListLibrary.sol in order to store, retrieve, remove, and 
      update bytes32 values in hash lists.

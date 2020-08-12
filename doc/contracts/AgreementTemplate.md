@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Agreement Template
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of Agreement Template
  *      Agreement template is a reference template where it
      has the ability to create agreements from whitelisted 

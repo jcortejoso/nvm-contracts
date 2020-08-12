@@ -14,7 +14,7 @@ const getBalance = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.js')
 
 contract('Stake Agreement integration test', (accounts) => {
-    let oceanToken,
+    let token,
         didRegistry,
         agreementStoreManager,
         conditionStoreManager,
@@ -28,7 +28,7 @@ contract('Stake Agreement integration test', (accounts) => {
         owner = accounts[9]
     } = {}) {
         ({
-            oceanToken,
+            token,
             didRegistry,
             agreementStoreManager,
             conditionStoreManager,
@@ -48,7 +48,7 @@ contract('Stake Agreement integration test', (accounts) => {
             agreementStoreManager,
             conditionStoreManager,
             didRegistry,
-            oceanToken
+            token
         ))
 
         return {
@@ -118,7 +118,7 @@ contract('Stake Agreement integration test', (accounts) => {
             const { agreementId, stakeAmount, stakePeriod, sign, checksum, url, agreement } = await prepareStakeAgreement()
 
             // fill up wallet
-            await oceanToken.mint(alice, stakeAmount, { from: owner })
+            await token.mint(alice, stakeAmount, { from: owner })
 
             // register DID
             await didRegistry.registerAttribute(agreement.did, checksum, [], url)
@@ -127,10 +127,10 @@ contract('Stake Agreement integration test', (accounts) => {
             await agreementStoreManager.createAgreement(agreementId, ...Object.values(agreement))
 
             // stake: fulfill lock reward
-            await oceanToken.approve(lockRewardCondition.address, stakeAmount, { from: alice })
+            await token.approve(lockRewardCondition.address, stakeAmount, { from: alice })
             await lockRewardCondition.fulfill(agreementId, escrowReward.address, stakeAmount)
-            assert.strictEqual(await getBalance(oceanToken, alice), 0)
-            assert.strictEqual(await getBalance(oceanToken, escrowReward.address), stakeAmount)
+            assert.strictEqual(await getBalance(token, alice), 0)
+            assert.strictEqual(await getBalance(token, escrowReward.address), stakeAmount)
 
             // unstake: fail to fulfill before stake period
             await assert.isRejected(
@@ -144,8 +144,8 @@ contract('Stake Agreement integration test', (accounts) => {
             // unstake: waited and fulfill after stake period
             await signCondition.fulfill(agreementId, sign.message, sign.publicKey, sign.signature)
             await escrowReward.fulfill(agreementId, stakeAmount, alice, alice, agreement.conditionIds[1], agreement.conditionIds[0])
-            assert.strictEqual(await getBalance(oceanToken, alice), stakeAmount)
-            assert.strictEqual(await getBalance(oceanToken, escrowReward.address), 0)
+            assert.strictEqual(await getBalance(token, alice), stakeAmount)
+            assert.strictEqual(await getBalance(token, escrowReward.address), 0)
         })
     })
 })

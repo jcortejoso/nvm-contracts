@@ -19,7 +19,7 @@ const contracts = [
     'AccessSecretStoreCondition',
     'EscrowReward',
     'EscrowAccessSecretStoreTemplate',
-    'OceanToken',
+    'TestToken',
     'Dispenser',
     'DIDRegistry',
     'ISecretStore',

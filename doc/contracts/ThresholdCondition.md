@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Threshold Condition
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Threshold Condition
  *      
      Threshold condition acts as a filter for a set of input condition(s) in which sends 

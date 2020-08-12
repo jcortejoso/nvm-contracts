@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Agreement Store Manager
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Agreement Store.
      TODO: link to OEP
  *      The agreement store generates conditions for an agreement template.

@@ -159,9 +159,9 @@ async function setupContracts({
         })
     }
 
-    if (addressBook.OceanToken) {
-        const OceanToken = artifacts.require('OceanToken')
-        const oceanToken = await OceanToken.at(addressBook.OceanToken)
+    if (addressBook.TestToken) {
+        const TestToken = artifacts.require('TestToken')
+        const testToken = await TestToken.at(addressBook.Token)
 
         if (addressBook.Dispenser) {
             if (verbose) {
@@ -170,7 +170,7 @@ async function setupContracts({
                 )
             }
 
-            await oceanToken.addMinter(
+            await testToken.addMinter(
                 addressBook.Dispenser,
                 { from: roles.deployer }
             )
@@ -182,7 +182,7 @@ async function setupContracts({
             )
         }
 
-        await oceanToken.renounceMinter({ from: roles.deployer })
+        await testToken.renounceMinter({ from: roles.deployer })
     }
 }
 

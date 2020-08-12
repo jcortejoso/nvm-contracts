@@ -12,7 +12,7 @@ const deployConditions = async function(
     agreementStoreManager,
     conditionStoreManager,
     didRegistry,
-    oceanToken
+    token
 ) {
     const hashLockCondition = await HashLockCondition.new({ from: deployer })
     await hashLockCondition.initialize(
@@ -32,7 +32,7 @@ const deployConditions = async function(
     await lockRewardCondition.initialize(
         owner,
         conditionStoreManager.address,
-        oceanToken.address,
+        token.address,
         { from: deployer }
     )
 
@@ -48,7 +48,7 @@ const deployConditions = async function(
     await escrowReward.initialize(
         owner,
         conditionStoreManager.address,
-        oceanToken.address,
+        token.address,
         { from: deployer }
     )
 

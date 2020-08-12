@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Parity Secret Store Interface
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
 ```
 
 ## Functions
