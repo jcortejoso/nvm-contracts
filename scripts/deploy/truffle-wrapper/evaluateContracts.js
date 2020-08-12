@@ -15,7 +15,7 @@ function evaluateContracts({
 
         // if we are on a testnet, add dispenser
         if (
-            (testnet || argv["with-token"]) &&
+            (testnet || argv['with-token']) &&
             contracts.indexOf('NeverminedToken') < 0
         ) {
             // deploy the NeverminedTokens if we are in a testnet
