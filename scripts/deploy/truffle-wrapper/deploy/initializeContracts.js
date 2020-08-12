@@ -17,7 +17,7 @@ async function initializeContracts({
     // instance=MyContract.at(proxyAddress)
     const addressBook = {
         // if the application should be deployed with another token set the address here!
-        Token: '0x59FBfA0d9053Fa30249132719e17F044554D63Dc'
+        // Token: '0x59FBfA0d9053Fa30249132719e17F044554D63Dc'
     }
 
     // WARNING!
