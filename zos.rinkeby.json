@@ -2145,7 +2145,7 @@
     "@keyko-io/nevermined-contracts/DIDRegistry": [
       {
         "address": "0x3262b3292eda1b5c68a3687EF7D9daF7899075E8",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0x6C85Ac61C05Dc021fD68f56B0436535977F41b08",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2153,7 +2153,7 @@
     "@keyko-io/nevermined-contracts/ConditionStoreManager": [
       {
         "address": "0x31Ea71619B2E8683E13093E93212AACA84238c38",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0x1EEBBF8aEC47E280A9B45AD96b203aEa479a1475",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2161,7 +2161,7 @@
     "@keyko-io/nevermined-contracts/TemplateStoreManager": [
       {
         "address": "0x3749aF0feCC396310AE03457c51C7bE04850ECdb",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0x2330F11B56dC3946b90EBF46a4721937e18D20b9",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2169,7 +2169,7 @@
     "@keyko-io/nevermined-contracts/SignCondition": [
       {
         "address": "0xe4486F92Bd2BD7e9757E184A5385006324352024",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0x0a8cd3DA9F614263d8a475B15b37fD6507C8eD29",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2177,7 +2177,7 @@
     "@keyko-io/nevermined-contracts/HashLockCondition": [
       {
         "address": "0xAD762e16445aeA6E71b2fc112c5Ef14F40B67d8E",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0xceC83765fA429ddB9960731a0C1909DD15591866",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2185,7 +2185,7 @@
     "@keyko-io/nevermined-contracts/ThresholdCondition": [
       {
         "address": "0xfAFa8e939937e7531B896Db9F9B66F935408626C",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0xFCb235C3cC78c2ea8b31668c1D150e05B182A7b3",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2193,7 +2193,7 @@
     "@keyko-io/nevermined-contracts/WhitelistingCondition": [
       {
         "address": "0xa7570Fa3A53337ABfeeE785017C5Eaa5dC84dE36",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0x6f698C8D3adB33eF504CE2afB85effDc67D6Bc7D",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2201,7 +2201,7 @@
     "@keyko-io/nevermined-contracts/AgreementStoreManager": [
       {
         "address": "0x1A3bafbC27F6290C4Fd99F80c0C48D6fFbbE7407",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0x4d1F86Bb5835F069cf49610DF041A53544A98C6d",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2209,7 +2209,7 @@
     "@keyko-io/nevermined-contracts/LockRewardCondition": [
       {
         "address": "0xF4193bb555F79b8B3C0e78E1E8caC7b5a1763C4a",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0xa0986A8f5f2230Dbdc93e1Cfa8691D80C0832D3a",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2217,7 +2217,7 @@
     "@keyko-io/nevermined-contracts/EscrowReward": [
       {
         "address": "0x4bc44f922B45008cb4977da9eDEc83D30a40F259",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0x62346198bb01844989Aa703f4E4f079Af4acB41C",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2225,7 +2225,7 @@
     "@keyko-io/nevermined-contracts/AccessSecretStoreCondition": [
       {
         "address": "0x3f558204fA288286C3Ce8cb3C4900Fd675fCeaF7",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0x288A9a8E1C483fC6eb9E959c0C941186ac2Fab43",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2233,7 +2233,7 @@
     "@keyko-io/nevermined-contracts/ComputeExecutionCondition": [
       {
         "address": "0x9Ee494Ee11Fded1B7cF915cfF92Db4E3E2F9fDd6",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0x1dC541176a2b831E1fac7F09314078513219664E",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2241,7 +2241,7 @@
     "@keyko-io/nevermined-contracts/EscrowAccessSecretStoreTemplate": [
       {
         "address": "0x25340D7Db40e31a5ccA3fEB61329A332f3b043dD",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0xC62A8d6D4F68FB4B547C485F7c3a827644D750f0",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -2249,14 +2249,14 @@
     "@keyko-io/nevermined-contracts/EscrowComputeExecutionTemplate": [
       {
         "address": "0x25649De77C125b9cF1EcD0f07A652676d590Ec5a",
-        "version": "v0.4.0",
+        "version": "v0.4.1",
         "implementation": "0xbaC16cC37E2FF2Df36e2893711Ed782904860C1A",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
     ]
   },
   "zosversion": "2.2",
-  "version": "v0.4.0",
+  "version": "v0.4.1",
   "proxyAdmin": {
     "address": "0xe4AB2213484FAef32078F0aDa126134572A7b5Da"
   }
