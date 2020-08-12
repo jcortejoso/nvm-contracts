@@ -20,6 +20,11 @@ We define four roles:
 - `upgraderWallet`: represented as the `upgrader` from `wallets.json`
 - `ownerWallet`: represented as the `owner` from `wallets.json`
 
+### Flags
+
+- `--testnet` Deploys the Dispenser, the NeverminedToken and the contracts from `contracts.json`
+- `--with-token` Deploys the NeverminedToken and the contracts from `contracts.json`
+
 #### Deployer
 
 Can be any account. It is used for deploying the initial proxy contracts and the logic contracts.
