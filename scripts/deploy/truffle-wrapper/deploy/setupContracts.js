@@ -161,7 +161,7 @@ async function setupContracts({
 
     if (addressBook.TestToken) {
         const TestToken = artifacts.require('TestToken')
-        const testToken = await TestToken.at(addressBook.Token)
+        const testToken = await TestToken.at(addressBook.TestToken)
 
         if (addressBook.Dispenser) {
             if (verbose) {

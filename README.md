@@ -2,7 +2,7 @@
 
 # Nevermined Smart Contracts
 
-> 💧 Smart Contracts implementation of Nevermined in Solidity 
+> 💧 Smart Contracts implementation of Nevermined in Solidity
 > [nevermined.io](https://nevermined.io)
 
 
@@ -124,24 +124,22 @@ The contract addresses deployed on Nevermined `Rinkeby` Test Network:
 
 | Contract                          | Version | Address                                      |
 |-----------------------------------|---------|----------------------------------------------|
-| AccessSecretStoreCondition        | v0.3.0  | `0x82109B64b5e57F7646d3E7E7b68bE7baA2A7b152` |
-| AgreementStoreManager             | v0.3.0  | `0xEaa29506a228Eb6C7d23297596Ec676192eFA52C` |
-| ComputeExecutionCondition         | v0.3.0  | `0x68fE91112540F9C0Ba2588A635A5B426f72e9528` |
-| ConditionStoreManager             | v0.3.0  | `0x667D172EEE7ab400DF16535CA70159fE8662451B` |
-| DIDRegistry                       | v0.3.0  | `0x7830042602f1D4772672e783A636f699b82b7C2B` |
-| DIDRegistryLibrary                | v0.3.0  | `0x6243456044f8D82692cBb4D2C7234c5baC682680` |
-| Dispenser                         | v0.3.0  | `0x5aDDCAF59Ac69e43BD2850cC549ad3EeA7884393` |
-| EpochLibrary                      | v0.3.0  | `0xaC297F7262116c17a9524E71833eB107Aa649AE7` |
-| EscrowAccessSecretStoreTemplate   | v0.3.0  | `0x4ec51839ed4eDa844f99Ae3d6D324E487aA8f95d` |
-| EscrowComputeExecutionTemplate    | v0.3.0  | `0x253bABB1702864680b5c0Dcd6084086F42903659` |
-| EscrowReward                      | v0.3.0  | `0xa56be8E65F6830f6aA856f09213F3ff6d51e3Af6` |
-| HashLockCondition                 | v0.3.0  | `0x4c1dF193b745ECC6159d9bf1d3DB1b13845B4D80` |
-| LockRewardCondition               | v0.3.0  | `0x0af287B7e8EdA92fFeD6E2bC1cc739bdC5ffd285` |
-| OceanToken                        | v0.3.0  | `0x5f5cbAea5A58176264E14a5403fc5b2A008787c1` |
-| SignCondition                     | v0.3.0  | `0xcD8602A94e17DedF9AF9f4c388B6ec8838bF058d` |
-| TemplateStoreManager              | v0.3.0  | `0x87c7639cFaA6eb05B928A6d5fe8DE0Ecc3b4935D` |
-| ThresholdCondition                | v0.3.0  | `0x503dac337B9e3605f3eC27dF72281f82818878cD` |
-| WhitelistingCondition             | v0.3.0  | `0xfEC4D80C8F0d62F0e64E323684D94e4128c9898a` |
+| AccessSecretStoreCondition        | v0.4.0  | `0x3f558204fA288286C3Ce8cb3C4900Fd675fCeaF7` |
+| AgreementStoreManager             | v0.4.0  | `0x1A3bafbC27F6290C4Fd99F80c0C48D6fFbbE7407` |
+| ComputeExecutionCondition         | v0.4.0  | `0x9Ee494Ee11Fded1B7cF915cfF92Db4E3E2F9fDd6` |
+| ConditionStoreManager             | v0.4.0  | `0x31Ea71619B2E8683E13093E93212AACA84238c38` |
+| DIDRegistry                       | v0.4.0  | `0x3262b3292eda1b5c68a3687EF7D9daF7899075E8` |
+| DIDRegistryLibrary                | v0.4.0  | `0x49bE8829eeC5f29262b31e25B6372E4b004a2e30` |
+| EpochLibrary                      | v0.4.0  | `0x750c547485AeE3774AA1B9919c06ad9833D9d01B` |
+| EscrowAccessSecretStoreTemplate   | v0.4.0  | `0x25340D7Db40e31a5ccA3fEB61329A332f3b043dD` |
+| EscrowComputeExecutionTemplate    | v0.4.0  | `0x25649De77C125b9cF1EcD0f07A652676d590Ec5a` |
+| EscrowReward                      | v0.4.0  | `0x4bc44f922B45008cb4977da9eDEc83D30a40F259` |
+| HashLockCondition                 | v0.4.0  | `0xAD762e16445aeA6E71b2fc112c5Ef14F40B67d8E` |
+| LockRewardCondition               | v0.4.0  | `0xF4193bb555F79b8B3C0e78E1E8caC7b5a1763C4a` |
+| SignCondition                     | v0.4.0  | `0xe4486F92Bd2BD7e9757E184A5385006324352024` |
+| TemplateStoreManager              | v0.4.0  | `0x3749aF0feCC396310AE03457c51C7bE04850ECdb` |
+| ThresholdCondition                | v0.4.0  | `0xfAFa8e939937e7531B896Db9F9B66F935408626C` |
+| WhitelistingCondition             | v0.4.0  | `0xa7570Fa3A53337ABfeeE785017C5Eaa5dC84dE36` |
 
 
 #### Integration Testnet

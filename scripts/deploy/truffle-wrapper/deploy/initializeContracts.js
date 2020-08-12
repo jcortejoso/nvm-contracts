@@ -15,15 +15,15 @@ async function initializeContracts({
     // Since each contract initialize function could be different we can not use a loop
     // NOTE: A dapp could now use the address of the proxy specified in zos.<network_name>.json
     // instance=MyContract.at(proxyAddress)
-    const addressBook = {
-        // if the application should be deployed with another token set the address here!
-        // Token: '0x59FBfA0d9053Fa30249132719e17F044554D63Dc'
-    }
+    const addressBook = {}
 
     // WARNING!
     // use this only when deploying a selective portion of the contracts
     // Only use this if you know what you do, otherwise it can break the contracts deployed
-    const proxies = {}
+    const proxies = {
+        // if the application should be deployed with another token set the address here!
+        Token: '0xc778417e063141139fce010982780140aa0cd5ab'
+    }
 
     // returns either the address from the address book or the address of the manual set proxies
     const getAddress = (contract) => {
@@ -52,7 +52,7 @@ async function initializeContracts({
         })
 
         // propagate the token address it is used somewhere else
-        addressBook.Token = addressBook.TestToken
+        proxies.Token = addressBook.TestToken
     }
 
     // testnet only!
