@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Condition
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Condition
  *      Each condition has a validation function that returns either FULFILLED, 
      ABORTED or UNFULFILLED. When a condition is successfully solved, we call 

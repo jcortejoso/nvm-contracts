@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Template Store Manager
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Template Store Manager.
      Templates are blueprints for modular SEAs. When creating an Agreement, 
      a templateId defines the condition and reward types that are instantiated 

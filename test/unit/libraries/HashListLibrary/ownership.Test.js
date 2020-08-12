@@ -18,7 +18,7 @@ contract('HashListLibrary', (accounts) => {
         hashListLibrary = await HashListLibrary.new()
         HashListLibraryProxy.link('HashListLibrary', hashListLibrary.address)
         hashListLibraryProxy = await HashListLibraryProxy.new()
-        hashListLibraryProxy.initialize(owner, { from: owner })
+        await hashListLibraryProxy.initialize(owner, { from: owner })
     })
 
     describe('ownedBy', () => {

@@ -7,7 +7,7 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const Dispenser = artifacts.require('Dispenser')
-const OceanToken = artifacts.require('OceanToken')
+const NeverminedToken = artifacts.require('NeverminedToken')
 
 contract('Dispenser', (accounts) => {
     const owner = accounts[0]
@@ -15,9 +15,9 @@ contract('Dispenser', (accounts) => {
     let dispenser
 
     beforeEach(async () => {
-        const oceanToken = await OceanToken.new()
+        const token = await NeverminedToken.new()
         dispenser = await Dispenser.new()
-        await dispenser.initialize(oceanToken.address, owner)
+        await dispenser.initialize(token.address, owner)
     })
 
     describe('setMaxAmount', () => {

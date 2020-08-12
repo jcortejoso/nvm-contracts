@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Agreement Template
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of Agreement Template
  *      Escrow Access secret store template is use case specific template.
      Anyone (consumer/provider/publisher) can use this template in order

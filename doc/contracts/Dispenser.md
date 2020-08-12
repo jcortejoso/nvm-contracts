@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Ocean Protocol Dispenser Contract
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
 ```
 
 ## Variables
@@ -21,7 +21,7 @@ Documentation:
 
 ### internal scale
 
-### public oceanToken
+### public token
 
 ## Events
 
@@ -50,12 +50,12 @@ Documentation:
 
 ```
 @dev Dispenser Initializer
-@param _oceanTokenAddress The deployed contract address of an OceanToken
+@param _tokenAddress The deployed contract address of an ERC20
 @param _owner The owner of the Dispenser
 Runs only on initial contract creation.
 ```
 Parameters:
-* address _oceanTokenAddress
+* address _tokenAddress
 * address _owner
 
 ### external requestTokens

@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Compute Execution Condition
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Compute Execution Condition
      This condition is meant to be a signal in which triggers
      the execution of a compute service. The compute service is fully described

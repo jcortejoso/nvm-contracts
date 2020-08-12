@@ -15,13 +15,15 @@ async function initializeContracts({
     // Since each contract initialize function could be different we can not use a loop
     // NOTE: A dapp could now use the address of the proxy specified in zos.<network_name>.json
     // instance=MyContract.at(proxyAddress)
-
     const addressBook = {}
 
     // WARNING!
     // use this only when deploying a selective portion of the contracts
     // Only use this if you know what you do, otherwise it can break the contracts deployed
-    const proxies = {}
+    const proxies = {
+        // if the application should be deployed with another token set the address here!
+        // Token: '0xc778417e063141139fce010982780140aa0cd5ab'
+    }
 
     // returns either the address from the address book or the address of the manual set proxies
     const getAddress = (contract) => {
@@ -37,9 +39,10 @@ async function initializeContracts({
         })
     }
 
-    if (contracts.indexOf('OceanToken') > -1) {
-        addressBook.OceanToken = zosCreate({
-            contract: 'OceanToken',
+    // testnet only!
+    if (contracts.indexOf('NeverminedToken') > -1) {
+        addressBook.NeverminedToken = zosCreate({
+            contract: 'NeverminedToken',
             network,
             args: [
                 roles.ownerWallet,
@@ -47,20 +50,25 @@ async function initializeContracts({
             ],
             verbose
         })
+
+        // propagate the token address it is used somewhere else
+        proxies.Token = addressBook.NeverminedToken
     }
 
-    if (getAddress('OceanToken')) {
-        if (contracts.indexOf('Dispenser') > -1) {
-            addressBook.Dispenser = zosCreate({
-                contract: 'Dispenser',
-                network,
-                args: [
-                    getAddress('OceanToken'),
-                    roles.ownerWallet
-                ],
-                verbose
-            })
-        }
+    // testnet only!
+    if (
+        contracts.indexOf('Dispenser') > -1 &&
+        getAddress('Token')
+    ) {
+        addressBook.Dispenser = zosCreate({
+            contract: 'Dispenser',
+            network,
+            args: [
+                getAddress('Token'),
+                roles.ownerWallet
+            ],
+            verbose
+        })
     }
 
     if (contracts.indexOf('ConditionStoreManager') > -1) {
@@ -149,8 +157,10 @@ async function initializeContracts({
         }
     }
 
-    if (getAddress('ConditionStoreManager') &&
-        getAddress('OceanToken')) {
+    if (
+        getAddress('ConditionStoreManager') &&
+        getAddress('Token')
+    ) {
         if (contracts.indexOf('LockRewardCondition') > -1) {
             addressBook.LockRewardCondition = zosCreate({
                 contract: 'LockRewardCondition',
@@ -158,7 +168,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('OceanToken')
+                    getAddress('Token')
                 ],
                 verbose
             })
@@ -171,7 +181,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('OceanToken')
+                    getAddress('Token')
                 ],
                 verbose
             })

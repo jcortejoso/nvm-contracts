@@ -8,26 +8,26 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const Dispenser = artifacts.require('Dispenser')
-const OceanToken = artifacts.require('OceanToken')
+const NeverminedToken = artifacts.require('NeverminedToken')
 
 contract('Dispenser', (accounts) => {
     let dispenser
-    let oceanToken
+    let token
 
     const deployer = accounts[0]
     const someone = accounts[1]
 
     beforeEach(async () => {
         // deploy and init ocean token
-        oceanToken = await OceanToken.new()
-        await oceanToken.initialize(deployer, deployer)
+        token = await NeverminedToken.new()
+        await token.initialize(deployer, deployer)
 
         // deploy and init dispenser
         dispenser = await Dispenser.new()
-        await dispenser.initialize(oceanToken.address, deployer)
+        await dispenser.initialize(token.address, deployer)
 
         // register dispenser as minter in ocean token
-        await oceanToken.addMinter(dispenser.address)
+        await token.addMinter(dispenser.address)
     })
 
     describe('requestTokens', () => {
@@ -39,7 +39,7 @@ contract('Dispenser', (accounts) => {
             )
 
             // assert
-            const balance = await oceanToken.balanceOf(someone)
+            const balance = await token.balanceOf(someone)
             assert.strictEqual(balance.toNumber(), 200)
         })
 
@@ -59,7 +59,7 @@ contract('Dispenser', (accounts) => {
             )
 
             // assert
-            const balance = await oceanToken.balanceOf(someone)
+            const balance = await token.balanceOf(someone)
             assert.strictEqual(balance.toNumber(), 10)
             testUtils.assertEmitted(result, 1, 'RequestFrequencyExceeded')
         })
@@ -76,7 +76,7 @@ contract('Dispenser', (accounts) => {
             )
 
             // assert
-            const balance = await oceanToken.balanceOf(someone)
+            const balance = await token.balanceOf(someone)
             assert.strictEqual(balance.toNumber(), 0)
             testUtils.assertEmitted(result, 1, 'RequestLimitExceeded')
         })

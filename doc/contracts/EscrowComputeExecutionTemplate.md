@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Service Execution Template
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of Service Execution Template
 ```
 

@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Escrow Reward
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Escrow Reward.
  *      The Escrow reward is reward condition in which only 
      can release reward if lock and release conditions

@@ -19,7 +19,7 @@ contract('HashLists', (accounts) => {
         hashListLibrary = await HashListLibrary.new()
         HashLists.link('HashListLibrary', hashListLibrary.address)
         hashList = await HashLists.new()
-        hashList.initialize(accounts[0], { from: owner })
+        await hashList.initialize(accounts[0], { from: owner })
         listId = await hashList.hash(owner)
     })
 

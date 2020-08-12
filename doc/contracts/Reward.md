@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Reward
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Reward.
  *      Generic reward condition
      For more information, please refer the following link:

@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Hash List library
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
 @dev Implementation of the basic functionality of list of hash values.
 This library allows other contracts to build and maintain lists
 and also preserves the privacy of the data by accepting only hashed 

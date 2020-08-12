@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title DID Registry Library
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev All function calls are currently implemented without side effects
 ```
 

@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Whitelisting Condition
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Whitelisting Condition
      TODO: documentation
 ```

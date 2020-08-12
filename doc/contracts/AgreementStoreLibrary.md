@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Agreement Store Library
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Agreement Store Library.
      For more information: https://github.com/oceanprotocol/OEPs/issues/125    
      TODO: update the OEP link 

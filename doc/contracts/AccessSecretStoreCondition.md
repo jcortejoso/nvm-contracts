@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Access Secret Store Condition
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Access Secret Store Condition
  *      Access Secret Store Condition is special condition
      where parity secret store can encrypt/decrypt documents 

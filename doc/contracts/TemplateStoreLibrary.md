@@ -4,7 +4,7 @@
 Documentation:
 ```
 @title Template Store Library
-@author Ocean Protocol Team
+@author Keyko & Ocean Protocol
  * @dev Implementation of the Template Store Library.
      
      Templates are blueprints for modular SEAs. When 

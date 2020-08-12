@@ -6,11 +6,11 @@ const AgreementStoreLibrary = artifacts.require('AgreementStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
-const OceanToken = artifacts.require('OceanToken')
+const NeverminedToken = artifacts.require('NeverminedToken')
 
 const deployManagers = async function(deployer, owner) {
-    const oceanToken = await OceanToken.new({ from: deployer })
-    await oceanToken.initialize(owner, owner)
+    const token = await NeverminedToken.new({ from: deployer })
+    await token.initialize(owner, owner)
 
     const didRegistryLibrary = await DIDRegistryLibrary.new()
     await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
@@ -44,7 +44,7 @@ const deployManagers = async function(deployer, owner) {
     )
 
     return {
-        oceanToken,
+        token,
         didRegistry,
         agreementStoreManager,
         conditionStoreManager,

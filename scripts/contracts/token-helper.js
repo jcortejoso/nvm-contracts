@@ -5,19 +5,19 @@ const BN = require('bignumber.js')
 
 const network = process.env.NETWORK || 'development'
 // eslint-disable-next-line security/detect-non-literal-require
-const oceanTokenArtifact = require(`../../artifacts/OceanToken.${network}.json`)
-const OceanToken = contract({ abi: oceanTokenArtifact.abi })
+const tokenArtifact = require(`../../artifacts/NeverminedToken.${network}.json`)
+const Token = contract({ abi: tokenArtifact.abi })
 
 async function calculate(
     amount
 ) {
-    OceanToken.setProvider(web3.currentProvider)
-    const OceanTokenInstance = await OceanToken.at(oceanTokenArtifact.address)
-    const decimals = await OceanTokenInstance.decimals()
+    Token.setProvider(web3.currentProvider)
+    const TokenInstance = await Token.at(tokenArtifact.address)
+    const decimals = await TokenInstance.decimals()
     const scale = BN(10).exponentiatedBy(decimals)
     const vodka = BN(amount).multipliedBy(scale)
 
-    console.log(`${amount} OceanToken is ${vodka.toFixed()} Vodka`)
+    console.log(`${amount} is ${vodka.toFixed()} Vodka`)
 }
 
 module.exports = (cb) => {

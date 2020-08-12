@@ -20,6 +20,11 @@ We define four roles:
 - `upgraderWallet`: represented as the `upgrader` from `wallets.json`
 - `ownerWallet`: represented as the `owner` from `wallets.json`
 
+### Flags
+
+- `--testnet` Deploys the Dispenser, the NeverminedToken and the contracts from `contracts.json`
+- `--with-token` Deploys the NeverminedToken and the contracts from `contracts.json`
+
 #### Deployer
 
 Can be any account. It is used for deploying the initial proxy contracts and the logic contracts.
@@ -53,7 +58,7 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 
 ##### Deploy a single contracts
 
-- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:staging -- OceanToken Dispenser`will deploy `OceanToken` and `Dispenser`.
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:staging -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
@@ -61,7 +66,7 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:staging -- OceanToken`. For upgrading the `OceanToken` contract.
+- To upgrade a single contract run `npm run upgrade:staging -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
 
 ##### Persist artifacts
 
@@ -79,7 +84,7 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 
 ##### Deploy a single contracts
 
-- To deploy a single contracts you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:kovan -- OceanToken Dispenser` will deploy `OceanToken` and `Dispenser`.
+- To deploy a single contracts you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:kovan -- NeverminedToken Dispenser` will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
@@ -87,7 +92,7 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:kovan -- OceanToken`. For upgrading the `OceanToken` contract.
+- To upgrade a single contract run `npm run upgrade:kovan -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
 
 ##### Persist artifacts
 

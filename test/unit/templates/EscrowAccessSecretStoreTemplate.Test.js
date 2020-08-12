@@ -19,7 +19,7 @@ contract('EscrowAccessSecretStoreTemplate', (accounts) => {
         owner = accounts[9]
     } = {}) {
         const {
-            oceanToken,
+            token,
             didRegistry,
             agreementStoreManager,
             conditionStoreManager,
@@ -39,7 +39,7 @@ contract('EscrowAccessSecretStoreTemplate', (accounts) => {
         )
 
         return {
-            oceanToken,
+            token,
             didRegistry,
             agreementStoreManager,
             conditionStoreManager,

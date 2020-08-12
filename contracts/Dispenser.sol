@@ -3,7 +3,7 @@ pragma solidity 0.5.6;
 
 import 'openzeppelin-eth/contracts/math/SafeMath.sol';
 import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
-import './OceanToken.sol';
+import './NeverminedToken.sol';
 
 /**
  * @title Ocean Protocol Dispenser Contract
@@ -29,7 +29,7 @@ contract Dispenser is Ownable {
     uint256 internal minPeriod;
     uint256 internal scale;
 
-    OceanToken public oceanToken;
+    NeverminedToken public token;
 
     event RequestFrequencyExceeded(
         address indexed requester,
@@ -53,25 +53,25 @@ contract Dispenser is Ownable {
 
     /**
      * @dev Dispenser Initializer
-     * @param _oceanTokenAddress The deployed contract address of an OceanToken
+     * @param _tokenAddress The deployed contract address of an ERC20
      * @param _owner The owner of the Dispenser
      * Runs only on initial contract creation.
      */
     function initialize(
-        address _oceanTokenAddress,
+        address _tokenAddress,
         address _owner
     )
         external
         initializer
-        isValidAddress(_oceanTokenAddress)
+        isValidAddress(_tokenAddress)
     {
         Ownable.initialize(_owner);
         // init total mint amount
         totalMintAmount = 0;
-        // instantiate OceanToken contract
-        oceanToken = OceanToken(_oceanTokenAddress);
+        // instantiate Token contract
+        token = NeverminedToken(_tokenAddress);
 
-        scale = 10 ** uint256(oceanToken.decimals());
+        scale = 10 ** uint256(token.decimals());
         maxAmount = uint256(1000).mul(scale);
         minPeriod = 0;
 
@@ -118,7 +118,7 @@ contract Dispenser is Ownable {
             return false;
         } else {
             require(
-                oceanToken.mint(msg.sender, amountWithDigits),
+                token.mint(msg.sender, amountWithDigits),
                 'Token minting failed.'
             );
 
