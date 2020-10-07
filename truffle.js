@@ -5,7 +5,7 @@ const utils = require('web3-utils')
 const rpcHost = process.env.KEEPER_RPC_HOST
 const rpcPort = process.env.KEEPER_RPC_PORT
 const url = process.env.KEEPER_RPC_URL
-const MNEMONIC = process.env.MNEMONIC
+const { MNEMONIC } = process.env.MNEMONIC
 
 const hdWalletStartIndex = 0
 const hdWalletAccounts = 5
