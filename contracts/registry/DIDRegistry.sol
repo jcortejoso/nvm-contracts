@@ -13,7 +13,6 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the DID Registry.
- *      https://github.com/oceanprotocol/OEPs/tree/master/7#registry
  */
 contract DIDRegistry is Ownable {
 
