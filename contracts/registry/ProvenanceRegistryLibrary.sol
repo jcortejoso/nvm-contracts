@@ -33,15 +33,15 @@ library ProvenanceRegistryLibrary {
     * @dev access modifiers and storage pointer should be implemented in ProvenanceRegistry
     * @param _self refers to storage pointer
     * @param _did refers to decentralized identifier (a byte32 length ID)
-    * @param _agentId refers to address of the agent triggering the activity
-    * @param _agentInvolvedId refers to address of the agent involved with the activity
+    * @param _agentId refers to address of the agent creating the provenance record
+    * @param _lastUpdatedBy refers to address of the agent triggering the activity
     * @param _activityId includes a one-way HASH calculated using the activity description
     */
     function create(
         ProvenanceRegisterList storage _self,
         bytes32 _did,
         address _agentId,
-        address _agentInvolvedId,
+        address _lastUpdatedBy,
         bytes32 _activityId
     )
         external
@@ -58,9 +58,9 @@ library ProvenanceRegistryLibrary {
         _self.provenanceRegisters[_did] = ProvenanceRegister({
             owner: msg.sender,
             agentId: _agentId,
-            agentInvolvedId: _agentInvolvedId,
+            agentInvolvedId: _agentId,
             activityId: _activityId,
-            lastUpdatedBy: msg.sender,
+            lastUpdatedBy: _lastUpdatedBy,
             blockNumberUpdated: block.number,
             delegates: new address[](0)
         });
@@ -113,27 +113,27 @@ library ProvenanceRegistryLibrary {
     * @dev update the Provenance registry delegates list by adding a new delegate
     * @param _self refers to storage pointer
     * @param _did refers to decentralized identifier (a byte32 length ID)
-    * @param delete the delegates's address 
+    * @param _delegate the delegates's address
     */
     function addDelegate(
         ProvenanceRegisterList storage _self,
         bytes32 _did,
-        address delegate
+        address _delegate
     )
         internal
     {
         require(
-            delegate != address(0),
+            _delegate != address(0),
             'Invalid asset delegate address'
         );
 
         require(
-            delegate != address(this),
+            _delegate != address(this),
             'DID delegate should not be this contract address'
         );
 
-        if (!isProvider(_self, _did, delegate)) {
-            _self.providerRegisters[_did].delegates.push(delegate);
+        if (!isDelegate(_self, _did, _delegate)) {
+            _self.provenanceRegisters[_did].delegates.push(_delegate);
         }
 
     }
@@ -143,7 +143,7 @@ library ProvenanceRegistryLibrary {
     * @dev update the Provenance registry delegates list by removing an existing delegate
     * @param _self refers to storage pointer
     * @param _did refers to decentralized identifier (a byte32 length ID)
-    * @param _delegate the delegate's address 
+    * @param _delegate the delegate's address
     */
     function removeDelegate(
         ProvenanceRegisterList storage _self,
@@ -164,7 +164,7 @@ library ProvenanceRegistryLibrary {
             return false;
         }
 
-        delete _self.providerRegisters[_did].delegates[uint256(i)];
+        delete _self.provenanceRegisters[_did].delegates[uint256(i)];
 
         return true;
     }
@@ -186,17 +186,17 @@ library ProvenanceRegistryLibrary {
             _newOwner != address(0),
             'Invalid new Provenance owner address'
         );
-        _self.didRegisters[_did].owner = _newOwner;
+        _self.provenanceRegisters[_did].owner = _newOwner;
     }
-    
+
    /**
     * @notice isDelegate check whether Provenance delegate exists
     * @param _self refers to storage pointer
     * @param _did refers to decentralized identifier (a byte32 length ID)
-    * @param _delegate the provider's address 
+    * @param _delegate the provider's address
     * @return true if the delegate already exists
     */
-    function isProvider(
+    function isDelegate(
         ProvenanceRegisterList storage _self,
         bytes32 _did,
         address _delegate
@@ -218,13 +218,13 @@ library ProvenanceRegistryLibrary {
     * @notice getDelegateIndex get the index of a delegate
     * @param _self refers to storage pointer
     * @param _did refers to decentralized identifier (a byte32 length ID)
-    * @param delegate the delegate's address 
+    * @param _delegate the delegate's address
     * @return the index if the delegate exists otherwise return -1
     */
     function getDelegateIndex(
         ProvenanceRegisterList storage _self,
         bytes32 _did,
-        address delegate
+        address _delegate
     )
         private
         view
@@ -232,7 +232,7 @@ library ProvenanceRegistryLibrary {
     {
         for (uint256 i = 0;
             i < _self.provenanceRegisters[_did].delegates.length; i++) {
-            if (delegate == _self.provenanceRegisters[_did].delegate[i]) {
+            if (_delegate == _self.provenanceRegisters[_did].delegates[i]) {
                 return int(i);
             }
         }

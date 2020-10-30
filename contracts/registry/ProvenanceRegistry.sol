@@ -26,8 +26,16 @@ contract ProvenanceRegistry is Ownable {
      */
     ProvenanceRegistryLibrary.ProvenanceRegisterList internal provenanceRegisterList;
 
-    // DID -> Address -> Boolean Permission
-    mapping(bytes32 => mapping(address => bool)) DIDPermissions;
+
+    modifier onlyProvenanceOwnerOrDelegated(bytes32 _did)
+    {
+        require(
+            msg.sender == provenanceRegisterList.provenanceRegisters[_did].owner ||
+            isProvenanceDelegate(_did, msg.sender),
+            'Invalid Provenance owner can perform this operation.'
+        );
+        _;
+    }
 
     modifier onlyProvenanceOwner(bytes32 _did)
     {
@@ -38,7 +46,8 @@ contract ProvenanceRegistry is Ownable {
         _;
     }
 
-    modifier onlyValidAttributes(string _attributes)
+
+    modifier onlyValidAttributes(string memory _attributes)
     {
         require(
             bytes(_attributes).length <= 2048,
@@ -55,6 +64,7 @@ contract ProvenanceRegistry is Ownable {
         bytes32 indexed _did,
         address indexed _agentId,
         bytes32 indexed _activityId,
+        bytes32 _relatedDid,
         address _agentInvolvedId,
         string _attributes,
         uint256 _blockNumberUpdated
@@ -86,22 +96,20 @@ contract ProvenanceRegistry is Ownable {
     );
 
     event WasAssociatedWith(
-        bytes32 indexed _agentId,
+        address indexed _agentId,
+        bytes32 indexed _activityId,
         bytes32 indexed _entityDid,
-        bytes32 indexed msg.sender,
-        _activityId,
-        _attributes,
-        block.number
+        string _attributes,
+        uint256 _blockNumberUpdated
     );
 
     event ActedOnBehalf(
         address indexed _delegateAgentId,
         address indexed _responsibleAgentId,
-        address indexed _entityDid,
-        msg.sender,
-        _activityId,
-        _attributes,
-        block.number
+        bytes32 indexed _entityDid,
+        bytes32 _activityId,
+        string _attributes,
+        uint256 _blockNumberUpdated
     );
 
     /**
@@ -128,7 +136,7 @@ contract ProvenanceRegistry is Ownable {
         address _agentId,
         bytes32 _activityId,
         address[] memory _delegates,
-        string _attributes
+        string memory _attributes
     )
         public
         onlyProvenanceOwner(_did)
@@ -137,13 +145,13 @@ contract ProvenanceRegistry is Ownable {
     {
 
         uint updatedSize = provenanceRegisterList
-            .create(_did, _agentId, _agentInvolvedId, _activityId);
+            .create(_did, _agentId, msg.sender, _activityId);
 
         // push delegates to storage
         for (uint256 i = 0; i < _delegates.length; i++) {
             provenanceRegisterList.addDelegate(
                 _did,
-                _delegate[i]
+                _delegates[i]
             );
 
         }
@@ -153,7 +161,8 @@ contract ProvenanceRegistry is Ownable {
             _did,
             provenanceRegisterList.provenanceRegisters[_did].owner,
             _activityId,
-            _agentInvolvedId,
+            _did,
+            msg.sender,
             _attributes,
             block.number
         );
@@ -179,13 +188,24 @@ contract ProvenanceRegistry is Ownable {
         address _agentId,
         bytes32 _activityId,
         bytes32 _did,
-        string _attributes
+        string memory _attributes
     )
         public
         onlyProvenanceOwnerOrDelegated(_did)
         onlyValidAttributes(_attributes)
         returns (uint size)
     {
+
+      emit ProvenanceAttributeRegistered(
+          _did,
+          msg.sender,
+          _activityId,
+          _did,
+          msg.sender,
+          _attributes,
+          block.number
+      );
+
       emit Used(
           _did,
           msg.sender,
@@ -193,6 +213,8 @@ contract ProvenanceRegistry is Ownable {
           _attributes,
           block.number
       );
+
+      return 0;
     }
 
 
@@ -207,18 +229,19 @@ contract ProvenanceRegistry is Ownable {
         address _agentId,
         bytes32 _activityId,
         address[] memory _delegates,
-        string _attributes
+        string memory _attributes
     )
         public
-        onlyProvenanceOwnerOrDelegated(_did)
+        onlyProvenanceOwnerOrDelegated(_usedEntityDid)
         onlyValidAttributes(_attributes)
         returns (uint size)
     {
       emit ProvenanceAttributeRegistered(
-          _newEntityDid,
-          provenanceRegisterList.provenanceRegisters[_did].owner,
+          _usedEntityDid,
+          msg.sender,
           _activityId,
-          _agentInvolvedId,
+          _newEntityDid,
+          msg.sender,
           _attributes,
           block.number
       );
@@ -231,6 +254,8 @@ contract ProvenanceRegistry is Ownable {
           _attributes,
           block.number
       );
+
+      return 0;
     }
 
 
@@ -243,10 +268,10 @@ contract ProvenanceRegistry is Ownable {
         bytes32 _activityId,
         bytes32 _entityDid,
         bytes32 _signature,
-        string _attributes
+        string memory _attributes
     )
         public
-        onlyProvenanceOwnerOrDelegated(_did)
+        onlyProvenanceOwnerOrDelegated(_entityDid)
         onlyValidAttributes(_attributes)
         returns (uint size)
     {
@@ -254,19 +279,21 @@ contract ProvenanceRegistry is Ownable {
           _entityDid,
           msg.sender,
           _activityId,
-          _agentInvolvedId,
+          _entityDid,
+          _agentId,
           _attributes,
           block.number
       );
 
       emit WasAssociatedWith(
           _agentId,
-          _entityDid,
-          msg.sender,
           _activityId,
+          _entityDid,
           _attributes,
           block.number
       );
+
+      return 0;
     }
 
     /**
@@ -279,10 +306,10 @@ contract ProvenanceRegistry is Ownable {
         bytes32 _entityDid,
         bytes32 _activityId,
         bytes32 _signature,
-        string _attributes
+        string memory _attributes
     )
         public
-        onlyProvenanceOwnerOrDelegated(_did)
+        onlyProvenanceOwnerOrDelegated(_entityDid)
         onlyValidAttributes(_attributes)
         returns (uint size)
     {
@@ -291,6 +318,7 @@ contract ProvenanceRegistry is Ownable {
           _entityDid,
           msg.sender,
           _activityId,
+          _entityDid,
           _delegateAgentId,
           _attributes,
           block.number
@@ -298,13 +326,31 @@ contract ProvenanceRegistry is Ownable {
 
       emit ActedOnBehalf(
           _delegateAgentId,
-          _responsibleAgentId,
-          _entityDid,
           msg.sender,
+          _entityDid,
           _activityId,
           _attributes,
           block.number
       );
+
+      return 0;
+    }
+
+
+    /**
+     * @notice isProvenanceDelegate check whether a given DID delegate exists
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _delegate delegate's address.
+     */
+    function isProvenanceDelegate(
+        bytes32 _did,
+        address _delegate
+    )
+        public
+        view
+        returns (bool)
+    {
+        return provenanceRegisterList.isDelegate(_did, _delegate);
     }
 
 
@@ -340,7 +386,7 @@ contract ProvenanceRegistry is Ownable {
         view
         returns (uint size)
     {
-        return provenanceRegisterList.provenanceRegisters.length;
+        return provenanceRegisterList.provenanceRegisterIds.length;
     }
 
     /**
@@ -351,7 +397,7 @@ contract ProvenanceRegistry is Ownable {
         view
         returns (bytes32[] memory)
     {
-        return provenanceRegisterList.provenanceRegisters;
+        return provenanceRegisterList.provenanceRegisterIds;
     }
 
 
