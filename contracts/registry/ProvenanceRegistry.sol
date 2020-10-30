@@ -129,7 +129,12 @@ contract ProvenanceRegistry is Ownable {
     /**
      * @notice Implements the W3C PROV Generation action
      *
-     * @param  _did refers to decentralized identifier (a bytes32 length ID) of the entity created
+     * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity created
+     * @param _agentId refers to address of the agent creating the provenance record
+     * @param _activityId refers to activity
+     * @param _delegates refers to the array of delegates able to interact with the provenance record
+     * @param _attributes referes to the provenance attributes
+     * @return the number of the new provenance size
      */
     function wasGeneratedBy(
         bytes32 _did,
@@ -182,8 +187,12 @@ contract ProvenanceRegistry is Ownable {
     /**
      * @notice Implements the W3C PROV Usage action
      *
-     * @param  _did refers to decentralized identifier (a bytes32 length ID) of the entity created
-     */
+     * @param _agentId refers to address of the agent creating the provenance record
+     * @param _activityId refers to activity
+     * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity created
+     * @param _attributes referes to the provenance attributes
+     * @return true if the action was properly registered
+    */
     function used(
         address _agentId,
         bytes32 _activityId,
@@ -193,7 +202,7 @@ contract ProvenanceRegistry is Ownable {
         public
         onlyProvenanceOwnerOrDelegated(_did)
         onlyValidAttributes(_attributes)
-        returns (uint size)
+        returns (bool success)
     {
 
       emit ProvenanceAttributeRegistered(
@@ -214,14 +223,20 @@ contract ProvenanceRegistry is Ownable {
           block.number
       );
 
-      return 0;
+      return true;
     }
 
 
     /**
      * @notice Implements the W3C PROV Derivation action
      *
-     * @param  _did refers to decentralized identifier (a bytes32 length ID) of the entity created
+     * @param _newEntityDid refers to decentralized identifier (a bytes32 length ID) of the entity created
+     * @param _usedEntityDid refers to decentralized identifier (a bytes32 length ID) of the entity used to derive the new did
+     * @param _agentId refers to address of the agent creating the provenance record
+     * @param _activityId refers to activity
+     * @param _delegates refers to the array of delegates able to interact with the provenance record
+     * @param _attributes referes to the provenance attributes
+     * @return true if the action was properly registered
      */
     function wasDerivedFrom(
         bytes32 _newEntityDid,
@@ -234,7 +249,7 @@ contract ProvenanceRegistry is Ownable {
         public
         onlyProvenanceOwnerOrDelegated(_usedEntityDid)
         onlyValidAttributes(_attributes)
-        returns (uint size)
+        returns (bool success)
     {
       emit ProvenanceAttributeRegistered(
           _usedEntityDid,
@@ -255,14 +270,20 @@ contract ProvenanceRegistry is Ownable {
           block.number
       );
 
-      return 0;
+      return true;
     }
 
 
     /**
      * @notice Implements the W3C PROV Association action
      *
-     */
+     * @param _agentId refers to address of the agent creating the provenance record
+     * @param _activityId refers to activity
+     * @param _entityDid refers to decentralized identifier (a bytes32 length ID) of the entity
+     * @param _signature refers to the digital signature provided by the counter party
+     * @param _attributes referes to the provenance attributes
+     * @return true if the action was properly registered
+    */
     function wasAssociatedWith(
         address _agentId,
         bytes32 _activityId,
@@ -273,7 +294,7 @@ contract ProvenanceRegistry is Ownable {
         public
         onlyProvenanceOwnerOrDelegated(_entityDid)
         onlyValidAttributes(_attributes)
-        returns (uint size)
+        returns (bool success)
     {
       emit ProvenanceAttributeRegistered(
           _entityDid,
@@ -293,12 +314,19 @@ contract ProvenanceRegistry is Ownable {
           block.number
       );
 
-      return 0;
+      return true;
     }
 
     /**
      * @notice Implements the W3C PROV Delegation action
      *
+     * @param _delegateAgentId refers to address acting on behalf of the provenance record
+     * @param _responsibleAgentId refers to address responsible of the provenance record
+     * @param _entityDid refers to decentralized identifier (a bytes32 length ID) of the entity
+     * @param _activityId refers to activity
+     * @param _signature refers to the digital signature provided by the counter party
+     * @param _attributes referes to the provenance attributes
+     * @return true if the action was properly registered
      */
     function actedOnBehalf(
         address _delegateAgentId,
@@ -311,7 +339,7 @@ contract ProvenanceRegistry is Ownable {
         public
         onlyProvenanceOwnerOrDelegated(_entityDid)
         onlyValidAttributes(_attributes)
-        returns (uint size)
+        returns (bool success)
     {
 
       emit ProvenanceAttributeRegistered(
@@ -333,7 +361,7 @@ contract ProvenanceRegistry is Ownable {
           block.number
       );
 
-      return 0;
+      return true;
     }
 
 
