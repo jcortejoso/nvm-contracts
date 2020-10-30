@@ -207,7 +207,7 @@ contract ProvenanceRegistry is Ownable {
 
       emit ProvenanceAttributeRegistered(
           _did,
-          msg.sender,
+          _agentId,
           _activityId,
           _did,
           msg.sender,
@@ -217,7 +217,7 @@ contract ProvenanceRegistry is Ownable {
 
       emit Used(
           _did,
-          msg.sender,
+          _agentId,
           _activityId,
           _attributes,
           block.number
@@ -253,7 +253,7 @@ contract ProvenanceRegistry is Ownable {
     {
       emit ProvenanceAttributeRegistered(
           _usedEntityDid,
-          msg.sender,
+          _agentId,
           _activityId,
           _newEntityDid,
           msg.sender,
@@ -264,7 +264,7 @@ contract ProvenanceRegistry is Ownable {
       emit WasDerivedFrom(
           _newEntityDid,
           _usedEntityDid,
-          msg.sender,
+          _agentId,
           _activityId,
           _attributes,
           block.number
