@@ -16,6 +16,23 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  */
 contract ProvenanceRegistry is Ownable {
 
+  enum ProvenanceMethod {
+    ENTITY,
+    ACTIVITY,
+    WAS_GENERATED_BY,
+    USED,
+    WAS_INFORMED_BY,
+    WAS_STARTED_BY,
+    WAS_ENDED_BY,
+    WAS_INVALIDATED_BY,
+    WAS_DERIVED_FROM,
+    AGENT,
+    WAS_ATTRIBUTED_TO,
+    WAS_ASSOCIATED_WITH,
+    ACTED_ON_BEHALF
+  }
+
+
     /**
      * @dev The ProvenanceRegistry Library takes care of the basic storage functions.
      */
@@ -66,6 +83,7 @@ contract ProvenanceRegistry is Ownable {
         bytes32 indexed _activityId,
         bytes32 _relatedDid,
         address _agentInvolvedId,
+        ProvenanceMethod _method,
         string _attributes,
         uint256 _blockNumberUpdated
     );
@@ -168,6 +186,7 @@ contract ProvenanceRegistry is Ownable {
             _activityId,
             _did,
             msg.sender,
+            ProvenanceMethod.WAS_GENERATED_BY,
             _attributes,
             block.number
         );
@@ -211,6 +230,7 @@ contract ProvenanceRegistry is Ownable {
           _activityId,
           _did,
           msg.sender,
+          ProvenanceMethod.USED,
           _attributes,
           block.number
       );
@@ -257,6 +277,7 @@ contract ProvenanceRegistry is Ownable {
           _activityId,
           _newEntityDid,
           msg.sender,
+          ProvenanceMethod.WAS_DERIVED_FROM,
           _attributes,
           block.number
       );
@@ -280,7 +301,7 @@ contract ProvenanceRegistry is Ownable {
      * @param _agentId refers to address of the agent creating the provenance record
      * @param _activityId refers to activity
      * @param _entityDid refers to decentralized identifier (a bytes32 length ID) of the entity
-     * @param _signature refers to the digital signature provided by the counter party
+     * @param _signatures refers to the digital signatures provided during the process by the parties
      * @param _attributes referes to the provenance attributes
      * @return true if the action was properly registered
     */
@@ -288,7 +309,7 @@ contract ProvenanceRegistry is Ownable {
         address _agentId,
         bytes32 _activityId,
         bytes32 _entityDid,
-        bytes32 _signature,
+        bytes32[] memory _signatures,
         string memory _attributes
     )
         public
@@ -302,6 +323,7 @@ contract ProvenanceRegistry is Ownable {
           _activityId,
           _entityDid,
           _agentId,
+          ProvenanceMethod.WAS_ASSOCIATED_WITH,
           _attributes,
           block.number
       );
@@ -324,7 +346,7 @@ contract ProvenanceRegistry is Ownable {
      * @param _responsibleAgentId refers to address responsible of the provenance record
      * @param _entityDid refers to decentralized identifier (a bytes32 length ID) of the entity
      * @param _activityId refers to activity
-     * @param _signature refers to the digital signature provided by the counter party
+     * @param _signatures refers to the digital signature provided by the parties involved
      * @param _attributes referes to the provenance attributes
      * @return true if the action was properly registered
      */
@@ -333,7 +355,7 @@ contract ProvenanceRegistry is Ownable {
         address _responsibleAgentId,
         bytes32 _entityDid,
         bytes32 _activityId,
-        bytes32 _signature,
+        bytes32[] memory _signatures,
         string memory _attributes
     )
         public
@@ -344,10 +366,11 @@ contract ProvenanceRegistry is Ownable {
 
       emit ProvenanceAttributeRegistered(
           _entityDid,
-          msg.sender,
+          _responsibleAgentId,
           _activityId,
           _entityDid,
           _delegateAgentId,
+          ProvenanceMethod.ACTED_ON_BEHALF,
           _attributes,
           block.number
       );
