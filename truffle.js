@@ -1,3 +1,5 @@
+require('ts-node/register')
+
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const NonceTrackerSubprovider = require('web3-provider-engine/subproviders/nonce-tracker')
 const utils = require('web3-utils')

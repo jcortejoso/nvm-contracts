@@ -5,6 +5,7 @@ pragma solidity 0.5.6;
 
 
 import './ProvenanceRegistryLibrary.sol';
+import './DIDRegistry.sol';
 import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
 
 /**
@@ -16,31 +17,35 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  */
 contract ProvenanceRegistry is Ownable {
 
-  enum ProvenanceMethod {
-    ENTITY,
-    ACTIVITY,
-    WAS_GENERATED_BY,
-    USED,
-    WAS_INFORMED_BY,
-    WAS_STARTED_BY,
-    WAS_ENDED_BY,
-    WAS_INVALIDATED_BY,
-    WAS_DERIVED_FROM,
-    AGENT,
-    WAS_ATTRIBUTED_TO,
-    WAS_ASSOCIATED_WITH,
-    ACTED_ON_BEHALF
-  }
+    DIDRegistry didRegistry;
+    
+    enum ProvenanceMethod {
+        ENTITY,
+        ACTIVITY,
+        WAS_GENERATED_BY,
+        USED,
+        WAS_INFORMED_BY,
+        WAS_STARTED_BY,
+        WAS_ENDED_BY,
+        WAS_INVALIDATED_BY,
+        WAS_DERIVED_FROM,
+        AGENT,
+        WAS_ATTRIBUTED_TO,
+        WAS_ASSOCIATED_WITH,
+        ACTED_ON_BEHALF
+    }
 
 
     /**
      * @dev The ProvenanceRegistry Library takes care of the basic storage functions.
      */
+    /* solium-disable-next-line */
     using ProvenanceRegistryLibrary for ProvenanceRegistryLibrary.ProvenanceRegisterList;
 
     /**
      * @dev state storage for the Provenance registry
      */
+    /* solium-disable-next-line */
     ProvenanceRegistryLibrary.ProvenanceRegisterList internal provenanceRegisterList;
 
 
@@ -63,6 +68,14 @@ contract ProvenanceRegistry is Ownable {
         _;
     }
 
+    modifier onlyDIDOwner(bytes32 _did)
+    {
+        require(
+            msg.sender == didRegistry.getDIDOwner(_did),
+            'Invalid DID owner can perform this operation.'
+        );
+        _;
+    }
 
     modifier onlyValidAttributes(string memory _attributes)
     {
@@ -136,11 +149,13 @@ contract ProvenanceRegistry is Ownable {
      * @param _owner refers to the owner of the contract.
      */
     function initialize(
+        address _didRegistry,
         address _owner
     )
         public
         initializer
     {
+        didRegistry = DIDRegistry(_didRegistry);
         Ownable.initialize(_owner);
     }
 
@@ -162,7 +177,7 @@ contract ProvenanceRegistry is Ownable {
         string memory _attributes
     )
         public
-        onlyProvenanceOwner(_did)
+        onlyDIDOwner(_did)
         onlyValidAttributes(_attributes)
         returns (uint size)
     {
@@ -224,28 +239,27 @@ contract ProvenanceRegistry is Ownable {
         returns (bool success)
     {
 
-      emit ProvenanceAttributeRegistered(
-          _did,
-          _agentId,
-          _activityId,
-          _did,
-          msg.sender,
-          ProvenanceMethod.USED,
-          _attributes,
-          block.number
-      );
+        emit ProvenanceAttributeRegistered(
+            _did,
+            _agentId,
+            _activityId,
+            _did,
+            msg.sender,
+            ProvenanceMethod.USED,
+            _attributes,
+            block.number
+        );
 
-      emit Used(
-          _did,
-          _agentId,
-          _activityId,
-          _attributes,
-          block.number
-      );
+        emit Used(
+            _did,
+            _agentId,
+            _activityId,
+            _attributes,
+            block.number
+        );
 
-      return true;
+        return true;
     }
-
 
     /**
      * @notice Implements the W3C PROV Derivation action
@@ -271,27 +285,27 @@ contract ProvenanceRegistry is Ownable {
         onlyValidAttributes(_attributes)
         returns (bool success)
     {
-      emit ProvenanceAttributeRegistered(
-          _usedEntityDid,
-          _agentId,
-          _activityId,
-          _newEntityDid,
-          msg.sender,
-          ProvenanceMethod.WAS_DERIVED_FROM,
-          _attributes,
-          block.number
-      );
+        emit ProvenanceAttributeRegistered(
+            _usedEntityDid,
+            _agentId,
+            _activityId,
+            _newEntityDid,
+            msg.sender,
+            ProvenanceMethod.WAS_DERIVED_FROM,
+            _attributes,
+            block.number
+        );
 
-      emit WasDerivedFrom(
-          _newEntityDid,
-          _usedEntityDid,
-          _agentId,
-          _activityId,
-          _attributes,
-          block.number
-      );
+        emit WasDerivedFrom(
+            _newEntityDid,
+            _usedEntityDid,
+            _agentId,
+            _activityId,
+            _attributes,
+            block.number
+        );
 
-      return true;
+        return true;
     }
 
 
@@ -317,26 +331,26 @@ contract ProvenanceRegistry is Ownable {
         onlyValidAttributes(_attributes)
         returns (bool success)
     {
-      emit ProvenanceAttributeRegistered(
-          _entityDid,
-          msg.sender,
-          _activityId,
-          _entityDid,
-          _agentId,
-          ProvenanceMethod.WAS_ASSOCIATED_WITH,
-          _attributes,
-          block.number
-      );
+        emit ProvenanceAttributeRegistered(
+            _entityDid,
+            msg.sender,
+            _activityId,
+            _entityDid,
+            _agentId,
+            ProvenanceMethod.WAS_ASSOCIATED_WITH,
+            _attributes,
+            block.number
+        );
 
-      emit WasAssociatedWith(
-          _agentId,
-          _activityId,
-          _entityDid,
-          _attributes,
-          block.number
-      );
+        emit WasAssociatedWith(
+            _agentId,
+            _activityId,
+            _entityDid,
+            _attributes,
+            block.number
+        );
 
-      return true;
+        return true;
     }
 
     /**
@@ -364,27 +378,27 @@ contract ProvenanceRegistry is Ownable {
         returns (bool success)
     {
 
-      emit ProvenanceAttributeRegistered(
-          _entityDid,
-          _responsibleAgentId,
-          _activityId,
-          _entityDid,
-          _delegateAgentId,
-          ProvenanceMethod.ACTED_ON_BEHALF,
-          _attributes,
-          block.number
-      );
+        emit ProvenanceAttributeRegistered(
+            _entityDid,
+            _responsibleAgentId,
+            _activityId,
+            _entityDid,
+            _delegateAgentId,
+            ProvenanceMethod.ACTED_ON_BEHALF,
+            _attributes,
+            block.number
+        );
 
-      emit ActedOnBehalf(
-          _delegateAgentId,
-          msg.sender,
-          _entityDid,
-          _activityId,
-          _attributes,
-          block.number
-      );
+        emit ActedOnBehalf(
+            _delegateAgentId,
+            msg.sender,
+            _entityDid,
+            _activityId,
+            _attributes,
+            block.number
+        );
 
-      return true;
+        return true;
     }
 
 
@@ -414,6 +428,7 @@ contract ProvenanceRegistry is Ownable {
         view
         returns (uint256 blockNumberUpdated)
     {
+        /* solium-disable-next-line */
         return provenanceRegisterList.provenanceRegisters[_did].blockNumberUpdated;
     }
 
