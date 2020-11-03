@@ -39,11 +39,14 @@ async function initializeContracts({
         })
     }
 
-    if (contracts.indexOf('ProvenanceRegistry') > -1) {
+    if (contracts.indexOf('ProvenanceRegistry') > -1 && getAddress('DIDRegistry')) {
         addressBook.ProvenanceRegistry = zosCreate({
             contract: 'ProvenanceRegistry',
             network,
-            args: [roles.ownerWallet],
+            args: [
+                getAddress('DIDRegistry'),
+                roles.ownerWallet
+            ],
             verbose
         })
     }
