@@ -15,7 +15,7 @@ jobs:
     - name: Pre-install
       run: |
         yarn
-        npx ganache-cli@~6.9.1 > ganache-cli.log &
+        npx ganache-cli@~6.12.1 > ganache-cli.log &
     - name: Run tests
       run: |
         yarn lint
