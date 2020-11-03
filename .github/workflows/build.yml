@@ -1,6 +1,6 @@
 name: Build
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   build:
@@ -8,20 +8,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '10.x'
-    - name: Pre-install
-      run: |
-        yarn
-        npx ganache-cli@~6.12.1 > ganache-cli.log &
-    - name: Run tests
-      run: |
-        yarn lint
-        yarn clean
-        yarn compile
-        yarn test:fast
-        yarn test:upgrade
-        yarn deploy:development --deeper-clean
-        git status
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+      - name: Pre-install
+        run: |
+          yarn
+          npx ganache-cli@~6.12.1 > ganache-cli.log &
+      - name: Run tests
+        run: |
+          yarn lint
+          yarn clean
+          yarn compile
+          yarn test:fast
+          yarn test:upgrade
+          yarn deploy:development --deeper-clean
+          git status
+        env:
+          NODE_OPTIONS: –max-old-space-size=8000
