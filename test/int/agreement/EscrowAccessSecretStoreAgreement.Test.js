@@ -117,7 +117,7 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
         }
     }
 
-    describe('create and fulfill escrow agreement', () => {
+    describe('create and fulfill escrow agreement [ @skip-on-coverage ]', () => {
         it('should create escrow agreement and fulfill', async () => {
             const { owner } = await setupTest()
 
@@ -235,7 +235,7 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
         })
     })
 
-    describe('create and fulfill escrow agreement with access secret store and timeLock', () => {
+    describe('create and fulfill escrow agreement with access secret store and timeLock [ @skip-on-coverage ]', () => {
         it('should create escrow agreement and fulfill', async () => {
             const { owner } = await setupTest()
 

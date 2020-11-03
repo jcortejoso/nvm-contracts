@@ -106,7 +106,7 @@ contract('Stake Agreement integration test', (accounts) => {
         }
     }
 
-    describe('create and fulfill stake agreement', () => {
+    describe('create and fulfill stake agreement [ @skip-on-coverage ]', () => {
         it('stake agreement as an escrow with self-sign release', async () => {
             const { owner } = await setupTest()
 

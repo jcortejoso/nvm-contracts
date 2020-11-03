@@ -35,7 +35,7 @@
     "test:integration": "truffle test $(find ./test/int -name '*.*s')",
     "test:fast": "truffle test $(find ./test/unit -name '*.*s') $(find ./test/int -name '*.*s')",
     "test:upgrade": "truffle test $(find ./test/upgrade -name '*.*s')",
-    "test:cover": "export NETWORK='coverage' && truffle run coverage",
+    "test:cover": "truffle run coverage",
     "test:manticore": "./test/verification/manticore/run.sh",
     "doc:contracts": "node scripts/contracts/doc-generator.js",
     "doc:addresses": "node scripts/contracts/get-addresses.js",
