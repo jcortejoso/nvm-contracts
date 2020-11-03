@@ -32,6 +32,7 @@ module.exports = {
     networks: {
         // only used locally, i.e. ganache
         development: {
+            networkCheckTimeout: 10000,
             host: rpcHost || 'localhost',
             port: rpcPort || 8545,
             // has to be '*' because this is usually ganache
