@@ -39,6 +39,15 @@ async function initializeContracts({
         })
     }
 
+    if (contracts.indexOf('ProvenanceRegistry') > -1) {
+        addressBook.ProvenanceRegistry = zosCreate({
+            contract: 'ProvenanceRegistry',
+            network,
+            args: [roles.ownerWallet],
+            verbose
+        })
+    }
+
     // testnet only!
     if (contracts.indexOf('NeverminedToken') > -1) {
         addressBook.NeverminedToken = zosCreate({
