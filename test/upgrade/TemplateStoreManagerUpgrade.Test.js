@@ -39,7 +39,7 @@ contract('TemplateStoreManager', (accounts) => {
         }
     }
 
-    describe('Test upgradability for TemplateStoreManager', () => {
+    describe('Test upgradability for TemplateStoreManager [ @skip-on-coverage ]', () => {
         beforeEach('Load wallet each time', async function() {
             const addressBook = await deploy({
                 web3,

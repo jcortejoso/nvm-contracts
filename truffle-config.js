@@ -39,15 +39,6 @@ module.exports = {
             network_id: '*',
             gas: 6721975
         },
-        // local network for generating coverage
-        coverage: {
-            host: 'localhost',
-            // has to be '*' because this is usually ganache
-            network_id: '*',
-            port: 8555,
-            gas: 0xfffffffffff,
-            gasPrice: 0x01
-        },
         // spree network from docker
         spree: {
             provider: () => setupWallet(
@@ -116,6 +107,7 @@ module.exports = {
             gasPrice: utils.toWei('10', 'mwei')
         }
     },
+    plugins: ["solidity-coverage"],
     compilers: {
         solc: {
             version: '0.5.6',

@@ -20,6 +20,8 @@ ganache-cli.log
 coverage*
 scTopics
 allFiredEvents
+.coverage_artifacts/
+.coverage_contracts/
 
 # Mac / Apple
 .DS_Store

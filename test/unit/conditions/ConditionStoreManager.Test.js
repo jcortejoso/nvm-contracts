@@ -13,7 +13,7 @@ const ConditionStoreLibrary = artifacts.require('ConditionStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 
 const constants = require('../../helpers/constants.js')
-const increaseTime = require('../../helpers/increaseTime.js')
+const increaseTime = require('../../helpers/increaseTime.ts')
 const testUtils = require('../../helpers/utils.js')
 
 contract('ConditionStoreManager', (accounts) => {
@@ -921,7 +921,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // waited for a block
-            await increaseTime(2)
+            await increaseTime.mineBlocks(2)
 
             await conditionStoreManager.updateConditionState(conditionId, newState)
             assert.strictEqual(
@@ -981,7 +981,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // wait for two blocks
-            await increaseTime(2)
+            await increaseTime.mineBlocks(2)
 
             assert.strictEqual(
                 await conditionStoreManager.isConditionTimedOut(conditionId),
@@ -1010,7 +1010,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // wait for a block
-            await increaseTime(1)
+            await increaseTime.mineBlocks(1)
 
             const newState = constants.condition.state.fulfilled
 
@@ -1083,7 +1083,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // wait for a block
-            await increaseTime(1)
+            await increaseTime.mineBlocks(1)
 
             await hashLockCondition.abortByTimeOut(conditionId)
             assert.strictEqual(
@@ -1119,7 +1119,7 @@ contract('ConditionStoreManager', (accounts) => {
                 { from: owner }
             )
 
-            await increaseTime(1)
+            await increaseTime.mineBlocks(1)
 
             const result = await conditionStoreManager.updateConditionState(conditionId, newState)
 
@@ -1154,7 +1154,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // wait for a block
-            await increaseTime(1)
+            await increaseTime.mineBlocks(1)
 
             await assert.isRejected(
                 hashLockCondition.abortByTimeOut(conditionId),
