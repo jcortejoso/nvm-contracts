@@ -1,4 +1,4 @@
-[![banner](https://raw.githubusercontent.com/keyko-io/assets/master/images/logo/nevermined_logo_1.png)](https://nevermined.io)
+[![banner](https://raw.githubusercontent.com/nevermined-io/assets/main/images/logo/banner_logo.png)](https://nevermined.io)
 
 # Nevermined Smart Contracts
 
@@ -7,10 +7,10 @@
 
 
 [![Docker Build Status](https://img.shields.io/docker/cloud/build/keykoio/nevermined-contracts.svg)](https://hub.docker.com/r/keykoio/nevermined-contracts/)
-![Build](https://github.com/keyko-io/nevermined-contracts/workflows/Build/badge.svg)
-![NPM Package](https://github.com/keyko-io/nevermined-contracts/workflows/NPM%20Release/badge.svg)
-![Pypi Package](https://github.com/keyko-io/nevermined-contracts/workflows/Pypi%20Release/badge.svg)
-![Maven Package](https://github.com/keyko-io/nevermined-contracts/workflows/Maven%20Release/badge.svg)
+![Build](https://github.com/nevermined-io/contracts/workflows/Build/badge.svg)
+![NPM Package](https://github.com/nevermined-io/contracts/workflows/NPM%20Release/badge.svg)
+![Pypi Package](https://github.com/nevermined-io/contracts/workflows/Pypi%20Release/badge.svg)
+![Maven Package](https://github.com/nevermined-io/contracts/workflows/Maven%20Release/badge.svg)
 
 
 Table of Contents
@@ -44,7 +44,7 @@ For local development of `nevermined-contracts` you can either use Docker, or se
 
 ### Docker
 
-The simplest way to get started with is using the [Nevermined Tools](https://github.com/keyko-io/nevermined-tools),
+The simplest way to get started with is using the [Nevermined Tools](https://github.com/nevermined-io/tools),
 a docker compose application to run all the Nevermined stack.
 
 ### Local development
@@ -59,7 +59,7 @@ Note: For MacOS, make sure to have `node@10` installed.
 Clone the project and install all dependencies:
 
 ```bash
-git clone git@github.com:keyko-io/nevermined-contracts.git
+git clone git@github.com:nevermined-io/contracts.git
 cd nevermined-contracts/
 
 Install dependencies:
@@ -177,8 +177,8 @@ To facilitate the integration of `nevermined-contracts` there are `Python`, `Jav
 Using these packages helps to avoid compiling the Smart Contracts and copying the ABI's manually to your project. In that way the integration is cleaner and easier.
 The packages provided currently are:
 
-* JavaScript `NPM` package - As part of the [@keyko-io npm organization](https://www.npmjs.com/settings/keyko-io/packages),
-  the [npm nevermined-contracts package](https://www.npmjs.com/package/@keyko-io/nevermined-contracts) provides the ABI's
+* JavaScript `NPM` package - As part of the [@nevermined-io npm organization](https://www.npmjs.com/settings/nevermined-io/packages),
+  the [npm nevermined-contracts package](https://www.npmjs.com/package/@nevermined-io/contracts) provides the ABI's
   to be imported from your `JavaScript` code.
 * Python `Pypi` package - The [Pypi nevermined-contracts package](https://pypi.org/project/nevermined-contracts/) provides
   the same ABI's to be used from `Python`.
@@ -192,13 +192,13 @@ In `JavaScript` they can be used like this:
 Install the `nevermined-contracts` `npm` package.
 
 ```bash
-npm install @keyko-io/nevermined-contracts
+npm install @nevermined-io/contracts
 ```
 
 Load the ABI of the `NeverminedToken` contract on the `staging` network:
 
 ```javascript
-const NeverminedToken = require('@keyko-io/nevermined-contracts/artifacts/NeverminedToken.staging.json')
+const NeverminedToken = require('@nevermined-io/contracts/artifacts/NeverminedToken.staging.json')
 ```
 
 The structure of the `artifacts` is:

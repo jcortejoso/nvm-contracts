@@ -1,6 +1,6 @@
 /* global artifacts, web3 */
 const { argv } = require('yargs')
-const { deployContracts } = require('@keyko-io/contract-tools')
+const { deployContracts } = require('@nevermined-io/contract-tools')
 const initializeContracts = require('./deploy/initializeContracts.js')
 const setupContracts = require('./deploy/setupContracts.js')
 const evaluateContracts = require('./evaluateContracts.js')

@@ -12,7 +12,7 @@ const {
     loadWallet,
     submitTransaction,
     confirmTransaction
-} = require('@keyko-io/contract-tools')
+} = require('@nevermined-io/contract-tools')
 
 const {
     deploy,

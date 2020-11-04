@@ -26,8 +26,8 @@ for df in data_files:
     print(df)
 
 setup(
-    author="keyko-io",
-    author_email='root@keyko.io',
+    author="nevermined-io",
+    author_email='root@nevermined.io',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
@@ -37,19 +37,19 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    description=" 🐳 Integration of TCRs, CPM and Ocean Tokens in Solidity",
+    description="Smart Contracts for Nevermined Data platform",
     data_files=data_files,
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=readme,
     long_description_content_type='text/markdown',
     include_package_data=True,
-    keywords='nevermined-contracts',
-    name='nevermined-contracts',
+    keywords='contracts',
+    name='contracts',
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/keyko-io/nevermined-contracts',
+    url='https://github.com/nevermined-io/contracts',
     version='0.5.0',
     zip_safe=False,
 )

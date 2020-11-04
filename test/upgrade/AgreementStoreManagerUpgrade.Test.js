@@ -9,7 +9,7 @@ const constants = require('../helpers/constants.js')
 
 const {
     confirmUpgrade
-} = require('@keyko-io/contract-tools')
+} = require('@nevermined-io/contract-tools')
 
 const {
     deploy,
