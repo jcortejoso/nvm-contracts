@@ -1,6 +1,6 @@
 /* global web3 */
 const { argv } = require('yargs')
-const { upgradeContracts } = require('@keyko-io/contract-tools')
+const { upgradeContracts } = require('@nevermined-io/contract-tools')
 const evaluateContracts = require('./evaluateContracts.js')
 
 module.exports = (cb) => {

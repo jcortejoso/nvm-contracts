@@ -1,6 +1,6 @@
 const {
     getAddresses
-} = require('@keyko-io/contract-tools')
+} = require('@nevermined-io/contract-tools')
 const network = process.argv[2]
 
 getAddresses({

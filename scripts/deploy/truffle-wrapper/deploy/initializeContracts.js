@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const { zosCreate } = require('@keyko-io/contract-tools')
+const { zosCreate } = require('@nevermined-io/contract-tools')
 
 async function initializeContracts({
     contracts,

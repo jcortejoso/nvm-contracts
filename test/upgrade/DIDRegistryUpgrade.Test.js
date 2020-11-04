@@ -10,7 +10,7 @@ const testUtils = require('../helpers/utils.js')
 
 const {
     confirmUpgrade
-} = require('@keyko-io/contract-tools')
+} = require('@nevermined-io/contract-tools')
 
 const {
     deploy,
