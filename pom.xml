@@ -7,7 +7,7 @@
   <version>0.5.0</version>
   <name>Nevermined Contracts</name>
   <description>Nevermined Data Plarform Smart Contracts in Solidity</description>
-  <url>https://github.com/keyko-io/nevermined-contracts</url>
+  <url>https://github.com/nevermined-io/contracts</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -40,9 +40,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git://github.com/keyko-io/nevermined-contracts.git</connection>
-    <developerConnection>scm:git:ssh://keyko-io/nevermined-contracts.git</developerConnection>
-    <url>https://github.com/keyko-io/nevermined-contracts/tree/master</url>
+    <connection>scm:git:git://github.com/nevermined-io/contracts.git</connection>
+    <developerConnection>scm:git:ssh://nevermined-io/contracts.git</developerConnection>
+    <url>https://github.com/nevermined-io/contracts/tree/master</url>
   </scm>
 
   <dependencies>
