@@ -13,7 +13,7 @@ const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
 const getBalance = require('../../helpers/getBalance.js')
-const increaseTime = require('../../helpers/increaseTime.js')
+const increaseTime = require('../../helpers/increaseTime.ts')
 
 contract('Escrow Compute Execution Template integration test', (accounts) => {
     let token,
@@ -117,7 +117,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
         }
     }
 
-    describe('create and fulfill escrow agreement', () => {
+    describe('create and fulfill escrow agreement [ @skip-on-coverage ]', () => {
         it('should create escrow agreement and fulfill', async () => {
             const { owner } = await setupTest()
 
@@ -216,7 +216,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             assert.strictEqual(result.logs.length, 0)
 
             // wait: for time out
-            await increaseTime(timeOutAccess)
+            await increaseTime.mineBlocks(timeOutAccess)
 
             // abort: fulfill access after timeout
             await computeExecutionCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
@@ -235,7 +235,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
         })
     })
 
-    describe('create and fulfill escrow agreement with access secret store and timeLock', () => {
+    describe('create and fulfill escrow agreement with access secret store and timeLock [ @skip-on-coverage ]', () => {
         it('should create escrow agreement and fulfill', async () => {
             const { owner } = await setupTest()
 
@@ -264,7 +264,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             )
 
             // wait: for time lock
-            await increaseTime(timeLockAccess)
+            await increaseTime.mineBlocks(timeLockAccess)
 
             // execute: fulfill access after time lock
             await computeExecutionCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })

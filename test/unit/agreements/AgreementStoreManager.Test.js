@@ -135,7 +135,7 @@ contract('AgreementStoreManager', (accounts) => {
 
             // setup with zero fails
             await assert.isRejected(
-                agreementStoreManager.initialize(),
+                agreementStoreManager.methods['initialize(address,address,address,address)'](),
                 constants.initialize.error.invalidNumberParamsGot0Expected4
             )
         })

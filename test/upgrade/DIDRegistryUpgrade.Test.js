@@ -59,7 +59,7 @@ contract('DIDRegistry', (accounts) => {
         return { did, checksum, value }
     }
 
-    describe('Test upgradability for DIDRegistry', () => {
+    describe('Test upgradability for DIDRegistry [ @skip-on-coverage ]', () => {
         beforeEach('Load wallet each time', async () => {
             const addressBook = await deploy({
                 web3,

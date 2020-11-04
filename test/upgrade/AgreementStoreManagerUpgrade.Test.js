@@ -53,7 +53,7 @@ contract('AgreementStoreManager', (accounts) => {
         }
     }
 
-    describe('Test upgradability for AgreementStoreManager', () => {
+    describe('Test upgradability for AgreementStoreManager [ @skip-on-coverage ]', () => {
         beforeEach('Load wallet each time', async () => {
             const addressBook = await deploy({
                 web3,

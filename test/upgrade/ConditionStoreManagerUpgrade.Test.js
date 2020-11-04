@@ -64,7 +64,7 @@ contract('ConditionStoreManager', (accounts) => {
         return { conditionStoreManager, conditionId, conditionType }
     }
 
-    describe('Test upgradability for ConditionStoreManager', () => {
+    describe('Test upgradability for ConditionStoreManager [ @skip-on-coverage ]', () => {
         it('Should be possible to fix/add a bug', async () => {
             const { conditionId } = await setupTest()
 
