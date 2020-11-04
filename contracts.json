@@ -11,6 +11,7 @@
   "DIDRegistry",
   "ThresholdCondition",
   "WhitelistingCondition",
+  "ProvenanceRegistry",
   "ComputeExecutionCondition",
   "EscrowComputeExecutionTemplate"
 ]

@@ -1,3 +1,5 @@
+require('ts-node/register')
+
 const HDWalletProvider = require('truffle-hdwallet-provider')
 const NonceTrackerSubprovider = require('web3-provider-engine/subproviders/nonce-tracker')
 const utils = require('web3-utils')
@@ -35,15 +37,6 @@ module.exports = {
             // has to be '*' because this is usually ganache
             network_id: '*',
             gas: 6721975
-        },
-        // local network for generating coverage
-        coverage: {
-            host: 'localhost',
-            // has to be '*' because this is usually ganache
-            network_id: '*',
-            port: 8555,
-            gas: 0xfffffffffff,
-            gasPrice: 0x01
         },
         // spree network from docker
         spree: {
@@ -113,6 +106,7 @@ module.exports = {
             gasPrice: utils.toWei('10', 'mwei')
         }
     },
+    plugins: ['solidity-coverage'],
     compilers: {
         solc: {
             version: '0.5.6',
