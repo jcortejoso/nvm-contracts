@@ -70,7 +70,7 @@
   "author": "Nevermined",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@keyko-io/contract-tools": "~0.2.1",
+    "@nevermined-io/contract-tools": "~0.2.2",
     "bignumber.js": "^9.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
