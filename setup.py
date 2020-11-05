@@ -44,8 +44,8 @@ setup(
     long_description=readme,
     long_description_content_type='text/markdown',
     include_package_data=True,
-    keywords='contracts',
-    name='contracts',
+    keywords='nevermined-contracts',
+    name='nevermined-contracts',
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
@@ -53,4 +53,3 @@ setup(
     version='0.5.0',
     zip_safe=False,
 )
-
