@@ -6,7 +6,6 @@ Documentation:
 @title DID Registry
 @author Keyko & Ocean Protocol
  * @dev Implementation of the DID Registry.
-     https://github.com/oceanprotocol/OEPs/tree/master/7#registry
 ```
 
 ## Variables
