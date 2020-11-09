@@ -29,7 +29,8 @@ const contracts = [
     'HashLists',
     'ThresholdCondition',
     'ComputeExecutionCondition',
-    'EscrowComputeExecutionTemplate'
+    'EscrowComputeExecutionTemplate',
+    'ProvenanceRegistry'
 ]
 
 contracts.forEach((contractName) => {
