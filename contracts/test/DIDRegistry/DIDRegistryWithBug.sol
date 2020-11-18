@@ -11,13 +11,13 @@ contract DIDRegistryWithBug is DIDRegistry {
     * @dev this function registers DID attributes
     * @param _did refers to decentralized identifier (a byte32 length ID)
     * @param _checksum includes a one-way HASH calculated using the DDO content
-    * @param _value refers to the attribute value
+    * @param _url refers to the attribute value
     */
     function registerAttribute (
         bytes32 _checksum,
         bytes32 _did,
         address[] memory _providers,
-        string memory _value
+        string memory _url
     )
         public
         returns (uint size)
@@ -30,11 +30,11 @@ contract DIDRegistryWithBug is DIDRegistry {
 
         require(
             //TODO: 2048 should be changed in the future
-            bytes(_value).length <= 2048,
+            bytes(_url).length <= 2048,
             'Invalid value size'
         );
 
-        didRegisterList.update(_did, _checksum);
+        didRegisterList.update(_did, _checksum, _url);
 
         // push providers to storage
         for(uint256 i = 0; i < _providers.length; i++){
@@ -48,7 +48,7 @@ contract DIDRegistryWithBug is DIDRegistry {
             _did,
             didRegisterList.didRegisters[_did].owner,
             _checksum,
-            _value,
+            _url,
             msg.sender,
             block.number
         );

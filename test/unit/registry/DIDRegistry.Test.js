@@ -13,7 +13,17 @@ const constants = require('../../helpers/constants.js')
 
 contract('DIDRegistry', (accounts) => {
     const owner = accounts[1]
+    const instigator = accounts[2]
+    const someone = accounts[5]
+    const delegates = [accounts[6], accounts[7]]
     const providers = [accounts[8], accounts[9]]
+    const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+
+    enum Activities {
+        GENERATED = '0x1',
+        USED = '0x2',
+        ACTED_IN_BEHALF = '0x3',
+    }
 
     async function setupTest() {
         const didRegistryLibrary = await DIDRegistryLibrary.new()
@@ -545,4 +555,93 @@ contract('DIDRegistry', (accounts) => {
             )
         })
     })
+
+    describe('Provenance #wasGeneratedBy()', () => {
+        it('should generate an entity', async () => {
+            const { didRegistry, did } = await setupTest()
+
+            await didRegistry.wasGeneratedBy(
+                did,
+                instigator,
+                Activities.GENERATED,
+                delegates,
+                ''
+            )
+        })
+    })
+
+    describe('Provenance #used()', () => {
+        it('should use an entity from owner', async () => {
+            const { didRegistry, did } = await setupTest()
+
+            await provenanceRegistry.wasGeneratedBy(
+                did,
+                instigator,
+                Activities.GENERATED,
+                delegates,
+                ''
+            )
+            await didRegistry.used(instigator, Activities.USED, did, '')
+        })
+
+        it('should use an entity from delegate', async () => {
+            const { didRegistry, did } = await setupTest()
+
+            await didRegistry.wasGeneratedBy(
+                did,
+                instigator,
+                Activities.GENERATED,
+                delegates,
+                ''
+            )
+            await provenanceRegistry.used(instigator, Activities.USED, did, '', {
+                from: delegates[0],
+            })
+        })
+
+        it('should fail to use an entity from someone', async () => {
+            const { didRegistry, did } = await setupTest()
+
+            await didRegistry.wasGeneratedBy(
+                did,
+                instigator,
+                Activities.GENERATED,
+                delegates,
+                ''
+            )
+
+            await assert.isRejected(
+                // must not be able to add attributes to someone else's DID
+                didRegistry.used(instigator, Activities.USED, did, '', {
+                    from: someone,
+                }),
+                'Invalid Provenance owner can perform this operation.'
+            )
+        })
+
+    })
+
+    describe('Provenance #actedOnBehalf()', () => {
+        it('should act in behalf of delegate 2', async () => {
+            const { didRegistry, did } = await setupTest()
+
+            await didRegistry.wasGeneratedBy(
+                did,
+                instigator,
+                Activities.GENERATED,
+                delegates,
+                ''
+            )
+            await didRegistry.actedOnBehalf(
+                instigator,
+                delegates[1],
+                did,
+                Activities.ACTED_IN_BEHALF,
+                [],
+                '',
+                { from: delegates[0] }
+            )
+        })
+    })
+
 })

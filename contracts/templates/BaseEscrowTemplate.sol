@@ -74,7 +74,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
             agreementStoreManager.getDIDRegistryAddress()
         );
         
-        (owner, , , , providers) = didRegistryInstance.getDIDRegister(_did);
+        (owner, , , , , providers) = didRegistryInstance.getDIDRegister(_did);
 
         // storing some additional information for the template
         agreementData.agreementDataItems[_id]

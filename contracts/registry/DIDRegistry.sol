@@ -6,7 +6,9 @@ pragma solidity 0.5.6;
 
 
 import './DIDRegistryLibrary.sol';
+import '../libraries/StringUtilsLibrary.sol';
 import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import 'openzeppelin-eth/contracts/cryptography/ECDSA.sol';
 
 /**
  * @title DID Registry
@@ -16,8 +18,9 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  */
 contract DIDRegistry is Ownable {
 
+
     /**
-     * @dev The DIDRegistry Library takes care of the basic storage functions.
+     * @dev The DIDRegistry Library takes care of the basic DID storage functions.
      */
     using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
 
@@ -25,10 +28,48 @@ contract DIDRegistry is Ownable {
      * @dev state storage for the DID registry
      */
     DIDRegistryLibrary.DIDRegisterList internal didRegisterList;
-    
+
     // DID -> Address -> Boolean Permission
     mapping(bytes32 => mapping(address => bool)) DIDPermissions;
+
+    /**
+     * @dev The DIDRegistryLibrary Library takes care of the basic provenance storage functions.
+     */
+    /* solium-disable-next-line */
+    using DIDRegistryLibrary for DIDRegistryLibrary.ProvenanceRegistryList;
+
+    /**
+     * @dev state storage for the Provenance registry
+     */
+    /* solium-disable-next-line */
+    DIDRegistryLibrary.ProvenanceRegistryList internal provenanceRegisterList;
     
+    // W3C Provenance Methods
+    enum ProvenanceMethod {
+        ENTITY,
+        ACTIVITY,
+        WAS_GENERATED_BY,
+        USED,
+        WAS_INFORMED_BY,
+        WAS_STARTED_BY,
+        WAS_ENDED_BY,
+        WAS_INVALIDATED_BY,
+        WAS_DERIVED_FROM,
+        AGENT,
+        WAS_ATTRIBUTED_TO,
+        WAS_ASSOCIATED_WITH,
+        ACTED_ON_BEHALF
+    }
+
+    bytes32 constant NULL_B32 = "";
+    address constant NULL_ADDRESS = address(0x0);
+    uint constant NULL_INT = 0;
+    bytes32[] EMPTY_LIST = new bytes32[](0);
+    
+    //////////////////////////////////////////////////////////////
+    ////////  MODIFIERS   ////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
+
     modifier onlyDIDOwner(bytes32 _did)
     {
         require(
@@ -38,9 +79,32 @@ contract DIDRegistry is Ownable {
         _;
     }
 
+    modifier onlyOwnerProviderOrDelegated(bytes32 _did)
+    {
+        require(
+            msg.sender == didRegisterList.didRegisters[_did].owner ||
+            isProvenanceDelegate(_did, msg.sender) ||
+            isDIDProvider(_did, msg.sender),
+            'Invalid DID Owner, Provider or Delegate can perform this operation.'
+        );
+        _;
+    }
+
+    modifier onlyValidAttributes(string memory _attributes)
+    {
+        require(
+            bytes(_attributes).length <= 2048,
+            'Invalid attributes size'
+        );
+        _;
+    }
+
+    //////////////////////////////////////////////////////////////
+    ////////  EVENTS  ////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
+
     /**
-     * @dev This implementation does not store _value on-chain,
-     *      but emits DIDAttributeRegistered events to store it in the event log.
+     * DID Events
      */
     event DIDAttributeRegistered(
         bytes32 indexed _did,
@@ -61,24 +125,98 @@ contract DIDRegistry is Ownable {
         bytes32 _did,
         address _provider
     );
-    
+
     event DIDOwnershipTransferred(
         bytes32 _did,
         address _previousOwner,
         address _newOwner
     );
-    
+
     event DIDPermissionGranted(
         bytes32 indexed _did,
         address indexed _owner,
         address indexed _grantee
     );
-    
+
     event DIDPermissionRevoked(
         bytes32 indexed _did,
         address indexed _owner,
         address indexed _grantee
     );
+
+    event DIDProvenanceDelegateRemoved(
+        bytes32 _did,
+        address _delegate,
+        bool state
+    );
+
+    event DIDProvenanceDelegateAdded(
+        bytes32 _did,
+        address _delegate
+    );
+
+    /**
+    * Provenance Events
+    */
+    event ProvenanceAttributeRegistered(
+        bytes32 indexed eventId,
+        bytes32 indexed _did,
+        address indexed _agentId,
+        bytes32 _activityId,
+        bytes32 _relatedDid,
+        address _agentInvolvedId,
+        ProvenanceMethod _method,
+        string _attributes,
+        uint256 _blockNumberUpdated
+    );
+
+    event WasGeneratedBy(
+        bytes32 indexed _did,
+        address indexed _agentId,
+        bytes32 indexed _activityId,
+        bytes32 eventId,
+        string _attributes,
+        uint256 _blockNumberUpdated
+    );
+
+    event Used(
+        bytes32 indexed _did,
+        address indexed _agentId,
+        bytes32 indexed _activityId,
+        bytes32 eventId,
+        string _attributes,
+        uint256 _blockNumberUpdated
+    );
+
+    event WasDerivedFrom(
+        bytes32 indexed _newEntityDid,
+        bytes32 indexed _usedEntityDid,
+        address indexed _agentId,
+        bytes32 _activityId,
+        bytes32 eventId,
+        string _attributes,
+        uint256 _blockNumberUpdated
+    );
+
+    event WasAssociatedWith(
+        bytes32 indexed _entityDid,
+        address indexed _agentId,
+        bytes32 indexed _activityId,
+        bytes32 eventId,
+        string _attributes,
+        uint256 _blockNumberUpdated
+    );
+
+    event ActedOnBehalf(
+        bytes32 indexed _entityDid,
+        address indexed _delegateAgentId,
+        address indexed _responsibleAgentId,
+        bytes32 _activityId,
+        bytes32 eventId,
+        string _attributes,
+        uint256 _blockNumberUpdated
+    );
+
 
     /**
      * @dev DIDRegistry Initializer
@@ -88,8 +226,8 @@ contract DIDRegistry is Ownable {
     function initialize(
         address _owner
     )
-        public
-        initializer
+    public
+    initializer
     {
         Ownable.initialize(_owner);
     }
@@ -102,17 +240,19 @@ contract DIDRegistry is Ownable {
      *
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @param _checksum includes a one-way HASH calculated using the DDO content.
-     * @param _value refers to the attribute value, limited to 2048 bytes.
+     * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
      * @return the size of the registry after the register action.
      */
-    function registerAttribute(
+    function registerDID(
         bytes32 _did,
         bytes32 _checksum,
         address[] memory _providers,
-        string memory _value
+        string memory _url,
+        bytes32 _activityId,
+        string memory _attributes
     )
-        public
-        returns (uint size)
+    public
+    returns (uint size)
     {
         require(
             didRegisterList.didRegisters[_did].owner == address(0x0) ||
@@ -121,12 +261,12 @@ contract DIDRegistry is Ownable {
         );
 
         require(
-            //TODO: 2048 should be changed in the future
-            bytes(_value).length <= 2048,
+        //TODO: 2048 should be changed in the future
+            bytes(_url).length <= 2048,
             'Invalid value size'
         );
 
-        uint updatedSize = didRegisterList.update(_did, _checksum);
+        uint updatedSize = didRegisterList.update(_did, _checksum, _url);
 
         // push providers to storage
         for (uint256 i = 0; i < _providers.length; i++) {
@@ -134,21 +274,370 @@ contract DIDRegistry is Ownable {
                 _did,
                 _providers[i]
             );
-
         }
 
-        /* emitting _value here to avoid expensive storage */
         emit DIDAttributeRegistered(
             _did,
             didRegisterList.didRegisters[_did].owner,
             _checksum,
-            _value,
+            _url,
             msg.sender,
             block.number
         );
 
+        wasGeneratedBy(
+            _did, msg.sender, _activityId,_attributes);
+
         return updatedSize;
     }
+
+
+    /**
+     * @notice Implements the W3C PROV Generation action
+     *
+     * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity created
+     * @param _agentId refers to address of the agent creating the provenance record
+     * @param _activityId refers to activity
+     * @param _attributes referes to the provenance attributes
+     * @return the number of the new provenance size
+     */
+    function wasGeneratedBy(
+        bytes32 _did,
+        address _agentId,
+        bytes32 _activityId,
+        string memory _attributes
+    )
+    public
+    onlyDIDOwner(_did)
+    onlyValidAttributes(_attributes)
+    returns (bool)
+    {
+
+        bytes32 eventId = keccak256(abi.encodePacked(
+                ProvenanceMethod.WAS_GENERATED_BY,
+                _did,
+                _agentId,
+                _activityId
+            ));
+
+        provenanceRegisterList.createProvenanceEvent(
+            eventId,
+            _did,
+            NULL_B32,
+            _agentId,
+            _activityId,
+            NULL_ADDRESS,
+            uint8(ProvenanceMethod.WAS_GENERATED_BY),
+            msg.sender,
+            EMPTY_LIST // No signatures between parties needed
+        );
+
+        /* emitting _attributes here to avoid expensive storage */
+        emit ProvenanceAttributeRegistered(
+            eventId,
+            _did,
+            provenanceRegisterList.provenanceRegistry[_did].createdBy,
+            _activityId,
+            NULL_B32,
+            NULL_ADDRESS,
+            ProvenanceMethod.WAS_GENERATED_BY,
+            _attributes,
+            block.number
+        );
+
+        emit WasGeneratedBy(
+            _did,
+            provenanceRegisterList.provenanceRegistry[_did].createdBy,
+            _activityId,
+            eventId,
+            _attributes,
+            block.number
+        );
+
+        return true;
+    }
+
+
+    /**
+     * @notice Implements the W3C PROV Usage action
+     *
+     * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity created
+     * @param _agentId refers to address of the agent creating the provenance record
+     * @param _activityId refers to activity
+     * @param _attributes refers to the provenance attributes
+     * @return true if the action was properly registered
+    */
+    function used(
+        bytes32 _did,
+        address _agentId,
+        bytes32 _activityId,
+        string memory _attributes
+    )
+    public
+    onlyOwnerProviderOrDelegated(_did)
+    onlyValidAttributes(_attributes)
+    returns (bool success)
+    {
+
+        bytes32 eventId = keccak256(abi.encodePacked(
+                ProvenanceMethod.USED,
+                _did,
+                _agentId,
+                _activityId
+            ));
+
+        provenanceRegisterList.createProvenanceEvent(
+            eventId,
+            _did,
+            NULL_B32,
+            _agentId,
+            _activityId,
+            NULL_ADDRESS,
+            uint8(ProvenanceMethod.USED),
+            msg.sender,
+            EMPTY_LIST // No signatures between parties needed
+        );
+
+        /* emitting _attributes here to avoid expensive storage */
+        emit ProvenanceAttributeRegistered(
+            eventId,
+            _did,
+            _agentId,
+            _activityId,
+            NULL_B32,
+            NULL_ADDRESS,
+            ProvenanceMethod.USED,
+            _attributes,
+            block.number
+        );
+
+        emit Used(
+            _did,
+            _agentId,
+            _activityId,
+            eventId,
+            _attributes,
+            block.number
+        );
+
+        return true;
+    }
+
+    /**
+     * @notice Implements the W3C PROV Derivation action
+     *
+     * @param _newEntityDid refers to decentralized identifier (a bytes32 length ID) of the entity created
+     * @param _usedEntityDid refers to decentralized identifier (a bytes32 length ID) of the entity used to derive the new did
+     * @param _agentId refers to address of the agent creating the provenance record
+     * @param _activityId refers to activity
+     * @param _attributes refers to the provenance attributes
+     * @return true if the action was properly registered
+     */
+    function wasDerivedFrom(
+        bytes32 _newEntityDid,
+        bytes32 _usedEntityDid,
+        address _agentId,
+        bytes32 _activityId,
+        string memory _attributes
+    )
+    public
+    onlyOwnerProviderOrDelegated(_usedEntityDid)
+    onlyValidAttributes(_attributes)
+    returns (bool success)
+    {
+
+        bytes32 eventId = keccak256(abi.encodePacked(
+                ProvenanceMethod.WAS_DERIVED_FROM,
+                _newEntityDid,
+                _usedEntityDid,
+                _agentId,
+                _activityId
+            ));
+
+        provenanceRegisterList.createProvenanceEvent(
+            eventId,
+            _newEntityDid,
+            _usedEntityDid,
+            _agentId,
+            _activityId,
+            NULL_ADDRESS,
+            uint8(ProvenanceMethod.WAS_DERIVED_FROM),
+            msg.sender, 
+            EMPTY_LIST // No signatures between parties needed
+        );
+
+        /* emitting _attributes here to avoid expensive storage */
+        emit ProvenanceAttributeRegistered(
+            eventId,
+            _newEntityDid,
+            _agentId,
+            _activityId,
+            _usedEntityDid,
+            NULL_ADDRESS,
+            ProvenanceMethod.WAS_DERIVED_FROM,
+            _attributes,
+            block.number
+        );
+
+        emit WasDerivedFrom(
+            _newEntityDid,
+            _usedEntityDid,
+            _agentId,
+            _activityId,
+            eventId,
+            _attributes,
+            block.number
+        );
+
+        return true;
+    }
+
+    /**
+     * @notice Implements the W3C PROV Association action
+     *
+     * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity
+     * @param _agentId refers to address of the agent creating the provenance record
+     * @param _activityId refers to activity
+     * @param _attributes referes to the provenance attributes
+     * @return true if the action was properly registered
+    */
+    function wasAssociatedWith(
+        bytes32 _did,
+        address _agentId,
+        bytes32 _activityId,
+        string memory _attributes
+    )
+    public
+    onlyOwnerProviderOrDelegated(_did)
+    onlyValidAttributes(_attributes)
+    returns (bool success)
+    {
+
+        bytes32 eventId = keccak256(abi.encodePacked(
+                ProvenanceMethod.WAS_ASSOCIATED_WITH,
+                _did,
+                _agentId,
+                _activityId
+            ));
+
+        provenanceRegisterList.createProvenanceEvent(
+            eventId,
+            _did,
+            NULL_B32,
+            _agentId,
+            _activityId,
+            NULL_ADDRESS,
+            uint8(ProvenanceMethod.WAS_ASSOCIATED_WITH),
+            msg.sender,
+            EMPTY_LIST // No signatures between parties needed
+        );
+
+        /* emitting _attributes here to avoid expensive storage */
+        emit ProvenanceAttributeRegistered(
+            eventId,
+            _did,
+            _agentId,
+            _activityId,
+            NULL_B32,
+            NULL_ADDRESS,
+            ProvenanceMethod.WAS_ASSOCIATED_WITH,
+            _attributes,
+            block.number
+        );
+
+        emit WasAssociatedWith(
+            _did,
+            _agentId,
+            _activityId,
+            eventId,
+            _attributes,
+            block.number
+        );
+
+        return true;
+    }
+
+    /**
+     * @notice Implements the W3C PROV Delegation action
+     *
+     * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity
+     * @param _delegateAgentId refers to address acting on behalf of the provenance record
+     * @param _responsibleAgentId refers to address responsible of the provenance record
+     * @param _activityId refers to activity
+     * @param _signatures refers to the digital signature provided by the parties involved. 
+     *      Each party involved in this method (_delegateAgentId & _responsibleAgentId) must provide a valid signature.
+     *      The content to sign is a representation of the footprint of the event (_did + _delegateAgentId + _responsibleAgentId + _activityId) 
+     * @param _attributes refere to the provenance attributes
+     * @return true if the action was properly registered
+     */
+    function actedOnBehalf(
+        bytes32 _did,
+        address _delegateAgentId,
+        address _responsibleAgentId,
+        bytes32 _activityId,
+        bytes32[] memory _signatures,
+        string memory _attributes
+    )
+    public
+    onlyOwnerProviderOrDelegated(_did)
+    onlyValidAttributes(_attributes)
+    returns (bool success)
+    {
+
+        bytes32 eventId = keccak256(abi.encodePacked(
+                ProvenanceMethod.ACTED_ON_BEHALF,
+                _did,
+                _delegateAgentId,
+                _responsibleAgentId,
+                _activityId
+            ));
+
+        require(
+            provenanceSignaturesAreCorrect(_responsibleAgentId, _delegateAgentId, eventId, _signatures),
+            'The signatures provided are not valid'
+        );
+        
+        provenanceRegisterList.createProvenanceEvent(
+            eventId,
+            _did,
+            NULL_B32,
+            _delegateAgentId,
+            _activityId,
+            _responsibleAgentId,
+            uint8(ProvenanceMethod.ACTED_ON_BEHALF),
+            msg.sender,
+            _signatures
+        );
+
+        addDIDProvenanceDelegate(_did, _delegateAgentId);
+        
+        /* emitting _attributes here to avoid expensive storage */
+        emit ProvenanceAttributeRegistered(
+            eventId,
+            _did,
+            _delegateAgentId,
+            _activityId,
+            NULL_B32,
+            _responsibleAgentId,
+            ProvenanceMethod.ACTED_ON_BEHALF,
+            _attributes,
+            block.number
+        );
+
+        emit ActedOnBehalf(
+            _did,
+            _delegateAgentId,
+            _responsibleAgentId,
+            _activityId,
+            eventId,
+            _attributes,
+            block.number
+        );
+
+        return true;
+
+    }
+
 
     /**
      * @notice addDIDProvider add new DID provider.
@@ -162,8 +651,8 @@ contract DIDRegistry is Ownable {
         bytes32 _did,
         address _provider
     )
-        external
-        onlyDIDOwner(_did)
+    external
+    onlyDIDOwner(_did)
     {
         didRegisterList.addProvider(_did, _provider);
 
@@ -182,8 +671,8 @@ contract DIDRegistry is Ownable {
         bytes32 _did,
         address _provider
     )
-        external
-        onlyDIDOwner(_did)
+    external
+    onlyDIDOwner(_did)
     {
         bool state = didRegisterList.removeProvider(_did, _provider);
 
@@ -193,19 +682,64 @@ contract DIDRegistry is Ownable {
             state
         );
     }
-    
+
+    /**
+     * @notice addDIDProvenanceDelegate add new DID provenance delegate.
+     *
+     * @dev it adds new DID provenance delegate to the delegates list. 
+     * A delegate is any entity that interact with the provenance entries of one DID
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _delegate delegates's address.
+     */
+    function addDIDProvenanceDelegate(
+        bytes32 _did,
+        address _delegate
+    )
+    public
+    onlyOwnerProviderOrDelegated(_did)
+    {
+        didRegisterList.addDelegate(_did, _delegate);
+
+        emit DIDProvenanceDelegateAdded(
+            _did,
+            _delegate
+        );
+    }
+
+    /**
+     * @notice removeDIDProvenanceDelegate delete an existing DID delegate.
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _delegate delegate's address.
+     */
+    function removeDIDProvenanceDelegate(
+        bytes32 _did,
+        address _delegate
+    )
+    external
+    onlyOwnerProviderOrDelegated(_did)
+    {
+        bool state = didRegisterList.removeDelegate(_did, _delegate);
+
+        emit DIDProvenanceDelegateRemoved(
+            _did,
+            _delegate,
+            state
+        );
+    }
+
+
     /**
      * @notice transferDIDOwnership transfer DID ownership
      * @param _did refers to decentralized identifier (a bytes32 length ID)
      * @param _newOwner new owner address
      */
     function transferDIDOwnership(bytes32 _did, address _newOwner)
-        external
-        onlyDIDOwner(_did)
+    external
+    onlyDIDOwner(_did)
     {
         address _previousOwner = didRegisterList.didRegisters[_did].owner;
         didRegisterList.updateDIDOwner(_did, _newOwner);
-        
+
         emit DIDOwnershipTransferred(
             _did,
             _previousOwner,
@@ -222,12 +756,12 @@ contract DIDRegistry is Ownable {
         bytes32 _did,
         address _grantee
     )
-        external
-        onlyDIDOwner(_did)
+    external
+    onlyDIDOwner(_did)
     {
         _grantPermission(_did, _grantee);
     }
-    
+
     /**
      * @dev revokePermission revokes access permission from grantee 
      * @param _did refers to decentralized identifier (a bytes32 length ID)
@@ -237,12 +771,12 @@ contract DIDRegistry is Ownable {
         bytes32 _did,
         address _grantee
     )
-        external
-        onlyDIDOwner(_did)
+    external
+    onlyDIDOwner(_did)
     {
         _revokePermission(_did, _grantee);
     }
-    
+
     /**
      * @dev getPermission gets access permission of a grantee
      * @param _did refers to decentralized identifier (a bytes32 length ID)
@@ -253,13 +787,13 @@ contract DIDRegistry is Ownable {
         bytes32 _did,
         address _grantee
     )
-        external
-        view
-        returns(bool)
+    external
+    view
+    returns(bool)
     {
         return _getPermission(_did, _grantee);
     }
-        
+
     /**
      * @notice isDIDProvider check whether a given DID provider exists
      * @param _did refers to decentralized identifier (a bytes32 length ID).
@@ -269,9 +803,9 @@ contract DIDRegistry is Ownable {
         bytes32 _did,
         address _provider
     )
-        public
-        view
-        returns (bool)
+    public
+    view
+    returns (bool)
     {
         return didRegisterList.isProvider(_did, _provider);
     }
@@ -283,21 +817,22 @@ contract DIDRegistry is Ownable {
     function getDIDRegister(
         bytes32 _did
     )
-        public
-        view
-        returns (
-            address owner,
-            bytes32 lastChecksum,
-            address lastUpdatedBy,
-            uint256 blockNumberUpdated,
-            address[] memory providers
-        )
+    public
+    view
+    returns (
+        address owner,
+        bytes32 lastChecksum,
+        string memory url,
+        address lastUpdatedBy,
+        uint256 blockNumberUpdated,
+        address[] memory providers
+    )
     {
         owner = didRegisterList.didRegisters[_did].owner;
         lastChecksum = didRegisterList.didRegisters[_did].lastChecksum;
+        url = didRegisterList.didRegisters[_did].url;
         lastUpdatedBy = didRegisterList.didRegisters[_did].lastUpdatedBy;
-        blockNumberUpdated = didRegisterList.didRegisters[_did]
-            .blockNumberUpdated;
+        blockNumberUpdated = didRegisterList.didRegisters[_did].blockNumberUpdated;
         providers = didRegisterList.didRegisters[_did].providers;
     }
 
@@ -306,9 +841,9 @@ contract DIDRegistry is Ownable {
      * @return last modified (update) block number of a DID.
      */
     function getBlockNumberUpdated(bytes32 _did)
-        public
-        view
-        returns (uint256 blockNumberUpdated)
+    public
+    view
+    returns (uint256 blockNumberUpdated)
     {
         return didRegisterList.didRegisters[_did].blockNumberUpdated;
     }
@@ -318,9 +853,9 @@ contract DIDRegistry is Ownable {
      * @return the address of the DID owner.
      */
     function getDIDOwner(bytes32 _did)
-        public
-        view
-        returns (address didOwner)
+    public
+    view
+    returns (address didOwner)
     {
         return didRegisterList.didRegisters[_did].owner;
     }
@@ -329,9 +864,9 @@ contract DIDRegistry is Ownable {
      * @return the length of the DID registry.
      */
     function getDIDRegistrySize()
-        public
-        view
-        returns (uint size)
+    public
+    view
+    returns (uint size)
     {
         return didRegisterList.didRegisterIds.length;
     }
@@ -340,13 +875,13 @@ contract DIDRegistry is Ownable {
      * @return the length of the DID registry.
      */
     function getDIDRegisterIds()
-        public
-        view
-        returns (bytes32[] memory)
+    public
+    view
+    returns (bytes32[] memory)
     {
         return didRegisterList.didRegisterIds;
     }
-    
+
     /**
      * @dev _grantPermission grants access permission to grantee 
      * @param _did refers to decentralized identifier (a bytes32 length ID)
@@ -356,7 +891,7 @@ contract DIDRegistry is Ownable {
         bytes32 _did,
         address _grantee
     )
-        internal
+    internal
     {
         require(
             _grantee != address(0),
@@ -369,7 +904,7 @@ contract DIDRegistry is Ownable {
             _grantee
         );
     }
-    
+
     /**
      * @dev _revokePermission revokes access permission from grantee 
      * @param _did refers to decentralized identifier (a bytes32 length ID)
@@ -379,7 +914,7 @@ contract DIDRegistry is Ownable {
         bytes32 _did,
         address _grantee
     )
-        internal
+    internal
     {
         require(
             DIDPermissions[_did][_grantee],
@@ -392,7 +927,7 @@ contract DIDRegistry is Ownable {
             _grantee
         );
     }
-    
+
     /**
      * @dev _getPermission gets access permission of a grantee
      * @param _did refers to decentralized identifier (a bytes32 length ID)
@@ -403,11 +938,69 @@ contract DIDRegistry is Ownable {
         bytes32 _did,
         address _grantee
     )
-        internal
-        view
-        returns(bool)
+    internal
+    view
+    returns(bool)
     {
         return DIDPermissions[_did][_grantee];
     }
 
+
+    //// PROVENANCE SUPPORT METHODS
+
+    /**
+     * @notice isProvenanceDelegate check whether a given DID delegate exists
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _delegate delegate's address.
+     */
+    function isProvenanceDelegate(
+        bytes32 _did,
+        address _delegate
+    )
+    public
+    view
+    returns (bool)
+    {
+        return didRegisterList.isDelegate(_did, _delegate);
+    }
+
+    /**
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @return the address of the Provenance owner.
+     */
+    function getProvenanceOwner(bytes32 _did)
+    public
+    view
+    returns (address provenanceOwner)
+    {
+        return provenanceRegisterList.provenanceRegistry[_did].createdBy;
+    }
+
+    /**
+    * @param _responsibleAgentId The address of the provenance entry responsible
+    * @param _delegateAgentId The address of the delegated agent
+    * @param _hash bytes32 message, the hash is the signed message. What is recovered is the signer address.
+    * @param _signatures Signatures provided by the responsible and delegate agents
+    * @return true if the signatures correspond to the responsible and delegate        
+    */
+    function provenanceSignaturesAreCorrect(
+        address _responsibleAgentId, 
+        address _delegateAgentId, 
+        bytes32 _hash, 
+        bytes32[] memory _signatures
+    )
+    internal
+    pure
+    returns(bool)
+    {
+        if (_signatures.length != 2)
+            return false;
+        if (ECDSA.recover(_hash, StringUtilsLibrary.bytes32ToBytes(_signatures[0])) != _responsibleAgentId)
+            return false;
+        if (ECDSA.recover(_hash, StringUtilsLibrary.bytes32ToBytes(_signatures[1])) != _delegateAgentId)
+            return false;
+        return true;
+    }
+  
+    
 }
