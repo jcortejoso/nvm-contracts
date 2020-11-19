@@ -17,12 +17,12 @@ contract('DIDRegistry', (accounts) => {
     const someone = accounts[5]
     const delegates = [accounts[6], accounts[7]]
     const providers = [accounts[8], accounts[9]]
-    const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+    const value = 'https://exmaple.com/did/nevermined/test-attr-example.txt'
 
-    enum Activities {
-        GENERATED = '0x1',
-        USED = '0x2',
-        ACTED_IN_BEHALF = '0x3',
+    const Activities = {
+        GENERATED: '0x1',
+        USED: '0x2',
+        ACTED_IN_BEHALF: '0x3',
     }
 
     async function setupTest() {
@@ -31,6 +31,7 @@ contract('DIDRegistry', (accounts) => {
         const didRegistry = await DIDRegistry.new()
         await didRegistry.initialize(owner)
         const common = await Common.new()
+        const did = constants.did[0]
         return {
             common,
             didRegistry
@@ -100,7 +101,7 @@ contract('DIDRegistry', (accounts) => {
             assert.strictEqual(value, logItem.returnValues._value)
         })
 
-        it('Should not fail to register the same attribute twice', async () => {
+        it('Should fail to register the same attribute twice', async () => {
             const { didRegistry } = await setupTest()
             const did = constants.did[0]
             const checksum = testUtils.generateId()
@@ -113,18 +114,15 @@ contract('DIDRegistry', (accounts) => {
             )
 
             // try to register the same attribute the second time
-            const result = await didRegistry.registerAttribute(
-                did,
-                checksum,
-                providers,
-                value
+            await assert.isRejected(
+                didRegistry.registerAttribute(
+                    did,
+                    checksum,
+                    providers,
+                    value
+                )
             )
 
-            testUtils.assertEmitted(
-                result,
-                1,
-                'DIDAttributeRegistered'
-            )
         })
 
         it('Should only allow the owner to set an attribute', async () => {
@@ -157,36 +155,6 @@ contract('DIDRegistry', (accounts) => {
             )
         })
 
-        it('Should DID registry handle DID duplicates consistently', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
-            const checksum = testUtils.generateId()
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
-            await didRegistry.registerAttribute(did, checksum, providers, value)
-            const didRegistryListSizeBefore = (await didRegistry.getDIDRegistrySize()).toNumber()
-
-            // update checksum & value
-            const newValue = 'https://exmaple.net/did/ocean/test-attr-example.txt'
-            const newChecksum = testUtils.generateId()
-            await didRegistry.registerAttribute(did, newChecksum, providers, newValue)
-            const didRegistryListSizeAfter = (await didRegistry.getDIDRegistrySize()).toNumber()
-
-            assert.equal(
-                didRegistryListSizeBefore,
-                didRegistryListSizeAfter,
-                'Indicating invalid DID duplicate handling'
-            )
-
-            // registering new DID
-            const newDid = constants.did[1]
-            await didRegistry.registerAttribute(newDid, checksum, providers, value)
-            // assert
-            assert.equal(
-                (await didRegistry.getDIDRegistrySize()).toNumber(),
-                2,
-                'Indicating invalid DID duplicate handling'
-            )
-        })
     })
 
     describe('get DIDRegister', () => {
@@ -558,88 +526,132 @@ contract('DIDRegistry', (accounts) => {
 
     describe('Provenance #wasGeneratedBy()', () => {
         it('should generate an entity', async () => {
-            const { didRegistry, did } = await setupTest()
+            const { didRegistry } = await setupTest()
+            const _did = testUtils.generateId()
 
-            await didRegistry.wasGeneratedBy(
-                did,
-                instigator,
+            await didRegistry.registerDID(
+                _did,
+                testUtils.generateId(),
+                providers,
+                value,
                 Activities.GENERATED,
-                delegates,
-                ''
+                'hi there'
             )
+
         })
     })
 
     describe('Provenance #used()', () => {
         it('should use an entity from owner', async () => {
-            const { didRegistry, did } = await setupTest()
+            const { didRegistry } = await setupTest()
+            const _did = testUtils.generateId()
 
-            await provenanceRegistry.wasGeneratedBy(
-                did,
-                instigator,
+            await didRegistry.registerDID(
+                _did,
+                testUtils.generateId(),
+                providers,
+                value,
                 Activities.GENERATED,
-                delegates,
-                ''
+                'hi there'
             )
-            await didRegistry.used(instigator, Activities.USED, did, '')
+
+            await didRegistry.used(_did, owner, Activities.USED, 'doing something')
         })
 
         it('should use an entity from delegate', async () => {
-            const { didRegistry, did } = await setupTest()
+            const { didRegistry } = await setupTest()
+            const _did = testUtils.generateId()
 
-            await didRegistry.wasGeneratedBy(
-                did,
-                instigator,
+            await didRegistry.registerDID(
+                _did,
+                testUtils.generateId(),
+                providers,
+                value,
                 Activities.GENERATED,
-                delegates,
-                ''
+                'hi there'
             )
-            await provenanceRegistry.used(instigator, Activities.USED, did, '', {
-                from: delegates[0],
+
+            didRegistry.addDIDProvenanceDelegate(_did, someone)
+
+            await didRegistry.used(_did, owner, Activities.USED, '', {
+                from: someone,
             })
         })
 
         it('should fail to use an entity from someone', async () => {
-            const { didRegistry, did } = await setupTest()
+            const { didRegistry } = await setupTest()
+            const _did = testUtils.generateId()
 
-            await didRegistry.wasGeneratedBy(
-                did,
-                instigator,
+            await didRegistry.registerDID(
+                _did,
+                testUtils.generateId(),
+                providers,
+                value,
                 Activities.GENERATED,
-                delegates,
-                ''
+                'hi there'
             )
 
             await assert.isRejected(
                 // must not be able to add attributes to someone else's DID
-                didRegistry.used(instigator, Activities.USED, did, '', {
+                didRegistry.used(_did, owner, Activities.USED, '', {
                     from: someone,
                 }),
-                'Invalid Provenance owner can perform this operation.'
+                'Invalid DID Owner, Provider or Delegate can perform this operation.'
             )
         })
 
     })
 
     describe('Provenance #actedOnBehalf()', () => {
-        it('should act in behalf of delegate 2', async () => {
-            const { didRegistry, did } = await setupTest()
+        it('we can generate the same signatures', async () => {
+            const { didRegistry } = await setupTest()
 
-            await didRegistry.wasGeneratedBy(
-                did,
-                instigator,
+            const _message = web3.utils.utf8ToHex("hi there")
+            const _signature = await web3.eth.sign(_message, owner)
+
+            const valid = await didRegistry.provenanceSignatureIsCorrect(
+                owner, _message, _signature)
+
+            console.log('Message:' + _message)
+            console.log('Address:' + owner)
+            console.log('Signature:' + _signature)
+            console.log('Is Valid:' + valid)
+
+            assert.isOk(valid, 'Signature doesnt match')
+        })
+
+        it('should act in behalf of delegate 2', async () => {
+            const { didRegistry } = await setupTest()
+            const _did = testUtils.generateId()
+
+            await didRegistry.registerDID(
+                _did,
+                testUtils.generateId(),
+                providers,
+                value,
                 Activities.GENERATED,
-                delegates,
-                ''
+                'hi there'
             )
+
+            didRegistry.addDIDProvenanceDelegate(_did, someone)
+
+
+            const message = 12 + _did + delegates[1] + owner + Activities.ACTED_IN_BEHALF
+//            var signatures = [
+//                await web3.eth.sign(message, owner),
+//                await web3.eth.sign(message, delegates[1])
+//                ]
+            console.log('Message Hash: ' + message)
+
             await didRegistry.actedOnBehalf(
-                instigator,
+                _did,
                 delegates[1],
-                did,
+                owner,
                 Activities.ACTED_IN_BEHALF,
-                [],
+                await web3.eth.sign(message, owner),
+                await web3.eth.sign(message, delegates[1]),
                 '',
-                { from: delegates[0] }
+                { from: someone }
             )
         })
     })

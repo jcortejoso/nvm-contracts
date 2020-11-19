@@ -64,7 +64,8 @@ contract DIDRegistry is Ownable {
     bytes32 constant NULL_B32 = "";
     address constant NULL_ADDRESS = address(0x0);
     uint constant NULL_INT = 0;
-    bytes32[] EMPTY_LIST = new bytes32[](0);
+    bytes NULL_BYTES = new bytes(0);
+    bytes[] EMPTY_LIST = new bytes[](0);
     
     //////////////////////////////////////////////////////////////
     ////////  MODIFIERS   ////////////////////////////////////////
@@ -240,6 +241,30 @@ contract DIDRegistry is Ownable {
      *
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @param _checksum includes a one-way HASH calculated using the DDO content.
+     * @param _url refers to the attribute value, limited to 2048 bytes.
+     * @return the size of the registry after the register action.
+     */
+    function registerAttribute(
+        bytes32 _did,
+        bytes32 _checksum,
+        address[] memory _providers,
+        string memory _url
+    )
+    public
+    returns (uint size)
+    {
+        return registerDID(_did, _checksum, _providers, _url, "", "");
+    }    
+    
+    
+    /**
+     * @notice Register DID attributes.
+     *
+     * @dev The first attribute of a DID registered sets the DID owner.
+     *      Subsequent updates record _checksum and update info.
+     *
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _checksum includes a one-way HASH calculated using the DDO content.
      * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
      * @return the size of the registry after the register action.
      */
@@ -286,7 +311,7 @@ contract DIDRegistry is Ownable {
         );
 
         wasGeneratedBy(
-            _did, msg.sender, _activityId,_attributes);
+            _did, msg.sender, _activityId, _attributes);
 
         return updatedSize;
     }
@@ -328,8 +353,9 @@ contract DIDRegistry is Ownable {
             _activityId,
             NULL_ADDRESS,
             uint8(ProvenanceMethod.WAS_GENERATED_BY),
-            msg.sender,
-            EMPTY_LIST // No signatures between parties needed
+            msg.sender, 
+            NULL_BYTES, // No signatures between parties needed 
+            NULL_BYTES
         );
 
         /* emitting _attributes here to avoid expensive storage */
@@ -394,8 +420,9 @@ contract DIDRegistry is Ownable {
             _activityId,
             NULL_ADDRESS,
             uint8(ProvenanceMethod.USED),
-            msg.sender,
-            EMPTY_LIST // No signatures between parties needed
+            msg.sender, 
+            NULL_BYTES, // No signatures between parties needed 
+            NULL_BYTES
         );
 
         /* emitting _attributes here to avoid expensive storage */
@@ -462,8 +489,9 @@ contract DIDRegistry is Ownable {
             _activityId,
             NULL_ADDRESS,
             uint8(ProvenanceMethod.WAS_DERIVED_FROM),
-            msg.sender, 
-            EMPTY_LIST // No signatures between parties needed
+            msg.sender,
+            NULL_BYTES, // No signatures between parties needed 
+            NULL_BYTES
         );
 
         /* emitting _attributes here to avoid expensive storage */
@@ -529,7 +557,8 @@ contract DIDRegistry is Ownable {
             NULL_ADDRESS,
             uint8(ProvenanceMethod.WAS_ASSOCIATED_WITH),
             msg.sender,
-            EMPTY_LIST // No signatures between parties needed
+            NULL_BYTES, // No signatures between parties needed 
+            NULL_BYTES
         );
 
         /* emitting _attributes here to avoid expensive storage */
@@ -559,15 +588,16 @@ contract DIDRegistry is Ownable {
 
     /**
      * @notice Implements the W3C PROV Delegation action
+     * Each party involved in this method (_delegateAgentId & _responsibleAgentId) must provide a valid signature.
+     * The content to sign is a representation of the footprint of the event (_did + _delegateAgentId + _responsibleAgentId + _activityId) 
      *
      * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity
      * @param _delegateAgentId refers to address acting on behalf of the provenance record
      * @param _responsibleAgentId refers to address responsible of the provenance record
      * @param _activityId refers to activity
-     * @param _signatures refers to the digital signature provided by the parties involved. 
-     *      Each party involved in this method (_delegateAgentId & _responsibleAgentId) must provide a valid signature.
-     *      The content to sign is a representation of the footprint of the event (_did + _delegateAgentId + _responsibleAgentId + _activityId) 
-     * @param _attributes refere to the provenance attributes
+     * @param _signatureResponsible refers to the digital signature provided by the did responsible. 
+     * @param _signatureDelegate refers to the digital signature provided by the did delegate.     
+     * @param _attributes refers to the provenance attributes
      * @return true if the action was properly registered
      */
     function actedOnBehalf(
@@ -575,7 +605,8 @@ contract DIDRegistry is Ownable {
         address _delegateAgentId,
         address _responsibleAgentId,
         bytes32 _activityId,
-        bytes32[] memory _signatures,
+        bytes memory _signatureResponsible,
+        bytes memory _signatureDelegate,
         string memory _attributes
     )
     public
@@ -593,9 +624,12 @@ contract DIDRegistry is Ownable {
             ));
 
         require(
-            provenanceSignaturesAreCorrect(_responsibleAgentId, _delegateAgentId, eventId, _signatures),
-            'The signatures provided are not valid'
-        );
+            provenanceSignatureIsCorrect(_responsibleAgentId, eventId, _signatureResponsible),
+            'The responsible signature is not valid');
+
+        require(
+            provenanceSignatureIsCorrect(_delegateAgentId, eventId, _signatureDelegate),
+            'The delegate signature is not valid');
         
         provenanceRegisterList.createProvenanceEvent(
             eventId,
@@ -605,8 +639,9 @@ contract DIDRegistry is Ownable {
             _activityId,
             _responsibleAgentId,
             uint8(ProvenanceMethod.ACTED_ON_BEHALF),
-            msg.sender,
-            _signatures
+            msg.sender, 
+            _signatureResponsible,
+            _signatureDelegate
         );
 
         addDIDProvenanceDelegate(_did, _delegateAgentId);
@@ -977,29 +1012,21 @@ contract DIDRegistry is Ownable {
     }
 
     /**
-    * @param _responsibleAgentId The address of the provenance entry responsible
-    * @param _delegateAgentId The address of the delegated agent
+    * @param _agentId The address of the agent
     * @param _hash bytes32 message, the hash is the signed message. What is recovered is the signer address.
-    * @param _signatures Signatures provided by the responsible and delegate agents
-    * @return true if the signatures correspond to the responsible and delegate        
+    * @param _signature Signatures provided by the agent
+    * @return true if the signature correspond to the agent address        
     */
-    function provenanceSignaturesAreCorrect(
-        address _responsibleAgentId, 
-        address _delegateAgentId, 
+    function provenanceSignatureIsCorrect(
+        address _agentId,      
         bytes32 _hash, 
-        bytes32[] memory _signatures
+        bytes memory _signature
     )
-    internal
+    public
     pure
     returns(bool)
     {
-        if (_signatures.length != 2)
-            return false;
-        if (ECDSA.recover(_hash, StringUtilsLibrary.bytes32ToBytes(_signatures[0])) != _responsibleAgentId)
-            return false;
-        if (ECDSA.recover(_hash, StringUtilsLibrary.bytes32ToBytes(_signatures[1])) != _delegateAgentId)
-            return false;
-        return true;
+        return ECDSA.recover(_hash, _signature) == _agentId;
     }
   
     

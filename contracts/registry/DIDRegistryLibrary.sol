@@ -40,7 +40,8 @@ library DIDRegistryLibrary {
         uint8   method; // W3C PROV method
         address createdBy; // Who added this event to the registry
         uint256 blockNumberUpdated; // Block number of when it was added
-        bytes32[] signatures;
+        bytes   signatureResponsible; // Signature of the responsible
+        bytes   signatureDelegate; // Signature of the delegate 
     }
 
     // List of Provenance entries registered in the system
@@ -97,8 +98,9 @@ library DIDRegistryLibrary {
      * @param _agentInvolvedId refers to address of the agent involved with the provenance record     
      * @param _method refers to the W3C Provenance method
      * @param _createdBy refers to address of the agent triggering the activity
-     * @param _signatures the signatures of parties involved
-     */
+     * @param _signatureResponsible refers to the digital signature provided by the did responsible. 
+     * @param _signatureDelegate refers to the digital signature provided by the did delegate. 
+    */
     function createProvenanceEvent(
         ProvenanceRegistryList storage _self,
         bytes32 _eventId,
@@ -109,7 +111,8 @@ library DIDRegistryLibrary {
         address _agentInvolvedId,
         uint8   _method,
         address _createdBy,
-        bytes32[] memory _signatures
+        bytes memory _signatureResponsible,
+        bytes memory _signatureDelegate
     )
     internal
     returns (bool)
@@ -131,7 +134,8 @@ library DIDRegistryLibrary {
             method: _method,
             createdBy: _createdBy,
             blockNumberUpdated: block.number,
-            signatures: _signatures
+            signatureResponsible: _signatureResponsible,
+            signatureDelegate: _signatureDelegate
         });
 
         return true;
@@ -335,12 +339,12 @@ library DIDRegistryLibrary {
     }
 
     /**
- * @notice isDelegate check whether DID delegate exists
- * @param _self refers to storage pointer
- * @param _did refers to decentralized identifier (a byte32 length ID)
- * @param _delegate the delegate's address 
- * @return true if the delegate already exists
- */
+     * @notice isDelegate check whether DID delegate exists
+     * @param _self refers to storage pointer
+     * @param _did refers to decentralized identifier (a byte32 length ID)
+     * @param _delegate the delegate's address 
+     * @return true if the delegate already exists
+     */
     function isDelegate(
         DIDRegisterList storage _self,
         bytes32 _did,
