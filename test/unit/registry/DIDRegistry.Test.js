@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* global artifacts, contract, describe, it */
+/* global artifacts, web3, contract, describe, it */
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
@@ -13,7 +13,7 @@ const constants = require('../../helpers/constants.js')
 
 contract('DIDRegistry', (accounts) => {
     const owner = accounts[1]
-    const instigator = accounts[2]
+
     const someone = accounts[5]
     const delegates = [accounts[6], accounts[7]]
     const providers = [accounts[8], accounts[9]]
@@ -22,7 +22,7 @@ contract('DIDRegistry', (accounts) => {
     const Activities = {
         GENERATED: '0x1',
         USED: '0x2',
-        ACTED_IN_BEHALF: '0x3',
+        ACTED_IN_BEHALF: '0x3'
     }
 
     async function setupTest() {
@@ -31,7 +31,7 @@ contract('DIDRegistry', (accounts) => {
         const didRegistry = await DIDRegistry.new()
         await didRegistry.initialize(owner)
         const common = await Common.new()
-        const did = constants.did[0]
+
         return {
             common,
             didRegistry
@@ -122,7 +122,6 @@ contract('DIDRegistry', (accounts) => {
                     value
                 )
             )
-
         })
 
         it('Should only allow the owner to set an attribute', async () => {
@@ -154,7 +153,6 @@ contract('DIDRegistry', (accounts) => {
                 constants.registry.error.invalidValueSize
             )
         })
-
     })
 
     describe('get DIDRegister', () => {
@@ -537,7 +535,6 @@ contract('DIDRegistry', (accounts) => {
                 Activities.GENERATED,
                 'hi there'
             )
-
         })
     })
 
@@ -555,7 +552,7 @@ contract('DIDRegistry', (accounts) => {
                 'hi there'
             )
 
-            await didRegistry.used(_did, owner, Activities.USED, 'doing something')
+            await didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, 'doing something')
         })
 
         it('should use an entity from delegate', async () => {
@@ -573,8 +570,8 @@ contract('DIDRegistry', (accounts) => {
 
             didRegistry.addDIDProvenanceDelegate(_did, someone)
 
-            await didRegistry.used(_did, owner, Activities.USED, '', {
-                from: someone,
+            await didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, '', {
+                from: someone
             })
         })
 
@@ -593,29 +590,34 @@ contract('DIDRegistry', (accounts) => {
 
             await assert.isRejected(
                 // must not be able to add attributes to someone else's DID
-                didRegistry.used(_did, owner, Activities.USED, '', {
-                    from: someone,
+                didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, '', {
+                    from: someone
                 }),
                 'Invalid DID Owner, Provider or Delegate can perform this operation.'
             )
         })
-
     })
 
     describe('Provenance #actedOnBehalf()', () => {
         it('we can generate the same signatures', async () => {
             const { didRegistry } = await setupTest()
+            const _did = testUtils.generateId()
 
-            const _message = web3.utils.utf8ToHex("hi there")
-            const _signature = await web3.eth.sign(_message, owner)
+            const _message = testUtils.toEthSignedMessageHash(
+                web3.utils.sha3(_did + delegates[1]))
+            const _messageHash = testUtils.toEthSignedMessageHash(_message)
+            const _signature = testUtils.fixSignature(
+                await web3.eth.sign(_message, owner)
+            )
 
             const valid = await didRegistry.provenanceSignatureIsCorrect(
-                owner, _message, _signature)
+                owner, _messageHash, _signature)
 
-            console.log('Message:' + _message)
-            console.log('Address:' + owner)
-            console.log('Signature:' + _signature)
-            console.log('Is Valid:' + valid)
+            console.debug('Message:' + _message)
+            console.debug('Eth Signed Message Hash:' + testUtils.toEthSignedMessageHash(_message))
+            console.debug('Address:' + owner)
+            console.debug('Signature:' + _signature)
+            console.debug('Is Valid:' + valid)
 
             assert.isOk(valid, 'Signature doesnt match')
         })
@@ -633,27 +635,44 @@ contract('DIDRegistry', (accounts) => {
                 'hi there'
             )
 
-            didRegistry.addDIDProvenanceDelegate(_did, someone)
+            await didRegistry.addDIDProvenanceDelegate(_did, delegates[1])
 
+            const _message = web3.utils.sha3(
+                _did + delegates[1])
 
-            const message = 12 + _did + delegates[1] + owner + Activities.ACTED_IN_BEHALF
-//            var signatures = [
-//                await web3.eth.sign(message, owner),
-//                await web3.eth.sign(message, delegates[1])
-//                ]
-            console.log('Message Hash: ' + message)
+            const _signatureOwner = testUtils.fixSignature(
+                await web3.eth.sign(_message, owner)
+            )
+            const _signatureDelegate = testUtils.fixSignature(
+                await web3.eth.sign(_message, delegates[1])
+            )
 
-            await didRegistry.actedOnBehalf(
+            assert.isOk(await didRegistry.provenanceSignatureIsCorrect(
+                owner, testUtils.toEthSignedMessageHash(_message), _signatureOwner))
+            assert.isOk(await didRegistry.provenanceSignatureIsCorrect(
+                delegates[1], testUtils.toEthSignedMessageHash(_message), _signatureDelegate))
+
+            console.debug('Message Hash: ' + _message)
+            console.debug('Signature Owner: ' + _signatureOwner)
+            console.debug('Signature delegate: ' + _signatureDelegate)
+
+            const result = await didRegistry.actedOnBehalf(
+                testUtils.toEthSignedMessageHash(_message),
                 _did,
                 delegates[1],
                 owner,
                 Activities.ACTED_IN_BEHALF,
-                await web3.eth.sign(message, owner),
-                await web3.eth.sign(message, delegates[1]),
+                _signatureOwner,
+                _signatureDelegate,
                 '',
-                { from: someone }
+                { from: delegates[1] }
+            )
+
+            testUtils.assertEmitted(
+                result,
+                1,
+                'ActedOnBehalf'
             )
         })
     })
-
 })

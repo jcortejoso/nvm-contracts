@@ -47,7 +47,7 @@ contract DIDRegistryChangeFunctionSignature is DIDRegistry {
         );
 
         wasGeneratedBy(
-            _did, msg.sender, _activityId, _attributes);
+            _did, _did, msg.sender, _activityId, _attributes);
         
         return getDIDRegistrySize();
     }

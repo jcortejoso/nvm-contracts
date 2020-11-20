@@ -1,6 +1,6 @@
 {
   "name": "@nevermined-io/contracts",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Nevermined implementation of Ocean Protocol in Solidity",
   "bugs": {
     "url": "https://github.com/nevermined-io/contracts/issues"
@@ -46,7 +46,7 @@
     "clean:zos": "rm -rf ./zos.json ./zos.dev-8996.json ./.zos.session ./wallets.json zos/",
     "lint": "npm run lint:eslint && npm run lint:ethlint",
     "lint:eslint": "eslint --ignore-path .gitignore --ext .js .",
-    "lint:ethlint": "solium -d ./contracts/",
+    "lint:ethlint": "solium -d ./contracts/ ",
     "lint:ethlint:watch": "npm run lint:solium -- --watch",
     "lint:fix": "npm run lint:eslint -- --fix && npm run lint:ethlint -- --fix",
     "security:mythril": "truffle compile && myth -x --truffle --max-depth 12 --outform markdown 2>&1 | tee mythrilReport.md",

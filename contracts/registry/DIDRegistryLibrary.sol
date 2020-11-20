@@ -15,13 +15,20 @@ library DIDRegistryLibrary {
 
     // DIDRegistry Entity
     struct DIDRegister {
-        address owner; // DIDRegistry entry owner
-        bytes32 lastChecksum; // Checksum associated to the DID
-        string  url; // URL to the metadata associated to the DID
-        address lastUpdatedBy; // Who was the last one updated the entry
-        uint256 blockNumberUpdated; // When was the last time was updated
-        address[] providers; // Providers able to manage this entry
-        address[] delegates; // Delegates able to register provenance events on behalf of the owner or providers 
+        // DIDRegistry entry owner
+        address owner;
+        // Checksum associated to the DID
+        bytes32 lastChecksum;
+        // URL to the metadata associated to the DID
+        string  url;
+        // Who was the last one updated the entry
+        address lastUpdatedBy;
+        // When was the last time was updated
+        uint256 blockNumberUpdated;
+        // Providers able to manage this entry
+        address[] providers;
+        // Delegates able to register provenance events on behalf of the owner or providers
+        address[] delegates;  
     }
 
     // List of DID's registered in the system
@@ -32,16 +39,26 @@ library DIDRegistryLibrary {
 
     // ProvenanceRegistry Entity
     struct ProvenanceRegistry {
-        bytes32 did; // DID associated to this provenance event
-        bytes32 relatedDid; // DID created or associated to the original one triggered on this provenance event
-        address agentId; // Agent associated to the provenance event
-        bytes32 activityId; // Provenance activity 
-        address agentInvolvedId; // Agent involved in the provenance event beyond the agent id
-        uint8   method; // W3C PROV method
-        address createdBy; // Who added this event to the registry
-        uint256 blockNumberUpdated; // Block number of when it was added
-        bytes   signatureResponsible; // Signature of the responsible
-        bytes   signatureDelegate; // Signature of the delegate 
+        // DID associated to this provenance event
+        bytes32 did;
+        // DID created or associated to the original one triggered on this provenance event
+        bytes32 relatedDid;
+        // Agent associated to the provenance event
+        address agentId;
+        // Provenance activity
+        bytes32 activityId;
+        // Agent involved in the provenance event beyond the agent id
+        address agentInvolvedId;
+        // W3C PROV method
+        uint8   method;
+        // Who added this event to the registry
+        address createdBy;
+        // Block number of when it was added
+        uint256 blockNumberUpdated; 
+        // Signature of the responsible
+        bytes   signatureResponsible; 
+        // Signature of the delegate
+        bytes   signatureDelegate;  
     }
 
     // List of Provenance entries registered in the system
@@ -75,13 +92,13 @@ library DIDRegistryLibrary {
         }
 
         _self.didRegisters[_did] = DIDRegister({
-        owner: didOwner,
-        lastChecksum: _checksum,
-        url: _url,
-        lastUpdatedBy: msg.sender,
-        blockNumberUpdated: block.number,
-        providers: new address[](0),
-        delegates: new address[](0)
+            owner: didOwner,
+            lastChecksum: _checksum,
+            url: _url,
+            lastUpdatedBy: msg.sender,
+            blockNumberUpdated: block.number,
+            providers: new address[](0),
+            delegates: new address[](0)
         });
 
         return _self.didRegisterIds.length;
@@ -91,6 +108,7 @@ library DIDRegistryLibrary {
      * @notice create an event in the Provenance store
      * @dev access modifiers and storage pointer should be implemented in ProvenanceRegistry
      * @param _self refers to storage pointer
+     * @param _provId refers to provenance event identifier
      * @param _did refers to decentralized identifier (a byte32 length ID)
      * @param _relatedDid refers to decentralized identifier (a byte32 length ID) of a related entity
      * @param _agentId refers to address of the agent creating the provenance record
@@ -103,7 +121,7 @@ library DIDRegistryLibrary {
     */
     function createProvenanceEvent(
         ProvenanceRegistryList storage _self,
-        bytes32 _eventId,
+        bytes32 _provId,
         bytes32 _did,
         bytes32 _relatedDid,
         address _agentId,
@@ -119,13 +137,13 @@ library DIDRegistryLibrary {
     {
 
         require(
-            _self.provenanceRegistry[_eventId].createdBy == address(0x0),
-            'Provenance record already existing for the Provenance eventId given.'
+            _self.provenanceRegistry[_provId].createdBy == address(0x0),
+            'Provenance record already existing for the Provenance _provId given.'
         );
 
         // Check that signatures are valid
-        
-        _self.provenanceRegistry[_eventId] = ProvenanceRegistry({
+
+        _self.provenanceRegistry[_provId] = ProvenanceRegistry({
             did: _did,
             relatedDid: _relatedDid,
             agentId: _agentId,
