@@ -613,12 +613,6 @@ contract('DIDRegistry', (accounts) => {
             const valid = await didRegistry.provenanceSignatureIsCorrect(
                 owner, _messageHash, _signature)
 
-            console.debug('Message:' + _message)
-            console.debug('Eth Signed Message Hash:' + testUtils.toEthSignedMessageHash(_message))
-            console.debug('Address:' + owner)
-            console.debug('Signature:' + _signature)
-            console.debug('Is Valid:' + valid)
-
             assert.isOk(valid, 'Signature doesnt match')
         })
 
@@ -651,10 +645,6 @@ contract('DIDRegistry', (accounts) => {
                 owner, testUtils.toEthSignedMessageHash(_message), _signatureOwner))
             assert.isOk(await didRegistry.provenanceSignatureIsCorrect(
                 delegates[1], testUtils.toEthSignedMessageHash(_message), _signatureDelegate))
-
-            console.debug('Message Hash: ' + _message)
-            console.debug('Signature Owner: ' + _signatureOwner)
-            console.debug('Signature delegate: ' + _signatureDelegate)
 
             const result = await didRegistry.actedOnBehalf(
                 testUtils.toEthSignedMessageHash(_message),

@@ -183,25 +183,25 @@
     "@ethersproject/rlp" "^5.0.0"
     "@ethersproject/signing-key" "^5.0.0"
 
-"@keyko-io/multisigwallet@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@keyko-io/multisigwallet/-/multisigwallet-0.2.0.tgz#b3c9674c8d7b9befd90d38d0474deef31db34c71"
-  integrity sha512-XG7fTaRXfjhLpHTfPd1yP9Ko5JN7RdkuLbLevKGGb4ljUt/NEZXaArhN6kxYl7lAoWOOXI5q6szP+Wgq8pYsEw==
+"@nevermined-io/contract-tools@~0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@nevermined-io/contract-tools/-/contract-tools-0.2.3.tgz#4d6f81555da15db8ad8ab2c14ff4599538a278dd"
+  integrity sha512-k6rIOING2XmQu9Nb2iC1ZSrcYY4d8vwW1b6f5Ffgp2o9RF//GVl0r3KHis3ykLSWrBlIFQxTPCfIOtYGPIqgbg==
   dependencies:
-    truffle "~5.1.25"
-    truffle-hdwallet-provider "~1.0.12"
-    web3-provider-engine "~15.0.0"
-
-"@nevermined-io/contract-tools@~0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@nevermined-io/contract-tools/-/contract-tools-0.2.2.tgz#afff60759704b38e515996ecaffbc98ee7f261ca"
-  integrity sha512-59ltrTTbjjxdLwMADQL8E4WQYnSBO+Q8qXIZV0p+Q27kJN7tcK6BABKuYBpGmmorgPcNZdxhvuCDBk//VHmFiA==
-  dependencies:
-    "@keyko-io/multisigwallet" "^0.2.0"
+    "@nevermined-io/multisigwallet" "^0.2.1"
     "@truffle/contract" "~4.2.5"
     glob "^7.1.4"
     web3-utils "~1.2.1"
     zos "2.2.3"
+
+"@nevermined-io/multisigwallet@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@nevermined-io/multisigwallet/-/multisigwallet-0.2.1.tgz#64d5ea62f915e10f6d5eb60ad7226ba12d873d93"
+  integrity sha512-uM2bREnUWcAoOcg9vBTL8/zNvMEcNq+IHXIewvLnS+zt1JRLn/i/AXA1MdYoxL52rCpopKeE3VhcD8pjnQAJcA==
+  dependencies:
+    truffle "~5.1.25"
+    truffle-hdwallet-provider "~1.0.12"
+    web3-provider-engine "~15.0.0"
 
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
