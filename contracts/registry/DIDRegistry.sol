@@ -6,7 +6,6 @@ pragma solidity 0.5.6;
 
 
 import './DIDRegistryLibrary.sol';
-import '../libraries/StringUtilsLibrary.sol';
 import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
 import 'openzeppelin-eth/contracts/cryptography/ECDSA.sol';
 
