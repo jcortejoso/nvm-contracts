@@ -11,7 +11,7 @@ contract DIDRegistryChangeFunctionSignature is DIDRegistry {
         bytes32 _did,
         address[] memory _providers,
         bytes32 _checksum,
-        string memory _value
+        string memory _url
     )
         public
         returns (uint size)
@@ -24,27 +24,26 @@ contract DIDRegistryChangeFunctionSignature is DIDRegistry {
 
         require(
             //TODO: 2048 should be changed in the future
-            bytes(_value).length <= 2048,
+            bytes(_url).length <= 2048,
             'Invalid value size'
         );
 
-        didRegisterList.update(_did, _checksum);
+        didRegisterList.update(_did, _checksum, _url);
 
         // push providers to storage
         for(uint256 i = 0; i < _providers.length; i++) {
             didRegisterList.addProvider(_did, _providers[i]);
         }
 
-        /* emitting _value here to avoid expensive storage */
         emit DIDAttributeRegistered(
             _did,
             didRegisterList.didRegisters[_did].owner,
             _checksum,
-            _value,
+            _url,
             msg.sender,
             block.number
         );
-
+        
         return getDIDRegistrySize();
     }
 }

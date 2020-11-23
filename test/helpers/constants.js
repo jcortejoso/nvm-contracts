@@ -107,7 +107,7 @@ const constants = {
             invalidValueSize: 'Invalid value size',
             didNotRegistered: 'DID not registered'
         },
-        url: 'https://example.com/did/ocean/test-attr-example.txt'
+        url: 'https://example.com/did/nevermined/test-attr-example.txt'
     }
 }
 
