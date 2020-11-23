@@ -32,7 +32,7 @@ contract('DIDRegistry', (accounts) => {
     const didOwner = accounts[5]
     const approver = accounts[2]
 
-    const verbose = false
+    const verbose = true
 
     async function setupTest({
         did = constants.did[0],

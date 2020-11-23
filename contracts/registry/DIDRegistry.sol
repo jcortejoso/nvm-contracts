@@ -59,11 +59,11 @@ contract DIDRegistry is Ownable {
         ACTED_ON_BEHALF
     }
 
-    bytes32 constant NULL_B32 = '';
-    address constant NULL_ADDRESS = address(0x0);
-    uint constant NULL_INT = 0;
-    bytes NULL_BYTES = new bytes(0);
-    bytes[] EMPTY_LIST = new bytes[](0);
+    bytes32 NULL_B32;
+    address NULL_ADDRESS;
+    uint NULL_INT;
+    bytes NULL_BYTES;
+    bytes[] EMPTY_LIST;
 
     //////////////////////////////////////////////////////////////
     ////////  MODIFIERS   ////////////////////////////////////////
@@ -229,6 +229,11 @@ contract DIDRegistry is Ownable {
     initializer
     {
         Ownable.initialize(_owner);
+        NULL_B32 = '';
+        NULL_ADDRESS = address(0x0);
+        NULL_INT = 0;
+        NULL_BYTES = new bytes(0);
+        EMPTY_LIST = new bytes[](0);
     }
 
     /**
@@ -264,6 +269,8 @@ contract DIDRegistry is Ownable {
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @param _checksum includes a one-way HASH calculated using the DDO content.
      * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
+     * @param _activityId refers to activity
+     * @param _attributes refers to the provenance attributes     
      * @return the size of the registry after the register action.
      */
     function registerDID(
@@ -322,7 +329,7 @@ contract DIDRegistry is Ownable {
      * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity created
      * @param _agentId refers to address of the agent creating the provenance record
      * @param _activityId refers to activity
-     * @param _attributes referres to the provenance attributes
+     * @param _attributes refers to the provenance attributes
      * @return the number of the new provenance size
      */
     function wasGeneratedBy(
