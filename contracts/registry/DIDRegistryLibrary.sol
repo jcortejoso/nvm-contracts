@@ -54,9 +54,7 @@ library DIDRegistryLibrary {
         // Who added this event to the registry
         address createdBy;
         // Block number of when it was added
-        uint256 blockNumberUpdated; 
-        // Signature of the responsible
-        bytes   signatureResponsible; 
+        uint256 blockNumberUpdated;
         // Signature of the delegate
         bytes   signatureDelegate;  
     }
@@ -116,7 +114,6 @@ library DIDRegistryLibrary {
      * @param _agentInvolvedId refers to address of the agent involved with the provenance record     
      * @param _method refers to the W3C Provenance method
      * @param _createdBy refers to address of the agent triggering the activity
-     * @param _signatureResponsible refers to the digital signature provided by the did responsible. 
      * @param _signatureDelegate refers to the digital signature provided by the did delegate. 
     */
     function createProvenanceEvent(
@@ -129,7 +126,6 @@ library DIDRegistryLibrary {
         address _agentInvolvedId,
         uint8   _method,
         address _createdBy,
-        bytes memory _signatureResponsible,
         bytes memory _signatureDelegate
     )
     internal
@@ -152,7 +148,6 @@ library DIDRegistryLibrary {
             method: _method,
             createdBy: _createdBy,
             blockNumberUpdated: block.number,
-            signatureResponsible: _signatureResponsible,
             signatureDelegate: _signatureDelegate
         });
 

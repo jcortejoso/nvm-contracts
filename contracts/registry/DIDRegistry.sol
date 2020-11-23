@@ -347,8 +347,7 @@ contract DIDRegistry is Ownable {
             NULL_ADDRESS,
             uint8(ProvenanceMethod.WAS_GENERATED_BY),
             msg.sender,
-            NULL_BYTES, // No signatures between parties needed 
-            NULL_BYTES
+            NULL_BYTES // No signatures between parties needed 
         );
 
         /* emitting _attributes here to avoid expensive storage */
@@ -384,6 +383,7 @@ contract DIDRegistry is Ownable {
      * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity created
      * @param _agentId refers to address of the agent creating the provenance record
      * @param _activityId refers to activity
+     * @param _signatureUsing refers to the digital signature provided by the agent using the _did     
      * @param _attributes refers to the provenance attributes
      * @return true if the action was properly registered
     */
@@ -392,6 +392,7 @@ contract DIDRegistry is Ownable {
         bytes32 _did,
         address _agentId,
         bytes32 _activityId,
+        bytes memory _signatureUsing,    
         string memory _attributes
     )
     public
@@ -399,7 +400,11 @@ contract DIDRegistry is Ownable {
     onlyValidAttributes(_attributes)
     returns (bool success)
     {
-
+        
+//        require(
+//            provenanceSignatureIsCorrect(_agentId, _provId, _signatureUsing),
+//            'The agent signature is not valid');
+        
         provenanceRegisterList.createProvenanceEvent(
             _provId,
             _did,
@@ -409,8 +414,7 @@ contract DIDRegistry is Ownable {
             NULL_ADDRESS,
             uint8(ProvenanceMethod.USED),
             msg.sender,
-            NULL_BYTES, // No signatures between parties needed 
-            NULL_BYTES
+            _signatureUsing
         );
 
         /* emitting _attributes here to avoid expensive storage */
@@ -472,8 +476,7 @@ contract DIDRegistry is Ownable {
             NULL_ADDRESS,
             uint8(ProvenanceMethod.WAS_DERIVED_FROM),
             msg.sender,
-            NULL_BYTES, // No signatures between parties needed 
-            NULL_BYTES
+            NULL_BYTES // No signatures between parties needed 
         );
 
         /* emitting _attributes here to avoid expensive storage */
@@ -534,8 +537,7 @@ contract DIDRegistry is Ownable {
             NULL_ADDRESS,
             uint8(ProvenanceMethod.WAS_ASSOCIATED_WITH),
             msg.sender,
-            NULL_BYTES, // No signatures between parties needed 
-            NULL_BYTES
+            NULL_BYTES // No signatures between parties needed 
         );
 
         /* emitting _attributes here to avoid expensive storage */
@@ -573,7 +575,6 @@ contract DIDRegistry is Ownable {
      * @param _delegateAgentId refers to address acting on behalf of the provenance record
      * @param _responsibleAgentId refers to address responsible of the provenance record
      * @param _activityId refers to activity
-     * @param _signatureResponsible refers to the digital signature provided by the did responsible. 
      * @param _signatureDelegate refers to the digital signature provided by the did delegate.     
      * @param _attributes refers to the provenance attributes
      * @return true if the action was properly registered
@@ -584,7 +585,6 @@ contract DIDRegistry is Ownable {
         address _delegateAgentId,
         address _responsibleAgentId,
         bytes32 _activityId,
-        bytes memory _signatureResponsible,
         bytes memory _signatureDelegate,
         string memory _attributes
     )
@@ -593,10 +593,6 @@ contract DIDRegistry is Ownable {
     onlyValidAttributes(_attributes)
     returns (bool success)
     {
-
-        require(
-            provenanceSignatureIsCorrect(_responsibleAgentId, _provId, _signatureResponsible),
-            'The responsible signature is not valid');
 
         require(
             provenanceSignatureIsCorrect(_delegateAgentId, _provId, _signatureDelegate),
@@ -611,7 +607,6 @@ contract DIDRegistry is Ownable {
             _responsibleAgentId,
             uint8(ProvenanceMethod.ACTED_ON_BEHALF),
             msg.sender,
-            _signatureResponsible,
             _signatureDelegate
         );
 

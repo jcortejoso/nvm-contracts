@@ -552,7 +552,7 @@ contract('DIDRegistry', (accounts) => {
                 'hi there'
             )
 
-            await didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, 'doing something')
+            await didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, [], 'doing something')
         })
 
         it('should use an entity from delegate', async () => {
@@ -570,7 +570,7 @@ contract('DIDRegistry', (accounts) => {
 
             didRegistry.addDIDProvenanceDelegate(_did, someone)
 
-            await didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, '', {
+            await didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, [], '', {
                 from: someone
             })
         })
@@ -590,7 +590,7 @@ contract('DIDRegistry', (accounts) => {
 
             await assert.isRejected(
                 // must not be able to add attributes to someone else's DID
-                didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, '', {
+                didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, [], '', {
                     from: someone
                 }),
                 'Invalid DID Owner, Provider or Delegate can perform this operation.'
@@ -607,11 +607,11 @@ contract('DIDRegistry', (accounts) => {
                 web3.utils.sha3(_did + delegates[1]))
             const _messageHash = testUtils.toEthSignedMessageHash(_message)
             const _signature = testUtils.fixSignature(
-                await web3.eth.sign(_message, owner)
+                await web3.eth.sign(_message, delegates[1])
             )
 
             const valid = await didRegistry.provenanceSignatureIsCorrect(
-                owner, _messageHash, _signature)
+                delegates[1], _messageHash, _signature)
 
             assert.isOk(valid, 'Signature doesnt match')
         })
@@ -634,15 +634,10 @@ contract('DIDRegistry', (accounts) => {
             const _message = web3.utils.sha3(
                 _did + delegates[1])
 
-            const _signatureOwner = testUtils.fixSignature(
-                await web3.eth.sign(_message, owner)
-            )
             const _signatureDelegate = testUtils.fixSignature(
                 await web3.eth.sign(_message, delegates[1])
             )
 
-            assert.isOk(await didRegistry.provenanceSignatureIsCorrect(
-                owner, testUtils.toEthSignedMessageHash(_message), _signatureOwner))
             assert.isOk(await didRegistry.provenanceSignatureIsCorrect(
                 delegates[1], testUtils.toEthSignedMessageHash(_message), _signatureDelegate))
 
@@ -652,7 +647,6 @@ contract('DIDRegistry', (accounts) => {
                 delegates[1],
                 owner,
                 Activities.ACTED_IN_BEHALF,
-                _signatureOwner,
                 _signatureDelegate,
                 '',
                 { from: delegates[1] }
