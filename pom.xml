@@ -4,7 +4,7 @@
   <groupId>io.keyko.nevermined</groupId>
   <artifactId>contracts</artifactId>
   <packaging>jar</packaging>
-  <version>0.5.0</version>
+  <version>0.5.1</version>
   <name>Nevermined Contracts</name>
   <description>Nevermined Data Plarform Smart Contracts in Solidity</description>
   <url>https://github.com/nevermined-io/contracts</url>
