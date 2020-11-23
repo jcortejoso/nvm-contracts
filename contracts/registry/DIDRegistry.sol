@@ -59,9 +59,9 @@ contract DIDRegistry is Ownable {
         ACTED_ON_BEHALF
     }
 
-    bytes32 NULL_B32;
-    address NULL_ADDRESS;
-    uint NULL_INT;
+    bytes32 constant NULL_B32 = '';
+    address constant NULL_ADDRESS = address(0x0);
+    uint constant NULL_INT = 0;
     bytes NULL_BYTES;
     bytes[] EMPTY_LIST;
 
@@ -229,9 +229,7 @@ contract DIDRegistry is Ownable {
     initializer
     {
         Ownable.initialize(_owner);
-        NULL_B32 = '';
-        NULL_ADDRESS = address(0x0);
-        NULL_INT = 0;
+        
         NULL_BYTES = new bytes(0);
         EMPTY_LIST = new bytes[](0);
     }
