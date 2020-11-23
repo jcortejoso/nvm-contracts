@@ -11,9 +11,7 @@ contract DIDRegistryChangeFunctionSignature is DIDRegistry {
         bytes32 _did,
         address[] memory _providers,
         bytes32 _checksum,
-        string memory _url,
-        bytes32 _activityId,
-        string memory _attributes
+        string memory _url
     )
         public
         returns (uint size)
@@ -45,9 +43,6 @@ contract DIDRegistryChangeFunctionSignature is DIDRegistry {
             msg.sender,
             block.number
         );
-
-        wasGeneratedBy(
-            _did, _did, msg.sender, _activityId, _attributes);
         
         return getDIDRegistrySize();
     }
