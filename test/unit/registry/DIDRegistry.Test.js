@@ -17,12 +17,14 @@ contract('DIDRegistry', (accounts) => {
     const someone = accounts[5]
     const delegates = [accounts[6], accounts[7]]
     const providers = [accounts[8], accounts[9]]
-    const value = 'https://exmaple.com/did/nevermined/test-attr-example.txt'
+    const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
 
     const Activities = {
         GENERATED: '0x1',
         USED: '0x2',
-        ACTED_IN_BEHALF: '0x3'
+        ACTED_IN_BEHALF: '0x3',
+        DERIVED_FROM: '0x4',
+        ASSOCIATED_WITH: '0x5'
     }
 
     async function setupTest() {
@@ -43,7 +45,7 @@ contract('DIDRegistry', (accounts) => {
             const { didRegistry } = await setupTest()
             const did = constants.did[0]
             const checksum = testUtils.generateId()
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             const result = await didRegistry.registerAttribute(did, checksum, providers, value)
 
             testUtils.assertEmitted(
@@ -63,7 +65,7 @@ contract('DIDRegistry', (accounts) => {
             const { didRegistry } = await setupTest()
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             const result = await didRegistry.registerAttribute(did, checksum, providers, value)
 
             testUtils.assertEmitted(
@@ -105,7 +107,7 @@ contract('DIDRegistry', (accounts) => {
             const { didRegistry } = await setupTest()
             const did = constants.did[0]
             const checksum = testUtils.generateId()
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -128,7 +130,7 @@ contract('DIDRegistry', (accounts) => {
             const { didRegistry } = await setupTest()
             const did = constants.did[0]
             const checksum = testUtils.generateId()
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(did, checksum, providers, value)
 
             const anotherPerson = { from: accounts[1] }
@@ -160,7 +162,7 @@ contract('DIDRegistry', (accounts) => {
             const { common, didRegistry } = await setupTest()
             const did = constants.did[0]
             const checksum = testUtils.generateId()
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             const blockNumber = await common.getCurrentBlockNumber()
             await didRegistry.registerAttribute(did, checksum, providers, value)
             const storedDIDRegister = await didRegistry.getDIDRegister(did)
@@ -195,7 +197,7 @@ contract('DIDRegistry', (accounts) => {
             const { didRegistry } = await setupTest()
             const did = constants.did[0]
             const checksum = testUtils.generateId()
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(did, checksum, providers, value)
             const storedDIDRegister = await didRegistry.getDIDRegister(did)
             assert.strictEqual(
@@ -212,7 +214,7 @@ contract('DIDRegistry', (accounts) => {
             const { didRegistry } = await setupTest()
             const did = constants.did[0]
             const checksum = testUtils.generateId()
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(did, checksum, providers, value)
             const storedDIDRegister = await didRegistry.getDIDRegister(did)
             assert.strictEqual(
@@ -233,7 +235,7 @@ contract('DIDRegistry', (accounts) => {
             const { didRegistry } = await setupTest()
             const did = constants.did[0]
             const checksum = testUtils.generateId()
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(did, checksum, providers, value)
             const storedDIDRegister = await didRegistry.getDIDRegister(did)
             assert.strictEqual(
@@ -269,7 +271,7 @@ contract('DIDRegistry', (accounts) => {
             const { didRegistry } = await setupTest()
             const did = constants.did[0]
             const checksum = testUtils.generateId()
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(did, checksum, [], value)
             const storedDIDRegister = await didRegistry.getDIDRegister(did)
             assert.strictEqual(
@@ -295,7 +297,7 @@ contract('DIDRegistry', (accounts) => {
             const { didRegistry } = await setupTest()
             const did = constants.did[0]
             const checksum = testUtils.generateId()
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
 
             await assert.isRejected(
                 didRegistry.registerAttribute(did, checksum, [didRegistry.address], value),
@@ -311,7 +313,7 @@ contract('DIDRegistry', (accounts) => {
             const checksum = testUtils.generateId()
             const didOwner = accounts[2]
             const newDIDOwner = accounts[3]
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -344,7 +346,7 @@ contract('DIDRegistry', (accounts) => {
             const checksum = testUtils.generateId()
             const didOwner = accounts[2]
             const newDIDOwner = accounts[3]
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -373,7 +375,7 @@ contract('DIDRegistry', (accounts) => {
             const checksum = testUtils.generateId()
             const didOwner = accounts[2]
             const grantee = accounts[3]
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -407,7 +409,7 @@ contract('DIDRegistry', (accounts) => {
             const didOwner = accounts[2]
             const grantee = accounts[3]
             const newDIDOwner = accounts[4]
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -446,7 +448,7 @@ contract('DIDRegistry', (accounts) => {
             const checksum = testUtils.generateId()
             const didOwner = accounts[2]
             const grantee = accounts[3]
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -489,7 +491,7 @@ contract('DIDRegistry', (accounts) => {
             const checksum = testUtils.generateId()
             const didOwner = accounts[2]
             const grantee = accounts[3]
-            const value = 'https://exmaple.com/did/ocean/test-attr-example.txt'
+            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -527,13 +529,55 @@ contract('DIDRegistry', (accounts) => {
             const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
 
-            await didRegistry.registerDID(
+            const result = await didRegistry.registerDID(
                 _did,
                 testUtils.generateId(),
                 providers,
                 value,
                 Activities.GENERATED,
                 'hi there'
+            )
+
+            didRegistry.getProvenanceEntry(_did)
+
+            testUtils.assertEmitted(
+                result,
+                1,
+                'DIDAttributeRegistered'
+            )
+            testUtils.assertEmitted(
+                result,
+                1,
+                'ProvenanceAttributeRegistered'
+            )
+            testUtils.assertEmitted(
+                result,
+                1,
+                'WasGeneratedBy'
+            )
+        })
+
+        it('should fetch a provenance entry', async () => {
+            const { didRegistry } = await setupTest()
+            const _did = testUtils.generateId()
+
+            const result = await didRegistry.registerDID(
+                _did,
+                testUtils.generateId(),
+                providers,
+                value,
+                Activities.GENERATED,
+                'hi there'
+            )
+
+            const storedProvEntry = await didRegistry.getProvenanceEntry(_did)
+            assert.strictEqual(
+                storedProvEntry.createdBy,
+                accounts[0]
+            )
+            assert.strictEqual(
+                storedProvEntry.did,
+                _did
             )
         })
     })
@@ -542,6 +586,7 @@ contract('DIDRegistry', (accounts) => {
         it('should use an entity from owner', async () => {
             const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
+            const _provId = testUtils.generateId()
 
             await didRegistry.registerDID(
                 _did,
@@ -552,7 +597,22 @@ contract('DIDRegistry', (accounts) => {
                 'hi there'
             )
 
-            await didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, [], 'doing something')
+            const result = await didRegistry.used(_provId, _did, owner, Activities.USED, [], 'doing something')
+            testUtils.assertEmitted(
+                result,
+                1,
+                'Used'
+            )
+
+            const storedProvEntry = await didRegistry.getProvenanceEntry(_provId)
+            assert.strictEqual(
+                storedProvEntry.createdBy,
+                accounts[0]
+            )
+            assert.strictEqual(
+                storedProvEntry.did,
+                _did
+            )
         })
 
         it('should use an entity from delegate', async () => {
@@ -594,6 +654,75 @@ contract('DIDRegistry', (accounts) => {
                     from: someone
                 }),
                 'Invalid DID Owner, Provider or Delegate can perform this operation.'
+            )
+        })
+    })
+
+    describe('Provenance #wasDerivedFrom()', () => {
+        it('should use an entity from owner', async () => {
+            const { didRegistry } = await setupTest()
+            const _did = testUtils.generateId()
+            const _newDid = testUtils.generateId()
+            const _provId = testUtils.generateId()
+
+            await didRegistry.registerDID(
+                _did,
+                testUtils.generateId(),
+                providers,
+                value,
+                Activities.GENERATED,
+                'hi there'
+            )
+
+            const result = await didRegistry.wasDerivedFrom(_provId, _newDid, _did, owner, Activities.DERIVED_FROM, 'derived')
+            testUtils.assertEmitted(
+                result,
+                1,
+                'WasDerivedFrom'
+            )
+
+            const storedProvEntry = await didRegistry.getProvenanceEntry(_provId)
+            assert.strictEqual(
+                storedProvEntry.createdBy,
+                accounts[0]
+            )
+            assert.strictEqual(
+                storedProvEntry.did,
+                _newDid
+            )
+        })
+    })
+
+    describe('Provenance #wasAssociatedWith()', () => {
+        it('should use an entity from owner', async () => {
+            const { didRegistry } = await setupTest()
+            const _did = testUtils.generateId()
+            const _provId = testUtils.generateId()
+
+            await didRegistry.registerDID(
+                _did,
+                testUtils.generateId(),
+                providers,
+                value,
+                Activities.GENERATED,
+                'hi there'
+            )
+
+            const result = await didRegistry.wasAssociatedWith(_provId, _did, owner, Activities.ASSOCIATED_WITH, 'associated')
+            testUtils.assertEmitted(
+                result,
+                1,
+                'WasAssociatedWith'
+            )
+
+            const storedProvEntry = await didRegistry.getProvenanceEntry(_provId)
+            assert.strictEqual(
+                storedProvEntry.createdBy,
+                accounts[0]
+            )
+            assert.strictEqual(
+                storedProvEntry.did,
+                _did
             )
         })
     })
