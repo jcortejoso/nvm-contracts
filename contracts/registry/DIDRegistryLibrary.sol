@@ -56,7 +56,7 @@ library DIDRegistryLibrary {
         // Block number of when it was added
         uint256 blockNumberUpdated;
         // Signature of the delegate
-        bytes   signatureDelegate;  
+        bytes   signature;  
     }
 
     // List of Provenance entries registered in the system
@@ -148,7 +148,7 @@ library DIDRegistryLibrary {
             method: _method,
             createdBy: _createdBy,
             blockNumberUpdated: block.number,
-            signatureDelegate: _signatureDelegate
+            signature: _signatureDelegate
         });
 
         return true;

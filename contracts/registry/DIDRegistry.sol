@@ -69,6 +69,7 @@ contract DIDRegistry is Ownable {
     ////////  MODIFIERS   ////////////////////////////////////////
     //////////////////////////////////////////////////////////////
 
+    
     modifier onlyDIDOwner(bytes32 _did)
     {
         require(
@@ -77,7 +78,7 @@ contract DIDRegistry is Ownable {
         );
         _;
     }
-
+    
     modifier onlyOwnerProviderOrDelegated(bytes32 _did)
     {
         require(
@@ -337,7 +338,7 @@ contract DIDRegistry is Ownable {
         bytes32 _activityId,
         string memory _attributes
     )
-    public
+    internal
     onlyDIDOwner(_did)
     onlyValidAttributes(_attributes)
     returns (bool)
@@ -598,10 +599,6 @@ contract DIDRegistry is Ownable {
     onlyValidAttributes(_attributes)
     returns (bool success)
     {
-
-        require(
-            provenanceSignatureIsCorrect(_delegateAgentId, _provId, _signatureDelegate),
-            'The delegate signature is not valid');
 
         provenanceRegisterList.createProvenanceEvent(
             _provId,
@@ -954,6 +951,47 @@ contract DIDRegistry is Ownable {
 
     //// PROVENANCE SUPPORT METHODS
 
+    /**
+     * @param _provId refers to the provenance identifier
+     * @return the complete provenance entry attributes
+     */
+    function getProvenanceEntry(
+        bytes32 _provId
+    )
+    public
+    view
+    returns (     
+        bytes32 did,
+        bytes32 relatedDid,
+        address agentId,
+        bytes32 activityId,
+        address agentInvolvedId,
+        uint8   method,
+        address createdBy,
+        uint256 blockNumberUpdated,
+        bytes memory signature
+    )
+    {
+        did = provenanceRegisterList
+            .provenanceRegistry[_provId].did;
+        relatedDid = provenanceRegisterList
+            .provenanceRegistry[_provId].relatedDid;
+        agentId = provenanceRegisterList
+            .provenanceRegistry[_provId].agentId;
+        activityId = provenanceRegisterList
+            .provenanceRegistry[_provId].activityId;
+        agentInvolvedId = provenanceRegisterList
+            .provenanceRegistry[_provId].agentInvolvedId;
+        method = provenanceRegisterList
+            .provenanceRegistry[_provId].method;
+        createdBy = provenanceRegisterList
+            .provenanceRegistry[_provId].createdBy;
+        blockNumberUpdated = provenanceRegisterList
+            .provenanceRegistry[_provId].blockNumberUpdated;
+        signature = provenanceRegisterList
+            .provenanceRegistry[_provId].signature;
+    }
+    
     /**
      * @notice isProvenanceDelegate check whether a given DID delegate exists
      * @param _did refers to decentralized identifier (a bytes32 length ID).
