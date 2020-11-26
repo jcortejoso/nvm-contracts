@@ -600,10 +600,6 @@ contract DIDRegistry is Ownable {
     returns (bool success)
     {
 
-        require(
-            provenanceSignatureIsCorrect(_delegateAgentId, _provId, _signatureDelegate),
-            'The delegate signature is not valid');
-
         provenanceRegisterList.createProvenanceEvent(
             _provId,
             _did,
@@ -976,15 +972,24 @@ contract DIDRegistry is Ownable {
         bytes memory signature
     )
     {
-        did = provenanceRegisterList.provenanceRegistry[_provId].did;
-        relatedDid = provenanceRegisterList.provenanceRegistry[_provId].relatedDid;
-        agentId = provenanceRegisterList.provenanceRegistry[_provId].agentId;
-        activityId = provenanceRegisterList.provenanceRegistry[_provId].activityId;
-        agentInvolvedId = provenanceRegisterList.provenanceRegistry[_provId].agentInvolvedId;
-        method = provenanceRegisterList.provenanceRegistry[_provId].method;
-        createdBy = provenanceRegisterList.provenanceRegistry[_provId].createdBy;
-        blockNumberUpdated = provenanceRegisterList.provenanceRegistry[_provId].blockNumberUpdated;
-        signature = provenanceRegisterList.provenanceRegistry[_provId].signature;
+        did = provenanceRegisterList
+            .provenanceRegistry[_provId].did;
+        relatedDid = provenanceRegisterList
+            .provenanceRegistry[_provId].relatedDid;
+        agentId = provenanceRegisterList
+            .provenanceRegistry[_provId].agentId;
+        activityId = provenanceRegisterList
+            .provenanceRegistry[_provId].activityId;
+        agentInvolvedId = provenanceRegisterList
+            .provenanceRegistry[_provId].agentInvolvedId;
+        method = provenanceRegisterList
+            .provenanceRegistry[_provId].method;
+        createdBy = provenanceRegisterList
+            .provenanceRegistry[_provId].createdBy;
+        blockNumberUpdated = provenanceRegisterList
+            .provenanceRegistry[_provId].blockNumberUpdated;
+        signature = provenanceRegisterList
+            .provenanceRegistry[_provId].signature;
     }
     
     /**

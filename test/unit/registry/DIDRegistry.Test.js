@@ -561,7 +561,7 @@ contract('DIDRegistry', (accounts) => {
             const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
 
-            const result = await didRegistry.registerDID(
+            await didRegistry.registerDID(
                 _did,
                 testUtils.generateId(),
                 providers,
@@ -728,6 +728,28 @@ contract('DIDRegistry', (accounts) => {
     })
 
     describe('Provenance #actedOnBehalf()', () => {
+        it('we can validate owner signature', async () => {
+            const { didRegistry } = await setupTest()
+            const _sourceMessage = 'hi there' // _did + owner
+
+            const _message = testUtils.toEthSignedMessageHash(
+                web3.utils.sha3(_sourceMessage))
+            const _messageHash = testUtils.toEthSignedMessageHash(_message)
+            const _signature = testUtils.fixSignature(
+                await web3.eth.sign(_message, owner)
+            )
+
+            //            console.log('Source Message Hash: ' + web3.utils.sha3(_sourceMessage))
+            //            console.log('Message: ' + _message)
+            //            console.log('Message Hash: ' + _messageHash)
+            //            console.log('Signature: ' + _signature)
+
+            const valid = await didRegistry.provenanceSignatureIsCorrect(
+                owner, _messageHash, _signature)
+
+            assert.isOk(valid, 'Signature doesnt match')
+        })
+
         it('we can generate the same signatures', async () => {
             const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
