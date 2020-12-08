@@ -6,7 +6,7 @@ pragma solidity 0.6.12;
 
 
 import './Condition.sol';
-import 'openzeppelin-eth/contracts/token/ERC20/ERC20.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
  * @title Lock Reward Condition
@@ -20,7 +20,7 @@ import 'openzeppelin-eth/contracts/token/ERC20/ERC20.sol';
  */
 contract LockRewardCondition is Condition {
 
-    IERC20 private token;
+    IERC20Upgradeable private token;
 
     event Fulfilled(
         bytes32 indexed _agreementId,
@@ -51,11 +51,11 @@ contract LockRewardCondition is Condition {
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.initialize(_owner);
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        token = ERC20(_tokenAddress);
+        token = ERC20Upgradeable(_tokenAddress);
     }
 
    /**

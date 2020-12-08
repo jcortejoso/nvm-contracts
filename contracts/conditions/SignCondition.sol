@@ -7,7 +7,7 @@ pragma solidity 0.6.12;
 
 import './Condition.sol';
 import './ConditionStoreLibrary.sol';
-import 'openzeppelin-eth/contracts/cryptography/ECDSA.sol';
+import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
 /**
  * @title Sign Condition
  * @author Keyko & Ocean Protocol
@@ -39,7 +39,8 @@ contract SignCondition is Condition {
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
@@ -78,7 +79,7 @@ contract SignCondition is Condition {
         returns (ConditionStoreLibrary.ConditionState)
     {
         require(
-            ECDSA.recover(_message, _signature) == _publicKey,
+            ECDSAUpgradeable.recover(_message, _signature) == _publicKey,
             'Could not recover signature'
         );
         return super.fulfill(

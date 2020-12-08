@@ -6,7 +6,7 @@ pragma solidity 0.6.12;
 
 
 import './TemplateStoreLibrary.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title Template Store Manager
@@ -22,7 +22,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  *      TODO: link to OEP
  *      
  */
-contract TemplateStoreManager is Ownable {
+contract TemplateStoreManager is OwnableUpgradeable {
 
     using TemplateStoreLibrary for TemplateStoreLibrary.TemplateList;
 
@@ -30,7 +30,7 @@ contract TemplateStoreManager is Ownable {
 
     modifier onlyOwnerOrTemplateOwner(address _id){
         require(
-            isOwner() ||
+            msg.sender == owner() ||
             templateList.templates[_id].owner == msg.sender,
             'Invalid UpdateRole'
         );
@@ -53,7 +53,7 @@ contract TemplateStoreManager is Ownable {
             'Invalid address'
         );
 
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.initialize(_owner);
     }
 
     /**

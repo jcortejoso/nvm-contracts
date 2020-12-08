@@ -40,7 +40,7 @@ contract ThresholdCondition is Condition {
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.initialize(_owner);
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );

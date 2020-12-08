@@ -3,7 +3,7 @@ pragma solidity 0.6.12;
 
 import '../Condition.sol';
 import '../ConditionStoreManager.sol';
-import 'openzeppelin-eth/contracts/token/ERC20/ERC20.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
  * @title Reward
@@ -17,7 +17,7 @@ import 'openzeppelin-eth/contracts/token/ERC20/ERC20.sol';
  *      TODO: update the OEP link 
  */
 contract Reward is Condition {
-    IERC20 internal token;
+    IERC20Upgradeable internal token;
 }
 
 

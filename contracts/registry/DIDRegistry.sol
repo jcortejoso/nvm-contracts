@@ -6,8 +6,8 @@ pragma solidity 0.6.12;
 
 
 import './DIDRegistryLibrary.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
-import 'openzeppelin-eth/contracts/cryptography/ECDSA.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
 
 /**
  * @title DID Registry
@@ -15,7 +15,7 @@ import 'openzeppelin-eth/contracts/cryptography/ECDSA.sol';
  *
  * @dev Implementation of the DID Registry.
  */
-contract DIDRegistry is Ownable {
+contract DIDRegistry is OwnableUpgradeable {
 
     /**
      * @dev The DIDRegistry Library takes care of the basic DID storage functions.
@@ -229,7 +229,7 @@ contract DIDRegistry is Ownable {
     public
     initializer
     {
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.initialize(_owner);
         
         NULL_BYTES = new bytes(0);
         EMPTY_LIST = new bytes[](0);
@@ -1035,7 +1035,7 @@ contract DIDRegistry is Ownable {
     pure
     returns(bool)
     {
-        return ECDSA.recover(_hash, _signature) == _agentId;
+        return ECDSAUpgradeable.recover(_hash, _signature) == _agentId;
     }
 
 

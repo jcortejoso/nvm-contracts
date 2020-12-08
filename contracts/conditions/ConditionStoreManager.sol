@@ -9,7 +9,7 @@ import '../Common.sol';
 import '../libraries/EpochLibrary.sol';
 import './ConditionStoreLibrary.sol';
 
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title Condition Store Manager
@@ -28,7 +28,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  *      https://github.com/oceanprotocol/OEPs/issues/119
  *      TODO: update the OEP link
  */
-contract ConditionStoreManager is Ownable, Common {
+contract ConditionStoreManager is OwnableUpgradeable, Common {
 
     using ConditionStoreLibrary for ConditionStoreLibrary.ConditionList;
     using EpochLibrary for EpochLibrary.EpochList;
@@ -101,7 +101,7 @@ contract ConditionStoreManager is Ownable, Common {
             createRole == address(0),
             'Role already assigned'
         );
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.initialize(_owner);
         createRole = _owner;
     }
 

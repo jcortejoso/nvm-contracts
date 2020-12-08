@@ -76,8 +76,8 @@ ISecretStore, ISecretStorePermission {
     )
         external
         initializer()
-    {   
-        Ownable.initialize(_owner);
+    {
+        OwnableUpgradeable.initialize(_owner);
 
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress

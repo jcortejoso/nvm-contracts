@@ -67,8 +67,9 @@ contract ComputeExecutionCondition is Condition {
     )
         external
         initializer()
-    {   
-        Ownable.initialize(_owner);
+    {
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
 
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress

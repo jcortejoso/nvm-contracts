@@ -46,11 +46,11 @@ contract EscrowReward is Reward {
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.initialize(_owner);
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        token = ERC20(_tokenAddress);
+        token = ERC20Upgradeable(_tokenAddress);
     }
 
    /**

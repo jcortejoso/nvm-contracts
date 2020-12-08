@@ -1,9 +1,10 @@
 pragma solidity 0.6.12;
 
 
-import 'openzeppelin-eth/contracts/token/ERC20/ERC20Capped.sol';
-import 'openzeppelin-eth/contracts/token/ERC20/ERC20Detailed.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20CappedUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 /**
  * @title Test Token Contract
@@ -12,9 +13,9 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  * @dev Implementation of a Test Token.
  *      Test Token is an ERC20 token only for testing purposes
  */
-contract NeverminedToken is Ownable, ERC20Detailed, ERC20Capped {
+contract NeverminedToken is OwnableUpgradeable, AccessControlUpgradeable, ERC20Upgradeable, ERC20CappedUpgradeable {
 
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
 
     /**
     * @dev NeverminedToken Initializer
@@ -32,11 +33,12 @@ contract NeverminedToken is Ownable, ERC20Detailed, ERC20Capped {
         uint256 CAP = 1500000000;
         uint256 TOTALSUPPLY = CAP.mul(10 ** 18);
 
-        ERC20Detailed.initialize('NeverminedToken', 'NVM', 18);
-        ERC20Capped.initialize(TOTALSUPPLY, _owner);
-        Ownable.initialize(_owner);
+        ERC20Upgradeable.__ERC20_init('NeverminedToken', 'NVM');
+        ERC20CappedUpgradeable.__ERC20Capped_init(TOTALSUPPLY);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
 
         // set initial minter, this has to be renounced after the setup!
-        _addMinter(_initialMinter);
+        AccessControlUpgradeable.grantRole("minter", _initialMinter);
     }
 }

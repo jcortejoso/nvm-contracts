@@ -7,7 +7,7 @@ pragma solidity 0.6.12;
 
 import './TemplateStoreLibrary.sol';
 import '../agreements/AgreementStoreManager.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title Agreement Template
@@ -19,7 +19,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  *      has the ability to create agreements from whitelisted 
  *      template
  */
-contract AgreementTemplate is Ownable {
+contract AgreementTemplate is OwnableUpgradeable {
 
     using TemplateStoreLibrary for TemplateStoreLibrary.TemplateList;
 

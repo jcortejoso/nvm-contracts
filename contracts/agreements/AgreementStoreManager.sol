@@ -10,7 +10,7 @@ import '../conditions/ConditionStoreManager.sol';
 import '../registry/DIDRegistry.sol';
 import '../templates/TemplateStoreManager.sol';
 
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title Agreement Store Manager
@@ -23,7 +23,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  *      Agreement templates must to be approved in the Template Store
  *      Each agreement is linked to the DID of an asset.
  */
-contract AgreementStoreManager is Ownable {
+contract AgreementStoreManager is OwnableUpgradeable {
 
     /**
      * @dev The Agreement Store Library takes care of the basic storage functions
@@ -63,7 +63,9 @@ contract AgreementStoreManager is Ownable {
             _didRegistryAddress != address(0),
             'Invalid address'
         );
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
+        
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );

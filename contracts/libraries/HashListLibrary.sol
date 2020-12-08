@@ -5,7 +5,7 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
-import 'openzeppelin-eth/contracts/math/SafeMath.sol';
+import '@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol';
 
 /**
  * @title Hash List library
@@ -18,7 +18,7 @@ import 'openzeppelin-eth/contracts/math/SafeMath.sol';
 
 library HashListLibrary {
     
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
     
     struct List {
         address _owner;

@@ -1,8 +1,6 @@
 pragma solidity 0.6.12;
 
 
-import 'zos-lib/contracts/Initializable.sol';
-
 /**
  * @title Common functions
  * @author Keyko & Ocean Protocol

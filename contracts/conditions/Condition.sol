@@ -6,7 +6,7 @@ pragma solidity 0.6.12;
 
 
 import './ConditionStoreManager.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 /**
  * @title Condition
  * @author Keyko & Ocean Protocol
@@ -23,7 +23,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  *      https://github.com/oceanprotocol/OEPs/issues/133
  *      TODO: update the OEP link
  */
-contract Condition is Ownable {
+contract Condition is OwnableUpgradeable {
 
     ConditionStoreManager internal conditionStoreManager;
 

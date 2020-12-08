@@ -2,10 +2,10 @@ pragma solidity 0.6.12;
 
 
 import '../../libraries/HashListLibrary.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 
-contract HashListLibraryProxy is Ownable {
+contract HashListLibraryProxy is OwnableUpgradeable {
 
     using HashListLibrary for HashListLibrary.List;        
     HashListLibrary.List testData;
@@ -16,7 +16,7 @@ contract HashListLibraryProxy is Ownable {
         public
     {
         testData.setOwner(msg.sender);
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.initialize(_owner);
     }
 
     

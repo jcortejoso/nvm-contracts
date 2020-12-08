@@ -5,7 +5,7 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
-import 'openzeppelin-eth/contracts/math/SafeMath.sol';
+import '@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol';
 
 /**
  * @title Epoch Library
@@ -21,7 +21,7 @@ import 'openzeppelin-eth/contracts/math/SafeMath.sol';
  */
 library EpochLibrary {
 
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
 
     struct Epoch {
         uint256 timeLock;

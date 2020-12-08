@@ -1,18 +1,18 @@
 pragma solidity 0.6.12;
 
 
-import 'openzeppelin-eth/contracts/math/SafeMath.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import './NeverminedToken.sol';
 
 /**
  * @title Ocean Protocol Dispenser Contract
  * @author Keyko & Ocean Protocol
  */
-contract Dispenser is Ownable {
+contract Dispenser is OwnableUpgradeable {
 
-    using SafeMath for uint256;
-    using SafeMath for uint;
+    using SafeMathUpgradeable for uint256;
+    using SafeMathUpgradeable for uint;
 
     // limit period for request of tokens
     // mapping from address to last time of request
@@ -65,7 +65,8 @@ contract Dispenser is Ownable {
         initializer
         isValidAddress(_tokenAddress)
     {
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
         // init total mint amount
         totalMintAmount = 0;
         // instantiate Token contract

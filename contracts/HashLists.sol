@@ -3,7 +3,7 @@ pragma solidity 0.6.12;
 
 import './interfaces/IList.sol';
 import './libraries/HashListLibrary.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title HashLists contract
@@ -17,7 +17,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  *      same condition.
  */
 
-contract HashLists is Ownable, IList {
+contract HashLists is OwnableUpgradeable, IList {
     
     using HashListLibrary for HashListLibrary.List;        
     mapping(bytes32 => HashListLibrary.List) lists;
@@ -32,7 +32,8 @@ contract HashLists is Ownable, IList {
     )
         public
     {
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
     }
     
     /**
