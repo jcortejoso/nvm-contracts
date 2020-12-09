@@ -37,7 +37,7 @@ contract AgreementTemplate is OwnableUpgradeable {
      *          same condition that has the same index
      * @param _timeOuts list of time outs, each time out will be assigned to the 
      *          same condition that has the same index
-     * @return the index of the created agreement
+     * @return size the index of the created agreement
      */
     function createAgreement(
         bytes32 _id,

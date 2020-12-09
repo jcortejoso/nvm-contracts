@@ -244,7 +244,7 @@ contract DIDRegistry is OwnableUpgradeable {
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @param _checksum includes a one-way HASH calculated using the DDO content.
      * @param _url refers to the attribute value, limited to 2048 bytes.
-     * @return the size of the registry after the register action.
+     * @return size refers to the size of the registry after the register action.
      */
     function registerAttribute(
         bytes32 _did,
@@ -253,6 +253,7 @@ contract DIDRegistry is OwnableUpgradeable {
         string memory _url
     )
     public
+    virtual
     returns (uint size)
     {
         return registerDID(_did, _checksum, _providers, _url, '', '');
@@ -270,7 +271,7 @@ contract DIDRegistry is OwnableUpgradeable {
      * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
      * @param _activityId refers to activity
      * @param _attributes refers to the provenance attributes     
-     * @return the size of the registry after the register action.
+     * @return size refers to the size of the registry after the register action.
      */
     function registerDID(
         bytes32 _did,
@@ -391,7 +392,7 @@ contract DIDRegistry is OwnableUpgradeable {
      * @param _activityId refers to activity
      * @param _signatureUsing refers to the digital signature provided by the agent using the _did     
      * @param _attributes refers to the provenance attributes
-     * @return true if the action was properly registered
+     * @return success true if the action was properly registered
     */
     function used(
         bytes32 _provId,
@@ -457,7 +458,7 @@ contract DIDRegistry is OwnableUpgradeable {
      * @param _agentId refers to address of the agent creating the provenance record
      * @param _activityId refers to activity
      * @param _attributes refers to the provenance attributes
-     * @return true if the action was properly registered
+     * @return success true if the action was properly registered
      */
     function wasDerivedFrom(
         bytes32 _provId,
@@ -518,8 +519,8 @@ contract DIDRegistry is OwnableUpgradeable {
      * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity
      * @param _agentId refers to address of the agent creating the provenance record
      * @param _activityId refers to activity
-     * @param _attributes referes to the provenance attributes
-     * @return true if the action was properly registered
+     * @param _attributes refers to the provenance attributes
+     * @return success true if the action was properly registered
     */
     function wasAssociatedWith(
         bytes32 _provId,
@@ -583,7 +584,7 @@ contract DIDRegistry is OwnableUpgradeable {
      * @param _activityId refers to activity
      * @param _signatureDelegate refers to the digital signature provided by the did delegate.     
      * @param _attributes refers to the provenance attributes
-     * @return true if the action was properly registered
+     * @return success true if the action was properly registered
      */
     function actedOnBehalf(
         bytes32 _provId,
@@ -814,7 +815,12 @@ contract DIDRegistry is OwnableUpgradeable {
 
     /**
      * @param _did refers to decentralized identifier (a bytes32 length ID).
-     * @return the address of the DID owner.
+     * @return owner the did owner
+     * @return lastChecksum 
+     * @return url 
+     * @return lastUpdatedBy 
+     * @return blockNumberUpdated 
+     * @return providers 
      */
     function getDIDRegister(
         bytes32 _did
@@ -841,7 +847,7 @@ contract DIDRegistry is OwnableUpgradeable {
 
     /**
      * @param _did refers to decentralized identifier (a bytes32 length ID).
-     * @return last modified (update) block number of a DID.
+     * @return blockNumberUpdated last modified (update) block number of a DID.
      */
     function getBlockNumberUpdated(bytes32 _did)
     public
@@ -853,7 +859,7 @@ contract DIDRegistry is OwnableUpgradeable {
 
     /**
      * @param _did refers to decentralized identifier (a bytes32 length ID).
-     * @return the address of the DID owner.
+     * @return didOwner the address of the DID owner.
      */
     function getDIDOwner(bytes32 _did)
     public
@@ -864,7 +870,7 @@ contract DIDRegistry is OwnableUpgradeable {
     }
 
     /**
-     * @return the length of the DID registry.
+     * @return size the length of the DID registry.
      */
     function getDIDRegistrySize()
     public
@@ -952,8 +958,18 @@ contract DIDRegistry is OwnableUpgradeable {
     //// PROVENANCE SUPPORT METHODS
 
     /**
+     * Fetch the complete provenance entry attributes
      * @param _provId refers to the provenance identifier
-     * @return the complete provenance entry attributes
+     * @return did 
+     * @return relatedDid 
+     * @return agentId
+     * @return activityId 
+     * @return agentInvolvedId 
+     * @return method
+     * @return createdBy 
+     * @return blockNumberUpdated 
+     * @return signature 
+     * 
      */
     function getProvenanceEntry(
         bytes32 _provId
@@ -1010,7 +1026,7 @@ contract DIDRegistry is OwnableUpgradeable {
 
     /**
      * @param _did refers to decentralized identifier (a bytes32 length ID).
-     * @return the address of the Provenance owner.
+     * @return provenanceOwner the address of the Provenance owner.
      */
     function getProvenanceOwner(bytes32 _did)
     public

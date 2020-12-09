@@ -46,7 +46,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
     * @param _timeOuts the ending point of the time window ,time lock is 
     *       in block number not seconds
     * @param _accessConsumer consumer address
-    * @return the agreement index
+    * @return size the agreement index
     */
     function createAgreement(
         bytes32 _id,
@@ -105,7 +105,8 @@ contract BaseEscrowTemplate is AgreementTemplate {
     /**
     * @notice getAgreementData return the agreement Data
     * @param _id SEA agreement unique identifier
-    * @return the agreement consumer and provider addresses
+    * @return accessConsumer the agreement consumer
+    * @return accessProvider the provider addresses
     */
     function getAgreementData(bytes32 _id)
         external

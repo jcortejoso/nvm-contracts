@@ -78,7 +78,6 @@ library ConditionStoreLibrary {
     * @param _self is the ConditionList storage pointer
     * @param _id condition identifier
     * @param _newState the new state of the condition
-    * @return ConditionState 
     */
     function updateState(
         ConditionList storage _self,

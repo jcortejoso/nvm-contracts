@@ -19,6 +19,6 @@ interface ISecretStore {
         address user,
         bytes32 documentKeyId
     )
-    external view
+    external view virtual
     returns (bool permissionGranted);
 }

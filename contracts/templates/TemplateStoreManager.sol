@@ -17,9 +17,6 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  *      a templateId defines the condition and reward types that are instantiated 
  *      in the ConditionStore. This contract manages the life cycle 
  *      of the template ( Propose --> Approve --> Revoke ).
- *      For more information please refer to this link:
- *      https://github.com/oceanprotocol/OEPs/issues/132
- *      TODO: link to OEP
  *      
  */
 contract TemplateStoreManager is OwnableUpgradeable {
@@ -99,8 +96,10 @@ contract TemplateStoreManager is OwnableUpgradeable {
      * @notice getTemplate get more information about a template
      * @param _id unique template identifier which is basically
      *        the template contract address.
-     * @return template status, template owner, last updated by and
-     *        last updated at.
+     * @return state template status
+     * @return owner template owner
+     * @return lastUpdatedBy last updated by
+     * @return blockNumberUpdated last updated at.
      */
     function getTemplate(address _id)
         external
@@ -120,11 +119,12 @@ contract TemplateStoreManager is OwnableUpgradeable {
 
     /**
      * @notice getTemplateListSize number of templates
-     * @return number of templates
+     * @return size number of templates
      */
     function getTemplateListSize()
         external
         view
+        virtual
         returns (uint size)
     {
         return templateList.templateIds.length;

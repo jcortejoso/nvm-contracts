@@ -161,6 +161,7 @@ ISecretStore, ISecretStorePermission {
         
     )
         public
+        override
         onlyDIDOwnerOrProvider(_documentId)
     {
         documentPermissions[_documentId].permission[_grantee] = true;
@@ -176,6 +177,7 @@ ISecretStore, ISecretStorePermission {
         bytes32 _documentId
     )
         public
+        override
         onlyDIDOwnerOrProvider(_documentId)
     {
         documentPermissions[_documentId].permission[_grantee] = false;
@@ -185,13 +187,14 @@ ISecretStore, ISecretStorePermission {
     * @notice checkPermissions is called by Parity secret store
     * @param _documentId refers to the DID in which secret store will issue the decryption keys
     * @param _grantee is the address of the granted user or the DID provider
-    * @return true if the access was granted
+    * @return permissionGranted true if the access was granted
     */
     function checkPermissions(
         address _grantee,
         bytes32 _documentId
     )
         external view
+        override
         returns(bool permissionGranted)
     {
         DIDRegistry didRegistry = DIDRegistry(

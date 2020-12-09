@@ -168,7 +168,7 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
      *      Uninitialized to Unfulfilled.
      * @param _id unique condition identifier
      * @param _typeRef condition contract address
-     * @return the index of the created condition 
+     * @return size the index of the created condition 
      */
     function createCondition(
         bytes32 _id,
@@ -195,7 +195,7 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
      * @param _typeRef condition contract address
      * @param _timeLock start of the time window
      * @param _timeOut end of the time window
-     * @return the index of the created condition 
+     * @return size the index of the created condition 
      */
     function createCondition(
         bytes32 _id,
@@ -263,7 +263,7 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
 
     /**
      * @dev getConditionListSize 
-     * @return the length of the condition list 
+     * @return size the length of the condition list 
      */
     function getConditionListSize()
         external
@@ -275,7 +275,13 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
 
     /**
      * @dev getCondition  
-     * @return all the condition details 
+     * @return typeRef the type reference
+     * @return state condition state
+     * @return timeLock the time lock
+     * @return timeOut time out
+     * @return blockNumber block number
+     * @return lastUpdatedBy block number
+     * @return blockNumberUpdated block number updated
      */
     function getCondition(bytes32 _id)
         external
@@ -306,6 +312,7 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
     function getConditionState(bytes32 _id)
         external
         view
+        virtual
         returns (ConditionStoreLibrary.ConditionState)
     {
         return conditionList.conditions[_id].state;

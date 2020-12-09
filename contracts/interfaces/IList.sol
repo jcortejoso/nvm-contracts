@@ -14,6 +14,7 @@ interface IList {
     function has(
         bytes32 value
     ) 
+        virtual
         external 
         view
         returns(bool);
@@ -22,6 +23,7 @@ interface IList {
         bytes32 value,
         bytes32 id
     )
+        virtual
         external
         view
         returns(bool);

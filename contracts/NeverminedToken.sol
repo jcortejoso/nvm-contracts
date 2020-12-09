@@ -1,5 +1,7 @@
 pragma solidity 0.6.12;
-
+// Copyright 2020 Keyko GmbH.
+// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+// Code is Apache-2.0 and docs are CC-BY-4.0
 
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20CappedUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
@@ -8,7 +10,7 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 
 /**
  * @title Test Token Contract
- * @author Keyko & Ocean Protocol
+ * @author Keyko
  *
  * @dev Implementation of a Test Token.
  *      Test Token is an ERC20 token only for testing purposes

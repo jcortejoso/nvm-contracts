@@ -1,5 +1,8 @@
 pragma solidity 0.6.12;
-
+// Copyright 2020 Keyko GmbH.
+// This product includes software developed at BigchainDB GmbH and Ocean Protocol
+// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+// Code is Apache-2.0 and docs are CC-BY-4.0
 
 import './interfaces/IList.sol';
 import './libraries/HashListLibrary.sol';
@@ -130,6 +133,7 @@ contract HashLists is OwnableUpgradeable, IList {
     ) 
         external 
         view
+        override
         returns(bool)
     {
         return lists[id].has(value);
@@ -145,6 +149,7 @@ contract HashLists is OwnableUpgradeable, IList {
     )
         external
         view
+        override
         returns(bool)
     {
         bytes32 id = hash(msg.sender);

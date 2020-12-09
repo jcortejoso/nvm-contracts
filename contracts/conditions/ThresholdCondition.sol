@@ -113,7 +113,7 @@ contract ThresholdCondition is Condition {
     * @notice canFulfill check if condition can be fulfilled
     * @param _inputConditions array of input conditions IDs
     * @param threshold the required number of fulfilled input conditions
-    * @return true if can fulfill 
+    * @return _fulfill true if can fulfill 
     */
     function canFulfill(
         bytes32[] memory _inputConditions,
