@@ -101,7 +101,9 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
             createRole == address(0),
             'Role already assigned'
         );
-        OwnableUpgradeable.initialize(_owner);
+
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
         createRole = _owner;
     }
 

@@ -77,7 +77,8 @@ contract EscrowAccessSecretStoreTemplate is BaseEscrowTemplate {
             'Invalid address'
         );
 
-        OwnableUpgradeable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
 
         agreementStoreManager = AgreementStoreManager(
             _agreementStoreManagerAddress

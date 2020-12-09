@@ -19,7 +19,6 @@ interface ISecretStorePermission {
         address user,
         bytes32 documentKeyId
     )
-    virtual
     external;
     
     /**
@@ -29,6 +28,5 @@ interface ISecretStorePermission {
         address user,
         bytes32 documentKeyId
     )
-    virtual
     external;
 }

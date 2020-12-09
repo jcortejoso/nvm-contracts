@@ -3,9 +3,11 @@ pragma solidity 0.6.12;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
+/* solium-disable-next-line */
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20CappedUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+/* solium-disable-next-line */
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 /**
@@ -15,7 +17,11 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
  * @dev Implementation of a Test Token.
  *      Test Token is an ERC20 token only for testing purposes
  */
-contract NeverminedToken is OwnableUpgradeable, AccessControlUpgradeable, ERC20Upgradeable, ERC20CappedUpgradeable {
+contract NeverminedToken is
+OwnableUpgradeable,
+AccessControlUpgradeable,
+ERC20Upgradeable,
+ERC20CappedUpgradeable {
 
     using SafeMathUpgradeable for uint256;
 
@@ -27,7 +33,7 @@ contract NeverminedToken is OwnableUpgradeable, AccessControlUpgradeable, ERC20U
     */
     function initialize(
         address _owner,
-        address _initialMinter
+        address payable _initialMinter
     )
     public
     initializer
@@ -41,7 +47,7 @@ contract NeverminedToken is OwnableUpgradeable, AccessControlUpgradeable, ERC20U
         transferOwnership(_owner);
 
         // set initial minter, this has to be renounced after the setup!
-        AccessControlUpgradeable.grantRole("minter", _initialMinter);
+        AccessControlUpgradeable.grantRole('minter', _initialMinter);
     }
 
     /**
@@ -51,10 +57,31 @@ contract NeverminedToken is OwnableUpgradeable, AccessControlUpgradeable, ERC20U
      *
      * - minted tokens must not cause the total supply to go over the cap.
      */
-    function _beforeTokenTransfer(address from, address to, uint256 amount) 
-    internal 
-    override(ERC20CappedUpgradeable, ERC20Upgradeable) 
+    function _beforeTokenTransfer(address from, address to, uint256 amount)
+    internal
+    override(ERC20CappedUpgradeable, ERC20Upgradeable)
     {
         super._beforeTokenTransfer(from, to, amount);
     }
+
+    /** @dev Creates `amount` tokens and assigns them to `account`, increasing
+     * the total supply.
+     *
+     * Emits a {Transfer} event with `from` set to the zero address.
+     *
+     * Requirements:
+     *
+     * - `to` cannot be the zero address.
+     */
+    function mint(address account, uint256 amount)
+    external
+    returns (bool)
+    {
+        require(
+            AccessControlUpgradeable.hasRole('minter', account),
+            'Address not granted for minting tokens');
+        super._mint(account, amount);
+        return true;
+    }
+
 }

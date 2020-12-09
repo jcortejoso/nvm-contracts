@@ -51,7 +51,8 @@ contract LockRewardCondition is Condition {
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
-        OwnableUpgradeable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );

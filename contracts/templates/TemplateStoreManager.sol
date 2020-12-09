@@ -50,7 +50,8 @@ contract TemplateStoreManager is OwnableUpgradeable {
             'Invalid address'
         );
 
-        OwnableUpgradeable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        //transferOwnership(_owner);
     }
 
     /**

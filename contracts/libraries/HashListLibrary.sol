@@ -139,8 +139,6 @@ library HashListLibrary {
         delete _self.values[_self.values.length.sub(1)];
         // delete old value from indices
         delete _self.indices[value];
-        // update the list size
-        _self.values.length--;
         return true;
     }
     

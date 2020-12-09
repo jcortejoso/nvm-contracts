@@ -229,7 +229,8 @@ contract DIDRegistry is OwnableUpgradeable {
     public
     initializer
     {
-        OwnableUpgradeable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
         
         NULL_BYTES = new bytes(0);
         EMPTY_LIST = new bytes[](0);
