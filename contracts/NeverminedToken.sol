@@ -29,8 +29,8 @@ contract NeverminedToken is OwnableUpgradeable, AccessControlUpgradeable, ERC20U
         address _owner,
         address _initialMinter
     )
-        public
-        initializer
+    public
+    initializer
     {
         uint256 CAP = 1500000000;
         uint256 TOTALSUPPLY = CAP.mul(10 ** 18);
@@ -42,5 +42,19 @@ contract NeverminedToken is OwnableUpgradeable, AccessControlUpgradeable, ERC20U
 
         // set initial minter, this has to be renounced after the setup!
         AccessControlUpgradeable.grantRole("minter", _initialMinter);
+    }
+
+    /**
+     * @dev See {ERC20-_beforeTokenTransfer}.
+     *
+     * Requirements:
+     *
+     * - minted tokens must not cause the total supply to go over the cap.
+     */
+    function _beforeTokenTransfer(address from, address to, uint256 amount) 
+    internal 
+    override(ERC20CappedUpgradeable, ERC20Upgradeable) 
+    {
+        super._beforeTokenTransfer(from, to, amount);
     }
 }
