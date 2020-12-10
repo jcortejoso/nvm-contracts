@@ -170,7 +170,8 @@ async function setupContracts({
                 )
             }
 
-            await token.addMinter(
+            await token.grantRole(
+                web3.utils.toHex("minter"),
                 addressBook.Dispenser,
                 { from: roles.deployer }
             )
