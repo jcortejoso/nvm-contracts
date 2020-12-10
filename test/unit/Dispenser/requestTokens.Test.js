@@ -27,7 +27,7 @@ contract('Dispenser', (accounts) => {
         await dispenser.initialize(token.address, deployer)
 
         // register dispenser as minter in ocean token
-        await token.addMinter(dispenser.address)
+        await token.grantRole(web3.utils.toHex("minter"), dispenser.address)
     })
 
     describe('requestTokens', () => {

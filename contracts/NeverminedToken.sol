@@ -45,9 +45,9 @@ ERC20CappedUpgradeable {
         ERC20CappedUpgradeable.__ERC20Capped_init(TOTALSUPPLY);
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
-
+        
         // set initial minter, this has to be renounced after the setup!
-        AccessControlUpgradeable.grantRole('minter', _initialMinter);
+        AccessControlUpgradeable._setupRole('minter', _initialMinter);
     }
 
     /**
