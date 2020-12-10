@@ -24,7 +24,7 @@ contract('HashLists', (accounts) => {
     describe('has', () => {
         it('should return true if value exists', async () => {
             const newValue = await hashList.hash(accounts[1])
-            await hashList.add(
+            await hashList.methods["add(bytes32)"](
                 newValue,
                 {
                     from: owner

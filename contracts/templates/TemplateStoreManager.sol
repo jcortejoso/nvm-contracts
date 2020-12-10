@@ -51,7 +51,7 @@ contract TemplateStoreManager is OwnableUpgradeable {
         );
 
         OwnableUpgradeable.__Ownable_init();
-        //transferOwnership(_owner);
+        transferOwnership(_owner);
     }
 
     /**

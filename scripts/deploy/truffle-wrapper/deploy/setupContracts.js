@@ -5,7 +5,8 @@ async function approveTemplate({
     roles,
     templateAddress
 } = {}) {
-    if (await TemplateStoreManagerInstance.isOwner({ from: roles.deployer })) {
+    const contractOwner = await TemplateStoreManagerInstance.owner()
+    if (contractOwner == roles.deployer) {
         await TemplateStoreManagerInstance.approveTemplate(
             templateAddress,
             { from: roles.deployer }
@@ -31,7 +32,8 @@ async function transferOwnership({
         )
     }
 
-    if (await ContractInstance.isOwner({ from: roles.deployer })) {
+    const contractOwner = await ContractInstance.owner()
+    if (contractOwner == roles.deployer) {
         await ContractInstance.transferOwnership(
             roles.ownerWallet,
             { from: roles.deployer }

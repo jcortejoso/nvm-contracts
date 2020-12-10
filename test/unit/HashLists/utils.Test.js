@@ -26,7 +26,7 @@ contract('HashLists', (accounts) => {
     describe('get', () => {
         it('should return value by index', async () => {
             const newValue = await hashList.hash(accounts[1])
-            await hashList.add(
+            await hashList.methods["add(bytes32)"](
                 newValue,
                 {
                     from: owner
@@ -46,7 +46,7 @@ contract('HashLists', (accounts) => {
     describe('all', () => {
         it('should return all list values', async () => {
             const newValue = await hashList.hash(accounts[1])
-            await hashList.add(
+            await hashList.methods["add(bytes32)"](
                 newValue,
                 {
                     from: owner
@@ -63,7 +63,7 @@ contract('HashLists', (accounts) => {
     describe('indexOf', () => {
         it('should return index of value in a list', async () => {
             const newValue = await hashList.hash(accounts[1])
-            await hashList.add(
+            await hashList.methods["add(bytes32)"](
                 newValue,
                 {
                     from: owner
@@ -94,7 +94,7 @@ contract('HashLists', (accounts) => {
 
         it('should return true if indexed in case of add single element', async () => {
             const newValue = await hashList.hash(accounts[1])
-            await hashList.add(
+            await hashList.methods["add(bytes32)"](
                 newValue,
                 {
                     from: owner
@@ -159,7 +159,7 @@ contract('HashLists', (accounts) => {
     describe('size', () => {
         it('should return size', async () => {
             const newValue = await hashList.hash(accounts[1])
-            await hashList.add(
+            await hashList.methods["add(bytes32)"](
                 newValue,
                 {
                     from: owner
