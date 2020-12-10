@@ -24,7 +24,7 @@ contract('HashLists', (accounts) => {
     describe('update', () => {
         it('should fail if value does not exist', async () => {
             const newValue = await hashList.hash(accounts[1])
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 newValue,
                 {
                     from: owner
@@ -45,7 +45,7 @@ contract('HashLists', (accounts) => {
 
         it('should fail if old value equals new value', async () => {
             const oldValue = await hashList.hash(accounts[1])
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 oldValue,
                 {
                     from: owner
@@ -68,7 +68,7 @@ contract('HashLists', (accounts) => {
             const newValue = await hashList.hash(accounts[2])
             const listId = await hashList.hash(owner)
 
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 oldValue,
                 {
                     from: owner
@@ -99,7 +99,7 @@ contract('HashLists', (accounts) => {
         it('should fail in case of invalid list owner', async () => {
             const oldValue = await hashList.hash(accounts[1])
             const invalidOwner = accounts[5]
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 oldValue,
                 {
                     from: owner

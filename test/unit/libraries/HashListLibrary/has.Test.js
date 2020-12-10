@@ -24,7 +24,7 @@ contract('HashListLibrary', (accounts) => {
     describe('has', () => {
         it('should return true if value exists', async () => {
             const newValue = await hashListLibraryProxy.hash(accounts[1])
-            await hashListLibraryProxy.methods["add(bytes32)"](
+            await hashListLibraryProxy.methods['add(bytes32)'](
                 newValue,
                 {
                     from: owner

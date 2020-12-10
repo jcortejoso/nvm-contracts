@@ -24,7 +24,7 @@ contract('HashLists', (accounts) => {
     describe('add', () => {
         it('should add a new value to list', async () => {
             const newAccountHash = await hashList.hash(accounts[1])
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 newAccountHash,
                 {
                     from: owner
@@ -38,7 +38,7 @@ contract('HashLists', (accounts) => {
 
         it('should fail if value already exists', async () => {
             const newAccountHash = await hashList.hash(accounts[1])
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 newAccountHash,
                 {
                     from: owner
@@ -47,7 +47,7 @@ contract('HashLists', (accounts) => {
 
             // assert
             await assert.isRejected(
-                hashList.methods["add(bytes32)"](
+                hashList.methods['add(bytes32)'](
                     newAccountHash,
                     {
                         from: owner

@@ -121,7 +121,7 @@ contract('Whitelisting Condition', (accounts) => {
             const someone = accounts[9]
             const listOwner = createRole
             const value = await hashList.hash(someone)
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 value,
                 {
                     from: listOwner
@@ -167,7 +167,7 @@ contract('Whitelisting Condition', (accounts) => {
             const someone = accounts[9]
 
             const value = await hashList.hash(someone)
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 value,
                 {
                     from: owner
@@ -214,7 +214,7 @@ contract('Whitelisting Condition', (accounts) => {
             const someone = accounts[9]
 
             const value = await hashList.hash(someone)
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 value,
                 {
                     from: owner
@@ -258,7 +258,7 @@ contract('Whitelisting Condition', (accounts) => {
 
             const value = await hashList.hash(someone)
             const listOwner = createRole
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 value,
                 {
                     from: listOwner
@@ -311,7 +311,7 @@ contract('Whitelisting Condition', (accounts) => {
             const someone = accounts[9]
 
             const value = await hashList.hash(someone)
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 value,
                 {
                     from: owner

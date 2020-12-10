@@ -25,7 +25,7 @@ contract('HashList', (accounts) => {
         it('should remove value from list', async () => {
             const newAccountHash = await hashList.hash(accounts[1])
             const listId = await hashList.hash(owner)
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 newAccountHash,
                 {
                     from: owner
@@ -53,7 +53,7 @@ contract('HashList', (accounts) => {
 
         it('should fail to remove if value does not exist', async () => {
             const newAccountHash = await hashList.hash(accounts[1])
-            await hashList.methods["add(bytes32)"](
+            await hashList.methods['add(bytes32)'](
                 newAccountHash,
                 {
                     from: owner

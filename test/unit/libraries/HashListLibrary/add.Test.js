@@ -24,7 +24,7 @@ contract('HashListLibrary', (accounts) => {
     describe('add', () => {
         it('should add a new value to list', async () => {
             const newAccountHash = await hashListLibraryProxy.hash(accounts[1])
-            await hashListLibraryProxy.methods["add(bytes32)"](
+            await hashListLibraryProxy.methods['add(bytes32)'](
                 newAccountHash,
                 {
                     from: owner
@@ -40,7 +40,7 @@ contract('HashListLibrary', (accounts) => {
             const newAccountHash = await hashListLibraryProxy.hash(accounts[1])
             const invalidOwner = accounts[1]
             await assert.isRejected(
-                hashListLibraryProxy.methods["add(bytes32)"](
+                hashListLibraryProxy.methods['add(bytes32)'](
                     newAccountHash,
                     {
                         from: invalidOwner
@@ -52,7 +52,7 @@ contract('HashListLibrary', (accounts) => {
 
         it('should fail if value already exists', async () => {
             const newAccountHash = await hashListLibraryProxy.hash(accounts[1])
-            await hashListLibraryProxy.methods["add(bytes32)"](
+            await hashListLibraryProxy.methods['add(bytes32)'](
                 newAccountHash,
                 {
                     from: owner
@@ -61,7 +61,7 @@ contract('HashListLibrary', (accounts) => {
 
             // assert
             await assert.isRejected(
-                hashListLibraryProxy.methods["add(bytes32)"](
+                hashListLibraryProxy.methods['add(bytes32)'](
                     newAccountHash,
                     {
                         from: owner
