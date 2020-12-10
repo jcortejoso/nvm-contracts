@@ -18,7 +18,7 @@ contract('HashLists', (accounts) => {
         hashListLibrary = await HashListLibrary.new()
         HashLists.link('HashListLibrary', hashListLibrary.address)
         hashList = await HashLists.new()
-        await hashList.initialize(accounts[0], { from: owner })
+        await hashList.initialize(owner, { from: owner })
     })
 
     describe('update', () => {
@@ -87,7 +87,10 @@ contract('HashLists', (accounts) => {
             assert.strictEqual(
                 await hashList.has(
                     listId,
-                    newValue
+                    newValue,
+                    {
+                        from: owner
+                    }
                 ),
                 true
             )

@@ -42,7 +42,10 @@ contract('HashList', (accounts) => {
             assert.strictEqual(
                 await hashList.has(
                     listId,
-                    newAccountHash
+                    newAccountHash,
+                    {
+                        from: owner
+                    }
                 ),
                 false
             )

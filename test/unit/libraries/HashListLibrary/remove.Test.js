@@ -24,7 +24,7 @@ contract('HashListLibrary', (accounts) => {
     describe('remove', () => {
         it('should remove value from list', async () => {
             const newAccountHash = await hashListLibraryProxy.hash(accounts[1])
-            await hashListLibraryProxy.add(
+            await hashListLibraryProxy.methods["add(bytes32)"](
                 newAccountHash,
                 {
                     from: owner
@@ -48,7 +48,7 @@ contract('HashListLibrary', (accounts) => {
 
         it('should fail to remove if value does not exist', async () => {
             const newAccountHash = await hashListLibraryProxy.hash(accounts[1])
-            await hashListLibraryProxy.add(
+            await hashListLibraryProxy.methods["add(bytes32)"](
                 newAccountHash,
                 {
                     from: owner

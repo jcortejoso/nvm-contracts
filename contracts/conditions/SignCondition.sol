@@ -13,10 +13,6 @@ import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
  * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the Sign Condition
- *
- *      For more information, please refer the following link
- *      https://github.com/oceanprotocol/OEPs/issues/121
- *      TODO: update the OEP link 
  */
 contract SignCondition is Condition {
 
