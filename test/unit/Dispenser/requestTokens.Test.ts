@@ -1,8 +1,12 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
 /* global artifacts, contract, describe, it, beforeEach */
+import BigNumber from "bignumber.js";
+
 const testUtils = require('../../helpers/utils.js')
+// @ts-ignore
 const chai = require('chai')
+// @ts-ignore
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
@@ -11,8 +15,8 @@ const Dispenser = artifacts.require('Dispenser')
 const NeverminedToken = artifacts.require('NeverminedToken')
 
 contract('Dispenser', (accounts) => {
-    let dispenser
-    let token
+    let dispenser: any
+    let token: any
 
     const deployer = accounts[0]
     const someone = accounts[1]
@@ -39,8 +43,8 @@ contract('Dispenser', (accounts) => {
             )
 
             // assert
-            const balance = await token.balanceOf(someone)
-            assert.strictEqual(balance.toNumber(), 200)
+            const balance: BigNumber = new BigNumber(await token.balanceOf(someone))
+            assert.strictEqual(balance.dividedBy(10 ** 18).toNumber(), 200)
         })
 
         it('Should not transfer frequently', async () => {
@@ -59,8 +63,8 @@ contract('Dispenser', (accounts) => {
             )
 
             // assert
-            const balance = await token.balanceOf(someone)
-            assert.strictEqual(balance.toNumber(), 10)
+            const balance: BigNumber = new BigNumber(await token.balanceOf(someone))
+            assert.strictEqual(balance.dividedBy(10 ** 18).toNumber(), 10)
             testUtils.assertEmitted(result, 1, 'RequestFrequencyExceeded')
         })
 
