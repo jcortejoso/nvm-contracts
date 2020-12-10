@@ -18,8 +18,8 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
  *      Test Token is an ERC20 token only for testing purposes
  */
 contract NeverminedToken is
-OwnableUpgradeable,
 AccessControlUpgradeable,
+OwnableUpgradeable,
 ERC20Upgradeable,
 ERC20CappedUpgradeable {
 
@@ -43,8 +43,12 @@ ERC20CappedUpgradeable {
 
         ERC20Upgradeable.__ERC20_init('NeverminedToken', 'NVM');
         ERC20CappedUpgradeable.__ERC20Capped_init(TOTALSUPPLY);
+        
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
+        
+        AccessControlUpgradeable.__AccessControl_init();
+        AccessControlUpgradeable._setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         
         // set initial minter, this has to be renounced after the setup!
         AccessControlUpgradeable._setupRole('minter', _initialMinter);
