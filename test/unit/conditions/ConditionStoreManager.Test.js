@@ -162,8 +162,7 @@ contract('ConditionStoreManager', (accounts) => {
             await assert.isRejected(
                 conditionStoreManager.initialize(
                     otherCreateRole
-                ),
-                'Contract instance has already been initialized'
+                )
             )
             assert.strictEqual(
                 await conditionStoreManager.getCreateRole(),
