@@ -185,12 +185,12 @@ async function setupContracts({
             )
         }
 
-        //await token.renounceMinter({ from: roles.deployer })
+        // await token.renounceMinter({ from: roles.deployer })
         await token.revokeRole(
-                        web3.utils.toHex('minter'),
-                        '0x0',
-                        { from: roles.deployer }
-                    )
+            web3.utils.toHex('minter'),
+            roles.deployer,
+            { from: roles.deployer }
+        )
     }
 }
 
