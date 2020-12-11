@@ -26,4 +26,4 @@ jobs:
           yarn deploy:development --deeper-clean
           git status
         env:
-          NODE_OPTIONS: "--max-old-space-size=8000"
+          NODE_OPTIONS: "--max-old-space-size=7000"
