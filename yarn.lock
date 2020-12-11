@@ -183,10 +183,10 @@
     "@ethersproject/rlp" "^5.0.0"
     "@ethersproject/signing-key" "^5.0.0"
 
-"@nevermined-io/contract-tools@~0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@nevermined-io/contract-tools/-/contract-tools-0.2.3.tgz#4d6f81555da15db8ad8ab2c14ff4599538a278dd"
-  integrity sha512-k6rIOING2XmQu9Nb2iC1ZSrcYY4d8vwW1b6f5Ffgp2o9RF//GVl0r3KHis3ykLSWrBlIFQxTPCfIOtYGPIqgbg==
+"@nevermined-io/contract-tools@~0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@nevermined-io/contract-tools/-/contract-tools-0.2.4.tgz#52d73b024edb14eb643cda16262ad0c569fe7d92"
+  integrity sha512-mnb087DWaVeMmb0y4MVuUzQBej0LNeA45nEVQ2Aeb9T9RMhYFFGJzJhQiSsC0dBmQGaA3mcsl4X7y0tZPf+yHQ==
   dependencies:
     "@nevermined-io/multisigwallet" "^0.2.1"
     "@truffle/contract" "~4.2.5"

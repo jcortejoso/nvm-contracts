@@ -70,7 +70,7 @@
   "author": "Nevermined",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@nevermined-io/contract-tools": "~0.2.3",
+    "@nevermined-io/contract-tools": "~0.2.4",
     "@openzeppelin/contracts-upgradeable": "^3.3.0",
     "@openzeppelin/truffle-upgrades": "^1.3.0",
     "bignumber.js": "^9.0.0",
