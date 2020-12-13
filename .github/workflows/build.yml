@@ -21,7 +21,8 @@ jobs:
           yarn lint
           yarn clean
           yarn compile
-          yarn test:fast
+          yarn test:unit
+          yarn test:integration
           yarn test:upgrade
           yarn deploy:development --deeper-clean
           git status
