@@ -5,7 +5,6 @@ pragma solidity 0.6.12;
 
 /* solium-disable-next-line */
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20CappedUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 /* solium-disable-next-line */
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
@@ -20,7 +19,6 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 contract NeverminedToken is
 AccessControlUpgradeable,
 OwnableUpgradeable,
-ERC20Upgradeable,
 ERC20CappedUpgradeable {
 
     using SafeMathUpgradeable for uint256;
@@ -63,7 +61,7 @@ ERC20CappedUpgradeable {
      */
     function _beforeTokenTransfer(address from, address to, uint256 amount)
     internal
-    override(ERC20CappedUpgradeable, ERC20Upgradeable)
+    override
     {
         super._beforeTokenTransfer(from, to, amount);
     }
