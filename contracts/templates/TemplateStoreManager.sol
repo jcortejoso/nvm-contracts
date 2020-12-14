@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -6,7 +6,7 @@ pragma solidity 0.5.6;
 
 
 import './TemplateStoreLibrary.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title Template Store Manager
@@ -17,12 +17,9 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  *      a templateId defines the condition and reward types that are instantiated 
  *      in the ConditionStore. This contract manages the life cycle 
  *      of the template ( Propose --> Approve --> Revoke ).
- *      For more information please refer to this link:
- *      https://github.com/oceanprotocol/OEPs/issues/132
- *      TODO: link to OEP
  *      
  */
-contract TemplateStoreManager is Ownable {
+contract TemplateStoreManager is OwnableUpgradeable {
 
     using TemplateStoreLibrary for TemplateStoreLibrary.TemplateList;
 
@@ -30,7 +27,7 @@ contract TemplateStoreManager is Ownable {
 
     modifier onlyOwnerOrTemplateOwner(address _id){
         require(
-            isOwner() ||
+            msg.sender == owner() ||
             templateList.templates[_id].owner == msg.sender,
             'Invalid UpdateRole'
         );
@@ -53,7 +50,8 @@ contract TemplateStoreManager is Ownable {
             'Invalid address'
         );
 
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
     }
 
     /**
@@ -99,8 +97,10 @@ contract TemplateStoreManager is Ownable {
      * @notice getTemplate get more information about a template
      * @param _id unique template identifier which is basically
      *        the template contract address.
-     * @return template status, template owner, last updated by and
-     *        last updated at.
+     * @return state template status
+     * @return owner template owner
+     * @return lastUpdatedBy last updated by
+     * @return blockNumberUpdated last updated at.
      */
     function getTemplate(address _id)
         external
@@ -120,11 +120,12 @@ contract TemplateStoreManager is Ownable {
 
     /**
      * @notice getTemplateListSize number of templates
-     * @return number of templates
+     * @return size number of templates
      */
     function getTemplateListSize()
         external
         view
+        virtual
         returns (uint size)
     {
         return templateList.templateIds.length;

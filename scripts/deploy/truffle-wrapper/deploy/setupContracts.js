@@ -5,7 +5,8 @@ async function approveTemplate({
     roles,
     templateAddress
 } = {}) {
-    if (await TemplateStoreManagerInstance.isOwner({ from: roles.deployer })) {
+    const contractOwner = await TemplateStoreManagerInstance.owner()
+    if (contractOwner === roles.deployer) {
         await TemplateStoreManagerInstance.approveTemplate(
             templateAddress,
             { from: roles.deployer }
@@ -31,7 +32,8 @@ async function transferOwnership({
         )
     }
 
-    if (await ContractInstance.isOwner({ from: roles.deployer })) {
+    const contractOwner = await ContractInstance.owner()
+    if (contractOwner === roles.deployer) {
         await ContractInstance.transferOwnership(
             roles.ownerWallet,
             { from: roles.deployer }
@@ -170,7 +172,8 @@ async function setupContracts({
                 )
             }
 
-            await token.addMinter(
+            await token.grantRole(
+                web3.utils.toHex('minter'),
                 addressBook.Dispenser,
                 { from: roles.deployer }
             )
@@ -182,7 +185,12 @@ async function setupContracts({
             )
         }
 
-        await token.renounceMinter({ from: roles.deployer })
+        // await token.renounceMinter({ from: roles.deployer })
+        await token.revokeRole(
+            web3.utils.toHex('minter'),
+            roles.deployer,
+            { from: roles.deployer }
+        )
     }
 }
 

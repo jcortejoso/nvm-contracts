@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -78,7 +78,6 @@ library ConditionStoreLibrary {
     * @param _self is the ConditionList storage pointer
     * @param _id condition identifier
     * @param _newState the new state of the condition
-    * @return ConditionState 
     */
     function updateState(
         ConditionList storage _self,

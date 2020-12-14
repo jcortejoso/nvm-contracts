@@ -24,7 +24,7 @@ contract('HashListLibrary', (accounts) => {
     describe('index', () => {
         it('should revert error message if list already indexed', async () => {
             const newAccountHash = await hashListLibraryProxy.hash(accounts[1])
-            await hashListLibraryProxy.add(
+            await hashListLibraryProxy.methods['add(bytes32)'](
                 newAccountHash,
                 {
                     from: owner

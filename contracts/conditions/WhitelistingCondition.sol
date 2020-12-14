@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -9,7 +9,7 @@ import '../Common.sol';
 import './Condition.sol';
 import './ConditionStoreLibrary.sol';
 import '../interfaces/IList.sol';
-import 'openzeppelin-eth/contracts/cryptography/ECDSA.sol';
+import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
 /**
  * @title Whitelisting Condition
  * @author Keyko & Ocean Protocol
@@ -38,7 +38,8 @@ contract WhitelistingCondition is Condition, Common {
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );

@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -40,7 +40,8 @@ contract ThresholdCondition is Condition {
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
@@ -113,7 +114,7 @@ contract ThresholdCondition is Condition {
     * @notice canFulfill check if condition can be fulfilled
     * @param _inputConditions array of input conditions IDs
     * @param threshold the required number of fulfilled input conditions
-    * @return true if can fulfill 
+    * @return _fulfill true if can fulfill 
     */
     function canFulfill(
         bytes32[] memory _inputConditions,

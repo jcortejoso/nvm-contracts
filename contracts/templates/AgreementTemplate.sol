@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -7,7 +7,7 @@ pragma solidity 0.5.6;
 
 import './TemplateStoreLibrary.sol';
 import '../agreements/AgreementStoreManager.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title Agreement Template
@@ -19,7 +19,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  *      has the ability to create agreements from whitelisted 
  *      template
  */
-contract AgreementTemplate is Ownable {
+contract AgreementTemplate is OwnableUpgradeable {
 
     using TemplateStoreLibrary for TemplateStoreLibrary.TemplateList;
 
@@ -37,7 +37,7 @@ contract AgreementTemplate is Ownable {
      *          same condition that has the same index
      * @param _timeOuts list of time outs, each time out will be assigned to the 
      *          same condition that has the same index
-     * @return the index of the created agreement
+     * @return size the index of the created agreement
      */
     function createAgreement(
         bytes32 _id,

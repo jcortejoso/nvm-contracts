@@ -1,20 +1,29 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
+// Copyright 2020 Keyko GmbH.
+// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+// Code is Apache-2.0 and docs are CC-BY-4.0
 
-
-import 'openzeppelin-eth/contracts/token/ERC20/ERC20Capped.sol';
-import 'openzeppelin-eth/contracts/token/ERC20/ERC20Detailed.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+/* solium-disable-next-line */
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20CappedUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+/* solium-disable-next-line */
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 /**
  * @title Test Token Contract
- * @author Keyko & Ocean Protocol
+ * @author Keyko
  *
  * @dev Implementation of a Test Token.
  *      Test Token is an ERC20 token only for testing purposes
  */
-contract NeverminedToken is Ownable, ERC20Detailed, ERC20Capped {
+contract NeverminedToken is
+AccessControlUpgradeable,
+OwnableUpgradeable,
+ERC20Upgradeable,
+ERC20CappedUpgradeable {
 
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
 
     /**
     * @dev NeverminedToken Initializer
@@ -24,19 +33,59 @@ contract NeverminedToken is Ownable, ERC20Detailed, ERC20Capped {
     */
     function initialize(
         address _owner,
-        address _initialMinter
+        address payable _initialMinter
     )
-        public
-        initializer
+    public
+    initializer
     {
         uint256 CAP = 1500000000;
         uint256 TOTALSUPPLY = CAP.mul(10 ** 18);
 
-        ERC20Detailed.initialize('NeverminedToken', 'NVM', 18);
-        ERC20Capped.initialize(TOTALSUPPLY, _owner);
-        Ownable.initialize(_owner);
-
+        ERC20Upgradeable.__ERC20_init('NeverminedToken', 'NVM');
+        ERC20CappedUpgradeable.__ERC20Capped_init(TOTALSUPPLY);
+        
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
+        
+        AccessControlUpgradeable.__AccessControl_init();
+        AccessControlUpgradeable._setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        
         // set initial minter, this has to be renounced after the setup!
-        _addMinter(_initialMinter);
+        AccessControlUpgradeable._setupRole('minter', _initialMinter);
     }
+
+    /**
+     * @dev See {ERC20-_beforeTokenTransfer}.
+     *
+     * Requirements:
+     *
+     * - minted tokens must not cause the total supply to go over the cap.
+     */
+    function _beforeTokenTransfer(address from, address to, uint256 amount)
+    internal
+    override(ERC20CappedUpgradeable, ERC20Upgradeable)
+    {
+        super._beforeTokenTransfer(from, to, amount);
+    }
+
+    /** @dev Creates `amount` tokens and assigns them to `account`, increasing
+     * the total supply.
+     *
+     * Emits a {Transfer} event with `from` set to the zero address.
+     *
+     * Requirements:
+     *
+     * - `to` cannot be the zero address.
+     */
+    function mint(address account, uint256 amount)
+    external
+    returns (bool)
+    {
+        require(
+            AccessControlUpgradeable.hasRole('minter', msg.sender),
+            'Address not granted for minting tokens');
+        super._mint(account, amount);
+        return true;
+    }
+
 }

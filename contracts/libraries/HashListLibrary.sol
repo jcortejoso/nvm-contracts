@@ -1,11 +1,11 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
-import 'openzeppelin-eth/contracts/math/SafeMath.sol';
+import '@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol';
 
 /**
  * @title Hash List library
@@ -18,7 +18,7 @@ import 'openzeppelin-eth/contracts/math/SafeMath.sol';
 
 library HashListLibrary {
     
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
     
     struct List {
         address _owner;
@@ -139,8 +139,6 @@ library HashListLibrary {
         delete _self.values[_self.values.length.sub(1)];
         // delete old value from indices
         delete _self.indices[value];
-        // update the list size
-        _self.values.length--;
         return true;
     }
     

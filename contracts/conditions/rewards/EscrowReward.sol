@@ -1,5 +1,8 @@
-pragma solidity 0.5.6;
-
+pragma solidity 0.6.12;
+// Copyright 2020 Keyko GmbH.
+// This product includes software developed at BigchainDB GmbH and Ocean Protocol
+// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+// Code is Apache-2.0 and docs are CC-BY-4.0
 
 import './Reward.sol';
 import '../ConditionStoreLibrary.sol';
@@ -46,11 +49,12 @@ contract EscrowReward is Reward {
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        token = ERC20(_tokenAddress);
+        token = ERC20Upgradeable(_tokenAddress);
     }
 
    /**

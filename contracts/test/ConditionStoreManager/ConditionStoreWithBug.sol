@@ -1,5 +1,8 @@
-pragma solidity 0.5.6;
-
+pragma solidity 0.6.12;
+// Copyright 2020 Keyko GmbH.
+// This product includes software developed at BigchainDB GmbH and Ocean Protocol
+// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+// Code is Apache-2.0 and docs are CC-BY-4.0
 
 import '../../conditions/ConditionStoreManager.sol';
 
@@ -7,6 +10,7 @@ contract ConditionStoreWithBug is ConditionStoreManager {
     function getConditionState(bytes32 _id)
         public
         view
+        override
         returns (ConditionStoreLibrary.ConditionState)
     {
         // adding Bug here: shouldn't return fulfilled

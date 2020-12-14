@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -10,20 +10,19 @@ import '../conditions/ConditionStoreManager.sol';
 import '../registry/DIDRegistry.sol';
 import '../templates/TemplateStoreManager.sol';
 
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title Agreement Store Manager
  * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the Agreement Store.
- *      TODO: link to OEP
  *
  *      The agreement store generates conditions for an agreement template.
  *      Agreement templates must to be approved in the Template Store
  *      Each agreement is linked to the DID of an asset.
  */
-contract AgreementStoreManager is Ownable {
+contract AgreementStoreManager is OwnableUpgradeable {
 
     /**
      * @dev The Agreement Store Library takes care of the basic storage functions
@@ -63,7 +62,9 @@ contract AgreementStoreManager is Ownable {
             _didRegistryAddress != address(0),
             'Invalid address'
         );
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
+        
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
@@ -85,7 +86,7 @@ contract AgreementStoreManager is Ownable {
      * @param _conditionIds is a list of bytes32 content-addressed Condition IDs
      * @param _timeLocks is a list of uint time lock values associated to each Condition
      * @param _timeOuts is a list of uint time out values associated to each Condition
-     * @return the size of the agreement list after the create action.
+     * @return size the size of the agreement list after the create action.
      */
     function createAgreement(
         bytes32 _id,
@@ -137,7 +138,12 @@ contract AgreementStoreManager is Ownable {
      *      The agreement will create conditions of conditionType with conditionId.
      *      Only "approved" templates can access this function.
      * @param _id is the ID of the agreement.
-     * @return the agreement attributes.
+     * @return did
+     * @return didOwner
+     * @return templateId
+     * @return conditionIds
+     * @return lastUpdatedBy
+     * @return blockNumberUpdated
      */
     function getAgreement(bytes32 _id)
         external
@@ -162,7 +168,7 @@ contract AgreementStoreManager is Ownable {
     /**
      * @dev get the DID owner for this agreement with _id.
      * @param _id is the ID of the agreement.
-     * @return the DID owner associated with agreement.did from the DID registry.
+     * @return didOwner the DID owner associated with agreement.did from the DID registry.
      */
     function getAgreementDIDOwner(bytes32 _id)
         external
@@ -205,11 +211,12 @@ contract AgreementStoreManager is Ownable {
     }
 
     /**
-     * @return the length of the agreement list.
+     * @return size the length of the agreement list.
      */
     function getAgreementListSize()
         public
         view
+        virtual
         returns (uint size)
     {
         return agreementList.agreementIds.length;

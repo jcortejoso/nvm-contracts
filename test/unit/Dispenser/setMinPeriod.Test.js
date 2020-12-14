@@ -32,7 +32,8 @@ contract('Dispenser', (accounts) => {
                 dispenser.setMinPeriod(10, { from: someone }),
                 'revert'
             )
-            assert.equal(false, await dispenser.isOwner({ from: someone }))
+            const contractOwner = await dispenser.owner()
+            assert.notEqual(someone, contractOwner)
         })
     })
 })

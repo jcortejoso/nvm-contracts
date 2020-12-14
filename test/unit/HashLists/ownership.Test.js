@@ -20,7 +20,7 @@ contract('HashList', (accounts) => {
         hashList = await HashLists.new()
         await hashList.initialize(owner, { from: owner })
         const newAccountHash = await hashList.hash(accounts[1])
-        await hashList.add(
+        await hashList.methods['add(bytes32)'](
             newAccountHash,
             {
                 from: owner

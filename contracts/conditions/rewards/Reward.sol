@@ -1,9 +1,12 @@
-pragma solidity 0.5.6;
-
+pragma solidity 0.6.12;
+// Copyright 2020 Keyko GmbH.
+// This product includes software developed at BigchainDB GmbH and Ocean Protocol
+// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+// Code is Apache-2.0 and docs are CC-BY-4.0
 
 import '../Condition.sol';
 import '../ConditionStoreManager.sol';
-import 'openzeppelin-eth/contracts/token/ERC20/ERC20.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
  * @title Reward
@@ -17,7 +20,7 @@ import 'openzeppelin-eth/contracts/token/ERC20/ERC20.sol';
  *      TODO: update the OEP link 
  */
 contract Reward is Condition {
-    IERC20 internal token;
+    IERC20Upgradeable internal token;
 }
 
 

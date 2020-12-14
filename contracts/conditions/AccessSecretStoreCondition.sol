@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -76,8 +76,9 @@ ISecretStore, ISecretStorePermission {
     )
         external
         initializer()
-    {   
-        Ownable.initialize(_owner);
+    {
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
 
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
@@ -161,6 +162,7 @@ ISecretStore, ISecretStorePermission {
         
     )
         public
+        override
         onlyDIDOwnerOrProvider(_documentId)
     {
         documentPermissions[_documentId].permission[_grantee] = true;
@@ -176,6 +178,7 @@ ISecretStore, ISecretStorePermission {
         bytes32 _documentId
     )
         public
+        override
         onlyDIDOwnerOrProvider(_documentId)
     {
         documentPermissions[_documentId].permission[_grantee] = false;
@@ -185,13 +188,14 @@ ISecretStore, ISecretStorePermission {
     * @notice checkPermissions is called by Parity secret store
     * @param _documentId refers to the DID in which secret store will issue the decryption keys
     * @param _grantee is the address of the granted user or the DID provider
-    * @return true if the access was granted
+    * @return permissionGranted true if the access was granted
     */
     function checkPermissions(
         address _grantee,
         bytes32 _documentId
     )
         external view
+        override
         returns(bool permissionGranted)
     {
         DIDRegistry didRegistry = DIDRegistry(

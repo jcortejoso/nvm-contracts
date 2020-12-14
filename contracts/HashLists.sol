@@ -1,9 +1,12 @@
-pragma solidity 0.5.6;
-
+pragma solidity 0.6.12;
+// Copyright 2020 Keyko GmbH.
+// This product includes software developed at BigchainDB GmbH and Ocean Protocol
+// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+// Code is Apache-2.0 and docs are CC-BY-4.0
 
 import './interfaces/IList.sol';
 import './libraries/HashListLibrary.sol';
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title HashLists contract
@@ -17,7 +20,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  *      same condition.
  */
 
-contract HashLists is Ownable, IList {
+contract HashLists is OwnableUpgradeable, IList {
     
     using HashListLibrary for HashListLibrary.List;        
     mapping(bytes32 => HashListLibrary.List) lists;
@@ -32,7 +35,8 @@ contract HashLists is Ownable, IList {
     )
         public
     {
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
     }
     
     /**
@@ -129,6 +133,7 @@ contract HashLists is Ownable, IList {
     ) 
         external 
         view
+        override
         returns(bool)
     {
         return lists[id].has(value);
@@ -144,6 +149,7 @@ contract HashLists is Ownable, IList {
     )
         external
         view
+        override
         returns(bool)
     {
         bytes32 id = hash(msg.sender);

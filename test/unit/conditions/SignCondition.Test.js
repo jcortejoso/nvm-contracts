@@ -124,8 +124,7 @@ contract('SignCondition constructor', (accounts) => {
                 signCondition.fulfill(
                     agreementId, message, publicKey,
                     constants.bytes32.one
-                ),
-                constants.condition.sign.error.couldNotRecoverSignature
+                )
             )
         })
 

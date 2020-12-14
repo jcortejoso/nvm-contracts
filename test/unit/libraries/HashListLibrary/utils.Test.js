@@ -24,7 +24,7 @@ contract('HashListLibrary', (accounts) => {
     describe('get', () => {
         it('should return value by index', async () => {
             const newValue = await hashListLibraryProxy.hash(accounts[1])
-            await hashListLibraryProxy.add(
+            await hashListLibraryProxy.methods['add(bytes32)'](
                 newValue,
                 {
                     from: owner
@@ -41,7 +41,7 @@ contract('HashListLibrary', (accounts) => {
     describe('all', () => {
         it('should return all list values', async () => {
             const newValue = await hashListLibraryProxy.hash(accounts[1])
-            await hashListLibraryProxy.add(
+            await hashListLibraryProxy.methods['add(bytes32)'](
                 newValue,
                 {
                     from: owner
@@ -58,7 +58,7 @@ contract('HashListLibrary', (accounts) => {
     describe('indexOf', () => {
         it('should return index of value in a list', async () => {
             const newValue = await hashListLibraryProxy.hash(accounts[1])
-            await hashListLibraryProxy.add(
+            await hashListLibraryProxy.methods['add(bytes32)'](
                 newValue,
                 {
                     from: owner
@@ -89,7 +89,7 @@ contract('HashListLibrary', (accounts) => {
 
         it('should return true if indexed in case of add single element', async () => {
             const newValue = await hashListLibraryProxy.hash(accounts[1])
-            await hashListLibraryProxy.add(
+            await hashListLibraryProxy.methods['add(bytes32)'](
                 newValue,
                 {
                     from: owner
@@ -154,7 +154,7 @@ contract('HashListLibrary', (accounts) => {
     describe('size', () => {
         it('should return size', async () => {
             const newValue = await hashListLibraryProxy.hash(accounts[1])
-            await hashListLibraryProxy.add(
+            await hashListLibraryProxy.methods['add(bytes32)'](
                 newValue,
                 {
                     from: owner

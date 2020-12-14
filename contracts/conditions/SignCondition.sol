@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -7,16 +7,12 @@ pragma solidity 0.5.6;
 
 import './Condition.sol';
 import './ConditionStoreLibrary.sol';
-import 'openzeppelin-eth/contracts/cryptography/ECDSA.sol';
+import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
 /**
  * @title Sign Condition
  * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the Sign Condition
- *
- *      For more information, please refer the following link
- *      https://github.com/oceanprotocol/OEPs/issues/121
- *      TODO: update the OEP link 
  */
 contract SignCondition is Condition {
 
@@ -39,7 +35,8 @@ contract SignCondition is Condition {
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
-        Ownable.initialize(_owner);
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
@@ -78,7 +75,7 @@ contract SignCondition is Condition {
         returns (ConditionStoreLibrary.ConditionState)
     {
         require(
-            ECDSA.recover(_message, _signature) == _publicKey,
+            ECDSAUpgradeable.recover(_message, _signature) == _publicKey,
             'Could not recover signature'
         );
         return super.fulfill(

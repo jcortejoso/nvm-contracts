@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -9,7 +9,7 @@ import '../Common.sol';
 import '../libraries/EpochLibrary.sol';
 import './ConditionStoreLibrary.sol';
 
-import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title Condition Store Manager
@@ -28,7 +28,7 @@ import 'openzeppelin-eth/contracts/ownership/Ownable.sol';
  *      https://github.com/oceanprotocol/OEPs/issues/119
  *      TODO: update the OEP link
  */
-contract ConditionStoreManager is Ownable, Common {
+contract ConditionStoreManager is OwnableUpgradeable, Common {
 
     using ConditionStoreLibrary for ConditionStoreLibrary.ConditionList;
     using EpochLibrary for EpochLibrary.EpochList;
@@ -101,7 +101,9 @@ contract ConditionStoreManager is Ownable, Common {
             createRole == address(0),
             'Role already assigned'
         );
-        Ownable.initialize(_owner);
+
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
         createRole = _owner;
     }
 
@@ -168,7 +170,7 @@ contract ConditionStoreManager is Ownable, Common {
      *      Uninitialized to Unfulfilled.
      * @param _id unique condition identifier
      * @param _typeRef condition contract address
-     * @return the index of the created condition 
+     * @return size the index of the created condition 
      */
     function createCondition(
         bytes32 _id,
@@ -195,7 +197,7 @@ contract ConditionStoreManager is Ownable, Common {
      * @param _typeRef condition contract address
      * @param _timeLock start of the time window
      * @param _timeOut end of the time window
-     * @return the index of the created condition 
+     * @return size the index of the created condition 
      */
     function createCondition(
         bytes32 _id,
@@ -263,7 +265,7 @@ contract ConditionStoreManager is Ownable, Common {
 
     /**
      * @dev getConditionListSize 
-     * @return the length of the condition list 
+     * @return size the length of the condition list 
      */
     function getConditionListSize()
         external
@@ -275,7 +277,13 @@ contract ConditionStoreManager is Ownable, Common {
 
     /**
      * @dev getCondition  
-     * @return all the condition details 
+     * @return typeRef the type reference
+     * @return state condition state
+     * @return timeLock the time lock
+     * @return timeOut time out
+     * @return blockNumber block number
+     * @return lastUpdatedBy block number
+     * @return blockNumberUpdated block number updated
      */
     function getCondition(bytes32 _id)
         external
@@ -306,6 +314,7 @@ contract ConditionStoreManager is Ownable, Common {
     function getConditionState(bytes32 _id)
         external
         view
+        virtual
         returns (ConditionStoreLibrary.ConditionState)
     {
         return conditionList.conditions[_id].state;

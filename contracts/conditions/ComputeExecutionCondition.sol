@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -67,8 +67,9 @@ contract ComputeExecutionCondition is Condition {
     )
         external
         initializer()
-    {   
-        Ownable.initialize(_owner);
+    {
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(_owner);
 
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress

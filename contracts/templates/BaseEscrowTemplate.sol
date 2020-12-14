@@ -1,4 +1,4 @@
-pragma solidity 0.5.6;
+pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -46,7 +46,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
     * @param _timeOuts the ending point of the time window ,time lock is 
     *       in block number not seconds
     * @param _accessConsumer consumer address
-    * @return the agreement index
+    * @return size the agreement index
     */
     function createAgreement(
         bytes32 _id,
@@ -105,7 +105,8 @@ contract BaseEscrowTemplate is AgreementTemplate {
     /**
     * @notice getAgreementData return the agreement Data
     * @param _id SEA agreement unique identifier
-    * @return the agreement consumer and provider addresses
+    * @return accessConsumer the agreement consumer
+    * @return accessProvider the provider addresses
     */
     function getAgreementData(bytes32 _id)
         external
