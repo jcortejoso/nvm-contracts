@@ -6,8 +6,8 @@ pragma solidity 0.6.12;
 
 
 import './DIDRegistryLibrary.sol';
+import './ProvenanceRegistry.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
 
 /**
  * @title DID Registry
@@ -15,7 +15,7 @@ import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
  *
  * @dev Implementation of the DID Registry.
  */
-contract DIDRegistry is OwnableUpgradeable {
+contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry {
 
     /**
      * @dev The DIDRegistry Library takes care of the basic DID storage functions.
@@ -26,44 +26,10 @@ contract DIDRegistry is OwnableUpgradeable {
      * @dev state storage for the DID registry
      */
     DIDRegistryLibrary.DIDRegisterList internal didRegisterList;
-
+    
     // DID -> Address -> Boolean Permission
-    mapping(bytes32 => mapping(address => bool)) DIDPermissions;
-
-    /**
-     * @dev The DIDRegistryLibrary Library takes care of the basic provenance storage functions.
-     */
-    /* solium-disable-next-line */
-    using DIDRegistryLibrary for DIDRegistryLibrary.ProvenanceRegistryList;
-
-    /**
-     * @dev state storage for the Provenance registry
-     */
-    /* solium-disable-next-line */
-    DIDRegistryLibrary.ProvenanceRegistryList internal provenanceRegisterList;
-
-    // W3C Provenance Methods
-    enum ProvenanceMethod {
-        ENTITY,
-        ACTIVITY,
-        WAS_GENERATED_BY,
-        USED,
-        WAS_INFORMED_BY,
-        WAS_STARTED_BY,
-        WAS_ENDED_BY,
-        WAS_INVALIDATED_BY,
-        WAS_DERIVED_FROM,
-        AGENT,
-        WAS_ATTRIBUTED_TO,
-        WAS_ASSOCIATED_WITH,
-        ACTED_ON_BEHALF
-    }
-
-    bytes32 constant NULL_B32 = '';
-    address constant NULL_ADDRESS = address(0x0);
-    uint constant NULL_INT = 0;
-    bytes NULL_BYTES;
-    bytes[] EMPTY_LIST;
+    mapping(bytes32 => mapping(address => bool)) internal didPermissions;
+    
 
     //////////////////////////////////////////////////////////////
     ////////  MODIFIERS   ////////////////////////////////////////
@@ -155,67 +121,6 @@ contract DIDRegistry is OwnableUpgradeable {
         address _delegate
     );
 
-    /**
-    * Provenance Events
-    */
-    event ProvenanceAttributeRegistered(
-        bytes32 indexed provId,
-        bytes32 indexed _did,
-        address indexed _agentId,
-        bytes32 _activityId,
-        bytes32 _relatedDid,
-        address _agentInvolvedId,
-        ProvenanceMethod _method,
-        string _attributes,
-        uint256 _blockNumberUpdated
-    );
-
-    event WasGeneratedBy(
-        bytes32 indexed _did,
-        address indexed _agentId,
-        bytes32 indexed _activityId,
-        bytes32 provId,
-        string _attributes,
-        uint256 _blockNumberUpdated
-    );
-
-    event Used(
-        bytes32 indexed _did,
-        address indexed _agentId,
-        bytes32 indexed _activityId,
-        bytes32 provId,
-        string _attributes,
-        uint256 _blockNumberUpdated
-    );
-
-    event WasDerivedFrom(
-        bytes32 indexed _newEntityDid,
-        bytes32 indexed _usedEntityDid,
-        address indexed _agentId,
-        bytes32 _activityId,
-        bytes32 provId,
-        string _attributes,
-        uint256 _blockNumberUpdated
-    );
-
-    event WasAssociatedWith(
-        bytes32 indexed _entityDid,
-        address indexed _agentId,
-        bytes32 indexed _activityId,
-        bytes32 provId,
-        string _attributes,
-        uint256 _blockNumberUpdated
-    );
-
-    event ActedOnBehalf(
-        bytes32 indexed _entityDid,
-        address indexed _delegateAgentId,
-        address indexed _responsibleAgentId,
-        bytes32 _activityId,
-        bytes32 provId,
-        string _attributes,
-        uint256 _blockNumberUpdated
-    );
 
 
     /**
@@ -231,7 +136,7 @@ contract DIDRegistry is OwnableUpgradeable {
     {
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
-        
+
         NULL_BYTES = new bytes(0);
         EMPTY_LIST = new bytes[](0);
     }
@@ -283,6 +188,7 @@ contract DIDRegistry is OwnableUpgradeable {
         string memory _attributes
     )
     public
+    onlyValidAttributes(_attributes)
     returns (uint size)
     {
         require(
@@ -321,18 +227,7 @@ contract DIDRegistry is OwnableUpgradeable {
 
         return updatedSize;
     }
-
-
-    /**
-     * @notice Implements the W3C PROV Generation action
-     *
-     * @param _provId unique identifier referring to the provenance entry     
-     * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity created
-     * @param _agentId refers to address of the agent creating the provenance record
-     * @param _activityId refers to activity
-     * @param _attributes refers to the provenance attributes
-     * @return the number of the new provenance size
-     */
+    
     function wasGeneratedBy(
         bytes32 _provId,
         bytes32 _did,
@@ -341,60 +236,15 @@ contract DIDRegistry is OwnableUpgradeable {
         string memory _attributes
     )
     internal
+    override
     onlyDIDOwner(_did)
-    onlyValidAttributes(_attributes)
     returns (bool)
     {
-
-        provenanceRegisterList.createProvenanceEvent(
-            _provId,
-            _did,
-            NULL_B32,
-            _agentId,
-            _activityId,
-            NULL_ADDRESS,
-            uint8(ProvenanceMethod.WAS_GENERATED_BY),
-            msg.sender,
-            NULL_BYTES // No signatures between parties needed 
-        );
-
-        /* emitting _attributes here to avoid expensive storage */
-        emit ProvenanceAttributeRegistered(
-            _provId,
-            _did,
-            provenanceRegisterList.provenanceRegistry[_did].createdBy,
-            _activityId,
-            NULL_B32,
-            NULL_ADDRESS,
-            ProvenanceMethod.WAS_GENERATED_BY,
-            _attributes,
-            block.number
-        );
-
-        emit WasGeneratedBy(
-            _did,
-            provenanceRegisterList.provenanceRegistry[_did].createdBy,
-            _activityId,
-            _provId,
-            _attributes,
-            block.number
-        );
-
-        return true;
+        return super.wasGeneratedBy(
+            _provId, _did, _agentId, _activityId, _attributes);
     }
 
-
-    /**
-     * @notice Implements the W3C PROV Usage action
-     *
-     * @param _provId unique identifier referring to the provenance entry     
-     * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity created
-     * @param _agentId refers to address of the agent creating the provenance record
-     * @param _activityId refers to activity
-     * @param _signatureUsing refers to the digital signature provided by the agent using the _did     
-     * @param _attributes refers to the provenance attributes
-     * @return success true if the action was properly registered
-    */
+    
     function used(
         bytes32 _provId,
         bytes32 _did,
@@ -404,63 +254,16 @@ contract DIDRegistry is OwnableUpgradeable {
         string memory _attributes
     )
     public
+    override
     onlyOwnerProviderOrDelegated(_did)
     onlyValidAttributes(_attributes)
     returns (bool success)
     {
-        
-//        require(
-//            provenanceSignatureIsCorrect(_agentId, _provId, _signatureUsing),
-//            'The agent signature is not valid');
-        
-        provenanceRegisterList.createProvenanceEvent(
-            _provId,
-            _did,
-            NULL_B32,
-            _agentId,
-            _activityId,
-            NULL_ADDRESS,
-            uint8(ProvenanceMethod.USED),
-            msg.sender,
-            _signatureUsing
-        );
-
-        /* emitting _attributes here to avoid expensive storage */
-        emit ProvenanceAttributeRegistered(
-            _provId,
-            _did,
-            _agentId,
-            _activityId,
-            NULL_B32,
-            NULL_ADDRESS,
-            ProvenanceMethod.USED,
-            _attributes,
-            block.number
-        );
-
-        emit Used(
-            _did,
-            _agentId,
-            _activityId,
-            _provId,
-            _attributes,
-            block.number
-        );
-
-        return true;
+        return super.used(
+            _provId, _did, _agentId, _activityId, _signatureUsing, _attributes);
     }
-
-    /**
-     * @notice Implements the W3C PROV Derivation action
-     *
-     * @param _provId unique identifier referring to the provenance entry     
-     * @param _newEntityDid refers to decentralized identifier (a bytes32 length ID) of the entity created
-     * @param _usedEntityDid refers to decentralized identifier (a bytes32 length ID) of the entity used to derive the new did
-     * @param _agentId refers to address of the agent creating the provenance record
-     * @param _activityId refers to activity
-     * @param _attributes refers to the provenance attributes
-     * @return success true if the action was properly registered
-     */
+    
+    
     function wasDerivedFrom(
         bytes32 _provId,
         bytes32 _newEntityDid,
@@ -470,59 +273,16 @@ contract DIDRegistry is OwnableUpgradeable {
         string memory _attributes
     )
     public
+    override
     onlyOwnerProviderOrDelegated(_usedEntityDid)
     onlyValidAttributes(_attributes)
     returns (bool success)
     {
-
-        provenanceRegisterList.createProvenanceEvent(
-            _provId,
-            _newEntityDid,
-            _usedEntityDid,
-            _agentId,
-            _activityId,
-            NULL_ADDRESS,
-            uint8(ProvenanceMethod.WAS_DERIVED_FROM),
-            msg.sender,
-            NULL_BYTES // No signatures between parties needed 
-        );
-
-        /* emitting _attributes here to avoid expensive storage */
-        emit ProvenanceAttributeRegistered(
-            _provId,
-            _newEntityDid,
-            _agentId,
-            _activityId,
-            _usedEntityDid,
-            NULL_ADDRESS,
-            ProvenanceMethod.WAS_DERIVED_FROM,
-            _attributes,
-            block.number
-        );
-
-        emit WasDerivedFrom(
-            _newEntityDid,
-            _usedEntityDid,
-            _agentId,
-            _activityId,
-            _provId,
-            _attributes,
-            block.number
-        );
-
-        return true;
+        return super.wasDerivedFrom(
+            _provId, _newEntityDid, _usedEntityDid, _agentId, _activityId, _attributes);
     }
 
-    /**
-     * @notice Implements the W3C PROV Association action
-     *
-     * @param _provId unique identifier referring to the provenance entry     
-     * @param _did refers to decentralized identifier (a bytes32 length ID) of the entity
-     * @param _agentId refers to address of the agent creating the provenance record
-     * @param _activityId refers to activity
-     * @param _attributes refers to the provenance attributes
-     * @return success true if the action was properly registered
-    */
+    
     function wasAssociatedWith(
         bytes32 _provId,
         bytes32 _did,
@@ -531,48 +291,16 @@ contract DIDRegistry is OwnableUpgradeable {
         string memory _attributes
     )
     public
+    override
     onlyOwnerProviderOrDelegated(_did)
     onlyValidAttributes(_attributes)
     returns (bool success)
     {
-
-        provenanceRegisterList.createProvenanceEvent(
-            _provId,
-            _did,
-            NULL_B32,
-            _agentId,
-            _activityId,
-            NULL_ADDRESS,
-            uint8(ProvenanceMethod.WAS_ASSOCIATED_WITH),
-            msg.sender,
-            NULL_BYTES // No signatures between parties needed 
-        );
-
-        /* emitting _attributes here to avoid expensive storage */
-        emit ProvenanceAttributeRegistered(
-            _provId,
-            _did,
-            _agentId,
-            _activityId,
-            NULL_B32,
-            NULL_ADDRESS,
-            ProvenanceMethod.WAS_ASSOCIATED_WITH,
-            _attributes,
-            block.number
-        );
-
-        emit WasAssociatedWith(
-            _did,
-            _agentId,
-            _activityId,
-            _provId,
-            _attributes,
-            block.number
-        );
-
-        return true;
+        return super.wasAssociatedWith(
+            _provId, _did, _agentId, _activityId, _attributes);
     }
 
+    
     /**
      * @notice Implements the W3C PROV Delegation action
      * Each party involved in this method (_delegateAgentId & _responsibleAgentId) must provide a valid signature.
@@ -597,52 +325,18 @@ contract DIDRegistry is OwnableUpgradeable {
         string memory _attributes
     )
     public
+    override
     onlyOwnerProviderOrDelegated(_did)
     onlyValidAttributes(_attributes)
     returns (bool success)
     {
-
-        provenanceRegisterList.createProvenanceEvent(
-            _provId,
-            _did,
-            NULL_B32,
-            _delegateAgentId,
-            _activityId,
-            _responsibleAgentId,
-            uint8(ProvenanceMethod.ACTED_ON_BEHALF),
-            msg.sender,
-            _signatureDelegate
-        );
-
+        super.actedOnBehalf(
+            _provId, _did, _delegateAgentId, _responsibleAgentId, _activityId, _signatureDelegate, _attributes);
         addDIDProvenanceDelegate(_did, _delegateAgentId);
-
-        /* emitting _attributes here to avoid expensive storage */
-        emit ProvenanceAttributeRegistered(
-            _provId,
-            _did,
-            _delegateAgentId,
-            _activityId,
-            NULL_B32,
-            _responsibleAgentId,
-            ProvenanceMethod.ACTED_ON_BEHALF,
-            _attributes,
-            block.number
-        );
-
-        emit ActedOnBehalf(
-            _did,
-            _delegateAgentId,
-            _responsibleAgentId,
-            _activityId,
-            _provId,
-            _attributes,
-            block.number
-        );
-
         return true;
-
     }
 
+    
     /**
      * @notice addDIDProvider add new DID provider.
      *
@@ -907,7 +601,7 @@ contract DIDRegistry is OwnableUpgradeable {
             _grantee != address(0),
             'Invalid grantee address'
         );
-        DIDPermissions[_did][_grantee] = true;
+        didPermissions[_did][_grantee] = true;
         emit DIDPermissionGranted(
             _did,
             msg.sender,
@@ -927,10 +621,10 @@ contract DIDRegistry is OwnableUpgradeable {
     internal
     {
         require(
-            DIDPermissions[_did][_grantee],
+            didPermissions[_did][_grantee],
             'Grantee already was revoked'
         );
-        DIDPermissions[_did][_grantee] = false;
+        didPermissions[_did][_grantee] = false;
         emit DIDPermissionRevoked(
             _did,
             msg.sender,
@@ -952,7 +646,7 @@ contract DIDRegistry is OwnableUpgradeable {
     view
     returns(bool)
     {
-        return DIDPermissions[_did][_grantee];
+        return didPermissions[_did][_grantee];
     }
 
 
@@ -989,24 +683,16 @@ contract DIDRegistry is OwnableUpgradeable {
         bytes memory signature
     )
     {
-        did = provenanceRegisterList
-            .provenanceRegistry[_provId].did;
-        relatedDid = provenanceRegisterList
-            .provenanceRegistry[_provId].relatedDid;
-        agentId = provenanceRegisterList
-            .provenanceRegistry[_provId].agentId;
-        activityId = provenanceRegisterList
-            .provenanceRegistry[_provId].activityId;
-        agentInvolvedId = provenanceRegisterList
-            .provenanceRegistry[_provId].agentInvolvedId;
-        method = provenanceRegisterList
-            .provenanceRegistry[_provId].method;
-        createdBy = provenanceRegisterList
-            .provenanceRegistry[_provId].createdBy;
-        blockNumberUpdated = provenanceRegisterList
-            .provenanceRegistry[_provId].blockNumberUpdated;
-        signature = provenanceRegisterList
-            .provenanceRegistry[_provId].signature;
+        did = provenanceRegistry.list[_provId].did;
+        relatedDid = provenanceRegistry.list[_provId].relatedDid;
+        agentId = provenanceRegistry.list[_provId].agentId;
+        activityId = provenanceRegistry.list[_provId].activityId;
+        agentInvolvedId = provenanceRegistry.list[_provId].agentInvolvedId;
+        method = provenanceRegistry.list[_provId].method;
+        createdBy = provenanceRegistry.list[_provId].createdBy;
+        blockNumberUpdated = provenanceRegistry
+            .list[_provId].blockNumberUpdated;
+        signature = provenanceRegistry.list[_provId].signature;
     }
     
     /**
@@ -1034,25 +720,7 @@ contract DIDRegistry is OwnableUpgradeable {
     view
     returns (address provenanceOwner)
     {
-        return provenanceRegisterList.provenanceRegistry[_did].createdBy;
-    }
-
-    /**
-    * @param _agentId The address of the agent
-    * @param _hash bytes32 message, the hash is the signed message. What is recovered is the signer address.
-    * @param _signature Signatures provided by the agent
-    * @return true if the signature correspond to the agent address        
-    */
-    function provenanceSignatureIsCorrect(
-        address _agentId,
-        bytes32 _hash,
-        bytes memory _signature
-    )
-    public
-    pure
-    returns(bool)
-    {
-        return ECDSAUpgradeable.recover(_hash, _signature) == _agentId;
+        return provenanceRegistry.list[_did].createdBy;
     }
 
 

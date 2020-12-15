@@ -127,7 +127,7 @@ contract ThresholdCondition is Condition {
         uint256 counter = 0;
         _fulfill = false;
         ConditionStoreLibrary.ConditionState inputConditionState;
-        ConditionStoreLibrary.ConditionState Fulfilled;
+        ConditionStoreLibrary.ConditionState Fulfilled; // solhint-disable-line
         Fulfilled = ConditionStoreLibrary.ConditionState.Fulfilled;
         
         for(uint i = 0; i < _inputConditions.length; i++)
