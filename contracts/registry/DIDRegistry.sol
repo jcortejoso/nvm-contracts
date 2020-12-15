@@ -8,7 +8,7 @@ pragma solidity 0.6.12;
 import './DIDRegistryLibrary.sol';
 import './ProvenanceRegistry.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol";
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
 
 /**
  * @title DID Registry
@@ -227,7 +227,7 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry, ERC1155BurnableU
         wasGeneratedBy(
             _did, _did, msg.sender, _activityId, _attributes);
 
-        _mint(msg.sender, uint256(_did), 1, "");
+        _mint(msg.sender, uint256(_did), 1, '');
         
         return updatedSize;
     }

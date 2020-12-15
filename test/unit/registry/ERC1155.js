@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* global artifacts, web3, contract, describe, it */
+/* global artifacts, contract, describe, it */
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
@@ -9,15 +9,9 @@ const Common = artifacts.require('Common')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
 const testUtils = require('../../helpers/utils.js')
-const constants = require('../../helpers/constants.js')
 
 contract('DIDRegistry + ERC1155', (accounts) => {
     const owner = accounts[1]
-
-    const someone = accounts[5]
-    const delegates = [accounts[6], accounts[7]]
-    const providers = [accounts[8], accounts[9]]
-    const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
 
     async function setupTest() {
         const didRegistryLibrary = await DIDRegistryLibrary.new()
@@ -39,7 +33,7 @@ contract('DIDRegistry + ERC1155', (accounts) => {
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             const result = await didRegistry.registerAttribute(
-                did, checksum, providers, value,
+                did, checksum, [], value,
                 {
                     from: owner
                 }
@@ -51,11 +45,8 @@ contract('DIDRegistry + ERC1155', (accounts) => {
                 'TransferSingle'
             )
 
-            const balance = await didRegistry.balanceOf(owner, did);
+            const balance = await didRegistry.balanceOf(owner, did)
             assert.strictEqual(1, balance.toNumber())
-
         })
-
     })
-
 })
