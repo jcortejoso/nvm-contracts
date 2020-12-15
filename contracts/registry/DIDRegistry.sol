@@ -8,6 +8,7 @@ pragma solidity 0.6.12;
 import './DIDRegistryLibrary.sol';
 import './ProvenanceRegistry.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol";
 
 /**
  * @title DID Registry
@@ -15,7 +16,7 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  *
  * @dev Implementation of the DID Registry.
  */
-contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry {
+contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry, ERC1155BurnableUpgradeable {
 
     /**
      * @dev The DIDRegistry Library takes care of the basic DID storage functions.
@@ -135,6 +136,7 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry {
     initializer
     {
         OwnableUpgradeable.__Ownable_init();
+        ERC1155BurnableUpgradeable.__ERC1155Burnable_init();
         transferOwnership(_owner);
 
         NULL_BYTES = new bytes(0);
@@ -225,6 +227,8 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry {
         wasGeneratedBy(
             _did, _did, msg.sender, _activityId, _attributes);
 
+        _mint(msg.sender, uint256(_did), 1, "");
+        
         return updatedSize;
     }
     
@@ -723,5 +727,19 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry {
         return provenanceRegistry.list[_did].createdBy;
     }
 
+    /**
+     * @dev Returns the amount of tokens of token type `id` owned by `account`.
+     *
+     * Requirements:
+     *
+     * - `account` cannot be the zero address.
+     */
+    function balanceOf(address account, bytes32 _did) 
+    external 
+    view 
+    returns (uint256)   {
+        return balanceOf(account, uint256(_did));
+    }
+    
 
 }
