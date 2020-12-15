@@ -37,34 +37,6 @@ library DIDRegistryLibrary {
         bytes32[] didRegisterIds;
     }
 
-    // ProvenanceRegistry Entity
-    struct ProvenanceRegistry {
-        // DID associated to this provenance event
-        bytes32 did;
-        // DID created or associated to the original one triggered on this provenance event
-        bytes32 relatedDid;
-        // Agent associated to the provenance event
-        address agentId;
-        // Provenance activity
-        bytes32 activityId;
-        // Agent involved in the provenance event beyond the agent id
-        address agentInvolvedId;
-        // W3C PROV method
-        uint8   method;
-        // Who added this event to the registry
-        address createdBy;
-        // Block number of when it was added
-        uint256 blockNumberUpdated;
-        // Signature of the delegate
-        bytes   signature;  
-    }
-
-    // List of Provenance entries registered in the system
-    struct ProvenanceRegistryList {
-        mapping(bytes32 => ProvenanceRegistry) provenanceRegistry;
-    }
-
-
     /**
      * @notice update the DID store
      * @dev access modifiers and storage pointer should be implemented in DIDRegistry
@@ -101,60 +73,6 @@ library DIDRegistryLibrary {
 
         return _self.didRegisterIds.length;
     }
-
-    /**
-     * @notice create an event in the Provenance store
-     * @dev access modifiers and storage pointer should be implemented in ProvenanceRegistry
-     * @param _self refers to storage pointer
-     * @param _provId refers to provenance event identifier
-     * @param _did refers to decentralized identifier (a byte32 length ID)
-     * @param _relatedDid refers to decentralized identifier (a byte32 length ID) of a related entity
-     * @param _agentId refers to address of the agent creating the provenance record
-     * @param _activityId refers to activity
-     * @param _agentInvolvedId refers to address of the agent involved with the provenance record     
-     * @param _method refers to the W3C Provenance method
-     * @param _createdBy refers to address of the agent triggering the activity
-     * @param _signatureDelegate refers to the digital signature provided by the did delegate. 
-    */
-    function createProvenanceEvent(
-        ProvenanceRegistryList storage _self,
-        bytes32 _provId,
-        bytes32 _did,
-        bytes32 _relatedDid,
-        address _agentId,
-        bytes32 _activityId,
-        address _agentInvolvedId,
-        uint8   _method,
-        address _createdBy,
-        bytes memory _signatureDelegate
-    )
-    internal
-    returns (bool)
-    {
-
-        require(
-            _self.provenanceRegistry[_provId].createdBy == address(0x0),
-            'Provenance record already existing for the Provenance _provId given.'
-        );
-
-        // Check that signatures are valid
-
-        _self.provenanceRegistry[_provId] = ProvenanceRegistry({
-            did: _did,
-            relatedDid: _relatedDid,
-            agentId: _agentId,
-            activityId: _activityId,
-            agentInvolvedId: _agentInvolvedId,
-            method: _method,
-            createdBy: _createdBy,
-            blockNumberUpdated: block.number,
-            signature: _signatureDelegate
-        });
-
-        return true;
-    }
-
-
 
     /**
      * @notice addProvider add provider to DID registry
