@@ -6,7 +6,7 @@
 > [nevermined.io](https://nevermined.io)
 
 
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/keykoio/nevermined-contracts.svg)](https://hub.docker.com/r/keykoio/nevermined-contracts/)
+[![Docker Build Status](https://img.shields.io/docker/cloud/build/neverminedio/contracts.svg)](https://hub.docker.com/r/neverminedio/contracts/)
 ![Build](https://github.com/nevermined-io/contracts/workflows/Build/badge.svg)
 ![NPM Package](https://github.com/nevermined-io/contracts/workflows/NPM%20Release/badge.svg)
 ![Pypi Package](https://github.com/nevermined-io/contracts/workflows/Pypi%20Release/badge.svg)
