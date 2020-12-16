@@ -227,10 +227,49 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry, ERC1155BurnableU
         wasGeneratedBy(
             _did, _did, msg.sender, _activityId, _attributes);
 
-        _mint(msg.sender, uint256(_did), 1, '');
+        mint(_did, 1);
         
         return updatedSize;
     }
+
+    /**
+     * @notice Mints a NFT associated to the DID
+     *
+     * @dev Because ERC-1155 uses uint256 and DID's are bytes32, there is a conversion between both
+     *      Only the DID owner can mint NFTs associated to the DID
+     *
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _amount amount to mint
+     */    
+    function mint(
+        bytes32 _did,
+        uint256 _amount
+    )
+    public
+    onlyDIDOwner(_did)
+    {
+        super._mint(msg.sender, uint256(_did), _amount, '');
+    }
+
+    /**
+     * @notice Burns NFTs associated to the DID
+     *
+     * @dev Because ERC-1155 uses uint256 and DID's are bytes32, there is a conversion between both
+     *      Only the DID owner can burn NFTs associated to the DID
+     *
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _amount amount to burn
+     */
+    function burn(
+        bytes32 _did,
+        uint256 _amount
+    )
+    public
+    onlyDIDOwner(_did)
+    {
+        super._burn(msg.sender, uint256(_did), _amount);
+    }
+    
     
     function wasGeneratedBy(
         bytes32 _provId,
