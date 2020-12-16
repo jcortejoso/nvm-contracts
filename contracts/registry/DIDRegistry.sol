@@ -8,6 +8,7 @@ pragma solidity 0.6.12;
 import './DIDRegistryLibrary.sol';
 import './ProvenanceRegistry.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
 
 /**
  * @title DID Registry
@@ -15,7 +16,7 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  *
  * @dev Implementation of the DID Registry.
  */
-contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry {
+contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry, ERC1155BurnableUpgradeable {
 
     /**
      * @dev The DIDRegistry Library takes care of the basic DID storage functions.
@@ -135,6 +136,7 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry {
     initializer
     {
         OwnableUpgradeable.__Ownable_init();
+        ERC1155BurnableUpgradeable.__ERC1155Burnable_init();
         transferOwnership(_owner);
 
         NULL_BYTES = new bytes(0);
@@ -225,8 +227,49 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry {
         wasGeneratedBy(
             _did, _did, msg.sender, _activityId, _attributes);
 
+        mint(_did, 1);
+        
         return updatedSize;
     }
+
+    /**
+     * @notice Mints a NFT associated to the DID
+     *
+     * @dev Because ERC-1155 uses uint256 and DID's are bytes32, there is a conversion between both
+     *      Only the DID owner can mint NFTs associated to the DID
+     *
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _amount amount to mint
+     */    
+    function mint(
+        bytes32 _did,
+        uint256 _amount
+    )
+    public
+    onlyDIDOwner(_did)
+    {
+        super._mint(msg.sender, uint256(_did), _amount, '');
+    }
+
+    /**
+     * @notice Burns NFTs associated to the DID
+     *
+     * @dev Because ERC-1155 uses uint256 and DID's are bytes32, there is a conversion between both
+     *      Only the DID owner can burn NFTs associated to the DID
+     *
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _amount amount to burn
+     */
+    function burn(
+        bytes32 _did,
+        uint256 _amount
+    )
+    public
+    onlyDIDOwner(_did)
+    {
+        super._burn(msg.sender, uint256(_did), _amount);
+    }
+    
     
     function wasGeneratedBy(
         bytes32 _provId,
@@ -723,5 +766,19 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry {
         return provenanceRegistry.list[_did].createdBy;
     }
 
+    /**
+     * @dev Returns the amount of tokens of token type `id` owned by `account`.
+     *
+     * Requirements:
+     *
+     * - `account` cannot be the zero address.
+     */
+    function balanceOf(address account, bytes32 _did) 
+    external 
+    view 
+    returns (uint256)   {
+        return balanceOf(account, uint256(_did));
+    }
+    
 
 }
