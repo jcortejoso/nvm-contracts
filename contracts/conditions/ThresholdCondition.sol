@@ -13,7 +13,6 @@ import './Condition.sol';
  *
  * @dev Implementation of the Threshold Condition
  *
- *      
  *      Threshold condition acts as a filter for a set of input condition(s) in which sends 
  *      a signal whether to complete the flow execution or abort it. This type of conditions 
  *      works as intermediary conditions where they wire SEA conditions in order to support  
@@ -21,14 +20,16 @@ import './Condition.sol';
  */
 contract ThresholdCondition is Condition {
     
-   /**
-    * @notice initialize init the 
-    *       contract with the following parameters
-    * @dev this function is called only once during the contract
-    *       initialization.
-    * @param _owner contract's owner account address
-    * @param _conditionStoreManagerAddress condition store manager address
-    */
+    bytes32 constant public CONDITION_TYPE = keccak256('ThresholdCondition');
+
+    /**
+     * @notice initialize init the 
+     *       contract with the following parameters
+     * @dev this function is called only once during the contract
+     *       initialization.
+     * @param _owner contract's owner account address
+     * @param _conditionStoreManagerAddress condition store manager address
+     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress

@@ -23,6 +23,8 @@ import '../agreements/AgreementStoreManager.sol';
  */
 contract ComputeExecutionCondition is Condition {
 
+    bytes32 constant public CONDITION_TYPE = keccak256('ComputeExecutionCondition');
+
     // DID --> Compute Consumer address --> triggered compute  ?
     mapping(bytes32 => mapping(address => bool)) private computeExecutionStatus;
     

@@ -19,9 +19,6 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  *      or other types of counter-proofs, the condition is ABORTED. UNFULFILLED 
  *      values imply that a condition has not been provably FULFILLED or ABORTED. 
  *      All initialized conditions start out as UNFULFILLED.
- *      For more information please refer to this link: 
- *      https://github.com/oceanprotocol/OEPs/issues/133
- *      TODO: update the OEP link
  */
 contract Condition is OwnableUpgradeable {
 

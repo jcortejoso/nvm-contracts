@@ -60,6 +60,11 @@ const constants = {
                 couldNotRecoverSignature: 'Could not recover signature'
             }
         },
+        nft: {
+            error: {
+                notEnoughNFTBalance: 'The holder doesnt have enough NFT balance for the did given'
+            }
+        },
         reward: {
             escrowReward: {
                 error: {

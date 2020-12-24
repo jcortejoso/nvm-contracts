@@ -15,18 +15,19 @@ import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
  * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the Whitelisting Condition
- *      TODO: documentation
  */
 contract WhitelistingCondition is Condition, Common {
 
-   /**
-    * @notice initialize init the 
-    *       contract with the following parameters
-    * @dev this function is called only once during the contract
-    *       initialization.
-    * @param _owner contract's owner account address
-    * @param _conditionStoreManagerAddress condition store manager address
-    */
+    bytes32 constant public CONDITION_TYPE = keccak256('WhitelistingCondition');
+
+    /**
+     * @notice initialize init the 
+     *       contract with the following parameters
+     * @dev this function is called only once during the contract
+     *       initialization.
+     * @param _owner contract's owner account address
+     * @param _conditionStoreManagerAddress condition store manager address
+     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress

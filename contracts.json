@@ -5,6 +5,7 @@
   "SignCondition",
   "HashLockCondition",
   "LockRewardCondition",
+  "NftHolderCondition",
   "AccessSecretStoreCondition",
   "EscrowReward",
   "EscrowAccessSecretStoreTemplate",

@@ -16,8 +16,6 @@ pragma solidity 0.6.12;
  *      Any Condition has only four state transitions starts with Uninitialized,
  *      Unfulfilled, Fulfilled, and Aborted. Condition state transition goes only 
  *      forward from Unintialized -> Unfulfilled -> {Fulfilled || Aborted} 
- *      For more information: https://github.com/oceanprotocol/OEPs/issues/119
- *      TODO: update the OEP link
  */
 library ConditionStoreLibrary {
 
