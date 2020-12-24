@@ -12,8 +12,10 @@ const testUtils = require('../../helpers/utils.js')
 const constants = require('../../helpers/constants.js')
 
 contract('DIDRegistry', (accounts) => {
-    const owner = accounts[1]
+    let didRegistry
+    let common
 
+    const owner = accounts[1]
     const someone = accounts[5]
     const delegates = [accounts[6], accounts[7]]
     const providers = [accounts[8], accounts[9]]
@@ -27,23 +29,23 @@ contract('DIDRegistry', (accounts) => {
         ASSOCIATED_WITH: '0x5'
     }
 
-    async function setupTest() {
-        const didRegistryLibrary = await DIDRegistryLibrary.new()
-        await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
-        const didRegistry = await DIDRegistry.new()
-        await didRegistry.initialize(owner)
-        const common = await Common.new()
+    beforeEach(async () => {
+        await setupTest()
+    })
 
-        return {
-            common,
-            didRegistry
+    async function setupTest() {
+        if (!didRegistry) {
+            const didRegistryLibrary = await DIDRegistryLibrary.new()
+            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
+            didRegistry = await DIDRegistry.new()
+            await didRegistry.initialize(owner)
+            common = await Common.new()
         }
     }
 
     describe('Register decentralised identifiers with attributes, fetch attributes by DID', () => {
         it('Should discover the attribute after registering it', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             const result = await didRegistry.registerAttribute(did, checksum, providers, value)
@@ -62,7 +64,6 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('Should find the event from the block number', async () => {
-            const { didRegistry } = await setupTest()
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
@@ -104,8 +105,7 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('Should fail to register the same attribute twice', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(
@@ -127,8 +127,7 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('Should only allow the owner to set an attribute', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(did, checksum, providers, value)
@@ -144,8 +143,7 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('Should not allow url value gt 2048 bytes long', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             // value is about 2049
             const value = 'dabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345xdfwfg'
@@ -159,8 +157,7 @@ contract('DIDRegistry', (accounts) => {
 
     describe('get DIDRegister', () => {
         it('successful register should DIDRegister', async () => {
-            const { common, didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             const blockNumber = await common.getCurrentBlockNumber()
@@ -184,9 +181,9 @@ contract('DIDRegistry', (accounts) => {
             )
 
             const getDIDRegisterIds = await didRegistry.getDIDRegisterIds()
-            assert.lengthOf(getDIDRegisterIds, 1)
+            assert.isAtLeast(getDIDRegisterIds.length, 1)
             assert.strictEqual(
-                getDIDRegisterIds[0],
+                getDIDRegisterIds[getDIDRegisterIds.length - 1],
                 did
             )
         })
@@ -194,8 +191,7 @@ contract('DIDRegistry', (accounts) => {
 
     describe('register DID providers', () => {
         it('should register did with providers', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(did, checksum, providers, value)
@@ -211,8 +207,7 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should owner able to remove DID provider', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(did, checksum, providers, value)
@@ -232,8 +227,7 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should DID owner able to remove all the providers', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(did, checksum, providers, value)
@@ -268,8 +262,7 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should register did then add providers', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             await didRegistry.registerAttribute(did, checksum, [], value)
@@ -294,8 +287,7 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should not register a did provider address that has the same DIDRegistry address', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
 
@@ -308,8 +300,7 @@ contract('DIDRegistry', (accounts) => {
 
     describe('transfer DID ownership', () => {
         it('should DID owner transfer a DID ownership', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const didOwner = accounts[2]
             const newDIDOwner = accounts[3]
@@ -341,8 +332,7 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should reject to transfer a DID ownership in case of invalid DID owner', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const didOwner = accounts[2]
             const newDIDOwner = accounts[3]
@@ -370,8 +360,7 @@ contract('DIDRegistry', (accounts) => {
 
     describe('grantPermissions', () => {
         it('should grant permission only in case of DID owner', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const didOwner = accounts[2]
             const grantee = accounts[3]
@@ -403,8 +392,7 @@ contract('DIDRegistry', (accounts) => {
             )
         })
         it('should fail to grant permission if not a DID owner', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const didOwner = accounts[2]
             const grantee = accounts[3]
@@ -443,8 +431,7 @@ contract('DIDRegistry', (accounts) => {
 
     describe('revokePermissions', () => {
         it('should revoke permission only in case of DID owner', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const didOwner = accounts[2]
             const grantee = accounts[3]
@@ -486,8 +473,7 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should fail to revoke permission if permission is not exists', async () => {
-            const { didRegistry } = await setupTest()
-            const did = constants.did[0]
+            const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const didOwner = accounts[2]
             const grantee = accounts[3]
@@ -526,7 +512,6 @@ contract('DIDRegistry', (accounts) => {
 
     describe('Provenance #wasGeneratedBy()', () => {
         it('should generate an entity', async () => {
-            const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
 
             const result = await didRegistry.registerDID(
@@ -558,7 +543,6 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should fetch a provenance entry', async () => {
-            const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
 
             await didRegistry.registerDID(
@@ -584,7 +568,6 @@ contract('DIDRegistry', (accounts) => {
 
     describe('Provenance #used()', () => {
         it('should use an entity from owner', async () => {
-            const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
             const _provId = testUtils.generateId()
 
@@ -616,7 +599,6 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should use an entity from delegate', async () => {
-            const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
 
             await didRegistry.registerDID(
@@ -636,7 +618,6 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should fail to use an entity from someone', async () => {
-            const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
 
             await didRegistry.registerDID(
@@ -660,7 +641,6 @@ contract('DIDRegistry', (accounts) => {
 
     describe('Provenance #wasDerivedFrom()', () => {
         it('should use an entity from owner', async () => {
-            const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
             const _newDid = testUtils.generateId()
             const _provId = testUtils.generateId()
@@ -695,7 +675,6 @@ contract('DIDRegistry', (accounts) => {
 
     describe('Provenance #wasAssociatedWith()', () => {
         it('should use an entity from owner', async () => {
-            const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
             const _provId = testUtils.generateId()
 
@@ -729,7 +708,6 @@ contract('DIDRegistry', (accounts) => {
 
     describe('Provenance #actedOnBehalf()', () => {
         it('we can validate owner signature', async () => {
-            const { didRegistry } = await setupTest()
             const _sourceMessage = 'hi there' // _did + owner
 
             const _message = testUtils.toEthSignedMessageHash(
@@ -739,11 +717,6 @@ contract('DIDRegistry', (accounts) => {
                 await web3.eth.sign(_message, owner)
             )
 
-            //            console.log('Source Message Hash: ' + web3.utils.sha3(_sourceMessage))
-            //            console.log('Message: ' + _message)
-            //            console.log('Message Hash: ' + _messageHash)
-            //            console.log('Signature: ' + _signature)
-
             const valid = await didRegistry.provenanceSignatureIsCorrect(
                 owner, _messageHash, _signature)
 
@@ -751,7 +724,6 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('we can generate the same signatures', async () => {
-            const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
 
             const _message = testUtils.toEthSignedMessageHash(
@@ -768,7 +740,6 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should act in behalf of delegate 2', async () => {
-            const { didRegistry } = await setupTest()
             const _did = testUtils.generateId()
 
             await didRegistry.registerDID(
