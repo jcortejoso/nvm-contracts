@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it, expect */
+/* global artifacts, contract, describe, it, expect, BigInt */
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
@@ -13,12 +13,11 @@ const DIDRegistry = artifacts.require('DIDRegistry')
 const NftHolderCondition = artifacts.require('NftHolderCondition')
 
 const constants = require('../../helpers/constants.js')
-const getBalance = require('../../helpers/getBalance.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('NftHolderCondition', (accounts) => {
     const owner = accounts[1]
-    createRole = accounts[0]
+    const createRole = accounts[0]
     const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
     let didRegistry
     let conditionStoreManager
@@ -54,12 +53,10 @@ contract('NftHolderCondition', (accounts) => {
 
     describe('fulfill existing condition', () => {
         it('should fulfill if conditions exist for account address', async () => {
-
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const agreementId = testUtils.generateId()
             const holderAddress = accounts[2]
-            const sender = accounts[0]
             const amount = 10
 
             const hashValues = await nftHolderCondition.hashValues(did, holderAddress, amount)
@@ -73,7 +70,6 @@ contract('NftHolderCondition', (accounts) => {
             await didRegistry.mint(did, 10, { from: owner })
             await didRegistry.safeTransferFrom(
                 owner, holderAddress, BigInt(did), 10, '0x', { from: owner })
-
 
             const result = await nftHolderCondition.fulfill(agreementId, did, holderAddress, amount)
             const { state } = await conditionStoreManager.getCondition(conditionId)
@@ -91,12 +87,10 @@ contract('NftHolderCondition', (accounts) => {
 
     describe('fulfill non existing condition', () => {
         it('should not fulfill if conditions do not exist', async () => {
-
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const agreementId = testUtils.generateId()
             const holderAddress = accounts[2]
-            const sender = accounts[0]
             const amount = 10
 
             await didRegistry.registerAttribute(did, checksum, [], value, { from: owner })
@@ -113,12 +107,10 @@ contract('NftHolderCondition', (accounts) => {
 
     describe('fail to fulfill existing condition', () => {
         it('out of balance should fail to fulfill if conditions exist', async () => {
-
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const agreementId = testUtils.generateId()
             const holderAddress = accounts[2]
-            const sender = accounts[0]
             const amount = 10
 
             const hashValues = await nftHolderCondition.hashValues(did, holderAddress, amount)
@@ -133,14 +125,10 @@ contract('NftHolderCondition', (accounts) => {
             await didRegistry.safeTransferFrom(
                 owner, holderAddress, BigInt(did), 1, '0x', { from: owner })
 
-
             await assert.isRejected(
-                 nftHolderCondition.fulfill(agreementId, did, holderAddress, amount),
+                nftHolderCondition.fulfill(agreementId, did, holderAddress, amount),
                 constants.condition.nft.error.notEnoughNFTBalance
             )
         })
-
     })
-
-
 })

@@ -5,7 +5,7 @@ pragma solidity 0.6.12;
 
 
 import './Condition.sol';
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol";
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
 
 /**
  * @title Lock Reward Condition
