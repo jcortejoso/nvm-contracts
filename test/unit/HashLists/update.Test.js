@@ -9,28 +9,33 @@ chai.use(chaiAsPromised)
 const HashListLibrary = artifacts.require('HashListLibrary')
 const HashLists = artifacts.require('HashLists')
 
+const testUtils = require('../../helpers/utils.js')
+
 contract('HashLists', (accounts) => {
     let hashListLibrary
     let hashList
     const owner = accounts[0]
 
     beforeEach(async () => {
-        hashListLibrary = await HashListLibrary.new()
-        HashLists.link('HashListLibrary', hashListLibrary.address)
-        hashList = await HashLists.new()
-        await hashList.initialize(owner, { from: owner })
+        if (!hashList)  {
+            hashListLibrary = await HashListLibrary.new()
+            HashLists.link('HashListLibrary', hashListLibrary.address)
+            hashList = await HashLists.new()
+            await hashList.initialize(owner, { from: owner })
+        }
     })
 
     describe('update', () => {
         it('should fail if value does not exist', async () => {
-            const newValue = await hashList.hash(accounts[1])
+            const accountAddress = testUtils.generateAccount().address
+            const newValue = await hashList.hash(accountAddress)
             await hashList.methods['add(bytes32)'](
                 newValue,
                 {
                     from: owner
                 }
             )
-            const invalidValue = await hashList.hash(accounts[3])
+            const invalidValue = await hashList.hash(testUtils.generateAccount().address)
             await assert.isRejected(
                 hashList.update(
                     invalidValue,
@@ -44,7 +49,8 @@ contract('HashLists', (accounts) => {
         })
 
         it('should fail if old value equals new value', async () => {
-            const oldValue = await hashList.hash(accounts[1])
+            const accountAddress = testUtils.generateAccount().address
+            const oldValue = await hashList.hash(accountAddress)
             await hashList.methods['add(bytes32)'](
                 oldValue,
                 {
@@ -64,8 +70,8 @@ contract('HashLists', (accounts) => {
         })
 
         it('should update if old value is exists', async () => {
-            const oldValue = await hashList.hash(accounts[1])
-            const newValue = await hashList.hash(accounts[2])
+            const oldValue = await hashList.hash(testUtils.generateAccount().address)
+            const newValue = await hashList.hash(testUtils.generateAccount().address)
             const listId = await hashList.hash(owner)
 
             await hashList.methods['add(bytes32)'](
@@ -97,8 +103,8 @@ contract('HashLists', (accounts) => {
         })
 
         it('should fail in case of invalid list owner', async () => {
-            const oldValue = await hashList.hash(accounts[1])
-            const invalidOwner = accounts[5]
+            const oldValue = await hashList.hash(testUtils.generateAccount().address)
+            const invalidOwner = testUtils.generateAccount().address
             await hashList.methods['add(bytes32)'](
                 oldValue,
                 {

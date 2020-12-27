@@ -15,17 +15,14 @@ contract('HashList', (accounts) => {
     const owner = accounts[0]
 
     beforeEach(async () => {
-        hashListLibrary = await HashListLibrary.new()
-        HashLists.link('HashListLibrary', hashListLibrary.address)
-        hashList = await HashLists.new()
-        await hashList.initialize(owner, { from: owner })
-        const newAccountHash = await hashList.hash(accounts[1])
-        await hashList.methods['add(bytes32)'](
-            newAccountHash,
-            {
-                from: owner
-            }
-        )
+        if (!hashList)  {
+            hashListLibrary = await HashListLibrary.new()
+            HashLists.link('HashListLibrary', hashListLibrary.address)
+            hashList = await HashLists.new()
+            await hashList.initialize(owner, { from: owner })
+            const newAccountHash = await hashList.hash(accounts[1])
+            await hashList.methods['add(bytes32)'](newAccountHash, { from: owner })
+        }
     })
 
     describe('ownedBy', () => {

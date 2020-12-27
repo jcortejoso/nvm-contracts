@@ -9,6 +9,8 @@ chai.use(chaiAsPromised)
 const HashListLibrary = artifacts.require('HashListLibrary')
 const HashLists = artifacts.require('HashLists')
 
+const testUtils = require('../../helpers/utils.js')
+
 contract('HashLists', (accounts) => {
     let hashListLibrary
     let hashList
@@ -16,11 +18,13 @@ contract('HashLists', (accounts) => {
     const owner = accounts[0]
 
     beforeEach(async () => {
-        hashListLibrary = await HashListLibrary.new()
-        HashLists.link('HashListLibrary', hashListLibrary.address)
-        hashList = await HashLists.new()
-        await hashList.initialize(accounts[0], { from: owner })
-        listId = await hashList.hash(owner)
+        if (!hashList)  {
+            hashListLibrary = await HashListLibrary.new()
+            HashLists.link('HashListLibrary', hashListLibrary.address)
+            hashList = await HashLists.new()
+            await hashList.initialize(accounts[0], { from: owner })
+            listId = await hashList.hash(owner)
+        }
     })
 
     describe('get', () => {
@@ -45,7 +49,9 @@ contract('HashLists', (accounts) => {
 
     describe('all', () => {
         it('should return all list values', async () => {
-            const newValue = await hashList.hash(accounts[1])
+            let listId = await hashList.hash(owner)
+            const newValue = await hashList.hash(testUtils.generateAccount().address)
+            const lengthBefore = (await hashList.all(listId)).length
             await hashList.methods['add(bytes32)'](
                 newValue,
                 {
@@ -55,14 +61,15 @@ contract('HashLists', (accounts) => {
 
             assert.strictEqual(
                 (await hashList.all(listId)).length,
-                1
+                lengthBefore + 1
             )
         })
     })
 
     describe('indexOf', () => {
         it('should return index of value in a list', async () => {
-            const newValue = await hashList.hash(accounts[1])
+            const newValue = await hashList.hash(testUtils.generateAccount().address)
+            const lengthBefore = (await hashList.all(listId)).length
             await hashList.methods['add(bytes32)'](
                 newValue,
                 {
@@ -72,12 +79,12 @@ contract('HashLists', (accounts) => {
             // assert
             assert.strictEqual(
                 (await hashList.indexOf(listId, newValue)).toNumber(),
-                1
+                lengthBefore + 1
             )
         })
 
         it('should fail if value does not exists', async () => {
-            const newValue = await hashList.hash(accounts[1])
+            const newValue = await hashList.hash(testUtils.generateAccount().address)
             await assert.isRejected(
                 hashList.indexOf(listId, newValue),
                 'Value does not exist'
@@ -87,13 +94,14 @@ contract('HashLists', (accounts) => {
 
     describe('isIndexed', () => {
         it('should return false if not indexed list', async () => {
+            const listId = await hashList.hash(testUtils.generateAccount().address)
             await assert.isRejected(
                 hashList.isIndexed(listId)
             )
         })
 
         it('should return true if indexed in case of add single element', async () => {
-            const newValue = await hashList.hash(accounts[1])
+            const newValue = await hashList.hash(testUtils.generateAccount().address)
             await hashList.methods['add(bytes32)'](
                 newValue,
                 {
@@ -109,8 +117,8 @@ contract('HashLists', (accounts) => {
 
         it('should return true if indexed using add multiple elements', async () => {
             const values = [
-                await hashList.hash(accounts[1]),
-                await hashList.hash(accounts[2])
+                await hashList.hash(testUtils.generateAccount().address),
+                await hashList.hash(testUtils.generateAccount().address)
             ]
 
             await hashList.methods['add(bytes32[])'](
@@ -158,7 +166,8 @@ contract('HashLists', (accounts) => {
 
     describe('size', () => {
         it('should return size', async () => {
-            const newValue = await hashList.hash(accounts[1])
+            const newValue = await hashList.hash(testUtils.generateAccount().address)
+            const lengthBefore = (await hashList.all(listId)).length
             await hashList.methods['add(bytes32)'](
                 newValue,
                 {
@@ -168,7 +177,7 @@ contract('HashLists', (accounts) => {
             // assert
             assert.strictEqual(
                 (await hashList.size(listId)).toNumber(),
-                1
+                lengthBefore + 1
             )
         })
     })

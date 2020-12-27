@@ -9,21 +9,26 @@ chai.use(chaiAsPromised)
 const HashListLibrary = artifacts.require('HashListLibrary')
 const HashLists = artifacts.require('HashLists')
 
+const testUtils = require('../../helpers/utils.js')
+
 contract('HashLists', (accounts) => {
     let hashListLibrary
     let hashList
     const owner = accounts[0]
 
     beforeEach(async () => {
-        hashListLibrary = await HashListLibrary.new()
-        HashLists.link('HashListLibrary', hashListLibrary.address)
-        hashList = await HashLists.new()
-        await hashList.initialize(accounts[0], { from: owner })
+        if (!hashList)  {
+            hashListLibrary = await HashListLibrary.new()
+            HashLists.link('HashListLibrary', hashListLibrary.address)
+            hashList = await HashLists.new()
+            await hashList.initialize(accounts[0], { from: owner })
+        }
     })
 
     describe('add', () => {
         it('should add a new value to list', async () => {
-            const newAccountHash = await hashList.hash(accounts[1])
+            const accountAddress = testUtils.generateAccount().address
+            const newAccountHash = await hashList.hash(accountAddress)
             await hashList.methods['add(bytes32)'](
                 newAccountHash,
                 {
@@ -37,30 +42,21 @@ contract('HashLists', (accounts) => {
         })
 
         it('should fail if value already exists', async () => {
-            const newAccountHash = await hashList.hash(accounts[1])
-            await hashList.methods['add(bytes32)'](
-                newAccountHash,
-                {
-                    from: owner
-                }
-            )
+            const accountAddress = testUtils.generateAccount().address
+            const newAccountHash = await hashList.hash(accountAddress)
+            await hashList.methods['add(bytes32)'](newAccountHash, { from: owner })
 
             // assert
             await assert.isRejected(
-                hashList.methods['add(bytes32)'](
-                    newAccountHash,
-                    {
-                        from: owner
-                    }
-                ),
+                hashList.methods['add(bytes32)'](newAccountHash, { from: owner }),
                 'Value already exists'
             )
         })
 
         it('should add multiple values at a time', async () => {
             const values = [
-                await hashList.hash(accounts[1]),
-                await hashList.hash(accounts[2])
+                await hashList.hash(accounts[3]),
+                await hashList.hash(accounts[4])
             ]
 
             await hashList.methods['add(bytes32[])'](

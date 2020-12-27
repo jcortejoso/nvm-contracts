@@ -11,34 +11,44 @@ const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const SignCondition = artifacts.require('SignCondition')
 
 const constants = require('../../helpers/constants.js')
+const testUtils = require('../../helpers/utils.js')
 
 contract('SignCondition constructor', (accounts) => {
+    const createRole = accounts[0]
+    const owner = accounts[1]
+    let epochLibrary
+    let conditionStoreManager
+    let signCondition
+
     async function setupTest({
         conditionId = constants.bytes32.one,
         conditionType = constants.address.dummy,
         createRole = accounts[0],
         owner = accounts[1]
     } = {}) {
-        const epochLibrary = await EpochLibrary.new()
-        await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
-        const conditionStoreManager = await ConditionStoreManager.new()
-        await conditionStoreManager.initialize(
-            owner,
-            { from: accounts[0] }
-        )
+        if (!signCondition) {
+            epochLibrary = await EpochLibrary.new()
+            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
-        await conditionStoreManager.delegateCreateRole(
-            createRole,
-            { from: owner }
-        )
+            conditionStoreManager = await ConditionStoreManager.new()
+            await conditionStoreManager.initialize(
+                owner,
+                { from: accounts[0] }
+            )
 
-        const signCondition = await SignCondition.new()
-        await signCondition.initialize(
-            owner,
-            conditionStoreManager.address,
-            { from: accounts[0] }
-        )
+            await conditionStoreManager.delegateCreateRole(
+                createRole,
+                { from: owner }
+            )
+
+            signCondition = await SignCondition.new()
+            await signCondition.initialize(
+                owner,
+                conditionStoreManager.address,
+                { from: accounts[0] }
+            )
+        }
 
         return { signCondition, conditionStoreManager, conditionId, conditionType, createRole, owner }
     }
@@ -104,9 +114,9 @@ contract('SignCondition constructor', (accounts) => {
 
     describe('fail to fulfill existing condition', () => {
         it('wrong signature should fail to fulfill if conditions exist for bytes32 message', async () => {
-            const { signCondition, conditionStoreManager } = await setupTest()
+//            const { signCondition, conditionStoreManager } = await setupTest()
 
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const {
                 message,
                 publicKey
@@ -123,15 +133,15 @@ contract('SignCondition constructor', (accounts) => {
             await assert.isRejected(
                 signCondition.fulfill(
                     agreementId, message, publicKey,
-                    constants.bytes32.one
+                    agreementId
                 )
             )
         })
 
         it('right signature should fail to fulfill if conditions already fulfilled for bytes32', async () => {
-            const { signCondition, conditionStoreManager } = await setupTest()
+//            const { signCondition, conditionStoreManager } = await setupTest()
 
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const {
                 message,
                 publicKey,
@@ -156,9 +166,9 @@ contract('SignCondition constructor', (accounts) => {
         })
 
         it('should fail to fulfill if conditions has different type ref', async () => {
-            const { signCondition, conditionStoreManager, createRole, owner } = await setupTest()
+//            const { signCondition, conditionStoreManager, createRole, owner } = await setupTest()
 
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const {
                 message,
                 publicKey,

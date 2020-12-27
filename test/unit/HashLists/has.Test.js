@@ -9,21 +9,26 @@ chai.use(chaiAsPromised)
 const HashListLibrary = artifacts.require('HashListLibrary')
 const HashLists = artifacts.require('HashLists')
 
+const testUtils = require('../../helpers/utils.js')
+
 contract('HashLists', (accounts) => {
     let hashListLibrary
     let hashList
     const owner = accounts[0]
 
     beforeEach(async () => {
-        hashListLibrary = await HashListLibrary.new()
-        HashLists.link('HashListLibrary', hashListLibrary.address)
-        hashList = await HashLists.new()
-        await hashList.initialize(accounts[0], { from: owner })
+        if (!hashList)  {
+            hashListLibrary = await HashListLibrary.new()
+            HashLists.link('HashListLibrary', hashListLibrary.address)
+            hashList = await HashLists.new()
+            await hashList.initialize(accounts[0], { from: owner })
+        }
     })
 
     describe('has', () => {
         it('should return true if value exists', async () => {
-            const newValue = await hashList.hash(accounts[1])
+            const accountAddress = testUtils.generateAccount().address
+            const newValue = await hashList.hash(accountAddress)
             await hashList.methods['add(bytes32)'](
                 newValue,
                 {
@@ -41,7 +46,8 @@ contract('HashLists', (accounts) => {
         })
 
         it('should return false if value does not exist', async () => {
-            const value = await hashList.hash(accounts[1])
+            const accountAddress = testUtils.generateAccount().address
+            const value = await hashList.hash(accountAddress)
             // assert
             assert.strictEqual(
                 await hashList.has(value),

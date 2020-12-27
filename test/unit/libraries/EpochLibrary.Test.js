@@ -17,9 +17,11 @@ contract('EpochLibrary', (accounts) => {
     let epochLibraryProxy
 
     beforeEach(async () => {
-        epochLibrary = await EpochLibrary.new()
-        EpochLibraryProxy.link('EpochLibrary', epochLibrary.address)
-        epochLibraryProxy = await EpochLibraryProxy.new()
+        if (!epochLibraryProxy) {
+            epochLibrary = await EpochLibrary.new()
+            EpochLibraryProxy.link('EpochLibrary', epochLibrary.address)
+            epochLibraryProxy = await EpochLibraryProxy.new()
+        }
     })
 
     describe('create', () => {
