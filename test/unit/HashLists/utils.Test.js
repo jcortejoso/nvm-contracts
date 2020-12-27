@@ -18,7 +18,7 @@ contract('HashLists', (accounts) => {
     const owner = accounts[0]
 
     beforeEach(async () => {
-        if (!hashList)  {
+        if (!hashList) {
             hashListLibrary = await HashListLibrary.new()
             HashLists.link('HashListLibrary', hashListLibrary.address)
             hashList = await HashLists.new()
@@ -49,7 +49,7 @@ contract('HashLists', (accounts) => {
 
     describe('all', () => {
         it('should return all list values', async () => {
-            let listId = await hashList.hash(owner)
+            const listId = await hashList.hash(owner)
             const newValue = await hashList.hash(testUtils.generateAccount().address)
             const lengthBefore = (await hashList.all(listId)).length
             await hashList.methods['add(bytes32)'](

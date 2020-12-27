@@ -26,7 +26,6 @@ contract('SignCondition constructor', (accounts) => {
         createRole = accounts[0],
         owner = accounts[1]
     } = {}) {
-
         if (!signCondition) {
             epochLibrary = await EpochLibrary.new()
             await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
@@ -114,7 +113,7 @@ contract('SignCondition constructor', (accounts) => {
 
     describe('fail to fulfill existing condition', () => {
         it('wrong signature should fail to fulfill if conditions exist for bytes32 message', async () => {
-//            const { signCondition, conditionStoreManager } = await setupTest()
+            //            const { signCondition, conditionStoreManager } = await setupTest()
 
             const agreementId = testUtils.generateId()
             const {
@@ -139,7 +138,7 @@ contract('SignCondition constructor', (accounts) => {
         })
 
         it('right signature should fail to fulfill if conditions already fulfilled for bytes32', async () => {
-//            const { signCondition, conditionStoreManager } = await setupTest()
+            //            const { signCondition, conditionStoreManager } = await setupTest()
 
             const agreementId = testUtils.generateId()
             const {
@@ -166,7 +165,7 @@ contract('SignCondition constructor', (accounts) => {
         })
 
         it('should fail to fulfill if conditions has different type ref', async () => {
-//            const { signCondition, conditionStoreManager, createRole, owner } = await setupTest()
+            //            const { signCondition, conditionStoreManager, createRole, owner } = await setupTest()
 
             const agreementId = testUtils.generateId()
             const {

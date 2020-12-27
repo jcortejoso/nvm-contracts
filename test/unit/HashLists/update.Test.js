@@ -17,7 +17,7 @@ contract('HashLists', (accounts) => {
     const owner = accounts[0]
 
     beforeEach(async () => {
-        if (!hashList)  {
+        if (!hashList) {
             hashListLibrary = await HashListLibrary.new()
             HashLists.link('HashListLibrary', hashListLibrary.address)
             hashList = await HashLists.new()

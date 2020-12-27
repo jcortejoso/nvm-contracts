@@ -108,7 +108,7 @@ contract('Whitelisting Condition', (accounts) => {
 
     describe('fulfill non existing condition', () => {
         it('should not fulfill if conditions do not exist', async () => {
-//            const { whitelistingCondition, hashList } = await setupTest()
+            //            const { whitelistingCondition, hashList } = await setupTest()
             const someone = accounts[9]
             const agreementId = constants.bytes32.one
 
@@ -123,12 +123,12 @@ contract('Whitelisting Condition', (accounts) => {
 
     describe('fulfill existing condition', () => {
         it('should fulfill if conditions exist', async () => {
-//            const {
-//                whitelistingCondition,
-//                conditionStoreManager,
-//                hashList,
-//                createRole
-//            } = await setupTest()
+            //            const {
+            //                whitelistingCondition,
+            //                conditionStoreManager,
+            //                hashList,
+            //                createRole
+            //            } = await setupTest()
 
             const agreementId = constants.bytes32.one
             const someone = accounts[9]
@@ -168,7 +168,6 @@ contract('Whitelisting Condition', (accounts) => {
 
     describe('fail to fulfill existing condition', () => {
         it('wrong value should fail to fulfill if conditions exist', async () => {
-
             const agreementId = testUtils.generateId()
             const someone = accounts[9]
 
@@ -208,7 +207,6 @@ contract('Whitelisting Condition', (accounts) => {
         })
 
         it('wrong value should fail to fulfill if conditions exist', async () => {
-
             const agreementId = testUtils.generateId()
             const someone = testUtils.generateAccount().address
 
@@ -245,7 +243,6 @@ contract('Whitelisting Condition', (accounts) => {
         })
 
         it('right value should fail to fulfill if conditions already fulfilled ', async () => {
-
             const agreementId = testUtils.generateId()
             const someone = testUtils.generateAccount().address
 
@@ -292,7 +289,6 @@ contract('Whitelisting Condition', (accounts) => {
         })
 
         it('should fail to fulfill if conditions has different type ref', async () => {
-
             const agreementId = testUtils.generateId()
             const someone = testUtils.generateAccount().address
 
