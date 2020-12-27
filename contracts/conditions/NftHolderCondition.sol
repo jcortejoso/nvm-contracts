@@ -8,10 +8,11 @@ import './Condition.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
 
 /**
- * @title Lock Reward Condition
- * @author Keyko & Ocean Protocol
+ * @title Nft Holder Condition
+ * Allows to fulfill a condition to users holding some amount of NFTs for a specific DID
+ * @author Keyko
  *
- * @dev Implementation of the Lock Reward Condition
+ * @dev Implementation of the Nft Holder Condition
  */
 contract NftHolderCondition is Condition {
 
