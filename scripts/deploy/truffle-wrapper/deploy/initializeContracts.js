@@ -39,18 +39,6 @@ async function initializeContracts({
         })
     }
 
-    if (contracts.indexOf('ProvenanceRegistry') > -1 && getAddress('DIDRegistry')) {
-        addressBook.ProvenanceRegistry = zosCreate({
-            contract: 'ProvenanceRegistry',
-            network,
-            args: [
-                getAddress('DIDRegistry'),
-                roles.ownerWallet
-            ],
-            verbose
-        })
-    }
-
     // testnet only!
     if (contracts.indexOf('NeverminedToken') > -1) {
         addressBook.NeverminedToken = zosCreate({
@@ -172,7 +160,7 @@ async function initializeContracts({
     if (getAddress('ConditionStoreManager') &&
         getAddress('DIDRegistry')) {
         if (contracts.indexOf('NftHolderCondition') > -1) {
-            addressBook.AgreementStoreManager = zosCreate({
+            addressBook.NftHolderCondition = zosCreate({
                 contract: 'NftHolderCondition',
                 network,
                 args: [
