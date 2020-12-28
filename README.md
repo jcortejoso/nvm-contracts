@@ -61,6 +61,7 @@ Clone the project and install all dependencies:
 ```bash
 git clone git@github.com:nevermined-io/contracts.git
 cd nevermined-contracts/
+```
 
 Install dependencies:
 ```bash
