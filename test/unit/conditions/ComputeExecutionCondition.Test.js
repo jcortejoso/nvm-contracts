@@ -20,13 +20,14 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
     let didRegistry,
         agreementStoreManager,
         conditionStoreManager,
-        templateStoreManager
+        templateStoreManager,
+        computeExecutionCondition
 
     async function setupTest({
         accounts = [],
-        conditionId = constants.bytes32.one,
+        conditionId = testUtils.generateId(),
         conditionType = constants.address.dummy,
-        did = constants.did[0],
+        did = testUtils.generateId(),
         checksum = testUtils.generateId(),
         value = constants.registry.url,
         deployer = accounts[8],
@@ -34,24 +35,25 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
         registerDID = false,
         DIDProvider = accounts[9]
     } = {}) {
-        ({
-            didRegistry,
-            agreementStoreManager,
-            conditionStoreManager,
-            templateStoreManager
-        } = await deployManagers(
-            deployer,
-            owner
-        ))
+        if (!didRegistry) {
+            ({
+                didRegistry,
+                agreementStoreManager,
+                conditionStoreManager,
+                templateStoreManager
+            } = await deployManagers(
+                deployer,
+                owner
+            ))
+            computeExecutionCondition = await ComputeExecutionCondition.new()
 
-        const computeExecutionCondition = await ComputeExecutionCondition.new()
-
-        await computeExecutionCondition.methods['initialize(address,address,address)'](
-            accounts[0],
-            conditionStoreManager.address,
-            agreementStoreManager.address,
-            { from: accounts[0] }
-        )
+            await computeExecutionCondition.methods['initialize(address,address,address)'](
+                accounts[0],
+                conditionStoreManager.address,
+                agreementStoreManager.address,
+                { from: accounts[0] }
+            )
+        }
 
         if (registerDID) {
             await didRegistry.registerAttribute(did, checksum, [DIDProvider], value)
@@ -125,7 +127,7 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             const agreementId = constants.bytes32.one
             const computeConsumer = accounts[1]
 
-            const templateId = accounts[2]
+            const templateId = accounts[6]
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
@@ -133,7 +135,7 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             const conditionId = await computeExecutionCondition.generateId(agreementId, hashValues)
 
             const agreement = {
-                did: constants.did[0],
+                did: did,
                 conditionTypes: [computeExecutionCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
@@ -171,10 +173,10 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
 
             } = await setupTest({ accounts: accounts, registerDID: true })
 
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const computeConsumer = accounts[1]
 
-            const templateId = accounts[2]
+            const templateId = accounts[5]
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
@@ -182,7 +184,7 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             const conditionId = await computeExecutionCondition.generateId(agreementId, hashValues)
 
             const agreement = {
-                did: constants.did[0],
+                did: did,
                 conditionTypes: [computeExecutionCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
@@ -210,10 +212,10 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
 
             } = await setupTest({ accounts: accounts, registerDID: true })
 
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const computeConsumer = accounts[1]
 
-            const templateId = accounts[2]
+            const templateId = accounts[4]
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
@@ -221,7 +223,7 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             const conditionId = await computeExecutionCondition.generateId(agreementId, hashValues)
 
             const agreement = {
-                did: constants.did[0],
+                did: did,
                 conditionTypes: [computeExecutionCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
@@ -252,12 +254,12 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
 
             } = await setupTest({ accounts: accounts, registerDID: true })
 
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const computeConsumer = accounts[1]
             const timeLock = 0
             const timeOut = 234898098
 
-            const templateId = accounts[2]
+            const templateId = accounts[3]
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
@@ -265,7 +267,7 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             const conditionId = await computeExecutionCondition.generateId(agreementId, hashValues)
 
             const agreement = {
-                did: constants.did[0],
+                did: did,
                 conditionTypes: [computeExecutionCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],

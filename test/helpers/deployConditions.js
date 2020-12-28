@@ -3,6 +3,7 @@ const AccessSecretStoreCondition = artifacts.require('AccessSecretStoreCondition
 const EscrowReward = artifacts.require('EscrowReward')
 const HashLockCondition = artifacts.require('HashLockCondition')
 const LockRewardCondition = artifacts.require('LockRewardCondition')
+const NftHolderCondition = artifacts.require('NftHolderCondition')
 const SignCondition = artifacts.require('SignCondition')
 const ComputeExecutionCondition = artifacts.require('ComputeExecutionCondition')
 
@@ -33,6 +34,14 @@ const deployConditions = async function(
         owner,
         conditionStoreManager.address,
         token.address,
+        { from: deployer }
+    )
+
+    const nftHolderCondition = await NftHolderCondition.new({ from: deployer })
+    await nftHolderCondition.initialize(
+        owner,
+        conditionStoreManager.address,
+        didRegistry.address,
         { from: deployer }
     )
 

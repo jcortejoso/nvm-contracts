@@ -17,40 +17,40 @@ const increaseTime = require('../../helpers/increaseTime.ts')
 const testUtils = require('../../helpers/utils.js')
 
 contract('ConditionStoreManager', (accounts) => {
-    async function setupTest({
-        conditionId = constants.bytes32.one,
-        conditionType = constants.address.dummy,
-        createRole = accounts[0],
-        owner = accounts[0]
-    } = {}) {
-        const common = await Common.new()
-        const epochLibrary = await EpochLibrary.new()
-        await ConditionStoreLibrary.link('EpochLibrary', epochLibrary.address)
-        const conditionStoreLibrary = await ConditionStoreLibrary.new()
-        await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-        await ConditionStoreManager.link('ConditionStoreLibrary', conditionStoreLibrary.address)
-        const conditionStoreManager = await ConditionStoreManager.new()
-        await conditionStoreManager.initialize(
-            owner,
-            { from: owner }
-        )
+    let common
+    let hashLockCondition
+    let epochLibrary
+    let conditionStoreManager
+    let conditionStoreLibrary
+    const conditionId = constants.bytes32.one
+    const createRole = accounts[0]
+    const owner = accounts[0]
 
-        const hashLockCondition = await HashLockCondition.new()
-        await hashLockCondition.initialize(
-            owner,
-            conditionStoreManager.address,
-            { from: owner }
-        )
+    beforeEach(async () => {
+        await setupTest()
+    })
 
-        return {
-            common,
-            hashLockCondition,
-            epochLibrary,
-            conditionStoreManager,
-            conditionId,
-            conditionType,
-            createRole,
-            owner
+    async function setupTest() {
+        // let conditionId = testUtils.generateId()
+        if (!conditionStoreManager) {
+            common = await Common.new()
+            epochLibrary = await EpochLibrary.new()
+            ConditionStoreLibrary.link('EpochLibrary', epochLibrary.address)
+            conditionStoreLibrary = await ConditionStoreLibrary.new()
+            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
+            await ConditionStoreManager.link('ConditionStoreLibrary', conditionStoreLibrary.address)
+            conditionStoreManager = await ConditionStoreManager.new()
+            await conditionStoreManager.initialize(
+                owner,
+                { from: owner }
+            )
+
+            hashLockCondition = await HashLockCondition.new()
+            hashLockCondition.initialize(
+                owner,
+                conditionStoreManager.address,
+                { from: owner }
+            )
         }
     }
 
@@ -173,13 +173,6 @@ contract('ConditionStoreManager', (accounts) => {
 
     describe('create conditions', () => {
         it('createRole should create', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole
-            } = await setupTest()
-
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
                 constants.condition.state.uninitialized)
@@ -199,13 +192,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('createRole should create with zero timeout and timelock', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole
-            } = await setupTest()
-
+            const conditionId = testUtils.generateId()
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
                 hashLockCondition.address,
@@ -226,9 +213,9 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('createRole should create with nonzero timeout and timelock', async () => {
-            const { conditionStoreManager, conditionId, hashLockCondition, createRole } = await setupTest()
             const conditionTimeLock = 1
             const conditionTimeOut = 10
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address,uint256,uint256)'](
                 conditionId,
@@ -254,13 +241,8 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('invalid createRole should not create', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole
-            } = await setupTest({ createRole: accounts[1] })
-
+            const conditionId = testUtils.generateId()
+            const createRole = accounts[1]
             await assert.isRejected(
                 conditionStoreManager.methods['createCondition(bytes32,address)'](
                     conditionId,
@@ -272,13 +254,8 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('invalid address should not create', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                conditionType,
-                createRole
-            } = await setupTest({ conditionType: constants.address.zero })
-
+            const conditionId = testUtils.generateId()
+            const conditionType = constants.address.zero
             await assert.isRejected(
                 conditionStoreManager.methods['createCondition(bytes32,address)'](
                     conditionId,
@@ -290,12 +267,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('existing ID should not create', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -314,7 +286,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('create condition should emit ConditionCreated event', async () => {
-            const { conditionStoreManager, conditionId, hashLockCondition } = await setupTest()
+            const conditionId = testUtils.generateId()
 
             // conditionId should exist after create
             const result = await conditionStoreManager.methods['createCondition(bytes32,address)'](
@@ -330,13 +302,7 @@ contract('ConditionStoreManager', (accounts) => {
 
     describe('get conditions', () => {
         it('successful create should get unfulfilled condition', async () => {
-            const {
-                common,
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole
-            } = await setupTest()
+            const conditionId = testUtils.generateId()
 
             const blockNumber = await common.getCurrentBlockNumber()
             // returns true on create
@@ -366,7 +332,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('no create should get uninitialized Condition', async () => {
-            const { conditionStoreManager, conditionId } = await setupTest()
+            const conditionId = testUtils.generateId()
 
             const { typeRef, state } = await conditionStoreManager.getCondition(conditionId)
             assert.strictEqual(typeRef, constants.address.zero)
@@ -376,7 +342,6 @@ contract('ConditionStoreManager', (accounts) => {
 
     describe('update condition state', () => {
         it('should not transition from uninitialized', async () => {
-            const { conditionStoreManager, conditionId } = await setupTest()
             const newState = constants.condition.state.unfulfilled
             await assert.isRejected(
                 conditionStoreManager.updateConditionState(conditionId, newState),
@@ -385,13 +350,8 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should transition from unfulfilled to fulfilled', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
+
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
                 hashLockCondition.address,
@@ -413,13 +373,8 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should transition from unfulfilled to aborted', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
+
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
                 hashLockCondition.address,
@@ -441,13 +396,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should not transition from unfulfilled to uninitialized', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -470,13 +419,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should not transition from unfulfilled to unfulfilled', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -499,13 +442,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should not transition from fulfilled to unfulfilled', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -527,13 +464,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should not transition from fulfilled to unfulfilled', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -555,13 +486,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should not transition from aborted to unfulfilled', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -583,13 +508,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should not transition from fulfilled to uninitialized', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -611,13 +530,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should not transition from aborted to uninitialized', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -639,13 +552,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should not transition from fulfilled to aborted', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -667,13 +574,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should not transition from aborted to fulfilled', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -695,13 +596,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should not transition from fulfilled to fulfilled', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -721,13 +616,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('correct role should not transition from aborted to aborted', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -749,12 +638,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('wrong role should not update', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole
-            } = await setupTest()
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -770,13 +654,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('update condition should emit ConditionUpdated event', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                owner,
-                createRole
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address)'](
                 conditionId,
@@ -807,15 +685,9 @@ contract('ConditionStoreManager', (accounts) => {
 
     describe('time locked conditions', () => {
         it('zero time lock should not time lock', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole
-            } = await setupTest({ conditionType: accounts[0] })
-
             const conditionTimeLock = 0
             const conditionTimeOut = 0
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address,uint256,uint256)'](
                 conditionId,
@@ -830,15 +702,9 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('nonzero time lock should time lock', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole
-            } = await setupTest({ conditionType: accounts[0] })
-
             const conditionTimeLock = 10
             const conditionTimeOut = 0
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address,uint256,uint256)'](
                 conditionId,
@@ -853,16 +719,9 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('nonzero time lock should not update', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
-
             const conditionTimeLock = 10
             const conditionTimeOut = 0
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address,uint256,uint256)'](
                 conditionId,
@@ -887,16 +746,9 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('nonzero time lock should update after timeLock expires', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
-
             const conditionTimeLock = 4
             const conditionTimeOut = 0
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address,uint256,uint256)'](
                 conditionId,
@@ -931,15 +783,9 @@ contract('ConditionStoreManager', (accounts) => {
 
     describe('timeout conditions', () => {
         it('zero time out should not time out', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole
-            } = await setupTest({ conditionType: accounts[0] })
-
             const conditionTimeLock = 0
             const conditionTimeOut = 0
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address,uint256,uint256)'](
                 conditionId,
@@ -956,15 +802,9 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('nonzero time out should time out', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole
-            } = await setupTest({ conditionType: accounts[0] })
-
             const conditionTimeLock = 0
             const conditionTimeOut = 1
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address,uint256,uint256)'](
                 conditionId,
@@ -989,16 +829,9 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('nonzero time out should not abort after time out', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
-
             const conditionTimeLock = 0
             const conditionTimeOut = 1
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address,uint256,uint256)'](
                 conditionId,
@@ -1027,16 +860,9 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('nonzero time lock should update before time out', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                createRole,
-                owner
-            } = await setupTest({ conditionType: accounts[0] })
-
             const conditionTimeLock = 0
             const conditionTimeOut = 2
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address,uint256,uint256)'](
                 conditionId,
@@ -1063,15 +889,9 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('timed out condition should abort by timeout', async () => {
-            const {
-                conditionStoreManager,
-                hashLockCondition,
-                conditionId,
-                createRole
-            } = await setupTest()
-
             const conditionTimeLock = 0
             const conditionTimeOut = 1
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address,uint256,uint256)'](
                 conditionId,
@@ -1091,13 +911,7 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('timed out condition should abort and emit corresponding ConditionUpdated event', async () => {
-            const {
-                conditionStoreManager,
-                conditionId,
-                hashLockCondition,
-                owner,
-                createRole
-            } = await setupTest({ conditionType: accounts[0] })
+            const conditionId = testUtils.generateId()
 
             const conditionTimeLock = 0
             const conditionTimeOut = 1
@@ -1134,15 +948,9 @@ contract('ConditionStoreManager', (accounts) => {
         })
 
         it('timed out condition should not abort before timeout', async () => {
-            const {
-                conditionStoreManager,
-                hashLockCondition,
-                conditionId,
-                createRole
-            } = await setupTest()
-
             const conditionTimeLock = 0
             const conditionTimeOut = 10
+            const conditionId = testUtils.generateId()
 
             await conditionStoreManager.methods['createCondition(bytes32,address,uint256,uint256)'](
                 conditionId,

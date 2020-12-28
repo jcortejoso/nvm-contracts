@@ -16,45 +16,47 @@ const getBalance = require('../../helpers/getBalance.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('LockRewardCondition', (accounts) => {
-    async function setupTest({
-        conditionId = constants.bytes32.one,
-        conditionType = constants.address.dummy,
-        owner = accounts[1],
-        createRole = accounts[0]
-    } = {}) {
-        const epochLibrary = await EpochLibrary.new()
-        await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
+    let epochLibrary
+    let conditionStoreManager
+    let token
+    let lockRewardCondition
 
-        const conditionStoreManager = await ConditionStoreManager.new()
-        await conditionStoreManager.initialize(
-            owner,
-            { from: owner }
-        )
+    //    const conditionId = constants.bytes32.one
+    //    const conditionType = constants.address.dummy
+    const owner = accounts[1]
+    const createRole = accounts[0]
 
-        await conditionStoreManager.delegateCreateRole(
-            createRole,
-            { from: owner }
-        )
+    beforeEach(async () => {
+        await setupTest()
+    })
 
-        const token = await NeverminedToken.new()
-        await token.initialize(owner, owner)
+    async function setupTest() {
+        if (!conditionStoreManager) {
+            epochLibrary = await EpochLibrary.new()
+            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
-        const lockRewardCondition = await LockRewardCondition.new()
+            conditionStoreManager = await ConditionStoreManager.new()
+            await conditionStoreManager.initialize(
+                owner,
+                { from: owner }
+            )
 
-        await lockRewardCondition.initialize(
-            owner,
-            conditionStoreManager.address,
-            token.address,
-            { from: createRole }
-        )
-        return {
-            lockRewardCondition,
-            token,
-            conditionStoreManager,
-            conditionId,
-            conditionType,
-            createRole,
-            owner
+            await conditionStoreManager.delegateCreateRole(
+                createRole,
+                { from: owner }
+            )
+
+            token = await NeverminedToken.new()
+            await token.initialize(owner, owner)
+
+            lockRewardCondition = await LockRewardCondition.new()
+
+            await lockRewardCondition.initialize(
+                owner,
+                conditionStoreManager.address,
+                token.address,
+                { from: createRole }
+            )
         }
     }
 
@@ -77,8 +79,6 @@ contract('LockRewardCondition', (accounts) => {
 
     describe('fulfill non existing condition', () => {
         it('should not fulfill if conditions do not exist', async () => {
-            const { lockRewardCondition, token, owner } = await setupTest()
-
             const agreementId = constants.bytes32.one
             const rewardAddress = accounts[2]
             const sender = accounts[0]
@@ -99,13 +99,6 @@ contract('LockRewardCondition', (accounts) => {
 
     describe('fulfill existing condition', () => {
         it('should fulfill if conditions exist for account address', async () => {
-            const {
-                lockRewardCondition,
-                token,
-                conditionStoreManager,
-                owner
-            } = await setupTest()
-
             const agreementId = constants.bytes32.one
             const rewardAddress = accounts[2]
             const sender = accounts[0]
@@ -141,9 +134,7 @@ contract('LockRewardCondition', (accounts) => {
 
     describe('fail to fulfill existing condition', () => {
         it('out of balance should fail to fulfill if conditions exist', async () => {
-            const { lockRewardCondition, conditionStoreManager } = await setupTest()
-
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const rewardAddress = accounts[2]
             const amount = 10
 
@@ -161,14 +152,7 @@ contract('LockRewardCondition', (accounts) => {
         })
 
         it('not approved should fail to fulfill if conditions exist', async () => {
-            const {
-                lockRewardCondition,
-                token,
-                conditionStoreManager,
-                owner
-            } = await setupTest()
-
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const rewardAddress = accounts[2]
             const amount = 10
             const sender = accounts[0]
@@ -189,14 +173,7 @@ contract('LockRewardCondition', (accounts) => {
         })
 
         it('right transfer should fail to fulfill if conditions already fulfilled', async () => {
-            const {
-                lockRewardCondition,
-                token,
-                conditionStoreManager,
-                owner
-            } = await setupTest()
-
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const rewardAddress = accounts[2]
             const amount = 10
             const sender = accounts[0]
@@ -234,15 +211,7 @@ contract('LockRewardCondition', (accounts) => {
         })
 
         it('should fail to fulfill if conditions has different type ref', async () => {
-            const {
-                lockRewardCondition,
-                token,
-                conditionStoreManager,
-                owner,
-                createRole
-            } = await setupTest()
-
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const rewardAddress = accounts[2]
             const amount = 10
             const sender = accounts[0]

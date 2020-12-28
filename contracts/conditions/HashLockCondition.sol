@@ -12,21 +12,19 @@ import './Condition.sol';
  * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the Hash Lock Condition
- *
- *      For more information, please refer the following link
- *      https://github.com/oceanprotocol/OEPs/issues/122
- *      TODO: update the OEP link 
  */
 contract HashLockCondition is Condition {
 
-   /**
-    * @notice initialize init the 
-    *       contract with the following parameters
-    * @dev this function is called only once during the contract
-    *       initialization.
-    * @param _owner contract's owner account address
-    * @param _conditionStoreManagerAddress condition store manager address
-    */
+    bytes32 constant public CONDITION_TYPE = keccak256('HashLockCondition');
+
+    /**
+     * @notice initialize init the 
+     *       contract with the following parameters
+     * @dev this function is called only once during the contract
+     *       initialization.
+     * @param _owner contract's owner account address
+     * @param _conditionStoreManagerAddress condition store manager address
+     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress

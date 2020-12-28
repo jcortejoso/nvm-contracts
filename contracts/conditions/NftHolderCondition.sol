@@ -1,28 +1,29 @@
 pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
-// This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
 import './Condition.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
 
 /**
- * @title Lock Reward Condition
- * @author Keyko & Ocean Protocol
+ * @title Nft Holder Condition
+ * Allows to fulfill a condition to users holding some amount of NFTs for a specific DID
+ * @author Keyko
  *
- * @dev Implementation of the Lock Reward Condition
+ * @dev Implementation of the Nft Holder Condition
  */
-contract LockRewardCondition is Condition {
+contract NftHolderCondition is Condition {
 
-    IERC20Upgradeable private token;
+    ERC1155BurnableUpgradeable private nftRegistry;
     
-    bytes32 constant public CONDITION_TYPE = keccak256('LockRewardCondition');
+    bytes32 constant public CONDITION_TYPE = keccak256('NftHolderCondition');
 
     event Fulfilled(
         bytes32 indexed _agreementId,
-        address indexed _rewardAddress,
+        bytes32 indexed _did,
+        address indexed _address,
         bytes32 _conditionId,
         uint256 _amount
     );
@@ -34,18 +35,18 @@ contract LockRewardCondition is Condition {
     *       initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address
-    * @param _tokenAddress Token contract address
+    * @param _didRegistryAddress DIDRegistry address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _tokenAddress
+        address _didRegistryAddress
     )
         external
         initializer()
     {
         require(
-            _tokenAddress != address(0) &&
+            _didRegistryAddress != address(0) &&
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
@@ -54,51 +55,55 @@ contract LockRewardCondition is Condition {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        token = ERC20Upgradeable(_tokenAddress);
+        nftRegistry = ERC1155BurnableUpgradeable(_didRegistryAddress);
     }
 
    /**
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters
-    * @param _rewardAddress the contract address where the reward will be locked
-    * @param _amount is the amount of the locked tokens
+    * @param _did the Decentralized Identifier of the asset
+    * @param _holderAddress the address of the NFT holder
+    * @param _amount is the amount NFTs that need to be hold by the holder
     * @return bytes32 hash of all these values 
     */
     function hashValues(
-        address _rewardAddress,
+        bytes32 _did,
+        address _holderAddress,
         uint256 _amount
     )
         public
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_rewardAddress, _amount));
+        return keccak256(abi.encodePacked(_did, _holderAddress, _amount));
     }
 
    /**
-    * @notice fulfill requires valid token transfer in order 
-    *           to lock the amount of tokens based on the SEA
+    * @notice fulfill requires a validation that holder has enough
+    *       NFTs for a specific DID
     * @param _agreementId SEA agreement identifier
-    * @param _rewardAddress the contract address where the reward is locked
-    * @param _amount is the amount of tokens to be transferred 
+    * @param _did the Decentralized Identifier of the asset    
+    * @param _holderAddress the contract address where the reward is locked
+    * @param _amount is the amount of NFT to be hold
     * @return condition state
     */
     function fulfill(
         bytes32 _agreementId,
-        address _rewardAddress,
+        bytes32 _did,
+        address _holderAddress,
         uint256 _amount
     )
         external
         returns (ConditionStoreLibrary.ConditionState)
     {
         require(
-            token.transferFrom(msg.sender, _rewardAddress, _amount),
-            'Could not transfer token'
+            nftRegistry.balanceOf(_holderAddress, uint256(_did)) >= _amount,
+            'The holder doesnt have enough NFT balance for the did given'
         );
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_rewardAddress, _amount)
+            hashValues(_did, _holderAddress, _amount)
         );
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
@@ -107,7 +112,8 @@ contract LockRewardCondition is Condition {
 
         emit Fulfilled(
             _agreementId,
-            _rewardAddress,
+            _did, 
+            _holderAddress,
             _id,
             _amount
         );

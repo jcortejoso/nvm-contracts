@@ -17,44 +17,58 @@ const getBalance = require('../../../helpers/getBalance.js')
 const testUtils = require('../../../helpers/utils.js')
 
 contract('EscrowReward constructor', (accounts) => {
+    let epochLibrary
+    let conditionStoreManager
+    let token
+    let lockRewardCondition
+    let escrowReward
+    const createRole = accounts[0]
+    const owner = accounts[1]
+
+    beforeEach(async () => {
+        await setupTest()
+    })
+
     async function setupTest({
-        conditionId = constants.bytes32.one,
-        conditionType = constants.address.dummy,
-        createRole = accounts[0],
-        owner = accounts[1]
+        conditionId = testUtils.generateId(),
+        conditionType = testUtils.generateId()
+        //        createRole = accounts[0],
+        //        owner = accounts[1]
     } = {}) {
-        const epochLibrary = await EpochLibrary.new()
-        await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
+        if (!escrowReward) {
+            epochLibrary = await EpochLibrary.new()
+            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
-        const conditionStoreManager = await ConditionStoreManager.new()
-        await conditionStoreManager.initialize(
-            owner,
-            { from: owner }
-        )
+            conditionStoreManager = await ConditionStoreManager.new()
+            await conditionStoreManager.initialize(
+                owner,
+                { from: owner }
+            )
 
-        await conditionStoreManager.delegateCreateRole(
-            createRole,
-            { from: owner }
-        )
+            await conditionStoreManager.delegateCreateRole(
+                createRole,
+                { from: owner }
+            )
 
-        const token = await NeverminedToken.new()
-        await token.initialize(owner, owner)
+            token = await NeverminedToken.new()
+            await token.initialize(owner, owner)
 
-        const lockRewardCondition = await LockRewardCondition.new()
-        await lockRewardCondition.initialize(
-            owner,
-            conditionStoreManager.address,
-            token.address,
-            { from: owner }
-        )
+            lockRewardCondition = await LockRewardCondition.new()
+            await lockRewardCondition.initialize(
+                owner,
+                conditionStoreManager.address,
+                token.address,
+                { from: owner }
+            )
 
-        const escrowReward = await EscrowReward.new()
-        await escrowReward.initialize(
-            owner,
-            conditionStoreManager.address,
-            token.address,
-            { from: createRole }
-        )
+            escrowReward = await EscrowReward.new()
+            await escrowReward.initialize(
+                owner,
+                conditionStoreManager.address,
+                token.address,
+                { from: createRole }
+            )
+        }
 
         return {
             escrowReward,
@@ -88,10 +102,10 @@ contract('EscrowReward constructor', (accounts) => {
 
     describe('fulfill non existing condition', () => {
         it('should not fulfill if conditions do not exist', async () => {
-            await setupTest()
+            //            await setupTest()
             const { escrowReward } = await setupTest()
 
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const lockConditionId = accounts[2]
             const releaseConditionId = accounts[3]
             const sender = accounts[0]
@@ -113,15 +127,15 @@ contract('EscrowReward constructor', (accounts) => {
 
     describe('fulfill existing condition', () => {
         it('should fulfill if conditions exist for account address', async () => {
-            const {
-                escrowReward,
-                lockRewardCondition,
-                token,
-                conditionStoreManager,
-                owner
-            } = await setupTest()
+            //            const {
+            //                escrowReward,
+            //                lockRewardCondition,
+            //                token,
+            //                conditionStoreManager,
+            //                owner
+            //            } = await setupTest()
 
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const sender = accounts[0]
             const receiver = accounts[1]
             const amount = 10
@@ -197,18 +211,19 @@ contract('EscrowReward constructor', (accounts) => {
             )
         })
         it('should not fulfill in case of null addresses', async () => {
-            const {
-                escrowReward,
-                lockRewardCondition,
-                token,
-                conditionStoreManager,
-                owner
-            } = await setupTest()
+            //            const {
+            //                escrowReward,
+            //                lockRewardCondition,
+            //                token,
+            //                conditionStoreManager,
+            //                owner
+            //            } = await setupTest()
 
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const sender = accounts[0]
             const receiver = constants.address.zero
             const amount = 10
+            const balanceBefore = await getBalance(token, escrowReward.address)
 
             const hashValuesLock = await lockRewardCondition.hashValues(escrowReward.address, amount)
             const conditionLockId = await lockRewardCondition.generateId(agreementId, hashValuesLock)
@@ -229,7 +244,7 @@ contract('EscrowReward constructor', (accounts) => {
             const conditionId = await escrowReward.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
-                constants.bytes32.one,
+                testUtils.generateId(),
                 escrowReward.address)
 
             await conditionStoreManager.createCondition(
@@ -245,7 +260,7 @@ contract('EscrowReward constructor', (accounts) => {
             await lockRewardCondition.fulfill(agreementId, escrowReward.address, amount)
 
             assert.strictEqual(await getBalance(token, lockRewardCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowReward.address), amount)
+            assert.strictEqual(await getBalance(token, escrowReward.address), balanceBefore + amount)
 
             await assert.isRejected(
                 escrowReward.fulfill(
@@ -260,18 +275,19 @@ contract('EscrowReward constructor', (accounts) => {
             )
         })
         it('should not fulfill if the receiver address is Escrow contract address', async () => {
-            const {
-                escrowReward,
-                lockRewardCondition,
-                token,
-                conditionStoreManager,
-                owner
-            } = await setupTest()
+            //            const {
+            //                escrowReward,
+            //                lockRewardCondition,
+            //                token,
+            //                conditionStoreManager,
+            //                owner
+            //            } = await setupTest()
 
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const sender = accounts[0]
             const receiver = escrowReward.address
             const amount = 10
+            const balanceBefore = await getBalance(token, escrowReward.address)
 
             const hashValuesLock = await lockRewardCondition.hashValues(escrowReward.address, amount)
             const conditionLockId = await lockRewardCondition.generateId(agreementId, hashValuesLock)
@@ -292,7 +308,7 @@ contract('EscrowReward constructor', (accounts) => {
             const conditionId = await escrowReward.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
-                constants.bytes32.one,
+                testUtils.generateId(),
                 escrowReward.address)
 
             await conditionStoreManager.createCondition(
@@ -308,7 +324,7 @@ contract('EscrowReward constructor', (accounts) => {
             await lockRewardCondition.fulfill(agreementId, escrowReward.address, amount)
 
             assert.strictEqual(await getBalance(token, lockRewardCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowReward.address), amount)
+            assert.strictEqual(await getBalance(token, escrowReward.address), balanceBefore + amount)
 
             await assert.isRejected(
                 escrowReward.fulfill(
@@ -326,15 +342,15 @@ contract('EscrowReward constructor', (accounts) => {
 
     describe('only fulfill conditions once', () => {
         it('do not allow rewards to be fulfilled twice', async () => {
-            const {
-                escrowReward,
-                lockRewardCondition,
-                token,
-                conditionStoreManager,
-                owner
-            } = await setupTest()
+            //            const {
+            //                escrowReward,
+            //                lockRewardCondition,
+            //                token,
+            //                conditionStoreManager,
+            //                owner
+            //            } = await setupTest()
 
-            const agreementId = constants.bytes32.one
+            const agreementId = testUtils.generateId()
             const sender = accounts[0]
             const attacker = accounts[2]
             const amount = 10
@@ -347,7 +363,7 @@ contract('EscrowReward constructor', (accounts) => {
                 lockRewardCondition.address)
 
             await conditionStoreManager.createCondition(
-                constants.bytes32.one,
+                testUtils.generateId(),
                 escrowReward.address)
 
             /* simulate a real environment by giving the EscrowReward contract a bunch of tokens: */

@@ -52,6 +52,7 @@ function that will be executed only once after the initial deployment.
   "SignCondition",
   "HashLockCondition",
   "LockRewardCondition",
+  "NftHolderCondition",
   "AccessSecretStoreCondition",
   "EscrowReward",
   "EscrowAccessSecretStoreTemplate",

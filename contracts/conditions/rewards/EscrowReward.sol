@@ -16,11 +16,10 @@ import '../ConditionStoreLibrary.sol';
  *      The Escrow reward is reward condition in which only 
  *      can release reward if lock and release conditions
  *      are fulfilled.
- *      For more information, please refer the following link: 
- *      https://github.com/oceanprotocol/OEPs/issues/133
- *      TODO: update the OEP link 
  */
 contract EscrowReward is Reward {
+
+    bytes32 constant public CONDITION_TYPE = keccak256('EscrowReward');
 
     event Fulfilled(
         bytes32 indexed _agreementId,

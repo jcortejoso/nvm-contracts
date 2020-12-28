@@ -28,6 +28,8 @@ import '../agreements/AgreementStoreManager.sol';
 contract AccessSecretStoreCondition is Condition, 
 ISecretStore, ISecretStorePermission {
 
+    bytes32 constant public CONDITION_TYPE = keccak256('AccessSecretStoreCondition');
+
     struct DocumentPermission {
         bytes32 agreementIdDeprecated;
         mapping(address => bool) permission;

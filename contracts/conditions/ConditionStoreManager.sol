@@ -24,9 +24,6 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  *      two types of roles, create role that in which is able to create conditions.
  *      The second role is the update role, which is can update the condition state.
  *      Also, it support delegating the roles to other contract(s)/account(s).
- *      For more information please refer to this link:
- *      https://github.com/oceanprotocol/OEPs/issues/119
- *      TODO: update the OEP link
  */
 contract ConditionStoreManager is OwnableUpgradeable, Common {
 
