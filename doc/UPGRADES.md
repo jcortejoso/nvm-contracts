@@ -87,32 +87,32 @@ $ npm run compile #to compile the contracts
 
 ### 3. Deploy & Upgrade
 
-The following steps shows how to perform contracts deployment and upgrade on `Nile` and `Kovan` networks.
+The following steps shows how to perform contracts deployment and upgrade on `Rinkeby` and `Kovan` networks.
 #### Nile
 
-- Copy the wallet file for `staging`
-  - `cp wallets_staging.json wallets.json`
+- Copy the wallet file for `rinkeby`
+  - `cp wallets_rinkeby.json wallets.json`
 - run `export MNEMONIC=<your staging mnemonic>`. You will find them in the password manager.
 
 ##### Deploy the whole application
 
-- To deploy all contracts run `npm run deploy:staging`
+- To deploy all contracts run `npm run deploy:rinkeby`
 
 ##### Deploy a single contracts
 
-- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:staging -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:rinkeby -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
-- To upgrade all contracts run `npm run upgrade:staging`
+- To upgrade all contracts run `npm run upgrade:rinkeby`
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:staging -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
+- To upgrade a single contract run `npm run upgrade:rinkeby -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
 
 ##### Persist artifacts
 
-- Commit all changes in `artifacts/*.staging.json`
+- Commit all changes in `artifacts/*.rinkeby.json`
 
 #### Kovan
 
@@ -155,7 +155,7 @@ All upgrades of the contracts have to be approved by the `upgrader` wallet confi
 
 ### 5. Audit Contracts
 
-To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:staging` to get a list of all the current transactions and their current status.
+To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:rinkeby` to get a list of all the current transactions and their current status.
 
 ```text
  Wallet: 0x24EB26D4042a2AB576E7E39b87c3f33f276AeF92

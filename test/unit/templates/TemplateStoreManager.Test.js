@@ -15,7 +15,6 @@ const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('TemplateStoreManager', (accounts) => {
-
     let common
     let templateStoreLibrary
     let templateStoreManager
@@ -29,7 +28,7 @@ contract('TemplateStoreManager', (accounts) => {
         conditionType = constants.address.dummy,
         createRole = accounts[0]
     } = {}) {
-        if (!templateStoreManager)  {
+        if (!templateStoreManager) {
             common = await Common.new()
             templateStoreLibrary = await TemplateStoreLibrary.new()
             await TemplateStoreManager.link('TemplateStoreLibrary', templateStoreLibrary.address)
@@ -58,7 +57,6 @@ contract('TemplateStoreManager', (accounts) => {
 
     describe('propose template', () => {
         it('should propose and be proposed', async () => {
-
             await templateStoreManager.proposeTemplate(templateId)
 
             expect((await templateStoreManager.getTemplate(templateId)).state.toNumber())
@@ -67,7 +65,6 @@ contract('TemplateStoreManager', (accounts) => {
         })
 
         it('should not propose if exists', async () => {
-
             await templateStoreManager.proposeTemplate(templateId)
 
             await assert.isRejected(
@@ -79,7 +76,6 @@ contract('TemplateStoreManager', (accounts) => {
 
     describe('approve template', () => {
         it('should approve after propose', async () => {
-
             const templateListSizeBefore = (await templateStoreManager.getTemplateListSize()).toNumber()
             await assert.isRejected(
                 templateStoreManager.approveTemplate(templateId),
@@ -94,7 +90,6 @@ contract('TemplateStoreManager', (accounts) => {
         })
 
         it('should not approve if not createRole', async () => {
-
             await templateStoreManager.proposeTemplate(templateId)
             await assert.isRejected(
                 templateStoreManager.approveTemplate(templateId, { from: accounts[1] }),
@@ -105,7 +100,6 @@ contract('TemplateStoreManager', (accounts) => {
 
     describe('get template', () => {
         it('successful create should get unfulfilled condition', async () => {
-
             const blockNumber = await common.getCurrentBlockNumber()
 
             await templateStoreManager.proposeTemplate(templateId)
@@ -123,7 +117,6 @@ contract('TemplateStoreManager', (accounts) => {
 
     describe('revoke template', () => {
         it('successful create should revoke if owner and approved', async () => {
-
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
@@ -139,7 +132,6 @@ contract('TemplateStoreManager', (accounts) => {
         })
 
         it('successful approve should not revoke if not owner', async () => {
-
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
@@ -150,7 +142,6 @@ contract('TemplateStoreManager', (accounts) => {
         })
 
         it('should not revoke if uninitialized', async () => {
-
             await assert.isRejected(
                 templateStoreManager.revokeTemplate(templateId),
                 constants.template.error.templateNotApproved
@@ -158,7 +149,6 @@ contract('TemplateStoreManager', (accounts) => {
         })
 
         it('should not revoke if proposed', async () => {
-
             await templateStoreManager.proposeTemplate(templateId)
 
             await assert.isRejected(
@@ -168,7 +158,6 @@ contract('TemplateStoreManager', (accounts) => {
         })
 
         it('should not revoke if already revoked', async () => {
-
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
             await templateStoreManager.revokeTemplate(templateId)

@@ -14,8 +14,6 @@ pragma solidity 0.6.12;
  *      Templates are blueprints for modular SEAs. When 
  *      creating an Agreement, a templateId defines the condition 
  *      and reward types that are instantiated in the ConditionStore.
- *      For more information: https://github.com/oceanprotocol/OEPs/issues/132
- *      TODO: update the OEP link 
  */
 library TemplateStoreLibrary {
 
