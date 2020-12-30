@@ -12,18 +12,30 @@ const TemplateStoreLibrary = artifacts.require('TemplateStoreLibrary')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 
 const constants = require('../../helpers/constants.js')
+const testUtils = require('../../helpers/utils.js')
 
 contract('TemplateStoreManager', (accounts) => {
+    let common
+    let templateStoreLibrary
+    let templateStoreManager
+    let templateId
+
+    beforeEach(async () => {
+        await setupTest()
+    })
+
     async function setupTest({
-        templateId = constants.bytes32.one,
         conditionType = constants.address.dummy,
         createRole = accounts[0]
     } = {}) {
-        const common = await Common.new()
-        const templateStoreLibrary = await TemplateStoreLibrary.new()
-        await TemplateStoreManager.link('TemplateStoreLibrary', templateStoreLibrary.address)
-        const templateStoreManager = await TemplateStoreManager.new()
-        await templateStoreManager.initialize(createRole)
+        if (!templateStoreManager) {
+            common = await Common.new()
+            templateStoreLibrary = await TemplateStoreLibrary.new()
+            await TemplateStoreManager.link('TemplateStoreLibrary', templateStoreLibrary.address)
+            templateStoreManager = await TemplateStoreManager.new()
+            await templateStoreManager.initialize(createRole)
+        }
+        templateId = testUtils.generateAccount().address
 
         return {
             common,
@@ -45,10 +57,6 @@ contract('TemplateStoreManager', (accounts) => {
 
     describe('propose template', () => {
         it('should propose and be proposed', async () => {
-            const { templateStoreManager } = await setupTest()
-
-            const templateId = constants.address.dummy
-
             await templateStoreManager.proposeTemplate(templateId)
 
             expect((await templateStoreManager.getTemplate(templateId)).state.toNumber())
@@ -57,10 +65,6 @@ contract('TemplateStoreManager', (accounts) => {
         })
 
         it('should not propose if exists', async () => {
-            const { templateStoreManager } = await setupTest()
-
-            const templateId = constants.address.dummy
-
             await templateStoreManager.proposeTemplate(templateId)
 
             await assert.isRejected(
@@ -72,10 +76,7 @@ contract('TemplateStoreManager', (accounts) => {
 
     describe('approve template', () => {
         it('should approve after propose', async () => {
-            const { templateStoreManager } = await setupTest()
-
-            const templateId = constants.address.dummy
-
+            const templateListSizeBefore = (await templateStoreManager.getTemplateListSize()).toNumber()
             await assert.isRejected(
                 templateStoreManager.approveTemplate(templateId),
                 constants.template.error.templateNotProposed
@@ -85,14 +86,10 @@ contract('TemplateStoreManager', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
             expect((await templateStoreManager.getTemplate(templateId)).state.toNumber())
                 .to.equal(constants.template.state.approved)
-            expect((await templateStoreManager.getTemplateListSize()).toNumber()).to.equal(1)
+            expect((await templateStoreManager.getTemplateListSize()).toNumber()).to.equal(templateListSizeBefore + 1)
         })
 
         it('should not approve if not createRole', async () => {
-            const { templateStoreManager } = await setupTest()
-
-            const templateId = constants.address.dummy
-
             await templateStoreManager.proposeTemplate(templateId)
             await assert.isRejected(
                 templateStoreManager.approveTemplate(templateId, { from: accounts[1] }),
@@ -103,10 +100,7 @@ contract('TemplateStoreManager', (accounts) => {
 
     describe('get template', () => {
         it('successful create should get unfulfilled condition', async () => {
-            const { common, templateStoreManager } = await setupTest()
-
             const blockNumber = await common.getCurrentBlockNumber()
-            const templateId = constants.address.dummy
 
             await templateStoreManager.proposeTemplate(templateId)
 
@@ -123,10 +117,6 @@ contract('TemplateStoreManager', (accounts) => {
 
     describe('revoke template', () => {
         it('successful create should revoke if owner and approved', async () => {
-            const { common, templateStoreManager } = await setupTest()
-
-            const templateId = constants.address.dummy
-
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
@@ -142,10 +132,6 @@ contract('TemplateStoreManager', (accounts) => {
         })
 
         it('successful approve should not revoke if not owner', async () => {
-            const { templateStoreManager } = await setupTest()
-
-            const templateId = constants.address.dummy
-
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
@@ -156,10 +142,6 @@ contract('TemplateStoreManager', (accounts) => {
         })
 
         it('should not revoke if uninitialized', async () => {
-            const { templateStoreManager } = await setupTest()
-
-            const templateId = constants.address.dummy
-
             await assert.isRejected(
                 templateStoreManager.revokeTemplate(templateId),
                 constants.template.error.templateNotApproved
@@ -167,10 +149,6 @@ contract('TemplateStoreManager', (accounts) => {
         })
 
         it('should not revoke if proposed', async () => {
-            const { templateStoreManager } = await setupTest()
-
-            const templateId = constants.address.dummy
-
             await templateStoreManager.proposeTemplate(templateId)
 
             await assert.isRejected(
@@ -180,10 +158,6 @@ contract('TemplateStoreManager', (accounts) => {
         })
 
         it('should not revoke if already revoked', async () => {
-            const { templateStoreManager } = await setupTest()
-
-            const templateId = constants.address.dummy
-
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
             await templateStoreManager.revokeTemplate(templateId)

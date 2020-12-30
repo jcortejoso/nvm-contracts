@@ -141,4 +141,6 @@ contract TemplateStoreManager is OwnableUpgradeable {
         return templateList.templates[_id].state ==
             TemplateStoreLibrary.TemplateState.Approved;
     }
+    
+
 }
