@@ -20,14 +20,17 @@ jobs:
           yarn lint
           yarn clean
           yarn compile
-      - name: Run Unit Tests
+#      - name: Run Unit Tests
+#        run: |
+#          yarn test:unit
+#          pkill --signal 9 -f ganache-cli
+#          npx ganache-cli@~6.12.1 &
+#      - name: Run Integration Tests
+#        run: |
+#          yarn test:integration
+      - name: Run Test Cover
         run: |
-          yarn test:unit
-          pkill --signal 9 -f ganache-cli
-          npx ganache-cli@~6.12.1 &
-      - name: Run Integration Tests
-        run: |
-          yarn test:integration
+          yarn test:cover
         env:
           NODE_OPTIONS: "--max-old-space-size=7500"
 
