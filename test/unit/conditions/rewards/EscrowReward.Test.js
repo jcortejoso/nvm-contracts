@@ -127,14 +127,6 @@ contract('EscrowReward constructor', (accounts) => {
 
     describe('fulfill existing condition', () => {
         it('should fulfill if conditions exist for account address', async () => {
-            //            const {
-            //                escrowReward,
-            //                lockRewardCondition,
-            //                token,
-            //                conditionStoreManager,
-            //                owner
-            //            } = await setupTest()
-
             const agreementId = testUtils.generateId()
             const sender = accounts[0]
             const receiver = accounts[1]
@@ -156,6 +148,7 @@ contract('EscrowReward constructor', (accounts) => {
                 sender,
                 lockConditionId,
                 releaseConditionId)
+
             const conditionId = await escrowReward.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
@@ -210,15 +203,92 @@ contract('EscrowReward constructor', (accounts) => {
                 constants.condition.state.error.invalidStateTransition
             )
         })
-        it('should not fulfill in case of null addresses', async () => {
-            //            const {
-            //                escrowReward,
-            //                lockRewardCondition,
-            //                token,
-            //                conditionStoreManager,
-            //                owner
-            //            } = await setupTest()
 
+        it('should fulfill and reward multiple addresses', async () => {
+            const agreementId = testUtils.generateId()
+            const sender = accounts[0]
+            const receiverA = accounts[3]
+            const receiverB = accounts[4]
+            const receivers = [receiverA, receiverB]
+            const amountA = 10
+            const amountB = 3
+            const totalAmount = amountA + amountB
+            const amounts = [amountA, amountB]
+            const escrowRewardInitialBalance = await getBalance(token, escrowReward.address)
+
+            const hashValuesLock = await lockRewardCondition.hashValues(
+                escrowReward.address, totalAmount)
+            const conditionLockId = await lockRewardCondition.generateId(agreementId, hashValuesLock)
+
+            await conditionStoreManager.createCondition(
+                conditionLockId,
+                lockRewardCondition.address)
+
+            const lockConditionId = conditionLockId
+            const releaseConditionId = conditionLockId
+
+            const hashValues = await escrowReward.hashMultipleValues(
+                amounts,
+                receivers,
+                sender,
+                lockConditionId,
+                releaseConditionId)
+
+            const conditionId = await escrowReward.generateId(agreementId, hashValues)
+
+            await conditionStoreManager.createCondition(
+                conditionId,
+                escrowReward.address)
+
+            await token.mint(sender, totalAmount, { from: owner })
+            await token.approve(
+                lockRewardCondition.address,
+                totalAmount,
+                { from: sender })
+
+            await lockRewardCondition.fulfill(agreementId, escrowReward.address, totalAmount)
+
+            assert.strictEqual(await getBalance(token, lockRewardCondition.address), 0)
+            assert.strictEqual(await getBalance(token, escrowReward.address), escrowRewardInitialBalance + totalAmount)
+
+            const result = await escrowReward.fulfillMultipleRewards(
+                agreementId,
+                amounts,
+                receivers,
+                sender,
+                lockConditionId,
+                releaseConditionId)
+
+            assert.strictEqual(
+                (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
+                constants.condition.state.fulfilled
+            )
+
+            testUtils.assertEmitted(result, 1, 'Fulfilled')
+            const eventArgs = testUtils.getEventArgsFromTx(result, 'Fulfilled')
+            expect(eventArgs._agreementId).to.equal(agreementId)
+            expect(eventArgs._conditionId).to.equal(conditionId)
+            expect(eventArgs._receivers[0]).to.equal(receiverA)
+            expect(eventArgs._receivers[1]).to.equal(receiverB)
+            expect(eventArgs._amounts[0].toNumber()).to.equal(amountA)
+            expect(eventArgs._amounts[1].toNumber()).to.equal(amountB)
+
+            assert.strictEqual(await getBalance(token, escrowReward.address), escrowRewardInitialBalance)
+            assert.strictEqual(await getBalance(token, receiverA), amountA)
+            assert.strictEqual(await getBalance(token, receiverB), amountB)
+
+            await token.mint(sender, totalAmount, { from: owner })
+            await token.approve(escrowReward.address, totalAmount, { from: sender })
+            await token.transfer(escrowReward.address, totalAmount, { from: sender })
+
+            assert.strictEqual(await getBalance(token, escrowReward.address), escrowRewardInitialBalance + totalAmount)
+            await assert.isRejected(
+                escrowReward.fulfillMultipleRewards(agreementId, amounts, receivers, sender, lockConditionId, releaseConditionId),
+                constants.condition.state.error.invalidStateTransition
+            )
+        })
+
+        it('should not fulfill in case of null addresses', async () => {
             const agreementId = testUtils.generateId()
             const sender = accounts[0]
             const receiver = constants.address.zero
@@ -275,14 +345,6 @@ contract('EscrowReward constructor', (accounts) => {
             )
         })
         it('should not fulfill if the receiver address is Escrow contract address', async () => {
-            //            const {
-            //                escrowReward,
-            //                lockRewardCondition,
-            //                token,
-            //                conditionStoreManager,
-            //                owner
-            //            } = await setupTest()
-
             const agreementId = testUtils.generateId()
             const sender = accounts[0]
             const receiver = escrowReward.address
@@ -342,14 +404,6 @@ contract('EscrowReward constructor', (accounts) => {
 
     describe('only fulfill conditions once', () => {
         it('do not allow rewards to be fulfilled twice', async () => {
-            //            const {
-            //                escrowReward,
-            //                lockRewardCondition,
-            //                token,
-            //                conditionStoreManager,
-            //                owner
-            //            } = await setupTest()
-
             const agreementId = testUtils.generateId()
             const sender = accounts[0]
             const attacker = accounts[2]
