@@ -15,7 +15,7 @@ jobs:
       - name: Pre-install
         run: |
           yarn
-          npx ganache-cli@~6.12.1 &
+          npx --verbose ganache-cli@~6.12.1 &
       - name: Compile and Lint
         run: |
           yarn lint
@@ -30,7 +30,7 @@ jobs:
         run: |
           yarn test:integration
         env:
-          NODE_OPTIONS: "--max-old-space-size=7500"
+          NODE_OPTIONS: "--max-old-space-size=8192"
 
   upgradability:
     runs-on: ubuntu-latest
