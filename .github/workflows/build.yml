@@ -1,7 +1,11 @@
 name: Build and Tests
 
 #on: [ push, pull_request ]
-on: push
+on:
+  push:
+  pull_request:
+    branches:
+      - master
 
 jobs:
 
@@ -15,7 +19,8 @@ jobs:
       - name: Pre-install
         run: |
           yarn
-          npx ganache-cli@~6.12.1 --verbose &
+          npm install ganache-cli@~6.12.2 -g
+          ganache-cli &
       - name: Compile and Lint
         run: |
           yarn lint
@@ -25,7 +30,7 @@ jobs:
         run: |
           yarn test:unit
           pkill --signal 9 -f ganache-cli
-          npx ganache-cli@~6.12.1 &
+          ganache-cli &
       - name: Run Integration Tests
         run: |
           yarn test:integration
