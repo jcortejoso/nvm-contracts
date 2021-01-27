@@ -264,8 +264,8 @@ contract('EscrowReward constructor', (accounts) => {
                 constants.condition.state.fulfilled
             )
 
-            testUtils.assertEmitted(result, 1, 'Fulfilled')
-            const eventArgs = testUtils.getEventArgsFromTx(result, 'Fulfilled')
+            testUtils.assertEmitted(result, 1, 'FulfilledMultiple')
+            const eventArgs = testUtils.getEventArgsFromTx(result, 'FulfilledMultiple')
             expect(eventArgs._agreementId).to.equal(agreementId)
             expect(eventArgs._conditionId).to.equal(conditionId)
             expect(eventArgs._receivers[0]).to.equal(receiverA)

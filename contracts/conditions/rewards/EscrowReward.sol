@@ -28,7 +28,7 @@ contract EscrowReward is Reward {
         uint256 _amount
     );
 
-    event Fulfilled(
+    event FulfilledMultiple(
         bytes32 indexed _agreementId,
         address[] _receivers,
         bytes32 _conditionId,
@@ -304,7 +304,8 @@ contract EscrowReward is Reward {
         if (state == ConditionStoreLibrary.ConditionState.Fulfilled)
         {
             state = _transferAndFulfillMultipleRewards(id, _receivers, _amounts);
-            emit Fulfilled(_agreementId, _receivers, id, _amounts);
+            emit FulfilledMultiple(_agreementId, _receivers, id, _amounts);
+                
         } else if (state == ConditionStoreLibrary.ConditionState.Aborted)
         {
             state = _transferAndFulfill(id, _sender, _totalAmount);
