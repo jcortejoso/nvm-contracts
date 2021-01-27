@@ -103,7 +103,7 @@ contract('EscrowReward constructor', (accounts) => {
     describe('fulfill non existing condition', () => {
         it('should not fulfill if conditions do not exist', async () => {
             //            await setupTest()
-            const { escrowReward } = await setupTest()
+            //            const { escrowReward } = await setupTest()
 
             const agreementId = testUtils.generateId()
             const lockConditionId = accounts[2]
