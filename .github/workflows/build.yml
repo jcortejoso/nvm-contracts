@@ -15,7 +15,7 @@ jobs:
       - name: Pre-install
         run: |
           yarn
-          npx --verbose ganache-cli@~6.12.1 &
+          npx ganache-cli@~6.12.1 --verbose &
       - name: Compile and Lint
         run: |
           yarn lint
