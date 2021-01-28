@@ -30,8 +30,6 @@ jobs:
 
       - name: Generating Stubs
         run: |
-#          curl -L https://get.web3j.io | sh
-#          source ~/.web3j/source.sh
           curl -L https://github.com/web3j/web3j-cli/releases/download/v4.5.16/web3j-4.5.16.tar -o /tmp/web3j-cli.tar
           tar xvf /tmp/web3j-cli.tar -C /tmp/
           export PATH=$PATH:/tmp/web3j-4.5.16/bin
