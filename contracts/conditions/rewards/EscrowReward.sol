@@ -23,13 +23,6 @@ contract EscrowReward is Reward {
 
     event Fulfilled(
         bytes32 indexed _agreementId,
-        address indexed _receiver,
-        bytes32 _conditionId,
-        uint256 _amount
-    );
-
-    event FulfilledMultiple(
-        bytes32 indexed _agreementId,
         address[] _receivers,
         bytes32 _conditionId,
         uint256[] _amounts
@@ -62,37 +55,7 @@ contract EscrowReward is Reward {
         );
         token = ERC20Upgradeable(_tokenAddress);
     }
-
-    /**
-     * @notice hashValues generates the hash of condition inputs 
-     *        with the following parameters
-     * @param _amount token amount to be locked/released
-     * @param _receiver receiver's address
-     * @param _sender sender's address
-     * @param _lockCondition lock condition identifier
-     * @param _releaseCondition release condition identifier
-     * @return bytes32 hash of all these values 
-     */
-    function hashValues(
-        uint256 _amount,
-        address _receiver,
-        address _sender,
-        bytes32 _lockCondition,
-        bytes32 _releaseCondition
-    )
-    public pure
-    returns (bytes32)
-    {
-        return keccak256(
-            abi.encodePacked(
-                _amount,
-                _receiver,
-                _sender,
-                _lockCondition,
-                _releaseCondition
-            )
-        );
-    }
+    
 
     /**
      * @notice hashValues generates the hash of condition inputs 
@@ -104,7 +67,7 @@ contract EscrowReward is Reward {
      * @param _releaseCondition release condition identifier
      * @return bytes32 hash of all these values 
      */
-    function hashMultipleValues(
+    function hashValues(
         uint256[] memory _amounts,
         address[] memory _receivers,
         address _sender,
@@ -137,99 +100,6 @@ contract EscrowReward is Reward {
      *      release/refund the reward to receiver/sender 
      *      respectively.
      * @param _agreementId agreement identifier
-     * @param _amount token amount to be locked/released
-     * @param _receiver receiver's address
-     * @param _sender sender's address
-     * @param _lockCondition lock condition identifier
-     * @param _releaseCondition release condition identifier
-     * @return condition state (Fulfilled/Aborted)
-     */
-    function fulfill(
-        bytes32 _agreementId,
-        uint256 _amount,
-        address _receiver,
-        address _sender,
-        bytes32 _lockCondition,
-        bytes32 _releaseCondition
-    )
-    external
-    returns (ConditionStoreLibrary.ConditionState)
-    {
-        bytes32 id = generateId(
-            _agreementId,
-            hashValues(
-                _amount,
-                _receiver,
-                _sender,
-                _lockCondition,
-                _releaseCondition
-            )
-        );
-        address lockConditionTypeRef;
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,) = conditionStoreManager
-        .getCondition(_lockCondition);
-
-        bytes32 generatedLockConditionId = keccak256(
-            abi.encodePacked(
-                _agreementId,
-                lockConditionTypeRef,
-                keccak256(
-                    abi.encodePacked(
-                        address(this),
-                        _amount
-                    )
-                )
-            )
-        );
-        require(
-            generatedLockConditionId == _lockCondition,
-            'LockCondition ID does not match'
-        );
-        require(
-            lockConditionState ==
-            ConditionStoreLibrary.ConditionState.Fulfilled,
-            'LockCondition needs to be Fulfilled'
-        );
-        require(
-            token.balanceOf(address(this)) >= _amount,
-            'Not enough balance'
-        );
-
-        ConditionStoreLibrary.ConditionState state = conditionStoreManager
-        .getConditionState(_releaseCondition);
-
-        address escrowReceiver = address(0x0);
-        if (state == ConditionStoreLibrary.ConditionState.Fulfilled)
-        {
-            escrowReceiver = _receiver;
-            state = _transferAndFulfill(id, _receiver, _amount);
-        } else if (state == ConditionStoreLibrary.ConditionState.Aborted)
-        {
-            escrowReceiver = _sender;
-            state = _transferAndFulfill(id, _sender, _amount);
-        } else
-        {
-            return conditionStoreManager.getConditionState(id);
-        }
-
-        emit Fulfilled(
-            _agreementId,
-            escrowReceiver,
-            id,
-            _amount
-        );
-
-        return state;
-    }
-
-    /**
-     * @notice fulfill escrow reward condition
-     * @dev fulfill method checks whether the lock and 
-     *      release conditions are fulfilled in order to 
-     *      release/refund the reward to receiver/sender 
-     *      respectively.
-     * @param _agreementId agreement identifier
      * @param _amounts token amounts to be locked/released
      * @param _receivers receiver's address
      * @param _sender sender's address
@@ -237,7 +107,7 @@ contract EscrowReward is Reward {
      * @param _releaseCondition release condition identifier
      * @return condition state (Fulfilled/Aborted)
      */
-    function fulfillMultipleRewards(
+    function fulfill(
         bytes32 _agreementId,
         uint256[] memory _amounts,
         address[] memory _receivers,
@@ -255,7 +125,7 @@ contract EscrowReward is Reward {
 
         bytes32 id = generateId(
             _agreementId,
-            hashMultipleValues(
+            hashValues(
                 _amounts,
                 _receivers,
                 _sender,
@@ -303,13 +173,17 @@ contract EscrowReward is Reward {
 
         if (state == ConditionStoreLibrary.ConditionState.Fulfilled)
         {
-            state = _transferAndFulfillMultipleRewards(id, _receivers, _amounts);
-            emit FulfilledMultiple(_agreementId, _receivers, id, _amounts);
+            state = _transferAndFulfill(id, _receivers, _amounts);
+            emit Fulfilled(_agreementId, _receivers, id, _amounts);
                 
         } else if (state == ConditionStoreLibrary.ConditionState.Aborted)
         {
-            state = _transferAndFulfill(id, _sender, _totalAmount);
-            emit Fulfilled(_agreementId, _sender, id, _totalAmount);
+            uint256[] memory _totalAmounts = new uint256[](1);
+            _totalAmounts[0] = _totalAmount;
+            address[] memory _originalSender = new address[](1);
+            _originalSender[0] = _sender;
+            state = _transferAndFulfill(id, _originalSender, _totalAmounts);
+            emit Fulfilled(_agreementId, _originalSender, id, _totalAmounts);
         } else
         {
             return conditionStoreManager.getConditionState(id);
@@ -317,42 +191,6 @@ contract EscrowReward is Reward {
 
         return state;
     }
-
-
-    /**
-    * @notice _transferAndFulfill transfer tokens and 
-    *       fulfill the condition
-    * @param _id condition identifier
-    * @param _receiver receiver's address
-    * @param _amount token amount to be locked/released
-    * @return condition state (Fulfilled/Aborted)
-    */
-    function _transferAndFulfill(
-        bytes32 _id,
-        address _receiver,
-        uint256 _amount
-    )
-    private
-    returns (ConditionStoreLibrary.ConditionState)
-    {
-        require(
-            _receiver != address(0),
-            'Null address is impossible to fulfill'
-        );
-        require(
-            _receiver != address(this),
-            'EscrowReward contract can not be a receiver'
-        );
-        require(
-            token.transfer(_receiver, _amount),
-            'Could not transfer token'
-        );
-        return super.fulfill(
-            _id,
-            ConditionStoreLibrary.ConditionState.Fulfilled
-        );
-    }
-
 
     /**
     * @notice _transferAndFulfill transfer tokens and 
@@ -362,7 +200,7 @@ contract EscrowReward is Reward {
     * @param _amounts token amount to be locked/released
     * @return condition state (Fulfilled/Aborted)
     */
-    function _transferAndFulfillMultipleRewards(
+    function _transferAndFulfill(
         bytes32 _id,
         address[] memory _receivers,
         uint256[] memory _amounts
