@@ -4,7 +4,7 @@
   <groupId>io.keyko.nevermined</groupId>
   <artifactId>contracts</artifactId>
   <packaging>jar</packaging>
-  <version>0.6.1</version>
+  <version>0.6.2</version>
   <name>Nevermined Contracts</name>
   <description>Nevermined Data Plarform Smart Contracts in Solidity</description>
   <url>https://github.com/nevermined-io/contracts</url>
@@ -20,7 +20,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
-    <web3j.version>4.8.2</web3j.version>
+    <web3j.version>4.8.3</web3j.version>
 
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>

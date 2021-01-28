@@ -90,7 +90,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
         // generate IDs from attributes
         const conditionIdCompute = await computeExecutionCondition.generateId(agreementId, await computeExecutionCondition.hashValues(did, receiver))
         const conditionIdLock = await lockRewardCondition.generateId(agreementId, await lockRewardCondition.hashValues(escrowReward.address, escrowAmount))
-        const conditionIdEscrow = await escrowReward.generateId(agreementId, await escrowReward.hashValues(escrowAmount, receiver, sender, conditionIdLock, conditionIdCompute))
+        const conditionIdEscrow = await escrowReward.generateId(agreementId, await escrowReward.hashValues([escrowAmount], [receiver], sender, conditionIdLock, conditionIdCompute))
 
         // construct agreement
         const agreement = {
@@ -171,7 +171,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
                 constants.condition.state.fulfilled)
 
             // get reward
-            await escrowReward.fulfill(agreementId, escrowAmount, receiver, sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
+            await escrowReward.fulfill(agreementId, [escrowAmount], [receiver], sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
@@ -208,7 +208,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
 
             // No update since access is not fulfilled yet
             // refund
-            const result = await escrowReward.fulfill(agreementId, escrowAmount, receiver, sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
+            const result = await escrowReward.fulfill(agreementId, [escrowAmount], [receiver], sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
                 constants.condition.state.unfulfilled
@@ -225,7 +225,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
                 constants.condition.state.aborted)
 
             // refund
-            await escrowReward.fulfill(agreementId, escrowAmount, receiver, sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: sender })
+            await escrowReward.fulfill(agreementId, [escrowAmount], [receiver], sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: sender })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
                 constants.condition.state.fulfilled
@@ -276,8 +276,8 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             // execute payment
             await escrowReward.fulfill(
                 agreementId,
-                escrowAmount,
-                receiver,
+                [escrowAmount],
+                [receiver],
                 sender,
                 agreement.conditionIds[1],
                 agreement.conditionIds[0],
@@ -310,8 +310,8 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
                 agreement2.conditionIds[2] = await escrowReward.generateId(
                     agreementId2,
                     await escrowReward.hashValues(
-                        escrowAmount * 2,
-                        receiver,
+                        [escrowAmount * 2],
+                        [receiver],
                         sender,
                         agreement2.conditionIds[1],
                         agreement2.conditionIds[0]))
@@ -334,7 +334,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
 
                 // get reward
                 await assert.isRejected(
-                    escrowReward.fulfill(agreementId2, escrowAmount * 2, receiver, sender, agreement2.conditionIds[1], agreement2.conditionIds[0], { from: receiver }),
+                    escrowReward.fulfill(agreementId2, [escrowAmount * 2], [receiver], sender, agreement2.conditionIds[1], agreement2.conditionIds[0], { from: receiver }),
                     constants.condition.reward.escrowReward.error.lockConditionIdDoesNotMatch
                 )
 
@@ -343,7 +343,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
                     constants.condition.state.unfulfilled
                 )
 
-                await escrowReward.fulfill(agreementId, escrowAmount, receiver, sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
+                await escrowReward.fulfill(agreementId, [escrowAmount], [receiver], sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
                 assert.strictEqual(
                     (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
                     constants.condition.state.fulfilled
