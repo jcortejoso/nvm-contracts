@@ -1,6 +1,6 @@
 {
   "name": "@nevermined-io/contracts",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Nevermined implementation of Ocean Protocol in Solidity",
   "bugs": {
     "url": "https://github.com/nevermined-io/contracts/issues"
@@ -84,6 +84,7 @@
     "mathjs": "~7.0.0",
     "prettier": "^2.1.2",
     "solidity-coverage": "^0.7.13",
+    "truffle-contract-size": "^2.0.1",
     "solhint": "^3.2.0",
     "truffle": "^5.1.56",
     "@truffle/contract": "~4.3.1",

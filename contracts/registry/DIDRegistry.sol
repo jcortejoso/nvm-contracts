@@ -41,7 +41,7 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry, ERC1155BurnableU
     {
         require(
             msg.sender == didRegisterList.didRegisters[_did].owner,
-            'Invalid DID owner can perform this operation.'
+            'Only DID Owner allowed'
         );
         _;
     }
@@ -52,7 +52,7 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry, ERC1155BurnableU
             msg.sender == didRegisterList.didRegisters[_did].owner ||
             isProvenanceDelegate(_did, msg.sender) ||
             isDIDProvider(_did, msg.sender),
-            'Invalid DID Owner, Provider or Delegate can perform this operation.'
+            'Only DID Owner, Provider or Delegate allowed'
         );
         _;
     }
@@ -66,6 +66,14 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry, ERC1155BurnableU
         _;
     }
 
+    modifier nftIsInitialized(bytes32 _did)
+    {
+        require(
+            didRegisterList.didRegisters[_did].nftInitialized,
+            'The NFTs needs to be initialized'
+        );
+        _;
+    }
     //////////////////////////////////////////////////////////////
     ////////  EVENTS  ////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
@@ -226,12 +234,36 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry, ERC1155BurnableU
 
         wasGeneratedBy(
             _did, _did, msg.sender, _activityId, _attributes);
-
-        mint(_did, 1);
         
         return updatedSize;
     }
 
+    /**
+     * @notice enableDidNft creates the initial setup of NFTs minting and royalties distribution.
+     * After this initial setup, this data can't be changed anymore for the DID given, even for the owner of the DID.
+     * The reason of this is to avoid minting additional NFTs after the initial agreement, what could affect the 
+     * valuation of NFTs of a DID already created.
+      
+     * @dev update the DID registry providers list by adding the mintCap and royalties configuration
+     * @param _did refers to decentralized identifier (a byte32 length ID)
+     * @param _cap refers to the mint cap
+     * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
+     */
+    function enableDidNft(
+        bytes32 _did,
+        uint256 _cap,
+        uint256 _royalties
+    )
+    external
+    onlyDIDOwner(_did)
+    returns (bool success)
+    {
+        didRegisterList.initializeNftConfig(_did, _cap, _royalties);
+        return super.used(
+            keccak256(abi.encodePacked(_did, _cap, _royalties, msg.sender)),
+            _did, msg.sender, keccak256('enableDidNft'), '', 'nft initialization');
+    }
+    
     /**
      * @notice Mints a NFT associated to the DID
      *
@@ -247,8 +279,21 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry, ERC1155BurnableU
     )
     public
     onlyDIDOwner(_did)
+    nftIsInitialized(_did)
     {
+        if (didRegisterList.didRegisters[_did].mintCap > 0) {
+            require(
+                didRegisterList.didRegisters[_did].nftSupply + _amount <= didRegisterList.didRegisters[_did].mintCap,
+                'The minted request exceeds the cap'
+            );
+        }
+        
         super._mint(msg.sender, uint256(_did), _amount, '');
+        didRegisterList.didRegisters[_did].nftSupply += _amount;
+        
+        super.used(
+            keccak256(abi.encodePacked(_did, msg.sender, 'mint', _amount, block.number)),
+            _did, msg.sender, keccak256('mint'), '', 'mint');
     }
 
     /**
@@ -266,8 +311,15 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry, ERC1155BurnableU
     )
     public
     onlyDIDOwner(_did)
+    nftIsInitialized(_did)
     {
+
         super._burn(msg.sender, uint256(_did), _amount);
+        didRegisterList.didRegisters[_did].nftSupply -= _amount;
+
+        super.used(
+            keccak256(abi.encodePacked(_did, msg.sender, 'burn', _amount, block.number)),
+            _did, msg.sender, keccak256('burn'), '', 'burn');
     }
     
     
@@ -378,7 +430,7 @@ contract DIDRegistry is OwnableUpgradeable, ProvenanceRegistry, ERC1155BurnableU
         addDIDProvenanceDelegate(_did, _delegateAgentId);
         return true;
     }
-
+    
     
     /**
      * @notice addDIDProvider add new DID provider.

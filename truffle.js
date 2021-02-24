@@ -106,7 +106,7 @@ module.exports = {
             gasPrice: utils.toWei('10', 'mwei')
         }
     },
-    plugins: ['solidity-coverage'],
+    plugins: ['solidity-coverage', 'truffle-contract-size'],
     compilers: {
         solc: {
             version: '0.6.12',

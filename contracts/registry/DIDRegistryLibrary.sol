@@ -17,6 +17,8 @@ library DIDRegistryLibrary {
     struct DIDRegister {
         // DIDRegistry entry owner
         address owner;
+        // DIDRegistry original creator, this can't be modified after the asset is registered 
+        address creator;        
         // Checksum associated to the DID
         bytes32 lastChecksum;
         // URL to the metadata associated to the DID
@@ -28,7 +30,15 @@ library DIDRegistryLibrary {
         // Providers able to manage this entry
         address[] providers;
         // Delegates able to register provenance events on behalf of the owner or providers
-        address[] delegates;  
+        address[] delegates;
+        // The NFTs supply associated to the DID 
+        uint256 nftSupply;        
+        // The max number of NFTs associated to the DID that can be minted 
+        uint256 mintCap;
+        // The percent of the sale that is going back to the original `creator` in the secondary market  
+        uint256 royalties;  
+        // Flag to control if NFTs config was already initialized
+        bool nftInitialized;
     }
 
     // List of DID's registered in the system
@@ -55,25 +65,66 @@ library DIDRegistryLibrary {
     returns (uint size)
     {
         address didOwner = _self.didRegisters[_did].owner;
-
+        address creator = _self.didRegisters[_did].creator;
+        
         if (didOwner == address(0)) {
             didOwner = msg.sender;
             _self.didRegisterIds.push(_did);
+            creator = didOwner;
         }
 
         _self.didRegisters[_did] = DIDRegister({
             owner: didOwner,
+            creator: creator,
             lastChecksum: _checksum,
             url: _url,
             lastUpdatedBy: msg.sender,
             blockNumberUpdated: block.number,
             providers: new address[](0),
-            delegates: new address[](0)
+            delegates: new address[](0),
+            nftSupply: 0,
+            mintCap: 0,
+            royalties: 0,
+            nftInitialized: false
         });
 
         return _self.didRegisterIds.length;
     }
 
+    /**
+     * @notice initializeNftConfig creates the initial setup of NFTs minting and royalties distribution.
+     * After this initial setup, this data can't be changed anymore for the DID given, even for the owner of the DID.
+     * The reason of this is to avoid minting additional NFTs after the initial agreement, what could affect the 
+     * valuation of NFTs of a DID already created. 
+     * @dev update the DID registry providers list by adding the mintCap and royalties configuration
+     * @param _self refers to storage pointer
+     * @param _did refers to decentralized identifier (a byte32 length ID)
+     * @param _cap refers to the mint cap
+     * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
+     *        The royalties in secondary market for the creator should be between 0% >= x < 100%
+     */        
+    function initializeNftConfig(
+        DIDRegisterList storage _self,
+        bytes32 _did,
+        uint256 _cap,
+        uint256 _royalties
+    )
+    internal
+    {
+        address didOwner = _self.didRegisters[_did].owner;
+        require(didOwner != address(0), 'The DID is not stored');
+        
+        require(!_self.didRegisters[_did].nftInitialized, 'NFTs config only can be initialized once');
+    
+        require(_cap >= 0, 'The NFT cap must be higher or equal to 0');
+    
+        require(_royalties >= 0 && _royalties < 100, 'Invalid royalties number');
+
+        _self.didRegisters[_did].mintCap = _cap;
+        _self.didRegisters[_did].royalties = _royalties;
+        _self.didRegisters[_did].nftInitialized = true;
+    }    
+        
     /**
      * @notice addProvider add provider to DID registry
      * @dev update the DID registry providers list by adding a new provider
@@ -171,12 +222,8 @@ library DIDRegistryLibrary {
     view
     returns(bool)
     {
-        int256 i = getProviderIndex(_self, _did, _provider);
-
-        if (i == -1) {
+        if (getProviderIndex(_self, _did, _provider) == -1)
             return false;
-        }
-
         return true;
     }
 
@@ -285,12 +332,8 @@ library DIDRegistryLibrary {
     view
     returns(bool)
     {
-        int256 i = getDelegateIndex(_self, _did, _delegate);
-
-        if (i == -1) {
+        if (getDelegateIndex(_self, _did, _delegate) == -1)
             return false;
-        }
-
         return true;
     }
 
