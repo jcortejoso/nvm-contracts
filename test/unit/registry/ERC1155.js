@@ -32,7 +32,7 @@ contract('DIDRegistry + ERC1155', (accounts) => {
         it('Should not mint automatically a NFT associated with the DID', async () => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
-            const result = await didRegistry.registerAttribute(
+            await didRegistry.registerAttribute(
                 did, checksum, [], value, { from: owner })
 
             const balance = await didRegistry.balanceOf(owner, did)
@@ -42,7 +42,7 @@ contract('DIDRegistry + ERC1155', (accounts) => {
         it('Should not mint or burn a NFTs without previous initialization', async () => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
-            const result = await didRegistry.registerAttribute(
+            await didRegistry.registerAttribute(
                 did, checksum, [], value, { from: owner })
 
             await assert.isRejected(
@@ -93,7 +93,7 @@ contract('DIDRegistry + ERC1155', (accounts) => {
         it('Should not mint a NFTs over minting cap', async () => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
-            const result = await didRegistry.registerAttribute(
+            await didRegistry.registerAttribute(
                 did, checksum, [], value, { from: owner })
 
             await didRegistry.enableDidNft(did, 5, 0, { from: owner })
@@ -105,7 +105,7 @@ contract('DIDRegistry + ERC1155', (accounts) => {
             )
 
             await didRegistry.mint(did, 5, { from: owner })
-            let balance = await didRegistry.balanceOf(owner, did)
+            const balance = await didRegistry.balanceOf(owner, did)
             assert.strictEqual(5, balance.toNumber())
 
             await assert.isRejected(
@@ -114,13 +114,12 @@ contract('DIDRegistry + ERC1155', (accounts) => {
                 'The minted request exceeds the cap'
             )
             assert.strictEqual(5, balance.toNumber())
-
         })
 
         it('Should not mint or burn if not DID Owner', async () => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
-            const result = await didRegistry.registerAttribute(
+            await didRegistry.registerAttribute(
                 did, checksum, [], value, { from: owner })
 
             await assert.isRejected(
