@@ -1,6 +1,6 @@
 {
   "name": "@nevermined-io/contracts",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "Nevermined implementation of Ocean Protocol in Solidity",
   "bugs": {
     "url": "https://github.com/nevermined-io/contracts/issues"

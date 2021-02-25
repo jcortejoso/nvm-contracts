@@ -67,6 +67,7 @@ contract('NftHolderCondition', (accounts) => {
                 nftHolderCondition.address)
 
             await didRegistry.registerAttribute(did, checksum, [], value, { from: owner })
+            await didRegistry.enableDidNft(did, 100, 0, { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
             await didRegistry.safeTransferFrom(
                 owner, holderAddress, BigInt(did), 10, '0x', { from: owner })
@@ -94,6 +95,7 @@ contract('NftHolderCondition', (accounts) => {
             const amount = 10
 
             await didRegistry.registerAttribute(did, checksum, [], value, { from: owner })
+            await didRegistry.enableDidNft(did, 100, 0, { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
             await didRegistry.safeTransferFrom(
                 owner, holderAddress, BigInt(did), 10, '0x', { from: owner })
@@ -121,6 +123,7 @@ contract('NftHolderCondition', (accounts) => {
                 nftHolderCondition.address)
 
             await didRegistry.registerAttribute(did, checksum, [], value, { from: owner })
+            await didRegistry.enableDidNft(did, 100, 0, { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
             await didRegistry.safeTransferFrom(
                 owner, holderAddress, BigInt(did), 1, '0x', { from: owner })

@@ -353,7 +353,7 @@ contract('DIDRegistry', (accounts) => {
                     did,
                     newDIDOwner
                 ),
-                'Invalid DID owner'
+                'Only DID Owner allowed'
             )
         })
     })
@@ -416,7 +416,7 @@ contract('DIDRegistry', (accounts) => {
                         from: newDIDOwner
                     }
                 ),
-                'Invalid DID owner'
+                'Only DID Owner allowed'
             )
             // act & assert
             assert.strictEqual(
@@ -634,7 +634,7 @@ contract('DIDRegistry', (accounts) => {
                 didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, [], '', {
                     from: someone
                 }),
-                'Invalid DID Owner, Provider or Delegate can perform this operation.'
+                'Only DID Owner, Provider or Delegate allowed'
             )
         })
     })
