@@ -77,7 +77,7 @@ contract('Stake Agreement integration test', (accounts) => {
 
         const conditionIdSign = await signCondition.generateId(agreementId, await signCondition.hashValues(sign.message, sign.publicKey))
         const conditionIdLock = await lockRewardCondition.generateId(agreementId, await lockRewardCondition.hashValues(escrowReward.address, stakeAmount))
-        const conditionIdEscrow = await escrowReward.generateId(agreementId, await escrowReward.hashValues(stakeAmount, staker, staker, conditionIdLock, conditionIdSign))
+        const conditionIdEscrow = await escrowReward.generateId(agreementId, await escrowReward.hashValues([stakeAmount], [staker], staker, conditionIdLock, conditionIdSign))
 
         // construct agreement
         const agreement = {
@@ -143,7 +143,7 @@ contract('Stake Agreement integration test', (accounts) => {
 
             // unstake: waited and fulfill after stake period
             await signCondition.fulfill(agreementId, sign.message, sign.publicKey, sign.signature)
-            await escrowReward.fulfill(agreementId, stakeAmount, alice, alice, agreement.conditionIds[1], agreement.conditionIds[0])
+            await escrowReward.fulfill(agreementId, [stakeAmount], [alice], alice, agreement.conditionIds[1], agreement.conditionIds[0])
             assert.strictEqual(await getBalance(token, alice), stakeAmount)
             assert.strictEqual(await getBalance(token, escrowReward.address), 0)
         })
