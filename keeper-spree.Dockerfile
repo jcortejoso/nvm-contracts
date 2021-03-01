@@ -29,12 +29,14 @@ WORKDIR /nevermined-contracts
 
 RUN yarn
 
-ENV MNEMONIC "taxi music thumb unique chat sand crew more leg another off lamp"
-ENV DEPLOY_CONTRACTS true
-ENV LOCAL_CONTRACTS true
-ENV REUSE_DATABASE false
-ENV NETWORK_NAME spree
-ENV KEEPER_RPC_HOST localhost
-ENV KEEPER_RPC_PORT 8545
+ENV MNEMONIC="taxi music thumb unique chat sand crew more leg another off lamp"
+ENV DEPLOY_CONTRACTS=true
+ENV LOCAL_CONTRACTS=true
+ENV REUSE_DATABASE=false
+ENV NETWORK_NAME=spree
+ENV KEEPER_RPC_HOST=localhost
+ENV KEEPER_RPC_PORT=8545
 
-RUN /nevermined-contracts/scripts/keeper2.sh
+RUN /nevermined-contracts/scripts/keeper_deploy_dockerfile.sh
+
+ENTRYPOINT ["/nevermined-contracts/scripts/keeper_entrypoint_nodeploy.sh"]
