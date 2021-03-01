@@ -7,7 +7,7 @@ pragma solidity 0.6.12;
 
 /**
  * @title DID Registry Library
- * @author Keyko & Ocean Protocol
+ * @author Keyko
  *
  * @dev All function calls are currently implemented without side effects
  */

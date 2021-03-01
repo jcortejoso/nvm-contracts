@@ -10,6 +10,7 @@
   "EscrowReward",
   "EscrowAccessSecretStoreTemplate",
   "DIDRegistry",
+  "MintableDIDRegistry",
   "ThresholdCondition",
   "WhitelistingCondition",
   "ComputeExecutionCondition",

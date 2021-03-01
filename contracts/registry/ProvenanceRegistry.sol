@@ -135,14 +135,6 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         string _attributes,
         uint256 _blockNumberUpdated
     );
-    
-    
-    bytes32 constant internal NULL_B32 = '';
-    address constant internal NULL_ADDRESS = address(0x0);
-    uint constant internal NULL_INT = 0;
-    bytes internal NULL_BYTES; // solhint-disable-line
-    bytes[] internal EMPTY_LIST; // solhint-disable-line
-    
 
     /**
      * @notice create an event in the Provenance store
@@ -232,13 +224,13 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         createProvenanceEntry(
             _provId,
             _did,
-            NULL_B32,
+            '',
             _agentId,
             _activityId,
-            NULL_ADDRESS,
+            address(0x0),
             ProvenanceMethod.WAS_GENERATED_BY,
             msg.sender,
-            NULL_BYTES, // No signatures between parties needed
+            new bytes(0), // No signatures between parties needed
             _attributes
         );
 
@@ -281,10 +273,10 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         createProvenanceEntry(
             _provId,
             _did,
-            NULL_B32,
+            '',
             _agentId,
             _activityId,
-            NULL_ADDRESS,
+            address(0x0),
             ProvenanceMethod.USED,
             msg.sender,
             _signatureUsing,
@@ -334,10 +326,10 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
             _usedEntityDid,
             _agentId,
             _activityId,
-            NULL_ADDRESS,
+            address(0x0),
             ProvenanceMethod.WAS_DERIVED_FROM,
             msg.sender,
-            NULL_BYTES, // No signatures between parties needed
+            new bytes(0), // No signatures between parties needed
             _attributes
         );
 
@@ -379,13 +371,13 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         createProvenanceEntry(
             _provId,
             _did,
-            NULL_B32,
+            '',
             _agentId,
             _activityId,
-            NULL_ADDRESS,
+            address(0x0),
             ProvenanceMethod.WAS_ASSOCIATED_WITH,
             msg.sender,
-            NULL_BYTES, // No signatures between parties needed
+            new bytes(0), // No signatures between parties needed
             _attributes
         );
 
@@ -432,7 +424,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         createProvenanceEntry(
             _provId,
             _did,
-            NULL_B32,
+            '',
             _delegateAgentId,
             _activityId,
             _responsibleAgentId,

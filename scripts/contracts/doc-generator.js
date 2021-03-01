@@ -22,6 +22,7 @@ const contracts = [
     'NeverminedToken',
     'Dispenser',
     'DIDRegistry',
+    'DIDFactory',
     'ISecretStore',
     'Common',
     'HashListLibrary',
