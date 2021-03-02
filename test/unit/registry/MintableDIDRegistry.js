@@ -42,7 +42,6 @@ contract('Mintable DIDRegistry', (accounts) => {
     }
 
     describe('Register an Asset with a DID', () => {
-/*
         it('A Mintable DID can be found in the regular DIDRegistry', async () => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
@@ -192,8 +191,6 @@ contract('Mintable DIDRegistry', (accounts) => {
                 'Only DID Owner allowed'
             )
         })
-*/
-
 
         it('Checks the royalties are right', async () => {
             const did = testUtils.generateId()
@@ -203,7 +200,7 @@ contract('Mintable DIDRegistry', (accounts) => {
             await didRegistryLibraryProxy.initializeNftConfig(did, 3, 10, { from: owner })
 
             assert.isOk( // MUST BE TRUE. It's the creator selling the DID
-                await didRegistryLibraryProxy.areRoyaltiesValid(did, [5], [other]) )
+                await didRegistryLibraryProxy.areRoyaltiesValid(did, [5], [other]))
 
             await didRegistryLibraryProxy.updateDIDOwner(did, other, { from: owner })
 
@@ -217,7 +214,7 @@ contract('Mintable DIDRegistry', (accounts) => {
                 await didRegistryLibraryProxy.areRoyaltiesValid(did, [91, 9], [consumer, owner]))
 
             assert.isOk( // MUST BE TRUE. There is not payment
-                await didRegistryLibraryProxy.areRoyaltiesValid(did, [], []) )
+                await didRegistryLibraryProxy.areRoyaltiesValid(did, [], []))
 
             assert.isOk( // MUST BE TRUE. Original creator is getting 10% by royalties
                 await didRegistryLibraryProxy.areRoyaltiesValid(did, [90, 10], [other, owner]))
@@ -227,8 +224,6 @@ contract('Mintable DIDRegistry', (accounts) => {
 
             assert.isNotOk( // MUST BE FALSE. Original creator is not getting royalties
                 await didRegistryLibraryProxy.areRoyaltiesValid(did, [100], [other]))
-
         })
-
     })
 })

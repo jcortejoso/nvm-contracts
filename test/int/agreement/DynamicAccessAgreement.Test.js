@@ -140,7 +140,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
             const { agreementId, agreement, holder, receiver, nftAmount, checksum, url } = await prepareAgreement()
 
             // register DID
-//            await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
+            //            await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
             await didRegistry.registerMintableDID(
                 agreement.did, checksum, [], url, 10, 0, Activities.GENERATED, '', { from: receiver })
 

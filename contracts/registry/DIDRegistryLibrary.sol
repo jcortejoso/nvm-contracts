@@ -125,6 +125,15 @@ library DIDRegistryLibrary {
     }
 
 
+    /**
+     * @notice areRoyaltiesValid checks if for a given DID and rewards distribution, this allocate the  
+     * original creator royalties properly
+     * @param _self refers to storage pointer
+     * @param _did refers to decentralized identifier (a byte32 length ID)
+     * @param _amounts refers to the amounts to reward
+     * @param _receivers refers to the receivers of rewards
+     * @return true if the rewards distribution respect the original creator royalties
+     */
     function areRoyaltiesValid(
         DIDRegisterList storage _self,
         bytes32 _did,
