@@ -547,7 +547,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         mintCap = didRegisterList.didRegisters[_did].mintCap;
         royalties = didRegisterList.didRegisters[_did].royalties;
     }
-
+    
     /**
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @return blockNumberUpdated last modified (update) block number of a DID.

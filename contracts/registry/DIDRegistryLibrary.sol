@@ -36,7 +36,7 @@ library DIDRegistryLibrary {
         // The max number of NFTs associated to the DID that can be minted 
         uint256 mintCap;
         // The percent of the sale that is going back to the original `creator` in the secondary market  
-        uint256 royalties;  
+        uint8 royalties;  
         // Flag to control if NFTs config was already initialized
         bool nftInitialized;
     }
@@ -107,12 +107,11 @@ library DIDRegistryLibrary {
         DIDRegisterList storage _self,
         bytes32 _did,
         uint256 _cap,
-        uint256 _royalties
+        uint8 _royalties
     )
     internal
     {
-        address didOwner = _self.didRegisters[_did].owner;
-        require(didOwner != address(0), 'The DID is not stored');
+        require(_self.didRegisters[_did].owner != address(0), 'The DID is not stored');
         
         require(!_self.didRegisters[_did].nftInitialized, 'NFTs config only can be initialized once');
     
@@ -123,8 +122,60 @@ library DIDRegistryLibrary {
         _self.didRegisters[_did].mintCap = _cap;
         _self.didRegisters[_did].royalties = _royalties;
         _self.didRegisters[_did].nftInitialized = true;
-    }    
+    }
+
+
+    function areRoyaltiesValid(
+        DIDRegisterList storage _self,
+        bytes32 _did,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    )
+    internal
+    view
+    returns (bool)
+    {
+        // If (did.creator == did.owner) - It means the DID is still a first sale so no royalties needed
+        // returns true;
+        if (_self.didRegisters[_did].owner == _self.didRegisters[_did].creator)
+            return true;
         
+        // If there are no royalties everything is good
+        if (_self.didRegisters[_did].royalties == 0)
+            return true;
+
+        // If (sum(_amounts) == 0) - It means there is no payment so everything is valid
+        // returns true;
+        uint256 _totalAmount = 0;
+        for(uint i = 0; i < _amounts.length; i++)
+            _totalAmount = _totalAmount + _amounts[i];
+        if (_totalAmount == 0)
+            return true;
+        
+        // If (_did.creator is not in _receivers) - It means the original creator is not included as part of the payment
+        // return false;
+        bool found = false;
+        uint256 index;
+        for (index = 0; index < _receivers.length; index++) {
+            if (_self.didRegisters[_did].creator == _receivers[index])  {
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found) // The creator royalties are not part of the rewards
+            return false;
+        
+        // If the amount to receive by the creator is lower than royalties the calculation is not valid
+        // return false;
+        uint256 _requiredRoyalties = ((_totalAmount * _self.didRegisters[_did].royalties) / 100);
+
+        if (_amounts[index] >= _requiredRoyalties) // Check if royalties are enough
+            return true; // We are paying enough royalties in the secondary market to the original creator
+        return false;
+    }
+
+
     /**
      * @notice addProvider add provider to DID registry
      * @dev update the DID registry providers list by adding a new provider
@@ -351,7 +402,7 @@ library DIDRegistryLibrary {
     )
     private
     view
-    returns(int256 )
+    returns(int256)
     {
         for (uint256 i = 0;
             i < _self.didRegisters[_did].delegates.length; i++) {

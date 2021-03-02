@@ -6,14 +6,18 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
+const DIDRegistryLibraryProxy = artifacts.require('DIDRegistryLibraryProxy')
 const DIDRegistry = artifacts.require('DIDRegistry')
 const testUtils = require('../../helpers/utils.js')
 
 contract('Mintable DIDRegistry', (accounts) => {
     const owner = accounts[1]
     const other = accounts[2]
+    const consumer = accounts[3]
     const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
     let didRegistry
+    let didRegistryLibrary
+    let didRegistryLibraryProxy
 
     const Activities = {
         GENERATED: '0x1',
@@ -26,7 +30,10 @@ contract('Mintable DIDRegistry', (accounts) => {
 
     async function setupTest() {
         if (!didRegistry) {
-            const didRegistryLibrary = await DIDRegistryLibrary.new()
+            didRegistryLibrary = await DIDRegistryLibrary.new()
+            await DIDRegistryLibraryProxy.link('DIDRegistryLibrary', didRegistryLibrary.address)
+            didRegistryLibraryProxy = await DIDRegistryLibraryProxy.new()
+
             await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
 
             didRegistry = await DIDRegistry.new()
@@ -35,6 +42,7 @@ contract('Mintable DIDRegistry', (accounts) => {
     }
 
     describe('Register an Asset with a DID', () => {
+/*
         it('A Mintable DID can be found in the regular DIDRegistry', async () => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
@@ -184,5 +192,43 @@ contract('Mintable DIDRegistry', (accounts) => {
                 'Only DID Owner allowed'
             )
         })
+*/
+
+
+        it('Checks the royalties are right', async () => {
+            const did = testUtils.generateId()
+            const checksum = testUtils.generateId()
+
+            await didRegistryLibraryProxy.update(did, checksum, value, { from: owner })
+            await didRegistryLibraryProxy.initializeNftConfig(did, 3, 10, { from: owner })
+
+            assert.isOk( // MUST BE TRUE. It's the creator selling the DID
+                await didRegistryLibraryProxy.areRoyaltiesValid(did, [5], [other]) )
+
+            await didRegistryLibraryProxy.updateDIDOwner(did, other, { from: owner })
+
+            const storedDIDRegister = await didRegistryLibraryProxy.getDIDInfo(did)
+
+            assert.strictEqual(storedDIDRegister.owner, other)
+            assert.strictEqual(storedDIDRegister.creator, owner)
+            assert.strictEqual(Number(storedDIDRegister.royalties), 10)
+
+            assert.isNotOk( // MUST BE FALSE. Royalties for original creator are too low
+                await didRegistryLibraryProxy.areRoyaltiesValid(did, [91, 9], [consumer, owner]))
+
+            assert.isOk( // MUST BE TRUE. There is not payment
+                await didRegistryLibraryProxy.areRoyaltiesValid(did, [], []) )
+
+            assert.isOk( // MUST BE TRUE. Original creator is getting 10% by royalties
+                await didRegistryLibraryProxy.areRoyaltiesValid(did, [90, 10], [other, owner]))
+
+            assert.isOk( // MUST BE TRUE. Original creator is getting 10% by royalties
+                await didRegistryLibraryProxy.areRoyaltiesValid(did, [10, 90], [owner, other]))
+
+            assert.isNotOk( // MUST BE FALSE. Original creator is not getting royalties
+                await didRegistryLibraryProxy.areRoyaltiesValid(did, [100], [other]))
+
+        })
+
     })
 })

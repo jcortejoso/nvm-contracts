@@ -67,7 +67,7 @@ contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
         address[] memory _providers,
         string memory _url,
         uint256 _cap,
-        uint256 _royalties,
+        uint8 _royalties,
         bytes32 _activityId,
         string memory _attributes
     )
@@ -94,7 +94,7 @@ contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
     function enableDidNft(
         bytes32 _did,
         uint256 _cap,
-        uint256 _royalties
+        uint8 _royalties
     )
     public
     onlyDIDOwner(_did)

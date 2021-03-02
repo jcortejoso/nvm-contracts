@@ -55,7 +55,6 @@ contract EscrowReward is Reward {
         );
         token = ERC20Upgradeable(_tokenAddress);
     }
-    
 
     /**
      * @notice hashValues generates the hash of condition inputs 
