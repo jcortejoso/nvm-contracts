@@ -76,7 +76,7 @@ contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
     returns (uint size)
     {
         uint result = registerDID(_did, _checksum, _providers, _url, _activityId, _attributes);
-        enableDidNft(_did, _cap, _royalties);
+        enableDidNft(_did, _cap, _royalties, false);
         return result;
     }    
     
@@ -94,16 +94,20 @@ contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
     function enableDidNft(
         bytes32 _did,
         uint256 _cap,
-        uint8 _royalties
+        uint8 _royalties,
+        bool _preMintAndLock
     )
     public
     onlyDIDOwner(_did)
     returns (bool success)
     {
         didRegisterList.initializeNftConfig(_did, _cap, _royalties);
-        // TODO: Here is necessary to mint & lock the NFTs in the NFTKLockRewardCondition contract
-        // mint()
-        // lockNft()
+
+        if (_preMintAndLock)    {
+            // TODO: Here is necessary to mint & lock the NFTs in the NFTKLockRewardCondition contract            
+            mint(_did, _cap);
+            // lockNft()
+        }
         
         return super.used(
             keccak256(abi.encodePacked(_did, _cap, _royalties, msg.sender)),

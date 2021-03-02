@@ -56,6 +56,7 @@ function that will be executed only once after the initial deployment.
   "AccessSecretStoreCondition",
   "EscrowReward",
   "EscrowAccessSecretStoreTemplate",
+  "NFTAccessTemplate",
   "DIDRegistry"
 ]
 ```

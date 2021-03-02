@@ -280,6 +280,26 @@ async function initializeContracts({
         }
     }
 
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('DIDRegistry') &&
+        getAddress('AccessSecretStoreCondition') &&
+        getAddress('NftHolderCondition')) {
+        if (contracts.indexOf('NFTAccessTemplate') > -1) {
+            addressBook.NFTAccessTemplate = zosCreate({
+                contract: 'NFTAccessTemplate',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('DIDRegistry'),
+                    getAddress('NftHolderCondition'),
+                    getAddress('AccessSecretStoreCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
     return addressBook
 }
 

@@ -113,6 +113,10 @@ const constants = {
             didNotRegistered: 'DID not registered'
         },
         url: 'https://example.com/did/nevermined/test-attr-example.txt'
+    },
+    activities: {
+        GENERATED: '0x1',
+        USED: '0x2'
     }
 }
 

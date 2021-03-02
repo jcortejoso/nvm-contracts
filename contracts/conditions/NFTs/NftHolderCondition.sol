@@ -4,7 +4,7 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
-import './Condition.sol';
+import '../Condition.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
 
 /**

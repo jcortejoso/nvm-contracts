@@ -127,6 +127,31 @@ async function setupContracts({
             })
         }
 
+        if (addressBook.NFTAccessTemplate) {
+            if (verbose) {
+                console.log(
+                    `Proposing template ${addressBook.NFTAccessTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await TemplateStoreManagerInstance.proposeTemplate(
+                addressBook.NFTAccessTemplate,
+                { from: roles.deployer }
+            )
+
+            if (verbose) {
+                console.log(
+                    `Approving template ${addressBook.NFTAccessTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await approveTemplate({
+                TemplateStoreManagerInstance,
+                roles,
+                templateAddress: addressBook.NFTAccessTemplate
+            })
+        }
+
         await transferOwnership({
             ContractInstance: TemplateStoreManagerInstance,
             name: TemplateStoreManager.contractName,

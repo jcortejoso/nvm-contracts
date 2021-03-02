@@ -19,6 +19,7 @@ const contracts = [
     'AccessSecretStoreCondition',
     'EscrowReward',
     'EscrowAccessSecretStoreTemplate',
+    'NFTAccessTemplate',
     'NeverminedToken',
     'Dispenser',
     'DIDRegistry',

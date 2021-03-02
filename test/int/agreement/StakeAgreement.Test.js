@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global contract, describe, it */
+/* global artifacts, contract, describe, it */
 
 const chai = require('chai')
 const { assert } = chai
@@ -12,6 +12,7 @@ const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
 const getBalance = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.ts')
+const SignCondition = artifacts.require('SignCondition')
 
 contract('Stake Agreement integration test', (accounts) => {
     let token,
@@ -39,7 +40,6 @@ contract('Stake Agreement integration test', (accounts) => {
         ));
 
         ({
-            signCondition,
             lockRewardCondition,
             escrowReward
         } = await deployConditions(
@@ -50,6 +50,13 @@ contract('Stake Agreement integration test', (accounts) => {
             didRegistry,
             token
         ))
+
+        signCondition = await SignCondition.new({ from: deployer })
+        await signCondition.initialize(
+            owner,
+            conditionStoreManager.address,
+            { from: deployer }
+        )
 
         return {
             deployer,

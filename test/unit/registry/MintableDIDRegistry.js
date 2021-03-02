@@ -9,6 +9,7 @@ const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistryLibraryProxy = artifacts.require('DIDRegistryLibraryProxy')
 const DIDRegistry = artifacts.require('DIDRegistry')
 const testUtils = require('../../helpers/utils.js')
+const constants = require('../../helpers/constants.js')
 
 contract('Mintable DIDRegistry', (accounts) => {
     const owner = accounts[1]
@@ -18,11 +19,6 @@ contract('Mintable DIDRegistry', (accounts) => {
     let didRegistry
     let didRegistryLibrary
     let didRegistryLibraryProxy
-
-    const Activities = {
-        GENERATED: '0x1',
-        USED: '0x2'
-    }
 
     beforeEach(async () => {
         await setupTest()
@@ -99,7 +95,7 @@ contract('Mintable DIDRegistry', (accounts) => {
                 }
             )
 
-            await didRegistry.enableDidNft(did, 20, 0, { from: owner })
+            await didRegistry.enableDidNft(did, 20, 0, false, { from: owner })
             const result = await didRegistry.mint(did, 10, { from: owner })
 
             testUtils.assertEmitted(
@@ -125,7 +121,7 @@ contract('Mintable DIDRegistry', (accounts) => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             await didRegistry.registerMintableDID(
-                did, checksum, [], value, 10, 0, Activities.GENERATED, '', { from: owner })
+                did, checksum, [], value, 10, 0, constants.activities.GENERATED, '', { from: owner })
 
             await didRegistry.mint(did, 10, { from: owner })
 
@@ -139,7 +135,7 @@ contract('Mintable DIDRegistry', (accounts) => {
             await didRegistry.registerAttribute(
                 did, checksum, [], value, { from: owner })
 
-            await didRegistry.enableDidNft(did, 0, 0, { from: owner })
+            await didRegistry.enableDidNft(did, 0, 0, false, { from: owner })
             await didRegistry.mint(did, 100, { from: owner })
 
             const balance = await didRegistry.balanceOf(owner, did)
@@ -152,7 +148,7 @@ contract('Mintable DIDRegistry', (accounts) => {
             await didRegistry.registerAttribute(
                 did, checksum, [], value, { from: owner })
 
-            await didRegistry.enableDidNft(did, 5, 0, { from: owner })
+            await didRegistry.enableDidNft(did, 5, 0, false, { from: owner })
 
             await assert.isRejected(
                 // Must not allow to mint tokens without previous initialization
@@ -180,11 +176,11 @@ contract('Mintable DIDRegistry', (accounts) => {
 
             await assert.isRejected(
                 // Must not allow to initialize NFTs if not the owner
-                didRegistry.enableDidNft(did, 5, 0, { from: other }),
+                didRegistry.enableDidNft(did, 5, 0, false, { from: other }),
                 'Only DID Owner allowed'
             )
 
-            await didRegistry.enableDidNft(did, 5, 0, { from: owner })
+            await didRegistry.enableDidNft(did, 5, 0, false, { from: owner })
             await assert.isRejected(
                 // Must not allow to mint tokens without previous initialization
                 didRegistry.mint(did, 1, { from: other }),

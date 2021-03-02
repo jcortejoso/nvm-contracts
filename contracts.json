@@ -9,6 +9,7 @@
   "AccessSecretStoreCondition",
   "EscrowReward",
   "EscrowAccessSecretStoreTemplate",
+  "NFTAccessTemplate",
   "DIDRegistry",
   "MintableDIDRegistry",
   "ThresholdCondition",
