@@ -62,10 +62,11 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
 //            didRegistry = await DIDRegistry.new()
 //            await didRegistry.initialize(owner)
 
-            transferCondition = await TransferDIDOwnershipCondition.new()
+            transferCondition = await TransferDIDOwnershipCondition.new({ from: deployer })
 
-            await transferCondition.methods['initialize(address,address)'](
+            await transferCondition.methods['initialize(address,address,address)'](
                 owner,
+                conditionStoreManager.address,
                 agreementStoreManager.address,
                 { from: deployer }
             )
@@ -135,7 +136,6 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 templateStoreManager
             } = await setupTest({ accounts: accounts, registerDID: true })
 
-            console.log('Using DIDRegistry address: ' + didRegistry.address)
             await didRegistry.registerAttribute(did, checksum, [], url, {from: owner})
 
             const agreementId = testUtils.generateId()
@@ -185,7 +185,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             expect(eventArgs._agreementId).to.equal(agreementId)
             expect(eventArgs._conditionId).to.equal(conditionId)
             expect(eventArgs._did).to.equal(did)
-            expect(eventArgs._computeConsumer).to.equal(computeConsumer)
+            expect(eventArgs._receiver).to.equal(receiver)
 
         })
     })
@@ -230,8 +230,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             const result = await transferCondition.fulfill(agreementId, did, receiver, {from: owner})
 
             await assert.isRejected(
-                transferCondition.fulfill(agreementId, did, receiver, { from: accounts[1] }),
-                'Only DID Owner allowed'
+                transferCondition.fulfill(agreementId, did, receiver, { from: accounts[1] })
             )
         })
 

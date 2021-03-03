@@ -258,6 +258,7 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
         );
 
         return updateState;
+//        return ConditionStoreLibrary.ConditionState.Fulfilled;
     }
 
     /**

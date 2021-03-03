@@ -218,26 +218,6 @@ async function initializeContracts({
                 verbose
             })
         }
-    }
-
-    if (getAddress('AgreementStoreManager') &&
-        getAddress('DIDRegistry')) {
-        if (contracts.indexOf('TransferDIDOwnershipCondition') > -1) {
-            addressBook.TransferDIDOwnershipCondition = zosCreate({
-                contract: 'TransferDIDOwnershipCondition',
-                network,
-                args: [
-                    roles.ownerWallet,
-                    getAddress('AgreementStoreManager'),
-                    getAddress('DIDRegistry')
-                ],
-                verbose
-            })
-        }
-    }
-
-    if (getAddress('ConditionStoreManager') &&
-        getAddress('AgreementStoreManager')) {
         if (contracts.indexOf('ComputeExecutionCondition') > -1) {
             addressBook.ComputeExecutionCondition = zosCreate({
                 contract: 'ComputeExecutionCondition',
@@ -250,7 +230,21 @@ async function initializeContracts({
                 verbose
             })
         }
+        if (contracts.indexOf('TransferDIDOwnershipCondition') > -1) {
+            addressBook.ComputeExecutionCondition = zosCreate({
+                contract: 'TransferDIDOwnershipCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('AgreementStoreManager')
+                ],
+                verbose
+            })
+        }
+
     }
+
 
     if (getAddress('AgreementStoreManager') &&
         getAddress('DIDRegistry') &&

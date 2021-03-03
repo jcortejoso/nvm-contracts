@@ -35,10 +35,12 @@ contract TransferDIDOwnershipCondition is Condition {
     * @dev this function is called only once during the contract
     *       initialization.
     * @param _owner contract's owner account address
+    * @param _conditionStoreManagerAddress condition store manager address    
     * @param _agreementStoreManagerAddress agreement store manager address
     */
     function initialize(
         address _owner,
+        address _conditionStoreManagerAddress,
         address _agreementStoreManagerAddress
     )
         external
@@ -53,6 +55,10 @@ contract TransferDIDOwnershipCondition is Condition {
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
 
+        conditionStoreManager = ConditionStoreManager(
+            _conditionStoreManagerAddress
+        );
+        
         agreementStoreManager = AgreementStoreManager(
             _agreementStoreManagerAddress
         );
@@ -99,7 +105,7 @@ contract TransferDIDOwnershipCondition is Condition {
         public
         returns (ConditionStoreLibrary.ConditionState)
     {
-        // Only DID Owner fulfill
+        // Only DID Owner can fulfill
         didRegistry.transferDIDOwnership(_did, _receiver);
         
         bytes32 _id = generateId(
@@ -119,7 +125,7 @@ contract TransferDIDOwnershipCondition is Condition {
             _id
         );
 
-        return ConditionStoreLibrary.ConditionState.Fulfilled;
+        return state;
     }
     
 }
