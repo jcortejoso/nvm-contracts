@@ -220,6 +220,22 @@ async function initializeContracts({
         }
     }
 
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('DIDRegistry')) {
+        if (contracts.indexOf('TransferDIDOwnershipCondition') > -1) {
+            addressBook.TransferDIDOwnershipCondition = zosCreate({
+                contract: 'TransferDIDOwnershipCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('DIDRegistry')
+                ],
+                verbose
+            })
+        }
+    }
+
     if (getAddress('ConditionStoreManager') &&
         getAddress('AgreementStoreManager')) {
         if (contracts.indexOf('ComputeExecutionCondition') > -1) {

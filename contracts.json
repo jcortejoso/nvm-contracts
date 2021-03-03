@@ -11,7 +11,7 @@
   "EscrowAccessSecretStoreTemplate",
   "NFTAccessTemplate",
   "DIDRegistry",
-  "MintableDIDRegistry",
+  "TransferDIDOwnershipCondition",
   "ThresholdCondition",
   "WhitelistingCondition",
   "ComputeExecutionCondition",

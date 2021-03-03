@@ -39,7 +39,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     modifier onlyDIDOwner(bytes32 _did)
     {
         require(
-            msg.sender == didRegisterList.didRegisters[_did].owner,
+            tx.origin == didRegisterList.didRegisters[_did].owner,
             'Only DID Owner allowed'
         );
         _;
