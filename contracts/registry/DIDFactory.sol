@@ -38,7 +38,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     
     modifier onlyDIDOwner(bytes32 _did)
     {
-        require(
+        require(// solhint-disable-next-line avoid-tx-origin
             tx.origin == didRegisterList.didRegisters[_did].owner,
             'Only DID Owner allowed'
         );

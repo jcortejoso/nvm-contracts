@@ -6,12 +6,6 @@ const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 const deployManagers = require('../../helpers/deployManagers.js')
-const EpochLibrary = artifacts.require('EpochLibrary')
-const AgreementStoreLibrary = artifacts.require('AgreementStoreLibrary')
-const AgreementStoreManager = artifacts.require('AgreementStoreManager')
-const DIDRegistry = artifacts.require('DIDRegistry')
-const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
-const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 const TransferDIDOwnershipCondition = artifacts.require('TransferDIDOwnershipCondition')
 const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
@@ -21,7 +15,6 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
     const url = constants.registry.url
 
     let didRegistry,
-        didRegistryLibrary,
         templateStoreManager,
         agreementStoreManager,
         conditionStoreManager,
@@ -49,18 +42,18 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 deployer,
                 owner
             ))
-//            templateStoreManager = await TemplateStoreManager.new()
-//            await templateStoreManager.initialize(
-//                owner,
-//                { from: deployer }
-//            )
-//            agreementStoreLibrary = await AgreementStoreLibrary.new()
-//            await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
-//            agreementStoreManager = await AgreementStoreManager.new()
-//            didRegistryLibrary = await DIDRegistryLibrary.new()
-//            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
-//            didRegistry = await DIDRegistry.new()
-//            await didRegistry.initialize(owner)
+            //            templateStoreManager = await TemplateStoreManager.new()
+            //            await templateStoreManager.initialize(
+            //                owner,
+            //                { from: deployer }
+            //            )
+            //            agreementStoreLibrary = await AgreementStoreLibrary.new()
+            //            await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
+            //            agreementStoreManager = await AgreementStoreManager.new()
+            //            didRegistryLibrary = await DIDRegistryLibrary.new()
+            //            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
+            //            didRegistry = await DIDRegistry.new()
+            //            await didRegistry.initialize(owner)
 
             transferCondition = await TransferDIDOwnershipCondition.new({ from: deployer })
 
@@ -70,11 +63,10 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 agreementStoreManager.address,
                 { from: deployer }
             )
-
         }
 
         if (registerDID) {
-//            await didRegistry.registerAttribute(did, checksum, [DIDProvider], value, {from: owner})
+            //            await didRegistry.registerAttribute(did, checksum, [DIDProvider], value, {from: owner})
         }
 
         return {
@@ -82,7 +74,6 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             did,
             conditionId,
             conditionType,
-            owner,
             DIDProvider,
             didRegistry,
             agreementStoreManager,
@@ -103,7 +94,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             const receiver = accounts[1]
 
             await assert.isRejected(
-                transferCondition.fulfill(agreementId, did, receiver, { from: receiver}),
+                transferCondition.fulfill(agreementId, did, receiver, { from: receiver }),
                 'Only DID Owner allowed'
             )
         })
@@ -136,7 +127,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 templateStoreManager
             } = await setupTest({ accounts: accounts, registerDID: true })
 
-            await didRegistry.registerAttribute(did, checksum, [], url, {from: owner})
+            await didRegistry.registerAttribute(did, checksum, [], url, { from: owner })
 
             const agreementId = testUtils.generateId()
             const receiver = accounts[1]
@@ -163,7 +154,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             )
 
             await assert.isRejected(
-                transferCondition.fulfill(agreementId, did, receiver, {from: receiver}),
+                transferCondition.fulfill(agreementId, did, receiver, { from: receiver }),
                 'Only DID Owner allowed'
             )
 
@@ -174,7 +165,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             )
 
             assert.strictEqual(didRegistry.address, await agreementStoreManager.getDIDRegistryAddress())
-            const result = await transferCondition.fulfill(agreementId, did, receiver, {from: owner})
+            const result = await transferCondition.fulfill(agreementId, did, receiver, { from: owner })
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
@@ -186,7 +177,6 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             expect(eventArgs._conditionId).to.equal(conditionId)
             expect(eventArgs._did).to.equal(did)
             expect(eventArgs._receiver).to.equal(receiver)
-
         })
     })
 
@@ -201,7 +191,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 templateStoreManager
             } = await setupTest({ accounts: accounts, registerDID: true })
 
-            await didRegistry.registerAttribute(did, checksum, [], url, {from: owner})
+            await didRegistry.registerAttribute(did, checksum, [], url, { from: owner })
 
             const agreementId = testUtils.generateId()
             const receiver = accounts[1]
@@ -227,12 +217,11 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 { from: templateId }
             )
 
-            const result = await transferCondition.fulfill(agreementId, did, receiver, {from: owner})
+            await transferCondition.fulfill(agreementId, did, receiver, { from: owner })
 
             await assert.isRejected(
                 transferCondition.fulfill(agreementId, did, receiver, { from: accounts[1] })
             )
         })
-
     })
 })

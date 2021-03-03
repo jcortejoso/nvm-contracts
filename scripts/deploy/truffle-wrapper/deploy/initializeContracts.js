@@ -242,9 +242,7 @@ async function initializeContracts({
                 verbose
             })
         }
-
     }
-
 
     if (getAddress('AgreementStoreManager') &&
         getAddress('DIDRegistry') &&
