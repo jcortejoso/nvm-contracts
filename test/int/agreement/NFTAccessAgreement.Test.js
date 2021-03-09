@@ -13,8 +13,8 @@ const testUtils = require('../../helpers/utils.js')
 const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
-const NftHolderCondition = artifacts.require('NftHolderCondition')
-const AccessSecretStoreCondition = artifacts.require('AccessSecretStoreCondition')
+const NFTHolderCondition = artifacts.require('NFTHolderCondition')
+const AccessCondition = artifacts.require('AccessCondition')
 
 contract('NFT Access integration test', (accounts) => {
     let token,
@@ -52,7 +52,7 @@ contract('NFT Access integration test', (accounts) => {
             token
         ))
 
-        accessCondition = await AccessSecretStoreCondition.new({ from: deployer })
+        accessCondition = await AccessCondition.new({ from: deployer })
         await accessCondition.methods['initialize(address,address,address)'](
             owner,
             conditionStoreManager.address,
@@ -60,7 +60,7 @@ contract('NFT Access integration test', (accounts) => {
             { from: deployer }
         )
 
-        nftHolderCondition = await NftHolderCondition.new({ from: deployer })
+        nftHolderCondition = await NFTHolderCondition.new({ from: deployer })
         await nftHolderCondition.initialize(
             owner,
             conditionStoreManager.address,

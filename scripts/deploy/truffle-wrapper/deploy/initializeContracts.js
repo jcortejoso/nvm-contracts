@@ -159,9 +159,9 @@ async function initializeContracts({
 
     if (getAddress('ConditionStoreManager') &&
         getAddress('DIDRegistry')) {
-        if (contracts.indexOf('NftHolderCondition') > -1) {
-            addressBook.NftHolderCondition = zosCreate({
-                contract: 'NftHolderCondition',
+        if (contracts.indexOf('NFTHolderCondition') > -1) {
+            addressBook.NFTHolderCondition = zosCreate({
+                contract: 'NFTHolderCondition',
                 network,
                 args: [
                     roles.ownerWallet,
@@ -206,9 +206,9 @@ async function initializeContracts({
 
     if (getAddress('ConditionStoreManager') &&
         getAddress('AgreementStoreManager')) {
-        if (contracts.indexOf('AccessSecretStoreCondition') > -1) {
-            addressBook.AccessSecretStoreCondition = zosCreate({
-                contract: 'AccessSecretStoreCondition',
+        if (contracts.indexOf('AccessCondition') > -1) {
+            addressBook.AccessCondition = zosCreate({
+                contract: 'AccessCondition',
                 network,
                 args: [
                     roles.ownerWallet,
@@ -246,7 +246,7 @@ async function initializeContracts({
 
     if (getAddress('AgreementStoreManager') &&
         getAddress('DIDRegistry') &&
-        getAddress('AccessSecretStoreCondition') &&
+        getAddress('AccessCondition') &&
         getAddress('LockRewardCondition') &&
         getAddress('EscrowReward')) {
         if (contracts.indexOf('EscrowAccessSecretStoreTemplate') > -1) {
@@ -257,7 +257,7 @@ async function initializeContracts({
                     roles.ownerWallet,
                     getAddress('AgreementStoreManager'),
                     getAddress('DIDRegistry'),
-                    getAddress('AccessSecretStoreCondition'),
+                    getAddress('AccessCondition'),
                     getAddress('LockRewardCondition'),
                     getAddress('EscrowReward')
                 ],
@@ -290,8 +290,8 @@ async function initializeContracts({
 
     if (getAddress('AgreementStoreManager') &&
         getAddress('DIDRegistry') &&
-        getAddress('AccessSecretStoreCondition') &&
-        getAddress('NftHolderCondition')) {
+        getAddress('AccessCondition') &&
+        getAddress('NFTHolderCondition')) {
         if (contracts.indexOf('NFTAccessTemplate') > -1) {
             addressBook.NFTAccessTemplate = zosCreate({
                 contract: 'NFTAccessTemplate',
@@ -300,8 +300,8 @@ async function initializeContracts({
                     roles.ownerWallet,
                     getAddress('AgreementStoreManager'),
                     getAddress('DIDRegistry'),
-                    getAddress('NftHolderCondition'),
-                    getAddress('AccessSecretStoreCondition')
+                    getAddress('NFTHolderCondition'),
+                    getAddress('AccessCondition')
                 ],
                 verbose
             })

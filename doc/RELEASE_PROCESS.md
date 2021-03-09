@@ -131,7 +131,7 @@ All upgrades of the contracts have to be approved by the `upgrader` wallet confi
 It will output the current proxy addresses in the `README` friendly format.
 
 ```text
-| AccessSecretStoreCondition        | v0.9.0 | 0x45DE141F8Efc355F1451a102FB6225F1EDd2921d |
+| AccessCondition        | v0.9.0 | 0x45DE141F8Efc355F1451a102FB6225F1EDd2921d |
 | AgreementStoreManager             | v0.9.0 | 0x62f84700b1A0ea6Bfb505aDC3c0286B7944D247C |
 | ConditionStoreManager             | v0.9.0 | 0x39b0AA775496C5ebf26f3B81C9ed1843f09eE466 |
 | DIDRegistry                       | v0.9.0 | 0x4A0f7F763B1A7937aED21D63b2A78adc89c5Db23 |

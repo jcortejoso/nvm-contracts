@@ -5,8 +5,8 @@ pragma solidity 0.6.12;
 
 
 import './BaseEscrowTemplate.sol';
-import '../conditions/AccessSecretStoreCondition.sol';
-import '../conditions/NFTs/NftHolderCondition.sol';
+import '../conditions/AccessCondition.sol';
+import '../conditions/NFTs/NFTHolderCondition.sol';
 import '../registry/DIDRegistry.sol';
 
 /**
@@ -33,8 +33,8 @@ import '../registry/DIDRegistry.sol';
 contract NFTAccessTemplate is BaseEscrowTemplate {
 
     DIDRegistry internal didRegistry;
-    NftHolderCondition internal nftHolderCondition;
-    AccessSecretStoreCondition internal accessCondition;
+    NFTHolderCondition internal nftHolderCondition;
+    AccessCondition internal accessCondition;
 
    /**
     * @notice initialize init the 
@@ -45,14 +45,12 @@ contract NFTAccessTemplate is BaseEscrowTemplate {
     *       access secret store, lock reward and escrow reward conditions.
     * @param _owner contract's owner account address
     * @param _agreementStoreManagerAddress agreement store manager contract address
-    * @param _didRegistryAddress DID registry contract address
     * @param _nftHolderConditionAddress lock reward condition contract address
     * @param _accessConditionAddress access condition contract address
     */
     function initialize(
         address _owner,
         address _agreementStoreManagerAddress,
-        address _didRegistryAddress,
         address _nftHolderConditionAddress,
         address _accessConditionAddress
     )
@@ -62,7 +60,6 @@ contract NFTAccessTemplate is BaseEscrowTemplate {
         require(
             _owner != address(0) &&
             _agreementStoreManagerAddress != address(0) &&
-            _didRegistryAddress != address(0) &&
             _nftHolderConditionAddress != address(0) &&
             _accessConditionAddress != address(0),
             'Invalid address'
@@ -76,14 +73,14 @@ contract NFTAccessTemplate is BaseEscrowTemplate {
         );
 
         didRegistry = DIDRegistry(
-            _didRegistryAddress
+            agreementStoreManager.getDIDRegistryAddress()
         );
 
-        nftHolderCondition = NftHolderCondition(
+        nftHolderCondition = NFTHolderCondition(
             _nftHolderConditionAddress
         );
 
-        accessCondition = AccessSecretStoreCondition(
+        accessCondition = AccessCondition(
             _accessConditionAddress
         );
         

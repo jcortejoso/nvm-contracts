@@ -51,7 +51,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
             msg.sender == didRegisterList.didRegisters[_did].owner ||
             isProvenanceDelegate(_did, msg.sender) ||
             isDIDProvider(_did, msg.sender),
-            'Only DID Owner, Provider or Delegate allowed'
+            'Only owner, provider or delegate'
         );
         _;
     }
@@ -193,7 +193,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         require(
             didRegisterList.didRegisters[_did].owner == address(0x0) ||
             didRegisterList.didRegisters[_did].owner == msg.sender,
-            'Attributes must be registered by the DID owners.'
+            'Only DID Owners'
         );
 
         require(
@@ -225,6 +225,26 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
             _did, _did, msg.sender, _activityId, _attributes);
         
         return updatedSize;
+    }
+
+    /**
+     * @notice areRoyaltiesValid checks if for a given DID and rewards distribution, this allocate the  
+     * original creator royalties properly
+     * @param _did refers to decentralized identifier (a byte32 length ID)
+     * @param _amounts refers to the amounts to reward
+     * @param _receivers refers to the receivers of rewards
+     * @return true if the rewards distribution respect the original creator royalties
+     */
+    function areRoyaltiesValid(     
+        bytes32 _did,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    )
+    public
+    view
+    returns (bool)
+    {
+        return didRegisterList.areRoyaltiesValid(_did, _amounts, _receivers);
     }
     
     function wasGeneratedBy(
@@ -437,6 +457,10 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         address _previousOwner = didRegisterList.didRegisters[_did].owner;
         didRegisterList.updateDIDOwner(_did, _newOwner);
 
+        super.wasAssociatedWith(
+            keccak256(abi.encodePacked(_did, msg.sender, 'transferDID', _newOwner, block.number)),
+            _did, _newOwner, keccak256('transferDID'), 'transferDID');
+        
         emit DIDOwnershipTransferred(
             _did,
             _previousOwner,

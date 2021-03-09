@@ -22,7 +22,7 @@ contract DIDRegistryChangeFunctionSignature is DIDFactory {
         require(
             didRegisterList.didRegisters[_did].owner == address(0x0) ||
             didRegisterList.didRegisters[_did].owner == msg.sender,
-            'Attributes must be registered by the DID owners.'
+            'Only DID Owners'
         );
 
         require(

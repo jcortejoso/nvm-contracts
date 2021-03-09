@@ -21,8 +21,6 @@ contract('LockRewardCondition', (accounts) => {
     let token
     let lockRewardCondition
 
-    //    const conditionId = constants.bytes32.one
-    //    const conditionType = constants.address.dummy
     const owner = accounts[1]
     const createRole = accounts[0]
 

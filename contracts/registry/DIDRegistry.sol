@@ -76,9 +76,10 @@ contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
     returns (uint size)
     {
         uint result = registerDID(_did, _checksum, _providers, _url, _activityId, _attributes);
-        enableDidNft(_did, _cap, _royalties, false);
+        enableAndMintDidNft(_did, _cap, _royalties, false);
         return result;
-    }    
+    }
+
     
     /**
      * @notice enableDidNft creates the initial setup of NFTs minting and royalties distribution.
@@ -90,12 +91,13 @@ contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
      * @param _did refers to decentralized identifier (a byte32 length ID)
      * @param _cap refers to the mint cap
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
+     * @param _preMint if is true mint directly the amount capped tokens and lock in the _lockAddress
      */
-    function enableDidNft(
+    function enableAndMintDidNft(
         bytes32 _did,
         uint256 _cap,
         uint8 _royalties,
-        bool _preMintAndLock
+        bool _preMint
     )
     public
     onlyDIDOwner(_did)
@@ -103,15 +105,13 @@ contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
     {
         didRegisterList.initializeNftConfig(_did, _cap, _royalties);
 
-        if (_preMintAndLock)    {
-            // TODO: Here is necessary to mint & lock the NFTs in the NFTKLockRewardCondition contract            
+        if (_preMint)    {
             mint(_did, _cap);
-            // lockNft()
         }
         
         return super.used(
             keccak256(abi.encodePacked(_did, _cap, _royalties, msg.sender)),
-            _did, msg.sender, keccak256('enableDidNft'), '', 'nft initialization');
+            _did, msg.sender, keccak256('enableNft'), '', 'nft initialization');
     }
     
     /**
@@ -134,7 +134,7 @@ contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
         if (didRegisterList.didRegisters[_did].mintCap > 0) {
             require(
                 didRegisterList.didRegisters[_did].nftSupply + _amount <= didRegisterList.didRegisters[_did].mintCap,
-                'The minted request exceeds the cap'
+                'Cap exceeded'
             );
         }
         

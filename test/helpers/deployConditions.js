@@ -1,5 +1,5 @@
 /* global artifacts */
-const AccessSecretStoreCondition = artifacts.require('AccessSecretStoreCondition')
+const AccessCondition = artifacts.require('AccessCondition')
 const EscrowReward = artifacts.require('EscrowReward')
 const LockRewardCondition = artifacts.require('LockRewardCondition')
 const ComputeExecutionCondition = artifacts.require('ComputeExecutionCondition')
@@ -20,7 +20,7 @@ const deployConditions = async function(
         { from: deployer }
     )
 
-    const accessSecretStoreCondition = await AccessSecretStoreCondition.new({ from: deployer })
+    const accessSecretStoreCondition = await AccessCondition.new({ from: deployer })
     await accessSecretStoreCondition.methods['initialize(address,address,address)'](
         owner,
         conditionStoreManager.address,

@@ -4,13 +4,13 @@
 const constants = require('../../../helpers/constants.js')
 const testUtils = require('../../../helpers/utils.js')
 const deployManagers = require('../../../helpers/deployManagers.js')
-const AccessSecretStoreCondition = artifacts.require('AccessSecretStoreCondition')
+const AccessCondition = artifacts.require('AccessCondition')
 
 let didRegistry,
     agreementStoreManager,
     conditionStoreManager,
     templateStoreManager,
-    accessSecretStoreCondition
+    accessCondition
 
 const common = {
     setupTest: async ({
@@ -35,9 +35,9 @@ const common = {
             owner
         ))
 
-        accessSecretStoreCondition = await AccessSecretStoreCondition.new()
+        accessCondition = await AccessCondition.new()
 
-        await accessSecretStoreCondition.methods['initialize(address,address,address)'](
+        await accessCondition.methods['initialize(address,address,address)'](
             accounts[0],
             conditionStoreManager.address,
             agreementStoreManager.address,
@@ -58,7 +58,7 @@ const common = {
             agreementStoreManager,
             conditionStoreManager,
             templateStoreManager,
-            accessSecretStoreCondition
+            accessCondition
         }
     }
 }

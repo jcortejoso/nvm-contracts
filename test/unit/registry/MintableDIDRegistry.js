@@ -88,14 +88,9 @@ contract('Mintable DIDRegistry', (accounts) => {
         it('Should mint and burn NFTs after initialization', async () => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
-            await didRegistry.registerAttribute(
-                did, checksum, [], value,
-                {
-                    from: owner
-                }
-            )
 
-            await didRegistry.enableDidNft(did, 20, 0, false, { from: owner })
+            await didRegistry.registerMintableDID(
+                did, checksum, [], value, 20, 0, constants.activities.GENERATED, '', { from: owner })
             const result = await didRegistry.mint(did, 10, { from: owner })
 
             testUtils.assertEmitted(
@@ -129,31 +124,40 @@ contract('Mintable DIDRegistry', (accounts) => {
             assert.strictEqual(10, balance.toNumber())
         })
 
-        it('Should mint if is not capped', async () => {
+        it('Should Mint automatically if is configured that way', async () => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             await didRegistry.registerAttribute(
                 did, checksum, [], value, { from: owner })
 
-            await didRegistry.enableDidNft(did, 0, 0, false, { from: owner })
-            await didRegistry.mint(did, 100, { from: owner })
+            await didRegistry.enableAndMintDidNft(did, 5, 0, true, { from: owner })
+
+            const balanceOwner = await didRegistry.balanceOf(owner, did)
+            assert.strictEqual(5, balanceOwner.toNumber())
+        })
+
+        it('Should mint if is not capped', async () => {
+            const did = testUtils.generateId()
+            const checksum = testUtils.generateId()
+
+            await didRegistry.registerMintableDID(
+                did, checksum, [], value, 0, 0, constants.activities.GENERATED, '', { from: owner })
+            await didRegistry.mint(did, 10, { from: owner })
 
             const balance = await didRegistry.balanceOf(owner, did)
-            assert.strictEqual(100, balance.toNumber())
+            assert.strictEqual(10, balance.toNumber())
         })
 
         it('Should not mint a NFTs over minting cap', async () => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
-            await didRegistry.registerAttribute(
-                did, checksum, [], value, { from: owner })
-
-            await didRegistry.enableDidNft(did, 5, 0, false, { from: owner })
+            await didRegistry.registerMintableDID(
+                did, checksum, [], value, 5, 0, constants.activities.GENERATED, '', { from: owner })
 
             await assert.isRejected(
                 // Must not allow to mint tokens without previous initialization
                 didRegistry.mint(did, 10, { from: owner }),
-                'The minted request exceeds the cap'
+                'Cap exceeded'
             )
 
             await didRegistry.mint(did, 5, { from: owner })
@@ -163,7 +167,7 @@ contract('Mintable DIDRegistry', (accounts) => {
             await assert.isRejected(
                 // Must not allow to mint tokens without previous initialization
                 didRegistry.mint(did, 1, { from: owner }),
-                'The minted request exceeds the cap'
+                'Cap exceeded'
             )
             assert.strictEqual(5, balance.toNumber())
         })
@@ -176,11 +180,11 @@ contract('Mintable DIDRegistry', (accounts) => {
 
             await assert.isRejected(
                 // Must not allow to initialize NFTs if not the owner
-                didRegistry.enableDidNft(did, 5, 0, false, { from: other }),
+                didRegistry.enableAndMintDidNft(did, 5, 0, true, { from: other }),
                 'Only DID Owner allowed'
             )
 
-            await didRegistry.enableDidNft(did, 5, 0, false, { from: owner })
+            await didRegistry.enableAndMintDidNft(did, 5, 0, true, { from: owner })
             await assert.isRejected(
                 // Must not allow to mint tokens without previous initialization
                 didRegistry.mint(did, 1, { from: other }),

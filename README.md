@@ -125,7 +125,7 @@ The contract addresses deployed on Nevermined `Rinkeby` Test Network:
 
 | Contract                          | Version | Address                                      |
 |-----------------------------------|---------|----------------------------------------------|
-| AccessSecretStoreCondition        | v0.6.0 | `0xA5910a44C88cF4B576F11b07719C8dD05b5a78a5` |
+| AccessCondition        | v0.6.0 | `0xA5910a44C88cF4B576F11b07719C8dD05b5a78a5` |
 | AgreementStoreManager             | v0.6.0 | `0x4C08EEA6A721b4DF66B6BD5479089b1CE18B0159` |
 | ComputeExecutionCondition         | v0.6.0 | `0xdD70eec059d810Ac77d42038Ea3979Eba1af2d52` |
 | ConditionStoreManager             | v0.6.0 | `0x8e023fDDe4400f93B2ae2db5512Cd9d3C9A544Db` |

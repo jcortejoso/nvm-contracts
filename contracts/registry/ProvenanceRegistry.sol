@@ -4,7 +4,6 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
 
 /**
  * @title Provenance Registry Library
@@ -167,7 +166,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
 
         require(
             provenanceRegistry.list[_provId].createdBy == address(0x0),
-            'Provenance record already existing for the Provenance _provId given.'
+            'Already existing provId'
         );
 
         provenanceRegistry.list[_provId] = Provenance({
@@ -446,23 +445,5 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
 
         return true;
     }
-
-    /**
-    * @param _agentId The address of the agent
-    * @param _hash bytes32 message, the hash is the signed message. What is recovered is the signer address.
-    * @param _signature Signatures provided by the agent
-    * @return true if the signature correspond to the agent address        
-    */
-    function provenanceSignatureIsCorrect(
-        address _agentId,
-        bytes32 _hash,
-        bytes memory _signature
-    )
-    public
-    pure
-    returns(bool)
-    {
-        return ECDSAUpgradeable.recover(_hash, _signature) == _agentId;
-    }    
     
 }

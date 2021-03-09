@@ -8,8 +8,8 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const DynamicAccessTemplate = artifacts.require('DynamicAccessTemplate')
-const AccessSecretStoreCondition = artifacts.require('AccessSecretStoreCondition')
-const NftHolderCondition = artifacts.require('NftHolderCondition')
+const AccessCondition = artifacts.require('AccessCondition')
+const NFTHolderCondition = artifacts.require('NFTHolderCondition')
 const EscrowReward = artifacts.require('EscrowReward')
 
 const constants = require('../../helpers/constants.js')
@@ -51,7 +51,7 @@ contract('DynamicAccessTemplate', (accounts) => {
                 { from: deployer }
             )
 
-            accessSecretStoreCondition = await AccessSecretStoreCondition.new()
+            accessSecretStoreCondition = await AccessCondition.new()
 
             await accessSecretStoreCondition.methods['initialize(address,address,address)'](
                 owner,
@@ -60,7 +60,7 @@ contract('DynamicAccessTemplate', (accounts) => {
                 { from: owner }
             )
 
-            nftHolderCondition = await NftHolderCondition.new()
+            nftHolderCondition = await NFTHolderCondition.new()
             await nftHolderCondition.initialize(
                 owner,
                 conditionStoreManager.address,

@@ -634,7 +634,7 @@ contract('DIDRegistry', (accounts) => {
                 didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, [], '', {
                     from: someone
                 }),
-                'Only DID Owner, Provider or Delegate allowed'
+                'Only owner, provider or delegate'
             )
         })
     })
@@ -717,7 +717,7 @@ contract('DIDRegistry', (accounts) => {
                 await web3.eth.sign(_message, owner)
             )
 
-            const valid = await didRegistry.provenanceSignatureIsCorrect(
+            const valid = await common.provenanceSignatureIsCorrect(
                 owner, _messageHash, _signature)
 
             assert.isOk(valid, 'Signature doesnt match')
@@ -733,7 +733,7 @@ contract('DIDRegistry', (accounts) => {
                 await web3.eth.sign(_message, delegates[1])
             )
 
-            const valid = await didRegistry.provenanceSignatureIsCorrect(
+            const valid = await common.provenanceSignatureIsCorrect(
                 delegates[1], _messageHash, _signature)
 
             assert.isOk(valid, 'Signature doesnt match')
@@ -760,7 +760,7 @@ contract('DIDRegistry', (accounts) => {
                 await web3.eth.sign(_message, delegates[1])
             )
 
-            assert.isOk(await didRegistry.provenanceSignatureIsCorrect(
+            assert.isOk(await common.provenanceSignatureIsCorrect(
                 delegates[1], testUtils.toEthSignedMessageHash(_message), _signatureDelegate))
 
             const result = await didRegistry.actedOnBehalf(

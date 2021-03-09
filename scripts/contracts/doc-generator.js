@@ -16,7 +16,7 @@ const contracts = [
     'SignCondition',
     'HashLockCondition',
     'LockRewardCondition',
-    'AccessSecretStoreCondition',
+    'AccessCondition',
     'EscrowReward',
     'EscrowAccessSecretStoreTemplate',
     'NFTAccessTemplate',

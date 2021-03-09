@@ -1,5 +1,5 @@
 
-# contract: AccessSecretStoreCondition
+# contract: AccessCondition
 
 Documentation:
 ```
@@ -7,10 +7,10 @@ Documentation:
 @author Keyko & Ocean Protocol
  * @dev Implementation of the Access Secret Store Condition
  *      Access Secret Store Condition is special condition
-     where parity secret store can encrypt/decrypt documents 
-     based on the on-chain granted permissions. For a given DID 
-     document, and agreement ID, the owner/provider of the DID 
-     will fulfill the condition. Consequently secret store 
+     where parity secret store can encrypt/decrypt documents
+     based on the on-chain granted permissions. For a given DID
+     document, and agreement ID, the owner/provider of the DID
+     will fulfill the condition. Consequently secret store
      will check whether the permission is granted for the consumer
      in order to encrypt/decrypt the document.
 ```
@@ -50,7 +50,7 @@ Parameters:
 Documentation:
 
 ```
-@notice initialize init the 
+@notice initialize init the
       contract with the following parameters
 @dev this function is called only once during the contract
       initialization.
@@ -68,11 +68,11 @@ Parameters:
 Documentation:
 
 ```
-@notice hashValues generates the hash of condition inputs 
+@notice hashValues generates the hash of condition inputs
        with the following parameters
 @param _documentId refers to the DID in which secret store will issue the decryption keys
 @param _grantee is the address of the granted user or the DID provider
-@return bytes32 hash of all these values 
+@return bytes32 hash of all these values
 ```
 Parameters:
 * bytes32 _documentId
@@ -85,7 +85,7 @@ Documentation:
 ```
 @notice fulfill access secret store condition
 @dev only DID owner or DID provider can call this
-      method. Fulfill method sets the permissions 
+      method. Fulfill method sets the permissions
       for the granted consumer's address to true then
       fulfill the condition
 @param _agreementId agreement identifier

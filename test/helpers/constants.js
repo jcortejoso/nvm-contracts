@@ -108,7 +108,7 @@ const constants = {
     ],
     registry: {
         error: {
-            onlyDIDOwner: 'Attributes must be registered by the DID owners.',
+            onlyDIDOwner: 'Only DID Owners',
             invalidValueSize: 'Invalid value size',
             didNotRegistered: 'DID not registered'
         },

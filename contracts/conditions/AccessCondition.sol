@@ -1,6 +1,5 @@
 pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
-// This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -13,7 +12,7 @@ import '../agreements/AgreementStoreManager.sol';
 
 /**
  * @title Access Secret Store Condition
- * @author Keyko & Ocean Protocol
+ * @author Keyko
  *
  * @dev Implementation of the Access Secret Store Condition
  *
@@ -25,10 +24,10 @@ import '../agreements/AgreementStoreManager.sol';
  *      will check whether the permission is granted for the consumer
  *      in order to encrypt/decrypt the document.
  */
-contract AccessSecretStoreCondition is Condition, 
+contract AccessCondition is Condition, 
 ISecretStore, ISecretStorePermission {
 
-    bytes32 constant public CONDITION_TYPE = keccak256('AccessSecretStoreCondition');
+    bytes32 constant public CONDITION_TYPE = keccak256('AccessCondition');
 
     struct DocumentPermission {
         bytes32 agreementIdDeprecated;
