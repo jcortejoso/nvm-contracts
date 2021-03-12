@@ -8,7 +8,7 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const NFTSalesTemplate = artifacts.require('NFTSalesTemplate')
-const NFTLockCondition = artifacts.require('NFTLockCondition')
+//const NFTLockCondition = artifacts.require('NFTLockCondition')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const TransferNFTCondition = artifacts.require('TransferNFTCondition')
 const EscrowReward = artifacts.require('EscrowReward')
@@ -18,8 +18,7 @@ const deployManagers = require('../../helpers/deployManagers.js')
 const testUtils = require('../../helpers/utils')
 
 contract('DIDSalesTemplate', (accounts) => {
-    let lockNFTCondition,
-        lockPaymentCondition,
+    let lockPaymentCondition,
         transferCondition,
         escrowCondition
 
@@ -35,14 +34,14 @@ contract('DIDSalesTemplate', (accounts) => {
             templateStoreManager
         } = await deployManagers(deployer, owner)
 
-        lockNFTCondition = await NFTLockCondition.new()
-
-        await lockNFTCondition.initialize(
-            owner,
-            conditionStoreManager.address,
-            didRegistry.address,
-            { from: deployer }
-        )
+//        lockNFTCondition = await NFTLockCondition.new()
+//
+//        await lockNFTCondition.initialize(
+//            owner,
+//            conditionStoreManager.address,
+//            didRegistry.address,
+//            { from: deployer }
+//        )
 
         lockPaymentCondition = await LockPaymentCondition.new()
 
@@ -72,10 +71,10 @@ contract('DIDSalesTemplate', (accounts) => {
         )
 
         const nftSalesTemplate = await NFTSalesTemplate.new({ from: deployer })
-        await nftSalesTemplate.methods['initialize(address,address,address,address,address,address)'](
+        await nftSalesTemplate.methods['initialize(address,address,address,address,address)'](
             owner,
             agreementStoreManager.address,
-            lockNFTCondition.address,
+//            lockNFTCondition.address,
             lockPaymentCondition.address,
             transferCondition.address,
             escrowCondition.address,
@@ -87,7 +86,7 @@ contract('DIDSalesTemplate', (accounts) => {
             escrowCondition,
             transferCondition,
             lockPaymentCondition,
-            lockNFTCondition,
+//            lockNFTCondition,
             didRegistry,
             agreementStoreManager,
             conditionStoreManager,
@@ -103,11 +102,10 @@ contract('DIDSalesTemplate', (accounts) => {
         conditionIds = [
             testUtils.generateId(),
             testUtils.generateId(),
-            testUtils.generateId(),
             testUtils.generateId()
         ],
-        timeLocks = [0, 0, 0, 0],
-        timeOuts = [0, 0, 0, 0],
+        timeLocks = [0, 0, 0],
+        timeOuts = [0, 0, 0],
         sender = accounts[0],
         receiver = accounts[1],
         did = testUtils.generateId()

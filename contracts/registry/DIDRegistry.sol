@@ -186,5 +186,28 @@ contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
     returns (uint256)   {
         return balanceOf(account, uint256(_did));
     }
-    
+/*
+    *//**
+     * Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-free listings.
+     *//*
+    function isApprovedForAll(
+        address _owner,
+        address _operator
+    ) 
+    public 
+    view
+    override
+    returns 
+    (bool isOperator) {
+        return true;
+        // Whitelist NFT Contracts
+//        ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
+//        if (address(proxyRegistry.proxies(_owner)) == _operator) {
+//            return true;
+//        }
+//
+//        return ERC1155.isApprovedForAll(_owner, _operator);
+    }*/
+
+
 }

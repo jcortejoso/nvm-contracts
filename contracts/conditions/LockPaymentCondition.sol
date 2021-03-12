@@ -69,7 +69,8 @@ contract LockPaymentCondition is Condition {
    /**
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters
-    * @param _did the asset decentralized identifier    
+    * @param _did the asset decentralized identifier 
+    * @param _rewardAddress the contract address where the reward is locked       
     * @param _amounts token amounts to be locked/released
     * @param _receivers receiver's addresses
     * @return bytes32 hash of all these values 
@@ -92,6 +93,7 @@ contract LockPaymentCondition is Condition {
     *           to lock the amount of tokens based on the SEA
     * @param _agreementId the agreement identifier
     * @param _did the asset decentralized identifier
+    * @param _rewardAddress the contract address where the reward is locked
     * @param _amounts token amounts to be locked/released
     * @param _receivers receiver's addresses
     * @return condition state

@@ -28,10 +28,9 @@ contract('NFTAccessTemplate', (accounts) => {
 
         const contractType = templateStoreManager.address
         const nftAccessTemplate = await NFTAccessTemplate.new({ from: deployer })
-        await nftAccessTemplate.methods['initialize(address,address,address,address,address)'](
+        await nftAccessTemplate.methods['initialize(address,address,address,address)'](
             owner,
             agreementStoreManager.address,
-            didRegistry.address,
             contractType,
             contractType,
             { from: deployer }

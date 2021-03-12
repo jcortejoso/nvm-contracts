@@ -1,6 +1,5 @@
 pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
-// This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -8,18 +7,18 @@ import './Reward.sol';
 import '../ConditionStoreLibrary.sol';
 
 /**
- * @title Escrow Reward
- * @author Keyko & Ocean Protocol
+ * @title Escrow Payment Condition
+ * @author Keyko
  *
- * @dev Implementation of the Escrow Reward.
+ * @dev Implementation of the Escrow Payment Condition
  *
- *      The Escrow reward is reward condition in which only 
+ *      The Escrow payment is reward condition in which only 
  *      can release reward if lock and release conditions
  *      are fulfilled.
  */
-contract EscrowReward is Reward {
+contract EscrowPaymentCondition is Reward {
 
-    bytes32 constant public CONDITION_TYPE = keccak256('EscrowReward');
+    bytes32 constant public CONDITION_TYPE = keccak256('EscrowPayment');
 
     event Fulfilled(
         bytes32 indexed _agreementId,
@@ -27,7 +26,7 @@ contract EscrowReward is Reward {
         bytes32 _conditionId,
         uint256[] _amounts
     );
-
+    
     /**
      * @notice initialize init the 
      *       contract with the following parameters
@@ -56,21 +55,22 @@ contract EscrowReward is Reward {
         token = ERC20Upgradeable(_tokenAddress);
     }
 
-
     /**
      * @notice hashValues generates the hash of condition inputs 
      *        with the following parameters
+     * @param _did asset decentralized identifier               
      * @param _amounts token amounts to be locked/released
      * @param _receivers receiver's addresses
-     * @param _sender sender's address
+     * @param _lockPaymentAddress lock payment contract address
      * @param _lockCondition lock condition identifier
      * @param _releaseCondition release condition identifier
      * @return bytes32 hash of all these values 
      */
     function hashValues(
+        bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
-        address _sender,
+        address _lockPaymentAddress,
         bytes32 _lockCondition,
         bytes32 _releaseCondition
     )
@@ -83,9 +83,10 @@ contract EscrowReward is Reward {
         );
         return keccak256(
             abi.encodePacked(
+                _did,
                 _amounts,
                 _receivers,
-                _sender,
+                _lockPaymentAddress,
                 _lockCondition,
                 _releaseCondition
             )
@@ -100,18 +101,20 @@ contract EscrowReward is Reward {
      *      release/refund the reward to receiver/sender 
      *      respectively.
      * @param _agreementId agreement identifier
+     * @param _did asset decentralized identifier          
      * @param _amounts token amounts to be locked/released
      * @param _receivers receiver's address
-     * @param _sender sender's address
+     * @param _lockPaymentAddress lock payment contract address
      * @param _lockCondition lock condition identifier
-     * @param _releaseCondition release condition identifier
+     * @param _lockPaymentAddress release condition identifier
      * @return condition state (Fulfilled/Aborted)
      */
     function fulfill(
         bytes32 _agreementId,
+        bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
-        address _sender,
+        address _lockPaymentAddress,
         bytes32 _lockCondition,
         bytes32 _releaseCondition
     )
@@ -126,9 +129,10 @@ contract EscrowReward is Reward {
         bytes32 id = generateId(
             _agreementId,
             hashValues(
+                _did,
                 _amounts,
                 _receivers,
-                _sender,
+                _lockPaymentAddress,
                 _lockCondition,
                 _releaseCondition
             )
@@ -147,13 +151,11 @@ contract EscrowReward is Reward {
                 _agreementId,
                 lockConditionTypeRef,
                 keccak256(
-                    abi.encodePacked(
-                        address(this),
-                        _totalAmount
-                    )
+                    abi.encodePacked(_did, _lockPaymentAddress, _amounts, _receivers)
                 )
             )
         );
+
         require(
             generatedLockConditionId == _lockCondition,
             'LockCondition ID does not match'
@@ -164,24 +166,24 @@ contract EscrowReward is Reward {
             'LockCondition needs to be Fulfilled'
         );
         require(
-            token.balanceOf(address(this)) >= _totalAmount,
+            token.balanceOf(_lockPaymentAddress) >= _totalAmount,
             'Not enough balance'
         );
 
         ConditionStoreLibrary.ConditionState state = conditionStoreManager
-        .getConditionState(_releaseCondition);
+            .getConditionState(_releaseCondition);
 
         if (state == ConditionStoreLibrary.ConditionState.Fulfilled)
         {
             state = _transferAndFulfill(id, _receivers, _amounts);
             emit Fulfilled(_agreementId, _receivers, id, _amounts);
-
+                
         } else if (state == ConditionStoreLibrary.ConditionState.Aborted)
         {
             uint256[] memory _totalAmounts = new uint256[](1);
             _totalAmounts[0] = _totalAmount;
             address[] memory _originalSender = new address[](1);
-            _originalSender[0] = _sender;
+            _originalSender[0] = lockConditionTypeRef;
             state = _transferAndFulfill(id, _originalSender, _totalAmounts);
             emit Fulfilled(_agreementId, _originalSender, id, _totalAmounts);
         } else
@@ -215,13 +217,14 @@ contract EscrowReward is Reward {
             );
             require(
                 _receivers[i] != address(this),
-                'EscrowReward contract can not be a receiver'
+                'Escrow contract can not be a receiver'
             );
             require(
                 token.transfer(_receivers[i], _amounts[i]),
                 'Could not transfer token'
             );
         }
+
         return super.fulfill(
             _id,
             ConditionStoreLibrary.ConditionState.Fulfilled
@@ -229,3 +232,6 @@ contract EscrowReward is Reward {
     }
 
 }
+
+
+

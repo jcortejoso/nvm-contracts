@@ -8,7 +8,7 @@ import './BaseEscrowTemplate.sol';
 import '../conditions/NFTs/NFTLockCondition.sol';
 import '../conditions/LockPaymentCondition.sol';
 import '../conditions/NFTs/TransferNFTCondition.sol';
-import '../conditions/rewards/EscrowReward.sol';
+import '../conditions/rewards/EscrowPaymentCondition.sol';
 import '../registry/DIDRegistry.sol';
 
 /**
@@ -23,7 +23,6 @@ import '../registry/DIDRegistry.sol';
  *      to setup an agreement allowing a NFT owner to transfer the asset ownership
  *      after some payment. 
  *      The template is a composite of 3 basic conditions: 
- *      - NFT Lock Condition
  *      - Lock Payment Condition
  *      - Transfer NFT Condition
  *      - Escrow Reward Condition
@@ -35,10 +34,10 @@ import '../registry/DIDRegistry.sol';
 contract NFTSalesTemplate is BaseEscrowTemplate {
 
     DIDRegistry internal didRegistry;
-    NFTLockCondition internal lockNFTCondition;
+//    NFTLockCondition internal lockNFTCondition;
     LockPaymentCondition internal lockPaymentCondition;
     TransferNFTCondition internal transferCondition;
-    EscrowReward internal rewardCondition;
+    EscrowPaymentCondition internal rewardCondition;
 
    /**
     * @notice initialize init the 
@@ -49,7 +48,6 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
     *       access secret store, lock reward and escrow reward conditions.
     * @param _owner contract's owner account address
     * @param _agreementStoreManagerAddress agreement store manager contract address
-    * @param _lockNFTConditionAddress lock NFT condition contract address    
     * @param _lockPaymentConditionAddress lock reward condition contract address
     * @param _transferConditionAddress transfer NFT condition contract address
     * @param _escrowRewardAddress escrow reward condition contract address    
@@ -57,7 +55,7 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
     function initialize(
         address _owner,
         address _agreementStoreManagerAddress,
-        address _lockNFTConditionAddress,
+//        address _lockNFTConditionAddress,
         address _lockPaymentConditionAddress,
         address _transferConditionAddress,
         address _escrowRewardAddress
@@ -68,7 +66,7 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         require(
             _owner != address(0) &&
             _agreementStoreManagerAddress != address(0) &&
-            _lockNFTConditionAddress != address(0) &&
+//            _lockNFTConditionAddress != address(0) &&
             _lockPaymentConditionAddress != address(0) &&
             _transferConditionAddress != address(0) &&
             _escrowRewardAddress != address(0),
@@ -86,9 +84,9 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
             agreementStoreManager.getDIDRegistryAddress()
         );
 
-        lockNFTCondition = NFTLockCondition(
-            _lockNFTConditionAddress
-        );
+//        lockNFTCondition = NFTLockCondition(
+//            _lockNFTConditionAddress
+//        );
 
         lockPaymentCondition = LockPaymentCondition(
             _lockPaymentConditionAddress
@@ -98,11 +96,11 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
             _transferConditionAddress
         );
 
-        rewardCondition = EscrowReward(
+        rewardCondition = EscrowPaymentCondition(
             _escrowRewardAddress
         );
 
-        conditionTypes.push(address(lockNFTCondition));
+//        conditionTypes.push(address(lockNFTCondition));
         conditionTypes.push(address(lockPaymentCondition));
         conditionTypes.push(address(transferCondition));
         conditionTypes.push(address(rewardCondition));
