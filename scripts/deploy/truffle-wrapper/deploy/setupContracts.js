@@ -241,7 +241,7 @@ async function setupContracts({
         const DIDRegistryInstance =
             await DIDRegistry.at(addressBook.DIDRegistry)
         await DIDRegistryInstance.setProxyApproval(
-            addressBook.TransferNFTCondition, true, { from: roles.deployer })
+            addressBook.TransferNFTCondition, true, { from: roles.ownerWallet })
     }
 
     if (addressBook.NeverminedToken) {
