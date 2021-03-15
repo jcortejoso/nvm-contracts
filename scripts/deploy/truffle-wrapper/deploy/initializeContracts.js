@@ -332,7 +332,6 @@ async function initializeContracts({
     }
 
     if (getAddress('AgreementStoreManager') &&
-        getAddress('DIDRegistry') &&
         getAddress('AccessCondition') &&
         getAddress('NFTHolderCondition')) {
         if (contracts.indexOf('NFTAccessTemplate') > -1) {
@@ -342,7 +341,6 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('AgreementStoreManager'),
-                    getAddress('DIDRegistry'),
                     getAddress('NFTHolderCondition'),
                     getAddress('AccessCondition')
                 ],
