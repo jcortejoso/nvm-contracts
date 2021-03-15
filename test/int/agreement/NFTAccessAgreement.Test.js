@@ -69,10 +69,9 @@ contract('NFT Access integration test', (accounts) => {
         )
 
         nftAccessTemplate = await NFTAccessTemplate.new()
-        await nftAccessTemplate.methods['initialize(address,address,address,address,address)'](
+        await nftAccessTemplate.methods['initialize(address,address,address,address)'](
             owner,
             agreementStoreManager.address,
-            didRegistry.address,
             nftHolderCondition.address,
             accessCondition.address,
             { from: deployer }
@@ -101,8 +100,10 @@ contract('NFT Access integration test', (accounts) => {
         checksum = constants.bytes32.one
     } = {}) {
         // generate IDs from attributes
-        const conditionIdNFT = await nftHolderCondition.generateId(agreementId, await nftHolderCondition.hashValues(did, receiver, nftAmount))
-        const conditionIdAccess = await accessCondition.generateId(agreementId, await accessCondition.hashValues(did, receiver))
+        const conditionIdNFT = await nftHolderCondition.generateId(agreementId,
+            await nftHolderCondition.hashValues(did, receiver, nftAmount))
+        const conditionIdAccess = await accessCondition.generateId(agreementId,
+            await accessCondition.hashValues(did, receiver))
 
         // construct agreement
         const agreement = {

@@ -1,12 +1,11 @@
 pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
-// This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
 import './DIDFactory.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
+import '../token/erc1155/NFTUpgradeable.sol';
 
 /**
  * @title Mintable DID Registry
@@ -14,21 +13,13 @@ import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgrade
  *
  * @dev Implementation of a Mintable DID Registry.
  */
-contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
+contract DIDRegistry is DIDFactory, NFTUpgradeable {
     
-    modifier nftIsInitialized(bytes32 _did)
-    {
-        require(
-            didRegisterList.didRegisters[_did].nftInitialized,
-            'The NFTs needs to be initialized'
-        );
-        _;
-    }
+
     //////////////////////////////////////////////////////////////
     ////////  EVENTS  ////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
-
-
+    
     /**
      * @dev DIDRegistry Initializer
      *      Initialize Ownable. Only on contract creation.
@@ -42,7 +33,7 @@ contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
     initializer
     {
         OwnableUpgradeable.__Ownable_init();
-        ERC1155BurnableUpgradeable.__ERC1155Burnable_init();
+        NFTUpgradeable.__NFTUpgradeable_init('');
         transferOwnership(_owner);
     }
 
@@ -172,42 +163,4 @@ contract DIDRegistry is DIDFactory, ERC1155BurnableUpgradeable {
             _did, msg.sender, keccak256('burn'), '', 'burn');
     }
     
-
-    /**
-     * @dev Returns the amount of tokens of token type `id` owned by `account`.
-     *
-     * Requirements:
-     *
-     * - `account` cannot be the zero address.
-     */
-    function balanceOf(address account, bytes32 _did) 
-    external 
-    view 
-    returns (uint256)   {
-        return balanceOf(account, uint256(_did));
-    }
-/*
-    *//**
-     * Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-free listings.
-     *//*
-    function isApprovedForAll(
-        address _owner,
-        address _operator
-    ) 
-    public 
-    view
-    override
-    returns 
-    (bool isOperator) {
-        return true;
-        // Whitelist NFT Contracts
-//        ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
-//        if (address(proxyRegistry.proxies(_owner)) == _operator) {
-//            return true;
-//        }
-//
-//        return ERC1155.isApprovedForAll(_owner, _operator);
-    }*/
-
-
 }

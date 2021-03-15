@@ -12,6 +12,7 @@
   "TransferNFTCondition",
   "AccessCondition",
   "EscrowReward",
+  "EscrowPaymentCondition",
   "TransferDIDOwnershipCondition",
   "ThresholdCondition",
   "WhitelistingCondition",

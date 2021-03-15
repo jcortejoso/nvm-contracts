@@ -21,7 +21,7 @@ contract TransferNFTCondition is Condition {
     bytes32 constant public CONDITION_TYPE = keccak256('TransferNFTCondition');
 
     AgreementStoreManager internal agreementStoreManager;
-    ERC1155Upgradeable private registry;
+    IERC1155Upgradeable private registry;
     
     event Fulfilled(
         bytes32 indexed _agreementId,
@@ -64,7 +64,7 @@ contract TransferNFTCondition is Condition {
             _agreementStoreManagerAddress
         );
 
-        registry = ERC1155Upgradeable(
+        registry = IERC1155Upgradeable(
             agreementStoreManager.getDIDRegistryAddress()
         );        
     }

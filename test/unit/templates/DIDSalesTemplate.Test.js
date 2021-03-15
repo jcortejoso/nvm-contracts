@@ -10,7 +10,7 @@ chai.use(chaiAsPromised)
 const DIDSalesTemplate = artifacts.require('DIDSalesTemplate')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const TransferDIDOwnershipCondition = artifacts.require('TransferDIDOwnershipCondition')
-const EscrowReward = artifacts.require('EscrowReward')
+const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
 
 const constants = require('../../helpers/constants.js')
 const deployManagers = require('../../helpers/deployManagers.js')
@@ -52,7 +52,7 @@ contract('DIDSalesTemplate', (accounts) => {
             { from: deployer }
         )
 
-        escrowCondition = await EscrowReward.new()
+        escrowCondition = await EscrowPaymentCondition.new()
         await escrowCondition.initialize(
             owner,
             conditionStoreManager.address,

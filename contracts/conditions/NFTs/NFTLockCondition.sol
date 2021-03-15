@@ -16,7 +16,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgrad
  */
 contract NFTLockCondition is Condition, IERC1155ReceiverUpgradeable {
 
-    ERC1155Upgradeable private registry;
+    IERC1155Upgradeable private registry;
     
     bytes32 constant public CONDITION_TYPE = keccak256('NFTLockCondition');
 
@@ -64,7 +64,7 @@ contract NFTLockCondition is Condition, IERC1155ReceiverUpgradeable {
             _conditionStoreManagerAddress
         );
         
-        registry = ERC1155Upgradeable(_didRegistryAddress);
+        registry = IERC1155Upgradeable(_didRegistryAddress);
     }
 
     function grantTransferApproval(

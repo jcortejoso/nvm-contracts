@@ -7,7 +7,7 @@ pragma solidity 0.6.12;
 import './BaseEscrowTemplate.sol';
 import '../conditions/LockPaymentCondition.sol';
 import '../conditions/TransferDIDOwnershipCondition.sol';
-import '../conditions/rewards/EscrowReward.sol';
+import '../conditions/rewards/EscrowPaymentCondition.sol';
 import '../registry/DIDRegistry.sol';
 
 /**
@@ -35,7 +35,7 @@ contract DIDSalesTemplate is BaseEscrowTemplate {
     DIDRegistry internal didRegistry;
     LockPaymentCondition internal lockCondition;
     TransferDIDOwnershipCondition internal transferCondition;
-    EscrowReward internal rewardCondition;
+    EscrowPaymentCondition internal rewardCondition;
 
    /**
     * @notice initialize init the 
@@ -88,7 +88,7 @@ contract DIDSalesTemplate is BaseEscrowTemplate {
             _transferConditionAddress
         );
 
-        rewardCondition = EscrowReward(
+        rewardCondition = EscrowPaymentCondition(
             _escrowRewardAddress
         );
 

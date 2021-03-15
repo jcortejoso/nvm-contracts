@@ -1,6 +1,5 @@
 pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
-// This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -15,17 +14,21 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  *
  * @dev Implementation of the DID Registry.
  */
-contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
-
+contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry { 
+    
     /**
      * @dev The DIDRegistry Library takes care of the basic DID storage functions.
      */
     using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
 
+//    using ProvenanceRegistry for ProvenanceRegistry.ProvenanceRegistryList;
+    
     /**
      * @dev state storage for the DID registry
      */
     DIDRegistryLibrary.DIDRegisterList internal didRegisterList;
+
+//    ProvenanceRegistry.ProvenanceRegistryList internal provenanceRegistryList;
     
     // DID -> Address -> Boolean Permission
     mapping(bytes32 => mapping(address => bool)) internal didPermissions;
@@ -39,18 +42,15 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     modifier onlyDIDOwner(bytes32 _did)
     {
         require(// solhint-disable-next-line avoid-tx-origin
-            tx.origin == didRegisterList.didRegisters[_did].owner,
+            isDIDOwner(tx.origin, _did),
             'Only DID Owner allowed'
         );
         _;
     }
-    
+
     modifier onlyOwnerProviderOrDelegated(bytes32 _did)
     {
-        require(
-            msg.sender == didRegisterList.didRegisters[_did].owner ||
-            isProvenanceDelegate(_did, msg.sender) ||
-            isDIDProvider(_did, msg.sender),
+        require(isOwnerProviderOrDelegate(_did),
             'Only owner, provider or delegate'
         );
         _;
@@ -64,6 +64,15 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         );
         _;
     }
+
+    modifier nftIsInitialized(bytes32 _did)
+    {
+        require(
+            didRegisterList.didRegisters[_did].nftInitialized,
+            'The NFTs needs to be initialized'
+        );
+        _;
+    }    
     
     //////////////////////////////////////////////////////////////
     ////////  EVENTS  ////////////////////////////////////////////
@@ -120,9 +129,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         bytes32 _did,
         address _delegate
     );
-
-
-
+    
     /**
      * @dev DIDRegistry Initializer
      *      Initialize Ownable. Only on contract creation.
@@ -196,12 +203,6 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
             'Only DID Owners'
         );
 
-        require(
-        //TODO: 2048 should be changed in the future
-            bytes(_url).length <= 2048,
-            'Invalid value size'
-        );
-
         uint updatedSize = didRegisterList.update(_did, _checksum, _url);
 
         // push providers to storage
@@ -220,8 +221,8 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
             msg.sender,
             block.number
         );
-
-        wasGeneratedBy(
+        
+        _wasGeneratedBy(
             _did, _did, msg.sender, _activityId, _attributes);
         
         return updatedSize;
@@ -255,11 +256,10 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         string memory _attributes
     )
     internal
-    override
     onlyDIDOwner(_did)
     returns (bool)
     {
-        return super.wasGeneratedBy(
+        return _wasGeneratedBy(
             _provId, _did, _agentId, _activityId, _attributes);
     }
 
@@ -273,12 +273,10 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         string memory _attributes
     )
     public
-    override
     onlyOwnerProviderOrDelegated(_did)
-    onlyValidAttributes(_attributes)
     returns (bool success)
     {
-        return super.used(
+        return _used(
             _provId, _did, _agentId, _activityId, _signatureUsing, _attributes);
     }
     
@@ -292,12 +290,10 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         string memory _attributes
     )
     public
-    override
     onlyOwnerProviderOrDelegated(_usedEntityDid)
-    onlyValidAttributes(_attributes)
     returns (bool success)
     {
-        return super.wasDerivedFrom(
+        return _wasDerivedFrom(
             _provId, _newEntityDid, _usedEntityDid, _agentId, _activityId, _attributes);
     }
 
@@ -310,12 +306,10 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         string memory _attributes
     )
     public
-    override
     onlyOwnerProviderOrDelegated(_did)
-    onlyValidAttributes(_attributes)
     returns (bool success)
     {
-        return super.wasAssociatedWith(
+        return _wasAssociatedWith(
             _provId, _did, _agentId, _activityId, _attributes);
     }
 
@@ -344,12 +338,10 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         string memory _attributes
     )
     public
-    override
     onlyOwnerProviderOrDelegated(_did)
-    onlyValidAttributes(_attributes)
     returns (bool success)
     {
-        super.actedOnBehalf(
+        _actedOnBehalf(
             _provId, _did, _delegateAgentId, _responsibleAgentId, _activityId, _signatureDelegate, _attributes);
         addDIDProvenanceDelegate(_did, _delegateAgentId);
         return true;
@@ -457,7 +449,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         address _previousOwner = didRegisterList.didRegisters[_did].owner;
         didRegisterList.updateDIDOwner(_did, _newOwner);
 
-        super.wasAssociatedWith(
+        _wasAssociatedWith(
             keccak256(abi.encodePacked(_did, msg.sender, 'transferDID', _newOwner, block.number)),
             _did, _newOwner, keccak256('transferDID'), 'transferDID');
         
@@ -726,11 +718,47 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
             .list[_provId].blockNumberUpdated;
         signature = provenanceRegistry.list[_provId].signature;
     }
+
+    /**
+     * @notice isDIDOwner check whether a given address is owner for a DID
+     * @param _address user address.
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     */
+    function isDIDOwner(
+        address _address,
+        bytes32 _did
+    )
+    public
+    view
+    returns (bool)
+    {
+        return _address == didRegisterList.didRegisters[_did].owner;
+    }
+
+
+    /**
+     * @notice isOwnerProviderOrDelegate check whether msg.sender is owner, provider or
+     * delegate for a DID given
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @return boolean true if yes
+     */
+    function isOwnerProviderOrDelegate(
+        bytes32 _did
+    )
+    public
+    view
+    returns (bool)
+    {
+        return (msg.sender == didRegisterList.didRegisters[_did].owner ||
+                    isProvenanceDelegate(_did, msg.sender) ||
+                    isDIDProvider(_did, msg.sender));
+    }    
     
     /**
      * @notice isProvenanceDelegate check whether a given DID delegate exists
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @param _delegate delegate's address.
+     * @return boolean true if yes     
      */
     function isProvenanceDelegate(
         bytes32 _did,
@@ -754,5 +782,5 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         return provenanceRegistry.list[_did].createdBy;
     }
-
+    
 }

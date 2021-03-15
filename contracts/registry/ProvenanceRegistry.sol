@@ -13,6 +13,8 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  */
 /* solium-disable-next-line */
 abstract contract ProvenanceRegistry is OwnableUpgradeable {
+//library ProvenanceRegistry {
+    
     // solhint-disable-next-line
     function __ProvenanceRegistry_init() internal initializer {
         __Context_init_unchained();
@@ -51,7 +53,6 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
     }
     
     ProvenanceRegistryList internal provenanceRegistry;
-    
     
     // W3C Provenance Methods
     enum ProvenanceMethod {
@@ -208,7 +209,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
      * @param _attributes refers to the provenance attributes
      * @return the number of the new provenance size
      */
-    function wasGeneratedBy(
+    function _wasGeneratedBy(
         bytes32 _provId,
         bytes32 _did,
         address _agentId,
@@ -219,7 +220,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
     virtual
     returns (bool)
     {
-
+        
         createProvenanceEntry(
             _provId,
             _did,
@@ -235,7 +236,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
 
         emit WasGeneratedBy(
             _did,
-            provenanceRegistry.list[_did].createdBy,
+           msg.sender,
             _activityId,
             _provId,
             _attributes,
@@ -256,7 +257,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
      * @param _attributes refers to the provenance attributes
      * @return success true if the action was properly registered
     */
-    function used(
+    function _used(
         bytes32 _provId,
         bytes32 _did,
         address _agentId,
@@ -264,7 +265,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         bytes memory _signatureUsing,
         string memory _attributes
     )
-    public
+    internal
     virtual
     returns (bool success)
     {
@@ -281,7 +282,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
             _signatureUsing,
             _attributes
         );
-
+        
         emit Used(
             _did,
             _agentId,
@@ -306,7 +307,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
      * @param _attributes refers to the provenance attributes
      * @return success true if the action was properly registered
      */
-    function wasDerivedFrom(
+    function _wasDerivedFrom(
         bytes32 _provId,
         bytes32 _newEntityDid,
         bytes32 _usedEntityDid,
@@ -314,7 +315,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         bytes32 _activityId,
         string memory _attributes
     )
-    public
+    internal
     virtual
     returns (bool success)
     {
@@ -355,18 +356,18 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
      * @param _attributes refers to the provenance attributes
      * @return success true if the action was properly registered
     */
-    function wasAssociatedWith(
+    function _wasAssociatedWith(
         bytes32 _provId,
         bytes32 _did,
         address _agentId,
         bytes32 _activityId,
         string memory _attributes
     )
-    public
+    internal
     virtual
     returns (bool success)
     {
-
+        
         createProvenanceEntry(
             _provId,
             _did,
@@ -406,7 +407,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
      * @param _attributes refers to the provenance attributes
      * @return success true if the action was properly registered
      */
-    function actedOnBehalf(
+    function _actedOnBehalf(
         bytes32 _provId,
         bytes32 _did,
         address _delegateAgentId,
@@ -415,7 +416,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         bytes memory _signatureDelegate,
         string memory _attributes
     )
-    public
+    internal
     virtual
     returns (bool success)
     {

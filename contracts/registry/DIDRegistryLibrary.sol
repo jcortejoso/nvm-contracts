@@ -1,6 +1,5 @@
 pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
-// This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -111,11 +110,11 @@ library DIDRegistryLibrary {
     )
     internal
     {
-        require(_self.didRegisters[_did].owner != address(0), 'The DID is not stored');
+        require(_self.didRegisters[_did].owner != address(0), 'DID not stored');
         
-        require(!_self.didRegisters[_did].nftInitialized, 'NFTs config only can be initialized once');
+        require(!_self.didRegisters[_did].nftInitialized, 'NFTs only can be initialized once');
     
-        require(_cap >= 0, 'The NFT cap must be higher or equal to 0');
+        require(_cap >= 0, 'Cap must be >=0');
     
         require(_royalties >= 0 && _royalties < 100, 'Invalid royalties number');
 
@@ -179,9 +178,9 @@ library DIDRegistryLibrary {
         // return false;
         uint256 _requiredRoyalties = ((_totalAmount * _self.didRegisters[_did].royalties) / 100);
 
-        if (_amounts[index] >= _requiredRoyalties) // Check if royalties are enough
-            return true; // We are paying enough royalties in the secondary market to the original creator
-        return false;
+        // Check if royalties are enough
+        // Are we paying enough royalties in the secondary market to the original creator?
+        return (_amounts[index] >= _requiredRoyalties);
     }
 
 
@@ -200,15 +199,10 @@ library DIDRegistryLibrary {
     internal
     {
         require(
-            provider != address(0),
-            'Invalid asset provider address'
+            provider != address(0) && provider != address(this),
+            'Invalid provider address'
         );
-
-        require(
-            provider != address(this),
-            'DID provider should not be this contract address'
-        );
-
+        
         if (!isProvider(_self, _did, provider)) {
             _self.didRegisters[_did].providers.push(provider);
         }
@@ -287,6 +281,8 @@ library DIDRegistryLibrary {
         return true;
     }
 
+
+    
     /**
      * @notice getProviderIndex get the index of a provider
      * @param _self refers to storage pointer
@@ -330,13 +326,8 @@ library DIDRegistryLibrary {
     internal
     {
         require(
-            delegate != address(0),
-            'Invalid provenance delegate address'
-        );
-
-        require(
-            delegate != address(this),
-            'DID  provenance delegate should not be this contract address'
+            delegate != address(0) && delegate != address(this),
+            'Invalid delegate address'
         );
 
         if (!isDelegate(_self, _did, delegate)) {

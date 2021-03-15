@@ -152,6 +152,56 @@ async function setupContracts({
             })
         }
 
+        if (addressBook.DIDSalesTemplate) {
+            if (verbose) {
+                console.log(
+                    `Proposing template ${addressBook.DIDSalesTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await TemplateStoreManagerInstance.proposeTemplate(
+                addressBook.DIDSalesTemplate,
+                { from: roles.deployer }
+            )
+
+            if (verbose) {
+                console.log(
+                    `Approving template ${addressBook.DIDSalesTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await approveTemplate({
+                TemplateStoreManagerInstance,
+                roles,
+                templateAddress: addressBook.DIDSalesTemplate
+            })
+        }
+
+        if (addressBook.NFTSalesTemplate) {
+            if (verbose) {
+                console.log(
+                    `Proposing template ${addressBook.NFTSalesTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await TemplateStoreManagerInstance.proposeTemplate(
+                addressBook.NFTSalesTemplate,
+                { from: roles.deployer }
+            )
+
+            if (verbose) {
+                console.log(
+                    `Approving template ${addressBook.NFTSalesTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await approveTemplate({
+                TemplateStoreManagerInstance,
+                roles,
+                templateAddress: addressBook.NFTSalesTemplate
+            })
+        }
+
         await transferOwnership({
             ContractInstance: TemplateStoreManagerInstance,
             name: TemplateStoreManager.contractName,
@@ -184,6 +234,14 @@ async function setupContracts({
             roles,
             verbose
         })
+    }
+
+    if (addressBook.TransferNFTCondition) {
+        const DIDRegistry = artifacts.require('DIDRegistry')
+        const DIDRegistryInstance =
+            await DIDRegistry.at(addressBook.DIDRegistry)
+        await DIDRegistryInstance.setProxyApproval(
+            addressBook.TransferNFTCondition, true, { from: roles.deployer })
     }
 
     if (addressBook.NeverminedToken) {
