@@ -34,7 +34,6 @@ import '../registry/DIDRegistry.sol';
 contract NFTSalesTemplate is BaseEscrowTemplate {
 
     DIDRegistry internal didRegistry;
-//    NFTLockCondition internal lockNFTCondition;
     LockPaymentCondition internal lockPaymentCondition;
     TransferNFTCondition internal transferCondition;
     EscrowPaymentCondition internal rewardCondition;
