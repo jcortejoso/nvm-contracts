@@ -298,7 +298,6 @@ async function initializeContracts({
                 verbose
             })
         }
-
     }
 
     if (getAddress('AgreementStoreManager') &&
@@ -387,7 +386,6 @@ async function initializeContracts({
         getAddress('LockPaymentCondition') &&
         getAddress('TransferDIDOwnershipCondition') &&
         getAddress('EscrowPaymentCondition')) {
-
         if (contracts.indexOf('DIDSalesTemplate') > -1) {
             addressBook.DIDSalesTemplate = zosCreate({
                 contract: 'DIDSalesTemplate',
@@ -422,7 +420,7 @@ async function initializeContracts({
                 verbose
             })
         }
-   }
+    }
 
     return addressBook
 }

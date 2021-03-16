@@ -241,11 +241,11 @@ async function setupContracts({
         const DIDRegistryInstance =
             await DIDRegistry.at(addressBook.DIDRegistry)
 
-//        const didRegistryOwner = await DIDRegistryInstance.owner()
-//        console.log('didRegistryOwner : ' + didRegistryOwner)
+        //        const didRegistryOwner = await DIDRegistryInstance.owner()
+        //        console.log('didRegistryOwner : ' + didRegistryOwner)
         console.log('TransferNFTCondition : ' + addressBook.TransferNFTCondition)
         await DIDRegistryInstance.setProxyApproval(
-            addressBook.TransferNFTCondition, true, {from: roles.deployer})
+            addressBook.TransferNFTCondition, true, { from: roles.deployer })
 
         await DIDRegistryInstance.transferOwnership(
             roles.ownerWallet,
