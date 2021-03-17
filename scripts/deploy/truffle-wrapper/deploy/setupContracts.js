@@ -246,7 +246,7 @@ async function setupContracts({
             addressBook.TransferNFTCondition, true, { from: roles.deployer })
     }
 
-    if(addressBook.DIDRegistry) {
+    if (addressBook.DIDRegistry) {
         const DIDRegistry = artifacts.require('DIDRegistry')
         const DIDRegistryInstance =
             await DIDRegistry.at(addressBook.DIDRegistry)
