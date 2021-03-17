@@ -236,21 +236,27 @@ async function setupContracts({
         })
     }
 
-    if (addressBook.TransferNFTCondition) {
+    if (addressBook.TransferNFTCondition && addressBook.DIDRegistry) {
         const DIDRegistry = artifacts.require('DIDRegistry')
         const DIDRegistryInstance =
             await DIDRegistry.at(addressBook.DIDRegistry)
 
-        //        const didRegistryOwner = await DIDRegistryInstance.owner()
-        //        console.log('didRegistryOwner : ' + didRegistryOwner)
         console.log('TransferNFTCondition : ' + addressBook.TransferNFTCondition)
         await DIDRegistryInstance.setProxyApproval(
             addressBook.TransferNFTCondition, true, { from: roles.deployer })
+    }
 
-        await DIDRegistryInstance.transferOwnership(
-            roles.ownerWallet,
-            { from: roles.deployer }
-        )
+    if(addressBook.DIDRegistry) {
+        const DIDRegistry = artifacts.require('DIDRegistry')
+        const DIDRegistryInstance =
+            await DIDRegistry.at(addressBook.DIDRegistry)
+
+        await transferOwnership({
+            ContractInstance: DIDRegistryInstance,
+            name: DIDRegistry.contractName,
+            roles,
+            verbose
+        })
     }
 
     if (addressBook.NeverminedToken) {
