@@ -108,11 +108,15 @@ const constants = {
     ],
     registry: {
         error: {
-            onlyDIDOwner: 'Attributes must be registered by the DID owners.',
+            onlyDIDOwner: 'Only DID Owners',
             invalidValueSize: 'Invalid value size',
             didNotRegistered: 'DID not registered'
         },
         url: 'https://example.com/did/nevermined/test-attr-example.txt'
+    },
+    activities: {
+        GENERATED: '0x1',
+        USED: '0x2'
     }
 }
 

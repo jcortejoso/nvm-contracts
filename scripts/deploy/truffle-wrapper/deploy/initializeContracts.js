@@ -34,7 +34,7 @@ async function initializeContracts({
         addressBook.DIDRegistry = zosCreate({
             contract: 'DIDRegistry',
             network,
-            args: [roles.ownerWallet],
+            args: [roles.deployer],
             verbose
         })
     }
@@ -159,9 +159,22 @@ async function initializeContracts({
 
     if (getAddress('ConditionStoreManager') &&
         getAddress('DIDRegistry')) {
-        if (contracts.indexOf('NftHolderCondition') > -1) {
-            addressBook.NftHolderCondition = zosCreate({
-                contract: 'NftHolderCondition',
+        if (contracts.indexOf('NFTHolderCondition') > -1) {
+            addressBook.NFTHolderCondition = zosCreate({
+                contract: 'NFTHolderCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('DIDRegistry')
+                ],
+                verbose
+            })
+        }
+
+        if (contracts.indexOf('NFTLockCondition') > -1) {
+            addressBook.NFTLockCondition = zosCreate({
+                contract: 'NFTLockCondition',
                 network,
                 args: [
                     roles.ownerWallet,
@@ -202,13 +215,44 @@ async function initializeContracts({
                 verbose
             })
         }
+
+        if (contracts.indexOf('EscrowPaymentCondition') > -1) {
+            addressBook.EscrowPaymentCondition = zosCreate({
+                contract: 'EscrowPaymentCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('Token')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('ConditionStoreManager') &&
+        getAddress('Token') &&
+        getAddress('DIDRegistry')) {
+        if (contracts.indexOf('LockPaymentCondition') > -1) {
+            addressBook.LockPaymentCondition = zosCreate({
+                contract: 'LockPaymentCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('Token'),
+                    getAddress('DIDRegistry')
+                ],
+                verbose
+            })
+        }
     }
 
     if (getAddress('ConditionStoreManager') &&
         getAddress('AgreementStoreManager')) {
-        if (contracts.indexOf('AccessSecretStoreCondition') > -1) {
-            addressBook.AccessSecretStoreCondition = zosCreate({
-                contract: 'AccessSecretStoreCondition',
+        if (contracts.indexOf('AccessCondition') > -1) {
+            addressBook.AccessCondition = zosCreate({
+                contract: 'AccessCondition',
                 network,
                 args: [
                     roles.ownerWallet,
@@ -218,13 +262,33 @@ async function initializeContracts({
                 verbose
             })
         }
-    }
-
-    if (getAddress('ConditionStoreManager') &&
-        getAddress('AgreementStoreManager')) {
         if (contracts.indexOf('ComputeExecutionCondition') > -1) {
             addressBook.ComputeExecutionCondition = zosCreate({
                 contract: 'ComputeExecutionCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('AgreementStoreManager')
+                ],
+                verbose
+            })
+        }
+        if (contracts.indexOf('TransferDIDOwnershipCondition') > -1) {
+            addressBook.TransferDIDOwnershipCondition = zosCreate({
+                contract: 'TransferDIDOwnershipCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('AgreementStoreManager')
+                ],
+                verbose
+            })
+        }
+        if (contracts.indexOf('TransferNFTCondition') > -1) {
+            addressBook.TransferNFTCondition = zosCreate({
+                contract: 'TransferNFTCondition',
                 network,
                 args: [
                     roles.ownerWallet,
@@ -238,7 +302,7 @@ async function initializeContracts({
 
     if (getAddress('AgreementStoreManager') &&
         getAddress('DIDRegistry') &&
-        getAddress('AccessSecretStoreCondition') &&
+        getAddress('AccessCondition') &&
         getAddress('LockRewardCondition') &&
         getAddress('EscrowReward')) {
         if (contracts.indexOf('EscrowAccessSecretStoreTemplate') > -1) {
@@ -249,7 +313,7 @@ async function initializeContracts({
                     roles.ownerWallet,
                     getAddress('AgreementStoreManager'),
                     getAddress('DIDRegistry'),
-                    getAddress('AccessSecretStoreCondition'),
+                    getAddress('AccessCondition'),
                     getAddress('LockRewardCondition'),
                     getAddress('EscrowReward')
                 ],
@@ -274,6 +338,84 @@ async function initializeContracts({
                     getAddress('ComputeExecutionCondition'),
                     getAddress('LockRewardCondition'),
                     getAddress('EscrowReward')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('AccessCondition') &&
+        getAddress('NFTHolderCondition')) {
+        if (contracts.indexOf('NFTAccessTemplate') > -1) {
+            addressBook.NFTAccessTemplate = zosCreate({
+                contract: 'NFTAccessTemplate',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('NFTHolderCondition'),
+                    getAddress('AccessCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('LockPaymentCondition') &&
+        getAddress('TransferNFTCondition') &&
+        getAddress('EscrowPaymentCondition')) {
+        if (contracts.indexOf('NFTSalesTemplate') > -1) {
+            addressBook.NFTSalesTemplate = zosCreate({
+                contract: 'NFTSalesTemplate',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('LockPaymentCondition'),
+                    getAddress('TransferNFTCondition'),
+                    getAddress('EscrowPaymentCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('LockPaymentCondition') &&
+        getAddress('TransferDIDOwnershipCondition') &&
+        getAddress('EscrowPaymentCondition')) {
+        if (contracts.indexOf('DIDSalesTemplate') > -1) {
+            addressBook.DIDSalesTemplate = zosCreate({
+                contract: 'DIDSalesTemplate',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('LockPaymentCondition'),
+                    getAddress('TransferDIDOwnershipCondition'),
+                    getAddress('EscrowPaymentCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('LockPaymentCondition') &&
+        getAddress('TransferNFTCondition') &&
+        getAddress('EscrowPaymentCondition')) {
+        if (contracts.indexOf('NFTSalesTemplate') > -1) {
+            addressBook.NFTSalesTemplate = zosCreate({
+                contract: 'NFTSalesTemplate',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('LockPaymentCondition'),
+                    getAddress('TransferNFTCondition'),
+                    getAddress('EscrowPaymentCondition')
                 ],
                 verbose
             })

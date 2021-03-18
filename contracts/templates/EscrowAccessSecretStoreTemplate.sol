@@ -6,7 +6,7 @@ pragma solidity 0.6.12;
 
 
 import './BaseEscrowTemplate.sol';
-import '../conditions/AccessSecretStoreCondition.sol';
+import '../conditions/AccessCondition.sol';
 import '../conditions/LockRewardCondition.sol';
 import '../conditions/rewards/EscrowReward.sol';
 import '../registry/DIDRegistry.sol';
@@ -38,7 +38,7 @@ import '../registry/DIDRegistry.sol';
 contract EscrowAccessSecretStoreTemplate is BaseEscrowTemplate {
 
     DIDRegistry internal didRegistry;
-    AccessSecretStoreCondition internal accessSecretStoreCondition;
+    AccessCondition internal accessSecretStoreCondition;
     LockRewardCondition internal lockRewardCondition;
     EscrowReward internal escrowReward;
 
@@ -88,7 +88,7 @@ contract EscrowAccessSecretStoreTemplate is BaseEscrowTemplate {
             _didRegistryAddress
         );
 
-        accessSecretStoreCondition = AccessSecretStoreCondition(
+        accessSecretStoreCondition = AccessCondition(
             _accessSecretStoreConditionAddress
         );
 

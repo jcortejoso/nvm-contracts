@@ -1,6 +1,5 @@
 pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
-// This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -12,7 +11,7 @@ import '../agreements/AgreementStoreManager.sol';
 
 /**
  * @title Compute Execution Condition
- * @author Keyko & Ocean Protocol
+ * @author Keyko
  *
  * @dev Implementation of the Compute Execution Condition
  *      This condition is meant to be a signal in which triggers

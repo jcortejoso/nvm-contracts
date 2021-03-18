@@ -17,6 +17,7 @@ const {
     upgrade
 } = require('./Upgrader')
 
+// const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
 
 const DIDRegistryChangeFunctionSignature = artifacts.require('DIDRegistryChangeFunctionSignature')
@@ -37,8 +38,10 @@ contract('DIDRegistry', (accounts) => {
     async function setupTest({
         did = constants.did[0],
         checksum = testUtils.generateId(),
-        value = 'https://example.com/did/ocean/test-attr-example.txt'
+        value = 'https://nevermined.io/did/test.txt'
     } = {}) {
+        //        const didRegistryLibrary = await DIDRegistryLibrary.new()
+        //        await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
         const DIDRegistryInstance = await DIDRegistry.at(DIDRegistryProxyAddress)
 
         const result = await DIDRegistryInstance.registerAttribute(

@@ -5,9 +5,9 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 // Contain upgraded version of the contracts for test
-import '../../registry/DIDRegistry.sol';
+import '../../registry/DIDFactory.sol';
 
-contract DIDRegistryChangeInStorage is DIDRegistry {
+contract DIDRegistryChangeInStorage is DIDFactory {
 
     // New variables should be added after the last variable
     // Old variables should be kept even if unused

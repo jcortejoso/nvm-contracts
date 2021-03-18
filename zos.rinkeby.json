@@ -1,6 +1,6 @@
 {
   "contracts": {
-    "AccessSecretStoreCondition": {
+    "AccessCondition": {
       "address": "0x19E172Edc10E9954889e24f0417b681a5c49c532",
       "constructorCode": "608060405234801561001057600080fd5b50611151806100206000396000f3fe",
       "bodyBytecodeHash": "7f1a761c4454c7b5b3aee37531061f80f8ebe92eea82a933d771b26aceb2a65e",
@@ -36,10 +36,10 @@
           "kind": "array",
           "label": "uint256[49]"
         },
-        "t_struct<AccessSecretStoreCondition.DocumentPermission>": {
-          "id": "t_struct<AccessSecretStoreCondition.DocumentPermission>",
+        "t_struct<AccessCondition.DocumentPermission>": {
+          "id": "t_struct<AccessCondition.DocumentPermission>",
           "kind": "struct",
-          "label": "AccessSecretStoreCondition.DocumentPermission",
+          "label": "AccessCondition.DocumentPermission",
           "members": [
             {
               "label": "agreementIdDeprecated",
@@ -66,10 +66,10 @@
           "label": "mapping(key => bool)",
           "kind": "mapping"
         },
-        "t_mapping<t_struct<AccessSecretStoreCondition.DocumentPermission>>": {
-          "id": "t_mapping<t_struct<AccessSecretStoreCondition.DocumentPermission>>",
-          "valueType": "t_struct<AccessSecretStoreCondition.DocumentPermission>",
-          "label": "mapping(key => AccessSecretStoreCondition.DocumentPermission)",
+        "t_mapping<t_struct<AccessCondition.DocumentPermission>>": {
+          "id": "t_mapping<t_struct<AccessCondition.DocumentPermission>>",
+          "valueType": "t_struct<AccessCondition.DocumentPermission>",
+          "label": "mapping(key => AccessCondition.DocumentPermission)",
           "kind": "mapping"
         }
       },
@@ -123,16 +123,16 @@
           "src": "1127:52:8"
         },
         {
-          "contract": "AccessSecretStoreCondition",
-          "path": "contracts/conditions/AccessSecretStoreCondition.sol",
+          "contract": "AccessCondition",
+          "path": "contracts/conditions/AccessCondition.sol",
           "label": "documentPermissions",
           "astId": 1308,
-          "type": "t_mapping<t_struct<AccessSecretStoreCondition.DocumentPermission>>",
+          "type": "t_mapping<t_struct<AccessCondition.DocumentPermission>>",
           "src": "1253:66:6"
         },
         {
-          "contract": "AccessSecretStoreCondition",
-          "path": "contracts/conditions/AccessSecretStoreCondition.sol",
+          "contract": "AccessCondition",
+          "path": "contracts/conditions/AccessCondition.sol",
           "label": "agreementStoreManager",
           "astId": 1310,
           "type": "t_address",
@@ -2959,7 +2959,7 @@
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
     ],
-    "@nevermined-io/contracts/AccessSecretStoreCondition": [
+    "@nevermined-io/contracts/AccessCondition": [
       {
         "address": "0xA5910a44C88cF4B576F11b07719C8dD05b5a78a5",
         "version": "v0.6.0",

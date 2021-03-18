@@ -12,11 +12,11 @@ const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const DIDRegistry = artifacts.require('DIDRegistry')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
-const AccessSecretStoreCondition = artifacts.require('AccessSecretStoreCondition')
+const AccessCondition = artifacts.require('AccessCondition')
 
 const common = require('./common')
 
-contract('AccessSecretStoreCondition', (accounts) => {
+contract('AccessCondition', (accounts) => {
     describe('deploy and setup', () => {
         it('contract should deploy', async () => {
             const epochLibrary = await EpochLibrary.new()
@@ -29,9 +29,9 @@ contract('AccessSecretStoreCondition', (accounts) => {
             await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             const didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(accounts[0])
-            const accessSecretStoreCondition = await AccessSecretStoreCondition.new()
+            const accessCondition = await AccessCondition.new()
 
-            await accessSecretStoreCondition.methods['initialize(address,address,address)'](
+            await accessCondition.methods['initialize(address,address,address)'](
                 accounts[0],
                 conditionStoreManager.address,
                 agreementStoreManager.address,
@@ -40,44 +40,37 @@ contract('AccessSecretStoreCondition', (accounts) => {
         })
     })
 
-    describe('renounce permission', () => {
-        it('should DID owner or provider renounce permission', async () => {
+    describe('grant permission', () => {
+        it('should DID owner or provider grant permission', async () => {
             const {
                 DIDProvider,
                 did,
-                accessSecretStoreCondition
+                accessCondition
 
             } = await common.setupTest({ accounts: accounts, registerDID: true })
 
             const documentId = did
             const grantee = accounts[1]
 
-            await accessSecretStoreCondition.grantPermission(
-                grantee,
-                documentId,
-                { from: DIDProvider }
-            )
-
-            await accessSecretStoreCondition.renouncePermission(
+            await accessCondition.grantPermission(
                 grantee,
                 documentId,
                 { from: DIDProvider }
             )
 
             assert.strictEqual(
-                await accessSecretStoreCondition.checkPermissions(
+                await accessCondition.checkPermissions(
                     grantee,
                     documentId
                 ),
-                false
+                true
             )
         })
 
-        it('should fail to renounce if not a DID owner or provider', async () => {
+        it('should fail to grant if not a DID owner or provider', async () => {
             const {
-                DIDProvider,
                 did,
-                accessSecretStoreCondition
+                accessCondition
 
             } = await common.setupTest({ accounts: accounts, registerDID: true })
 
@@ -85,27 +78,13 @@ contract('AccessSecretStoreCondition', (accounts) => {
             const grantee = accounts[1]
             const someone = accounts[7]
 
-            await accessSecretStoreCondition.grantPermission(
-                grantee,
-                documentId,
-                { from: DIDProvider }
-            )
-
             await assert.isRejected(
-                accessSecretStoreCondition.renouncePermission(
+                accessCondition.grantPermission(
                     grantee,
                     documentId,
                     { from: someone }
                 ),
                 'Invalid DID owner/provider'
-            )
-
-            assert.strictEqual(
-                await accessSecretStoreCondition.checkPermissions(
-                    grantee,
-                    documentId
-                ),
-                true
             )
         })
     })

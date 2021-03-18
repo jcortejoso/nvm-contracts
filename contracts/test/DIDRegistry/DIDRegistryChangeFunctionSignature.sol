@@ -5,9 +5,9 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 // Contain upgraded version of the contracts for test
-import '../../registry/DIDRegistry.sol';
+import '../../registry/DIDFactory.sol';
 
-contract DIDRegistryChangeFunctionSignature is DIDRegistry {
+contract DIDRegistryChangeFunctionSignature is DIDFactory {
 
     // swap _checksum with _did
     function registerAttribute (
@@ -22,7 +22,7 @@ contract DIDRegistryChangeFunctionSignature is DIDRegistry {
         require(
             didRegisterList.didRegisters[_did].owner == address(0x0) ||
             didRegisterList.didRegisters[_did].owner == msg.sender,
-            'Attributes must be registered by the DID owners.'
+            'Only DID Owners'
         );
 
         require(

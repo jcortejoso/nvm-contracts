@@ -32,8 +32,6 @@ contract('EscrowReward constructor', (accounts) => {
     async function setupTest({
         conditionId = testUtils.generateId(),
         conditionType = testUtils.generateId()
-        //        createRole = accounts[0],
-        //        owner = accounts[1]
     } = {}) {
         if (!escrowReward) {
             epochLibrary = await EpochLibrary.new()

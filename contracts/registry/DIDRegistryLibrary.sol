@@ -1,13 +1,12 @@
 pragma solidity 0.6.12;
 // Copyright 2020 Keyko GmbH.
-// This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
 /**
  * @title DID Registry Library
- * @author Keyko & Ocean Protocol
+ * @author Keyko
  *
  * @dev All function calls are currently implemented without side effects
  */
@@ -17,6 +16,8 @@ library DIDRegistryLibrary {
     struct DIDRegister {
         // DIDRegistry entry owner
         address owner;
+        // DIDRegistry original creator, this can't be modified after the asset is registered 
+        address creator;        
         // Checksum associated to the DID
         bytes32 lastChecksum;
         // URL to the metadata associated to the DID
@@ -28,7 +29,15 @@ library DIDRegistryLibrary {
         // Providers able to manage this entry
         address[] providers;
         // Delegates able to register provenance events on behalf of the owner or providers
-        address[] delegates;  
+        address[] delegates;
+        // The NFTs supply associated to the DID 
+        uint256 nftSupply;        
+        // The max number of NFTs associated to the DID that can be minted 
+        uint256 mintCap;
+        // The percent of the sale that is going back to the original `creator` in the secondary market  
+        uint8 royalties;  
+        // Flag to control if NFTs config was already initialized
+        bool nftInitialized;
     }
 
     // List of DID's registered in the system
@@ -55,24 +64,125 @@ library DIDRegistryLibrary {
     returns (uint size)
     {
         address didOwner = _self.didRegisters[_did].owner;
-
+        address creator = _self.didRegisters[_did].creator;
+        
         if (didOwner == address(0)) {
             didOwner = msg.sender;
             _self.didRegisterIds.push(_did);
+            creator = didOwner;
         }
 
         _self.didRegisters[_did] = DIDRegister({
             owner: didOwner,
+            creator: creator,
             lastChecksum: _checksum,
             url: _url,
             lastUpdatedBy: msg.sender,
             blockNumberUpdated: block.number,
             providers: new address[](0),
-            delegates: new address[](0)
+            delegates: new address[](0),
+            nftSupply: 0,
+            mintCap: 0,
+            royalties: 0,
+            nftInitialized: false
         });
 
         return _self.didRegisterIds.length;
     }
+
+    /**
+     * @notice initializeNftConfig creates the initial setup of NFTs minting and royalties distribution.
+     * After this initial setup, this data can't be changed anymore for the DID given, even for the owner of the DID.
+     * The reason of this is to avoid minting additional NFTs after the initial agreement, what could affect the 
+     * valuation of NFTs of a DID already created. 
+     * @dev update the DID registry providers list by adding the mintCap and royalties configuration
+     * @param _self refers to storage pointer
+     * @param _did refers to decentralized identifier (a byte32 length ID)
+     * @param _cap refers to the mint cap
+     * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
+     *        The royalties in secondary market for the creator should be between 0% >= x < 100%
+     */        
+    function initializeNftConfig(
+        DIDRegisterList storage _self,
+        bytes32 _did,
+        uint256 _cap,
+        uint8 _royalties
+    )
+    internal
+    {
+        require(_self.didRegisters[_did].owner != address(0), 'DID not stored');
+        
+        require(!_self.didRegisters[_did].nftInitialized, 'NFTs only can be initialized once');
+    
+        require(_cap >= 0, 'Cap must be >=0');
+    
+        require(_royalties >= 0 && _royalties < 100, 'Invalid royalties number');
+
+        _self.didRegisters[_did].mintCap = _cap;
+        _self.didRegisters[_did].royalties = _royalties;
+        _self.didRegisters[_did].nftInitialized = true;
+    }
+
+
+    /**
+     * @notice areRoyaltiesValid checks if for a given DID and rewards distribution, this allocate the  
+     * original creator royalties properly
+     * @param _self refers to storage pointer
+     * @param _did refers to decentralized identifier (a byte32 length ID)
+     * @param _amounts refers to the amounts to reward
+     * @param _receivers refers to the receivers of rewards
+     * @return true if the rewards distribution respect the original creator royalties
+     */
+    function areRoyaltiesValid(
+        DIDRegisterList storage _self,
+        bytes32 _did,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    )
+    internal
+    view
+    returns (bool)
+    {
+        // If (did.creator == did.owner) - It means the DID is still a first sale so no royalties needed
+        // returns true;
+        if (_self.didRegisters[_did].owner == _self.didRegisters[_did].creator)
+            return true;
+        
+        // If there are no royalties everything is good
+        if (_self.didRegisters[_did].royalties == 0)
+            return true;
+
+        // If (sum(_amounts) == 0) - It means there is no payment so everything is valid
+        // returns true;
+        uint256 _totalAmount = 0;
+        for(uint i = 0; i < _amounts.length; i++)
+            _totalAmount = _totalAmount + _amounts[i];
+        if (_totalAmount == 0)
+            return true;
+        
+        // If (_did.creator is not in _receivers) - It means the original creator is not included as part of the payment
+        // return false;
+        bool found = false;
+        uint256 index;
+        for (index = 0; index < _receivers.length; index++) {
+            if (_self.didRegisters[_did].creator == _receivers[index])  {
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found) // The creator royalties are not part of the rewards
+            return false;
+        
+        // If the amount to receive by the creator is lower than royalties the calculation is not valid
+        // return false;
+        uint256 _requiredRoyalties = ((_totalAmount * _self.didRegisters[_did].royalties) / 100);
+
+        // Check if royalties are enough
+        // Are we paying enough royalties in the secondary market to the original creator?
+        return (_amounts[index] >= _requiredRoyalties);
+    }
+
 
     /**
      * @notice addProvider add provider to DID registry
@@ -89,15 +199,10 @@ library DIDRegistryLibrary {
     internal
     {
         require(
-            provider != address(0),
-            'Invalid asset provider address'
+            provider != address(0) && provider != address(this),
+            'Invalid provider address'
         );
-
-        require(
-            provider != address(this),
-            'DID provider should not be this contract address'
-        );
-
+        
         if (!isProvider(_self, _did, provider)) {
             _self.didRegisters[_did].providers.push(provider);
         }
@@ -171,15 +276,13 @@ library DIDRegistryLibrary {
     view
     returns(bool)
     {
-        int256 i = getProviderIndex(_self, _did, _provider);
-
-        if (i == -1) {
+        if (getProviderIndex(_self, _did, _provider) == -1)
             return false;
-        }
-
         return true;
     }
 
+
+    
     /**
      * @notice getProviderIndex get the index of a provider
      * @param _self refers to storage pointer
@@ -223,13 +326,8 @@ library DIDRegistryLibrary {
     internal
     {
         require(
-            delegate != address(0),
-            'Invalid provenance delegate address'
-        );
-
-        require(
-            delegate != address(this),
-            'DID  provenance delegate should not be this contract address'
+            delegate != address(0) && delegate != address(this),
+            'Invalid delegate address'
         );
 
         if (!isDelegate(_self, _did, delegate)) {
@@ -285,12 +383,8 @@ library DIDRegistryLibrary {
     view
     returns(bool)
     {
-        int256 i = getDelegateIndex(_self, _did, _delegate);
-
-        if (i == -1) {
+        if (getDelegateIndex(_self, _did, _delegate) == -1)
             return false;
-        }
-
         return true;
     }
 
@@ -308,7 +402,7 @@ library DIDRegistryLibrary {
     )
     private
     view
-    returns(int256 )
+    returns(int256)
     {
         for (uint256 i = 0;
             i < _self.didRegisters[_did].delegates.length; i++) {

@@ -141,18 +141,6 @@ contract('DIDRegistry', (accounts) => {
                 constants.registry.error.onlyDIDOwner
             )
         })
-
-        it('Should not allow url value gt 2048 bytes long', async () => {
-            const did = testUtils.generateId()
-            const checksum = testUtils.generateId()
-            // value is about 2049
-            const value = 'dabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345xdfwfg'
-
-            await assert.isRejected(
-                didRegistry.registerAttribute(did, checksum, providers, value),
-                constants.registry.error.invalidValueSize
-            )
-        })
     })
 
     describe('get DIDRegister', () => {
@@ -293,7 +281,7 @@ contract('DIDRegistry', (accounts) => {
 
             await assert.isRejected(
                 didRegistry.registerAttribute(did, checksum, [didRegistry.address], value),
-                'DID provider should not be this contract address'
+                'Invalid provider address'
             )
         })
     })
@@ -353,7 +341,7 @@ contract('DIDRegistry', (accounts) => {
                     did,
                     newDIDOwner
                 ),
-                'Invalid DID owner'
+                'Only DID Owner allowed'
             )
         })
     })
@@ -416,7 +404,7 @@ contract('DIDRegistry', (accounts) => {
                         from: newDIDOwner
                     }
                 ),
-                'Invalid DID owner'
+                'Only DID Owner allowed'
             )
             // act & assert
             assert.strictEqual(
@@ -634,7 +622,7 @@ contract('DIDRegistry', (accounts) => {
                 didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, [], '', {
                     from: someone
                 }),
-                'Invalid DID Owner, Provider or Delegate can perform this operation.'
+                'Only owner, provider or delegate'
             )
         })
     })
@@ -717,7 +705,7 @@ contract('DIDRegistry', (accounts) => {
                 await web3.eth.sign(_message, owner)
             )
 
-            const valid = await didRegistry.provenanceSignatureIsCorrect(
+            const valid = await common.provenanceSignatureIsCorrect(
                 owner, _messageHash, _signature)
 
             assert.isOk(valid, 'Signature doesnt match')
@@ -733,7 +721,7 @@ contract('DIDRegistry', (accounts) => {
                 await web3.eth.sign(_message, delegates[1])
             )
 
-            const valid = await didRegistry.provenanceSignatureIsCorrect(
+            const valid = await common.provenanceSignatureIsCorrect(
                 delegates[1], _messageHash, _signature)
 
             assert.isOk(valid, 'Signature doesnt match')
@@ -760,7 +748,7 @@ contract('DIDRegistry', (accounts) => {
                 await web3.eth.sign(_message, delegates[1])
             )
 
-            assert.isOk(await didRegistry.provenanceSignatureIsCorrect(
+            assert.isOk(await common.provenanceSignatureIsCorrect(
                 delegates[1], testUtils.toEthSignedMessageHash(_message), _signatureDelegate))
 
             const result = await didRegistry.actedOnBehalf(

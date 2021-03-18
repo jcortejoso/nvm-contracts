@@ -1,5 +1,5 @@
 
-# contract: NftHolderCondition
+# contract: NFTHolderCondition
 
 Documentation:
 ```

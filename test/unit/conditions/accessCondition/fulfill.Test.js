@@ -12,13 +12,13 @@ const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const DIDRegistry = artifacts.require('DIDRegistry')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
-const AccessSecretStoreCondition = artifacts.require('AccessSecretStoreCondition')
+const AccessCondition = artifacts.require('AccessCondition')
 
 const constants = require('../../../helpers/constants.js')
 const testUtils = require('../../../helpers/utils.js')
 const common = require('./common')
 
-contract('AccessSecretStoreCondition constructor', (accounts) => {
+contract('AccessCondition constructor', (accounts) => {
     describe('deploy and setup', () => {
         it('contract should deploy', async () => {
             const epochLibrary = await EpochLibrary.new()
@@ -31,9 +31,9 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
             await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             const didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(accounts[0])
-            const accessSecretStoreCondition = await AccessSecretStoreCondition.new()
+            const accessCondition = await AccessCondition.new()
 
-            await accessSecretStoreCondition.methods['initialize(address,address,address)'](
+            await accessCondition.methods['initialize(address,address,address)'](
                 accounts[0],
                 conditionStoreManager.address,
                 agreementStoreManager.address,
@@ -45,7 +45,7 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
     describe('fulfill non existing condition', () => {
         it('should not fulfill if condition does not exist', async () => {
             const {
-                accessSecretStoreCondition
+                accessCondition
             } = await common.setupTest({ accounts: accounts })
 
             const agreementId = constants.bytes32.one
@@ -53,7 +53,7 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
             const grantee = accounts[1]
 
             await assert.isRejected(
-                accessSecretStoreCondition.fulfill(agreementId, documentId, grantee),
+                accessCondition.fulfill(agreementId, documentId, grantee),
                 'Invalid DID owner/provider'
             )
         })
@@ -66,7 +66,7 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
                 agreementStoreManager,
                 conditionStoreManager,
                 templateStoreManager,
-                accessSecretStoreCondition
+                accessCondition
 
             } = await common.setupTest({ accounts: accounts, registerDID: true })
 
@@ -78,12 +78,12 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
-            const hashValues = await accessSecretStoreCondition.hashValues(documentId, grantee)
-            const conditionId = await accessSecretStoreCondition.generateId(agreementId, hashValues)
+            const hashValues = await accessCondition.hashValues(documentId, grantee)
+            const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: constants.did[0],
-                conditionTypes: [accessSecretStoreCondition.address],
+                conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
                 timeOuts: [2]
@@ -95,7 +95,7 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
                 { from: templateId }
             )
 
-            const result = await accessSecretStoreCondition.fulfill(agreementId, documentId, grantee)
+            const result = await accessCondition.fulfill(agreementId, documentId, grantee)
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
@@ -116,7 +116,7 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
                 did,
                 agreementStoreManager,
                 templateStoreManager,
-                accessSecretStoreCondition
+                accessCondition
 
             } = await common.setupTest({ accounts: accounts, registerDID: true })
 
@@ -128,12 +128,12 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
-            const hashValues = await accessSecretStoreCondition.hashValues(documentId, grantee)
-            const conditionId = await accessSecretStoreCondition.generateId(agreementId, hashValues)
+            const hashValues = await accessCondition.hashValues(documentId, grantee)
+            const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: constants.did[0],
-                conditionTypes: [accessSecretStoreCondition.address],
+                conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
                 timeOuts: [2]
@@ -146,7 +146,7 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
             )
 
             await assert.isRejected(
-                accessSecretStoreCondition.fulfill(agreementId, documentId, grantee, { from: accounts[1] }),
+                accessCondition.fulfill(agreementId, documentId, grantee, { from: accounts[1] }),
                 'Invalid DID owner/provider'
             )
         })
@@ -156,7 +156,7 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
                 did,
                 agreementStoreManager,
                 templateStoreManager,
-                accessSecretStoreCondition
+                accessCondition
 
             } = await common.setupTest({ accounts: accounts, registerDID: true })
 
@@ -168,12 +168,12 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
-            const hashValues = await accessSecretStoreCondition.hashValues(documentId, grantee)
-            const conditionId = await accessSecretStoreCondition.generateId(agreementId, hashValues)
+            const hashValues = await accessCondition.hashValues(documentId, grantee)
+            const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: constants.did[0],
-                conditionTypes: [accessSecretStoreCondition.address],
+                conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
                 timeOuts: [2]
@@ -185,10 +185,10 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
                 { from: templateId }
             )
 
-            await accessSecretStoreCondition.fulfill(agreementId, documentId, grantee)
+            await accessCondition.fulfill(agreementId, documentId, grantee)
 
             await assert.isRejected(
-                accessSecretStoreCondition.fulfill(agreementId, documentId, grantee),
+                accessCondition.fulfill(agreementId, documentId, grantee),
                 constants.condition.state.error.invalidStateTransition
             )
         })
@@ -201,7 +201,7 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
                 agreementStoreManager,
                 conditionStoreManager,
                 templateStoreManager,
-                accessSecretStoreCondition
+                accessCondition
 
             } = await common.setupTest({ accounts: accounts, registerDID: true })
 
@@ -215,12 +215,12 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
-            const hashValues = await accessSecretStoreCondition.hashValues(documentId, grantee)
-            const conditionId = await accessSecretStoreCondition.generateId(agreementId, hashValues)
+            const hashValues = await accessCondition.hashValues(documentId, grantee)
+            const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: constants.did[0],
-                conditionTypes: [accessSecretStoreCondition.address],
+                conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
                 timeOuts: [timeOut]
@@ -235,7 +235,7 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
             const storedCondition = await conditionStoreManager.getCondition(conditionId)
             // TODO - containSubset
             expect(storedCondition.typeRef)
-                .to.equal(accessSecretStoreCondition.address)
+                .to.equal(accessCondition.address)
             expect(storedCondition.timeLock.toNumber())
                 .to.equal(timeLock)
             expect(storedCondition.timeOut.toNumber())
@@ -249,7 +249,7 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
                 did,
                 agreementStoreManager,
                 templateStoreManager,
-                accessSecretStoreCondition
+                accessCondition
 
             } = await common.setupTest({ accounts: accounts, registerDID: true })
 
@@ -263,12 +263,12 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
-            const hashValues = await accessSecretStoreCondition.hashValues(documentId, grantee)
-            const conditionId = await accessSecretStoreCondition.generateId(agreementId, hashValues)
+            const hashValues = await accessCondition.hashValues(documentId, grantee)
+            const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: constants.did[0],
-                conditionTypes: [accessSecretStoreCondition.address],
+                conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
                 timeOuts: [timeOut]
@@ -280,10 +280,10 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
                 { from: templateId }
             )
 
-            await accessSecretStoreCondition.fulfill(agreementId, documentId, grantee)
+            await accessCondition.fulfill(agreementId, documentId, grantee)
 
             assert.strictEqual(
-                await accessSecretStoreCondition.checkPermissions(
+                await accessCondition.checkPermissions(
                     DIDProvider,
                     documentId
                 ),
@@ -295,7 +295,7 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
                 did,
                 agreementStoreManager,
                 templateStoreManager,
-                accessSecretStoreCondition
+                accessCondition
 
             } = await common.setupTest({ accounts: accounts, registerDID: true })
 
@@ -309,18 +309,18 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId)
 
-            const hashValues = await accessSecretStoreCondition.hashValues(documentId, grantee)
-            const conditionId = await accessSecretStoreCondition.generateId(agreementId, hashValues)
+            const hashValues = await accessCondition.hashValues(documentId, grantee)
+            const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: constants.did[0],
-                conditionTypes: [accessSecretStoreCondition.address],
+                conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
                 timeOuts: [timeOut]
             }
 
-            expect(await accessSecretStoreCondition.checkPermissions(grantee, documentId))
+            expect(await accessCondition.checkPermissions(grantee, documentId))
                 .to.equal(false)
 
             await agreementStoreManager.createAgreement(
@@ -329,12 +329,12 @@ contract('AccessSecretStoreCondition constructor', (accounts) => {
                 { from: templateId }
             )
 
-            expect(await accessSecretStoreCondition.checkPermissions(grantee, documentId))
+            expect(await accessCondition.checkPermissions(grantee, documentId))
                 .to.equal(false)
 
-            await accessSecretStoreCondition.fulfill(agreementId, documentId, grantee)
+            await accessCondition.fulfill(agreementId, documentId, grantee)
 
-            expect(await accessSecretStoreCondition.checkPermissions(grantee, documentId))
+            expect(await accessCondition.checkPermissions(grantee, documentId))
                 .to.equal(true)
         })
     })

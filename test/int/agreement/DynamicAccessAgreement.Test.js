@@ -8,8 +8,8 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const DynamicAccessTemplate = artifacts.require('DynamicAccessTemplate')
-const AccessSecretStoreCondition = artifacts.require('AccessSecretStoreCondition')
-const NftHolderCondition = artifacts.require('NftHolderCondition')
+const AccessCondition = artifacts.require('AccessCondition')
+const NFTHolderCondition = artifacts.require('NFTHolderCondition')
 
 const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
@@ -24,6 +24,11 @@ contract('Dynamic Access Template integration test', (accounts) => {
         dynamicAccessTemplate,
         accessSecretStoreCondition,
         nftHolderCondition
+
+    const Activities = {
+        GENERATED: '0x1',
+        USED: '0x2'
+    }
 
     async function setupTest({
         deployer = accounts[8],
@@ -60,7 +65,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
             { from: deployer }
         )
 
-        accessSecretStoreCondition = await AccessSecretStoreCondition.new()
+        accessSecretStoreCondition = await AccessCondition.new()
 
         await accessSecretStoreCondition.methods['initialize(address,address,address)'](
             owner,
@@ -69,7 +74,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
             { from: owner }
         )
 
-        nftHolderCondition = await NftHolderCondition.new()
+        nftHolderCondition = await NFTHolderCondition.new()
         await nftHolderCondition.initialize(
             owner,
             conditionStoreManager.address,
@@ -135,7 +140,9 @@ contract('Dynamic Access Template integration test', (accounts) => {
             const { agreementId, agreement, holder, receiver, nftAmount, checksum, url } = await prepareAgreement()
 
             // register DID
-            await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
+            //            await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
+            await didRegistry.registerMintableDID(
+                agreement.did, checksum, [], url, 10, 0, Activities.GENERATED, '', { from: receiver })
 
             // Mint and Transfer
             await didRegistry.mint(agreement.did, 10, { from: receiver })

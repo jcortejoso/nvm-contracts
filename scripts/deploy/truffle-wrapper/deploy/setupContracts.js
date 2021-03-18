@@ -127,6 +127,81 @@ async function setupContracts({
             })
         }
 
+        if (addressBook.NFTAccessTemplate) {
+            if (verbose) {
+                console.log(
+                    `Proposing template ${addressBook.NFTAccessTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await TemplateStoreManagerInstance.proposeTemplate(
+                addressBook.NFTAccessTemplate,
+                { from: roles.deployer }
+            )
+
+            if (verbose) {
+                console.log(
+                    `Approving template ${addressBook.NFTAccessTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await approveTemplate({
+                TemplateStoreManagerInstance,
+                roles,
+                templateAddress: addressBook.NFTAccessTemplate
+            })
+        }
+
+        if (addressBook.DIDSalesTemplate) {
+            if (verbose) {
+                console.log(
+                    `Proposing template ${addressBook.DIDSalesTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await TemplateStoreManagerInstance.proposeTemplate(
+                addressBook.DIDSalesTemplate,
+                { from: roles.deployer }
+            )
+
+            if (verbose) {
+                console.log(
+                    `Approving template ${addressBook.DIDSalesTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await approveTemplate({
+                TemplateStoreManagerInstance,
+                roles,
+                templateAddress: addressBook.DIDSalesTemplate
+            })
+        }
+
+        if (addressBook.NFTSalesTemplate) {
+            if (verbose) {
+                console.log(
+                    `Proposing template ${addressBook.NFTSalesTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await TemplateStoreManagerInstance.proposeTemplate(
+                addressBook.NFTSalesTemplate,
+                { from: roles.deployer }
+            )
+
+            if (verbose) {
+                console.log(
+                    `Approving template ${addressBook.NFTSalesTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await approveTemplate({
+                TemplateStoreManagerInstance,
+                roles,
+                templateAddress: addressBook.NFTSalesTemplate
+            })
+        }
+
         await transferOwnership({
             ContractInstance: TemplateStoreManagerInstance,
             name: TemplateStoreManager.contractName,
@@ -156,6 +231,29 @@ async function setupContracts({
         await transferOwnership({
             ContractInstance: ConditionStoreManagerInstance,
             name: ConditionStoreManager.contractName,
+            roles,
+            verbose
+        })
+    }
+
+    if (addressBook.TransferNFTCondition && addressBook.DIDRegistry) {
+        const DIDRegistry = artifacts.require('DIDRegistry')
+        const DIDRegistryInstance =
+            await DIDRegistry.at(addressBook.DIDRegistry)
+
+        console.log('TransferNFTCondition : ' + addressBook.TransferNFTCondition)
+        await DIDRegistryInstance.setProxyApproval(
+            addressBook.TransferNFTCondition, true, { from: roles.deployer })
+    }
+
+    if (addressBook.DIDRegistry) {
+        const DIDRegistry = artifacts.require('DIDRegistry')
+        const DIDRegistryInstance =
+            await DIDRegistry.at(addressBook.DIDRegistry)
+
+        await transferOwnership({
+            ContractInstance: DIDRegistryInstance,
+            name: DIDRegistry.contractName,
             roles,
             verbose
         })

@@ -4,7 +4,7 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
-import './Condition.sol';
+import '../Condition.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
 
 /**
@@ -14,11 +14,11 @@ import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgrade
  *
  * @dev Implementation of the Nft Holder Condition
  */
-contract NftHolderCondition is Condition {
+contract NFTHolderCondition is Condition {
 
     ERC1155BurnableUpgradeable private nftRegistry;
     
-    bytes32 constant public CONDITION_TYPE = keccak256('NftHolderCondition');
+    bytes32 constant public CONDITION_TYPE = keccak256('NFTHolderCondition');
 
     event Fulfilled(
         bytes32 indexed _agreementId,

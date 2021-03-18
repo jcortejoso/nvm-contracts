@@ -21,7 +21,7 @@ There are several folders and each includes solidity source files for each modul
         - [Hash Lock Condition](HashLockCondition.md)
         - [Lock Reward Condition](LockRewardCondition.md)
         - [Sign Condition](SignCondition.md)
-        - [Access Secret Store Condition](AccessSecretStoreCondition.md)
+        - [Access Secret Store Condition](AccessCondition.md)
         - [Whitelisting Condition](WhitelistingCondition.md)
         - [Threshold Condition](ThresholdCondition.md)
         - [Compute Execution Condition](ComputeExecutionCondition.md)

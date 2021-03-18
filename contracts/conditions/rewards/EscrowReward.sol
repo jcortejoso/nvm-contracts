@@ -27,7 +27,7 @@ contract EscrowReward is Reward {
         bytes32 _conditionId,
         uint256[] _amounts
     );
-    
+
     /**
      * @notice initialize init the 
      *       contract with the following parameters
@@ -55,7 +55,7 @@ contract EscrowReward is Reward {
         );
         token = ERC20Upgradeable(_tokenAddress);
     }
-    
+
 
     /**
      * @notice hashValues generates the hash of condition inputs 
@@ -169,13 +169,13 @@ contract EscrowReward is Reward {
         );
 
         ConditionStoreLibrary.ConditionState state = conditionStoreManager
-            .getConditionState(_releaseCondition);
+        .getConditionState(_releaseCondition);
 
         if (state == ConditionStoreLibrary.ConditionState.Fulfilled)
         {
             state = _transferAndFulfill(id, _receivers, _amounts);
             emit Fulfilled(_agreementId, _receivers, id, _amounts);
-                
+
         } else if (state == ConditionStoreLibrary.ConditionState.Aborted)
         {
             uint256[] memory _totalAmounts = new uint256[](1);
@@ -229,6 +229,3 @@ contract EscrowReward is Reward {
     }
 
 }
-
-
-

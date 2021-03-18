@@ -4,7 +4,6 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
 
 /**
  * @title Provenance Registry Library
@@ -14,6 +13,8 @@ import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
  */
 /* solium-disable-next-line */
 abstract contract ProvenanceRegistry is OwnableUpgradeable {
+//library ProvenanceRegistry {
+    
     // solhint-disable-next-line
     function __ProvenanceRegistry_init() internal initializer {
         __Context_init_unchained();
@@ -52,7 +53,6 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
     }
     
     ProvenanceRegistryList internal provenanceRegistry;
-    
     
     // W3C Provenance Methods
     enum ProvenanceMethod {
@@ -135,14 +135,6 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         string _attributes,
         uint256 _blockNumberUpdated
     );
-    
-    
-    bytes32 constant internal NULL_B32 = '';
-    address constant internal NULL_ADDRESS = address(0x0);
-    uint constant internal NULL_INT = 0;
-    bytes internal NULL_BYTES; // solhint-disable-line
-    bytes[] internal EMPTY_LIST; // solhint-disable-line
-    
 
     /**
      * @notice create an event in the Provenance store
@@ -175,7 +167,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
 
         require(
             provenanceRegistry.list[_provId].createdBy == address(0x0),
-            'Provenance record already existing for the Provenance _provId given.'
+            'Already existing provId'
         );
 
         provenanceRegistry.list[_provId] = Provenance({
@@ -217,7 +209,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
      * @param _attributes refers to the provenance attributes
      * @return the number of the new provenance size
      */
-    function wasGeneratedBy(
+    function _wasGeneratedBy(
         bytes32 _provId,
         bytes32 _did,
         address _agentId,
@@ -228,23 +220,23 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
     virtual
     returns (bool)
     {
-
+        
         createProvenanceEntry(
             _provId,
             _did,
-            NULL_B32,
+            '',
             _agentId,
             _activityId,
-            NULL_ADDRESS,
+            address(0x0),
             ProvenanceMethod.WAS_GENERATED_BY,
             msg.sender,
-            NULL_BYTES, // No signatures between parties needed
+            new bytes(0), // No signatures between parties needed
             _attributes
         );
 
         emit WasGeneratedBy(
             _did,
-            provenanceRegistry.list[_did].createdBy,
+           msg.sender,
             _activityId,
             _provId,
             _attributes,
@@ -265,7 +257,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
      * @param _attributes refers to the provenance attributes
      * @return success true if the action was properly registered
     */
-    function used(
+    function _used(
         bytes32 _provId,
         bytes32 _did,
         address _agentId,
@@ -273,7 +265,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         bytes memory _signatureUsing,
         string memory _attributes
     )
-    public
+    internal
     virtual
     returns (bool success)
     {
@@ -281,16 +273,16 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         createProvenanceEntry(
             _provId,
             _did,
-            NULL_B32,
+            '',
             _agentId,
             _activityId,
-            NULL_ADDRESS,
+            address(0x0),
             ProvenanceMethod.USED,
             msg.sender,
             _signatureUsing,
             _attributes
         );
-
+        
         emit Used(
             _did,
             _agentId,
@@ -315,7 +307,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
      * @param _attributes refers to the provenance attributes
      * @return success true if the action was properly registered
      */
-    function wasDerivedFrom(
+    function _wasDerivedFrom(
         bytes32 _provId,
         bytes32 _newEntityDid,
         bytes32 _usedEntityDid,
@@ -323,7 +315,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         bytes32 _activityId,
         string memory _attributes
     )
-    public
+    internal
     virtual
     returns (bool success)
     {
@@ -334,10 +326,10 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
             _usedEntityDid,
             _agentId,
             _activityId,
-            NULL_ADDRESS,
+            address(0x0),
             ProvenanceMethod.WAS_DERIVED_FROM,
             msg.sender,
-            NULL_BYTES, // No signatures between parties needed
+            new bytes(0), // No signatures between parties needed
             _attributes
         );
 
@@ -364,28 +356,28 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
      * @param _attributes refers to the provenance attributes
      * @return success true if the action was properly registered
     */
-    function wasAssociatedWith(
+    function _wasAssociatedWith(
         bytes32 _provId,
         bytes32 _did,
         address _agentId,
         bytes32 _activityId,
         string memory _attributes
     )
-    public
+    internal
     virtual
     returns (bool success)
     {
-
+        
         createProvenanceEntry(
             _provId,
             _did,
-            NULL_B32,
+            '',
             _agentId,
             _activityId,
-            NULL_ADDRESS,
+            address(0x0),
             ProvenanceMethod.WAS_ASSOCIATED_WITH,
             msg.sender,
-            NULL_BYTES, // No signatures between parties needed
+            new bytes(0), // No signatures between parties needed
             _attributes
         );
 
@@ -415,7 +407,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
      * @param _attributes refers to the provenance attributes
      * @return success true if the action was properly registered
      */
-    function actedOnBehalf(
+    function _actedOnBehalf(
         bytes32 _provId,
         bytes32 _did,
         address _delegateAgentId,
@@ -424,7 +416,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         bytes memory _signatureDelegate,
         string memory _attributes
     )
-    public
+    internal
     virtual
     returns (bool success)
     {
@@ -432,7 +424,7 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
         createProvenanceEntry(
             _provId,
             _did,
-            NULL_B32,
+            '',
             _delegateAgentId,
             _activityId,
             _responsibleAgentId,
@@ -454,23 +446,5 @@ abstract contract ProvenanceRegistry is OwnableUpgradeable {
 
         return true;
     }
-
-    /**
-    * @param _agentId The address of the agent
-    * @param _hash bytes32 message, the hash is the signed message. What is recovered is the signer address.
-    * @param _signature Signatures provided by the agent
-    * @return true if the signature correspond to the agent address        
-    */
-    function provenanceSignatureIsCorrect(
-        address _agentId,
-        bytes32 _hash,
-        bytes memory _signature
-    )
-    public
-    pure
-    returns(bool)
-    {
-        return ECDSAUpgradeable.recover(_hash, _signature) == _agentId;
-    }    
     
 }

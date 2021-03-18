@@ -10,12 +10,12 @@ const EpochLibrary = artifacts.require('EpochLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
-const NftHolderCondition = artifacts.require('NftHolderCondition')
+const NFTHolderCondition = artifacts.require('NFTHolderCondition')
 
 const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
-contract('NftHolderCondition', (accounts) => {
+contract('NFTHolderCondition', (accounts) => {
     const owner = accounts[1]
     const createRole = accounts[0]
     const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
@@ -42,7 +42,7 @@ contract('NftHolderCondition', (accounts) => {
             await conditionStoreManager.initialize(owner, { from: owner })
             await conditionStoreManager.delegateCreateRole(createRole, { from: owner })
 
-            nftHolderCondition = await NftHolderCondition.new()
+            nftHolderCondition = await NFTHolderCondition.new()
             await nftHolderCondition.initialize(
                 accounts[0],
                 conditionStoreManager.address,
@@ -66,8 +66,10 @@ contract('NftHolderCondition', (accounts) => {
                 conditionId,
                 nftHolderCondition.address)
 
-            await didRegistry.registerAttribute(did, checksum, [], value, { from: owner })
+            await didRegistry.registerMintableDID(
+                did, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
+
             await didRegistry.safeTransferFrom(
                 owner, holderAddress, BigInt(did), 10, '0x', { from: owner })
 
@@ -93,8 +95,10 @@ contract('NftHolderCondition', (accounts) => {
             const holderAddress = accounts[2]
             const amount = 10
 
-            await didRegistry.registerAttribute(did, checksum, [], value, { from: owner })
+            await didRegistry.registerMintableDID(
+                did, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
+
             await didRegistry.safeTransferFrom(
                 owner, holderAddress, BigInt(did), 10, '0x', { from: owner })
 
@@ -120,8 +124,10 @@ contract('NftHolderCondition', (accounts) => {
                 conditionId,
                 nftHolderCondition.address)
 
-            await didRegistry.registerAttribute(did, checksum, [], value, { from: owner })
+            await didRegistry.registerMintableDID(
+                did, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
+
             await didRegistry.safeTransferFrom(
                 owner, holderAddress, BigInt(did), 1, '0x', { from: owner })
 
