@@ -22,7 +22,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
         conditionStoreManager,
         templateStoreManager,
         dynamicAccessTemplate,
-        accessSecretStoreCondition,
+        accessCondition,
         nftHolderCondition
 
     const Activities = {
@@ -46,7 +46,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
         ));
 
         ({
-            accessSecretStoreCondition,
+            accessCondition,
             nftHolderCondition
         } = await deployConditions(
             deployer,
@@ -65,9 +65,9 @@ contract('Dynamic Access Template integration test', (accounts) => {
             { from: deployer }
         )
 
-        accessSecretStoreCondition = await AccessCondition.new()
+        accessCondition = await AccessCondition.new()
 
-        await accessSecretStoreCondition.methods['initialize(address,address,address)'](
+        await accessCondition.methods['initialize(address,address,address)'](
             owner,
             conditionStoreManager.address,
             agreementStoreManager.address,
@@ -105,7 +105,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
         checksum = constants.bytes32.one
     } = {}) {
         // generate IDs from attributes
-        const conditionIdAccess = await accessSecretStoreCondition.generateId(agreementId, await accessSecretStoreCondition.hashValues(did, receiver))
+        const conditionIdAccess = await accessCondition.generateId(agreementId, await accessCondition.hashValues(did, receiver))
         const conditionIdNft = await nftHolderCondition.generateId(agreementId, await nftHolderCondition.hashValues(did, holder, nftAmount))
 
         // construct agreement
@@ -155,7 +155,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
                 'Arguments have wrong length'
             )
 
-            await dynamicAccessTemplate.addTemplateCondition(accessSecretStoreCondition.address, { from: owner })
+            await dynamicAccessTemplate.addTemplateCondition(accessCondition.address, { from: owner })
             await dynamicAccessTemplate.addTemplateCondition(nftHolderCondition.address, { from: owner })
             const templateConditionTypes = await dynamicAccessTemplate.getConditionTypes()
             assert.strictEqual(2, templateConditionTypes.length)
@@ -183,7 +183,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
                 constants.condition.state.fulfilled)
 
             // fulfill access
-            await accessSecretStoreCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
+            await accessCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),

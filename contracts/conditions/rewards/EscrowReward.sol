@@ -135,7 +135,7 @@ contract EscrowReward is Reward {
         );
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
         .getCondition(_lockCondition);
 
         uint256 _totalAmount = 0;

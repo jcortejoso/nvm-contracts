@@ -23,7 +23,7 @@ contract('DynamicAccessTemplate', (accounts) => {
     let conditionStoreManager
     let templateStoreManager
     let dynamicAccessTemplate
-    let accessSecretStoreCondition
+    let accessCondition
     let nftHolderCondition
     let escrowReward
     const deployer = accounts[8]
@@ -51,9 +51,9 @@ contract('DynamicAccessTemplate', (accounts) => {
                 { from: deployer }
             )
 
-            accessSecretStoreCondition = await AccessCondition.new()
+            accessCondition = await AccessCondition.new()
 
-            await accessSecretStoreCondition.methods['initialize(address,address,address)'](
+            await accessCondition.methods['initialize(address,address,address)'](
                 owner,
                 conditionStoreManager.address,
                 agreementStoreManager.address,
@@ -144,7 +144,7 @@ contract('DynamicAccessTemplate', (accounts) => {
                 'Arguments have wrong length'
             )
 
-            await dynamicAccessTemplate.addTemplateCondition(accessSecretStoreCondition.address, { from: owner })
+            await dynamicAccessTemplate.addTemplateCondition(accessCondition.address, { from: owner })
             await dynamicAccessTemplate.addTemplateCondition(nftHolderCondition.address, { from: owner })
             await dynamicAccessTemplate.addTemplateCondition(escrowReward.address, { from: owner })
             const templateConditionTypes = await dynamicAccessTemplate.getConditionTypes()

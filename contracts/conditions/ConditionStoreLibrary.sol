@@ -24,6 +24,7 @@ library ConditionStoreLibrary {
     struct Condition {
         address typeRef;
         ConditionState state;
+        address createdBy;
         address lastUpdatedBy;
         uint256 blockNumberUpdated;
     }
@@ -59,6 +60,7 @@ library ConditionStoreLibrary {
         _self.conditions[_id] = Condition({
             typeRef: _typeRef,
             state: ConditionState.Unfulfilled,
+            createdBy: tx.origin, // solhint-disable avoid-tx-origin
             lastUpdatedBy: msg.sender,
             blockNumberUpdated: block.number
         });

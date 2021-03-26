@@ -7,13 +7,13 @@ const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
-const EscrowAccessSecretStoreTemplate = artifacts.require('EscrowAccessSecretStoreTemplate')
+const AccessTemplate = artifacts.require('AccessTemplate')
 
 const constants = require('../../helpers/constants.js')
 const deployManagers = require('../../helpers/deployManagers.js')
 const testUtils = require('../../helpers/utils')
 
-contract('EscrowAccessSecretStoreTemplate', (accounts) => {
+contract('AccessTemplate', (accounts) => {
     async function setupTest({
         deployer = accounts[8],
         owner = accounts[9]
@@ -27,8 +27,8 @@ contract('EscrowAccessSecretStoreTemplate', (accounts) => {
         } = await deployManagers(deployer, owner)
 
         const contractType = templateStoreManager.address
-        const escrowAccessSecretStoreTemplate = await EscrowAccessSecretStoreTemplate.new({ from: deployer })
-        await escrowAccessSecretStoreTemplate.methods['initialize(address,address,address,address,address,address)'](
+        const accessTemplate = await AccessTemplate.new({ from: deployer })
+        await accessTemplate.methods['initialize(address,address,address,address,address,address)'](
             owner,
             agreementStoreManager.address,
             didRegistry.address,
@@ -44,7 +44,7 @@ contract('EscrowAccessSecretStoreTemplate', (accounts) => {
             agreementStoreManager,
             conditionStoreManager,
             templateStoreManager,
-            escrowAccessSecretStoreTemplate,
+            accessTemplate,
             deployer,
             owner
         }
@@ -85,33 +85,33 @@ contract('EscrowAccessSecretStoreTemplate', (accounts) => {
                 agreementStoreManager,
                 conditionStoreManager,
                 templateStoreManager,
-                escrowAccessSecretStoreTemplate,
+                accessTemplate,
                 owner
             } = await setupTest()
 
             const { agreementId, agreement } = await prepareAgreement()
 
             await assert.isRejected(
-                escrowAccessSecretStoreTemplate.createAgreement(agreementId, ...Object.values(agreement)),
+                accessTemplate.createAgreement(agreementId, ...Object.values(agreement)),
                 constants.template.error.templateNotApproved
             )
 
             // propose and approve template
-            const templateId = escrowAccessSecretStoreTemplate.address
+            const templateId = accessTemplate.address
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId, { from: owner })
 
             await assert.isRejected(
-                escrowAccessSecretStoreTemplate.createAgreement(agreementId, ...Object.values(agreement)),
+                accessTemplate.createAgreement(agreementId, ...Object.values(agreement)),
                 constants.registry.error.didNotRegistered
             )
 
             // register DID
             await didRegistry.registerAttribute(agreement.did, constants.bytes32.one, [], constants.registry.url)
 
-            await escrowAccessSecretStoreTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
-            const storedAgreementData = await escrowAccessSecretStoreTemplate.getAgreementData(agreementId)
+            const storedAgreementData = await accessTemplate.getAgreementData(agreementId)
             assert.strictEqual(storedAgreementData.accessConsumer, agreement.accessConsumer)
             assert.strictEqual(storedAgreementData.accessProvider, accounts[0])
 
@@ -122,7 +122,7 @@ contract('EscrowAccessSecretStoreTemplate', (accounts) => {
                 .to.equal(templateId)
 
             let i = 0
-            const conditionTypes = await escrowAccessSecretStoreTemplate.getConditionTypes()
+            const conditionTypes = await accessTemplate.getConditionTypes()
             for (const conditionId of agreement.conditionIds) {
                 const storedCondition = await conditionStoreManager.getCondition(conditionId)
                 expect(storedCondition.typeRef).to.equal(conditionTypes[i])
@@ -140,7 +140,7 @@ contract('EscrowAccessSecretStoreTemplate', (accounts) => {
                 didRegistry,
                 agreementStoreManager,
                 templateStoreManager,
-                escrowAccessSecretStoreTemplate,
+                accessTemplate,
                 owner
             } = await setupTest()
 
@@ -150,11 +150,11 @@ contract('EscrowAccessSecretStoreTemplate', (accounts) => {
             await didRegistry.registerAttribute(agreement.did, constants.bytes32.one, [], constants.registry.url)
 
             // propose and approve template
-            const templateId = escrowAccessSecretStoreTemplate.address
+            const templateId = accessTemplate.address
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId, { from: owner })
 
-            const result = await escrowAccessSecretStoreTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            const result = await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
             testUtils.assertEmitted(result, 1, 'AgreementCreated')
 
@@ -175,7 +175,7 @@ contract('EscrowAccessSecretStoreTemplate', (accounts) => {
             const {
                 didRegistry,
                 templateStoreManager,
-                escrowAccessSecretStoreTemplate,
+                accessTemplate,
                 owner
             } = await setupTest()
 
@@ -186,11 +186,11 @@ contract('EscrowAccessSecretStoreTemplate', (accounts) => {
                 agreement.did, constants.bytes32.one, [accounts[2]], constants.registry.url)
 
             // propose and approve template
-            const templateId = escrowAccessSecretStoreTemplate.address
+            const templateId = accessTemplate.address
             await templateStoreManager.proposeTemplate(templateId)
             await templateStoreManager.approveTemplate(templateId, { from: owner })
 
-            const result = await escrowAccessSecretStoreTemplate
+            const result = await accessTemplate
                 .createAgreement(agreementId, ...Object.values(agreement))
 
             testUtils.assertEmitted(result, 1, 'AgreementCreated')
@@ -201,7 +201,7 @@ contract('EscrowAccessSecretStoreTemplate', (accounts) => {
             expect(eventArgs._accessProvider).to.equal(accounts[2])
             expect(eventArgs._accessConsumer).to.equal(agreement.accessConsumer)
 
-            const storedAgreementData = await escrowAccessSecretStoreTemplate.getAgreementData(agreementId)
+            const storedAgreementData = await accessTemplate.getAgreementData(agreementId)
             assert.strictEqual(storedAgreementData.accessProvider, accounts[2])
         })
     })
