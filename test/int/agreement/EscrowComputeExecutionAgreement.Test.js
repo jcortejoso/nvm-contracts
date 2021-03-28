@@ -188,7 +188,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             assert.strictEqual(await getBalance(token, sender), 0)
             assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
             assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, receiver), totalAmount)
+            assert.strictEqual(await getBalance(token, receivers[0]), escrowAmounts[0])
         })
 
         it('should create escrow agreement and abort after timeout', async () => {
@@ -302,7 +302,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
                 constants.condition.state.fulfilled
             )
             assert.strictEqual(await getBalance(token, sender), 0)
-            assert.strictEqual(await getBalance(token, receiver), totalAmount)
+            assert.strictEqual(await getBalance(token, receivers[0]), escrowAmounts[0])
         })
 
         describe('drain escrow reward', () => {
@@ -321,13 +321,13 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
                 await escrowComputeExecutionTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
                 const { agreementId: agreementId2, agreement: agreement2 } = await prepareEscrowAgreement(
-                    { agreementId: constants.bytes32.two }
+                    { agreementId: constants.bytes32.two, did: did }
                 )
                 const agreement2Amounts = [escrowAmounts[0] * 2, escrowAmounts[1]]
                 agreement2.conditionIds[2] = await escrowPaymentCondition.generateId(
                     agreementId2,
                     await escrowPaymentCondition.hashValues(
-                        agreement2.did,
+                        did,
                         agreement2Amounts,
                         receivers,
                         escrowPaymentCondition.address,
@@ -345,15 +345,14 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
                 await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, escrowAmounts, receivers, { from: sender })
 
                 await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
-                await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, escrowAmounts, receivers, { from: sender })
+                await lockPaymentCondition.fulfill(agreementId2, did, escrowPaymentCondition.address, escrowAmounts, receivers, { from: sender })
                 // fulfill access
                 await computeExecutionCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
                 await computeExecutionCondition.fulfill(agreementId2, agreement2.did, receiver, { from: receiver })
 
                 // get reward
                 await assert.isRejected(
-                    escrowPaymentCondition.fulfill(agreementId2, [totalAmount * 2], [receiver], sender, agreement2.conditionIds[1], agreement2.conditionIds[0], { from: receiver }),
-                    constants.condition.reward.escrowPaymentCondition.error.lockConditionIdDoesNotMatch
+                    escrowPaymentCondition.fulfill(agreementId2, [totalAmount * 2], [receiver], sender, agreement2.conditionIds[1], agreement2.conditionIds[0], { from: receiver })
                 )
 
                 await assert.isRejected(
