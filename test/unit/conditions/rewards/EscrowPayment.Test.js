@@ -113,7 +113,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
         })
     })
 
-
     describe('fulfill existing condition', () => {
         it('should fulfill if conditions exist for account address', async () => {
             const agreementId = testUtils.generateId()
