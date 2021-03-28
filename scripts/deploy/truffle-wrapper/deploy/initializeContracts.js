@@ -190,7 +190,6 @@ async function initializeContracts({
         getAddress('ConditionStoreManager') &&
         getAddress('Token')
     ) {
-
         if (contracts.indexOf('EscrowPaymentCondition') > -1) {
             addressBook.EscrowPaymentCondition = zosCreate({
                 contract: 'EscrowPaymentCondition',
