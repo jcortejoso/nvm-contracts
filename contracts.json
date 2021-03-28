@@ -17,7 +17,7 @@
   "ThresholdCondition",
   "WhitelistingCondition",
   "ComputeExecutionCondition",
-  "EscrowAccessSecretStoreTemplate",
+  "AccessTemplate",
   "NFTAccessTemplate",
   "DIDSalesTemplate",
   "NFTSalesTemplate",
