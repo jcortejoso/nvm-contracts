@@ -193,9 +193,6 @@ contract TransferNFTCondition is Condition {
         bytes32 _did,
         address _nftReceiver,
         uint256 _nftAmount,
-//        address _lockPaymentAddress,
-//        uint256[] memory _paymentAmounts,
-//        address[] memory _paymentReceivers,    
         bytes32 _nftLockCondition
     )
         public
