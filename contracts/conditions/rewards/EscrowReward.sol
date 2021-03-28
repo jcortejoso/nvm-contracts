@@ -10,8 +10,10 @@ import '../ConditionStoreLibrary.sol';
 /**
  * @title Escrow Reward
  * @author Keyko & Ocean Protocol
+ * 
  *
  * @dev Implementation of the Escrow Reward.
+ * @dev This condition is DEPRECATED. Please use the EscrowPaymentCondition
  *
  *      The Escrow reward is reward condition in which only 
  *      can release reward if lock and release conditions

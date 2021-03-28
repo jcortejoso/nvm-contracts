@@ -13,6 +13,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
  * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of the Lock Reward Condition
+ * @dev This condition is DEPRECATED. Please use the LockPaymentCondition
  */
 contract LockRewardCondition is Condition {
 
