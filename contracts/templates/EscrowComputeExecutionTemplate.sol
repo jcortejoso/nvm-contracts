@@ -22,7 +22,7 @@ import '../conditions/ComputeExecutionCondition.sol';
  *      conditions. Once the agreement is created, the consumer will lock an amount
  *      of tokens (as listed in the DID document - off-chain metadata) to the 
  *      the lock reward contract which in turn will fire an event. ON the other hand 
- *      the provider is listening to the to all the emitted events, the provider 
+ *      the provider is listening to all the emitted events, the provider 
  *      will catch the event and grant permissions to trigger a computation granting
  *      the execution via the ComputeExecutionCondition contract. 
  *      The consumer now is able to trigger that computation

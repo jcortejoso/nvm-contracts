@@ -16,6 +16,7 @@ import '../registry/DIDRegistry.sol';
  * @author Keyko & Ocean Protocol
  *
  * @dev Implementation of Agreement Template
+ * @dev IMPORTANT: This template is DEPRECATED. Please use the AccessTemplate.
  *
  *      Escrow Access secret store template is use case specific template.
  *      Anyone (consumer/provider/publisher) can use this template in order

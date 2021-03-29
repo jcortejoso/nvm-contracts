@@ -22,7 +22,7 @@ import '../registry/DIDRegistry.sol';
  *      conditions. Once the agreement is created, the consumer will lock an amount
  *      of tokens (as listed in the DID document - off-chain metadata) to the 
  *      the lock reward contract which in turn will fire an event. ON the other hand 
- *      the provider is listening to the to all the emitted events, the provider 
+ *      the provider is listening to all the emitted events, the provider 
  *      will catch the event and grant permissions to the consumer through 
  *      secret store contract, the consumer now is able to download the data set
  *      by asking the off-chain component of secret store to decrypt the DID and 
