@@ -1,8 +1,6 @@
 /* global artifacts */
 const AccessCondition = artifacts.require('AccessCondition')
-const EscrowReward = artifacts.require('EscrowReward')
 const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
-const LockRewardCondition = artifacts.require('LockRewardCondition')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const ComputeExecutionCondition = artifacts.require('ComputeExecutionCondition')
 
@@ -14,14 +12,6 @@ const deployConditions = async function(
     didRegistry,
     token
 ) {
-    const lockRewardCondition = await LockRewardCondition.new({ from: deployer })
-    await lockRewardCondition.initialize(
-        owner,
-        conditionStoreManager.address,
-        token.address,
-        { from: deployer }
-    )
-
     const lockPaymentCondition = await LockPaymentCondition.new({ from: deployer })
     await lockPaymentCondition.initialize(
         owner,
@@ -36,14 +26,6 @@ const deployConditions = async function(
         owner,
         conditionStoreManager.address,
         agreementStoreManager.address,
-        { from: deployer }
-    )
-
-    const escrowReward = await EscrowReward.new({ from: deployer })
-    await escrowReward.initialize(
-        owner,
-        conditionStoreManager.address,
-        token.address,
         { from: deployer }
     )
 
@@ -65,9 +47,7 @@ const deployConditions = async function(
 
     return {
         accessCondition,
-        escrowReward,
         escrowPaymentCondition,
-        lockRewardCondition,
         lockPaymentCondition,
         computeExecutionCondition
     }

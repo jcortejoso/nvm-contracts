@@ -12,6 +12,7 @@ const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
 const getBalance = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.ts')
+const testUtils = require('../../helpers/utils')
 const SignCondition = artifacts.require('SignCondition')
 
 contract('Stake Agreement integration test', (accounts) => {
@@ -21,8 +22,8 @@ contract('Stake Agreement integration test', (accounts) => {
         conditionStoreManager,
         templateStoreManager,
         signCondition,
-        lockRewardCondition,
-        escrowReward
+        lockPaymentCondition,
+        escrowPaymentCondition
 
     async function setupTest({
         deployer = accounts[8],
@@ -40,8 +41,8 @@ contract('Stake Agreement integration test', (accounts) => {
         ));
 
         ({
-            lockRewardCondition,
-            escrowReward
+            lockPaymentCondition,
+            escrowPaymentCondition
         } = await deployConditions(
             deployer,
             owner,
@@ -76,23 +77,25 @@ contract('Stake Agreement integration test', (accounts) => {
         stakePeriod = 5,
         // uses signature as release, could also be hash of secret
         sign = constants.condition.sign.bytes32,
-        did = constants.did[0],
+        did = testUtils.generateId(),
         url = constants.registry.url,
         checksum = constants.bytes32.one
     } = {}) {
         // generate IDs from attributes
 
         const conditionIdSign = await signCondition.generateId(agreementId, await signCondition.hashValues(sign.message, sign.publicKey))
-        const conditionIdLock = await lockRewardCondition.generateId(agreementId, await lockRewardCondition.hashValues(escrowReward.address, stakeAmount))
-        const conditionIdEscrow = await escrowReward.generateId(agreementId, await escrowReward.hashValues([stakeAmount], [staker], staker, conditionIdLock, conditionIdSign))
+        const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
+            await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, [stakeAmount], [staker]))
+        const conditionIdEscrow = await escrowPaymentCondition.generateId(agreementId,
+            await escrowPaymentCondition.hashValues(did, [stakeAmount], [staker], escrowPaymentCondition.address, conditionIdLock, conditionIdSign))
 
         // construct agreement
         const agreement = {
             did: did,
             conditionTypes: [
                 signCondition.address,
-                lockRewardCondition.address,
-                escrowReward.address
+                lockPaymentCondition.address,
+                escrowPaymentCondition.address
             ],
             conditionIds: [
                 conditionIdSign,
@@ -104,8 +107,10 @@ contract('Stake Agreement integration test', (accounts) => {
         }
         return {
             agreementId,
+            did,
             agreement,
             stakeAmount,
+            staker,
             stakePeriod,
             sign,
             checksum,
@@ -122,7 +127,7 @@ contract('Stake Agreement integration test', (accounts) => {
             await approveTemplateAccount(owner, alice)
 
             // prepare: stake agreement
-            const { agreementId, stakeAmount, stakePeriod, sign, checksum, url, agreement } = await prepareStakeAgreement()
+            const { agreementId, did, stakeAmount, staker, stakePeriod, sign, checksum, url, agreement } = await prepareStakeAgreement()
 
             // fill up wallet
             await token.mint(alice, stakeAmount, { from: owner })
@@ -134,10 +139,10 @@ contract('Stake Agreement integration test', (accounts) => {
             await agreementStoreManager.createAgreement(agreementId, ...Object.values(agreement))
 
             // stake: fulfill lock reward
-            await token.approve(lockRewardCondition.address, stakeAmount, { from: alice })
-            await lockRewardCondition.fulfill(agreementId, escrowReward.address, stakeAmount)
+            await token.approve(lockPaymentCondition.address, stakeAmount, { from: alice })
+            await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, [stakeAmount], [staker])
             assert.strictEqual(await getBalance(token, alice), 0)
-            assert.strictEqual(await getBalance(token, escrowReward.address), stakeAmount)
+            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), stakeAmount)
 
             // unstake: fail to fulfill before stake period
             await assert.isRejected(
@@ -150,9 +155,9 @@ contract('Stake Agreement integration test', (accounts) => {
 
             // unstake: waited and fulfill after stake period
             await signCondition.fulfill(agreementId, sign.message, sign.publicKey, sign.signature)
-            await escrowReward.fulfill(agreementId, [stakeAmount], [alice], alice, agreement.conditionIds[1], agreement.conditionIds[0])
+            await escrowPaymentCondition.fulfill(agreementId, did, [stakeAmount], [alice], escrowPaymentCondition.address, agreement.conditionIds[1], agreement.conditionIds[0])
             assert.strictEqual(await getBalance(token, alice), stakeAmount)
-            assert.strictEqual(await getBalance(token, escrowReward.address), 0)
+            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
         })
     })
 })
