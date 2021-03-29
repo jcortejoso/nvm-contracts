@@ -1,7 +1,7 @@
 /* global artifacts */
 const AccessCondition = artifacts.require('AccessCondition')
-const EscrowReward = artifacts.require('EscrowReward')
-const LockRewardCondition = artifacts.require('LockRewardCondition')
+const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
+const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const ComputeExecutionCondition = artifacts.require('ComputeExecutionCondition')
 
 const deployConditions = async function(
@@ -12,24 +12,25 @@ const deployConditions = async function(
     didRegistry,
     token
 ) {
-    const lockRewardCondition = await LockRewardCondition.new({ from: deployer })
-    await lockRewardCondition.initialize(
+    const lockPaymentCondition = await LockPaymentCondition.new({ from: deployer })
+    await lockPaymentCondition.initialize(
         owner,
         conditionStoreManager.address,
         token.address,
+        didRegistry.address,
         { from: deployer }
     )
 
-    const accessSecretStoreCondition = await AccessCondition.new({ from: deployer })
-    await accessSecretStoreCondition.methods['initialize(address,address,address)'](
+    const accessCondition = await AccessCondition.new({ from: deployer })
+    await accessCondition.methods['initialize(address,address,address)'](
         owner,
         conditionStoreManager.address,
         agreementStoreManager.address,
         { from: deployer }
     )
 
-    const escrowReward = await EscrowReward.new({ from: deployer })
-    await escrowReward.initialize(
+    const escrowPaymentCondition = await EscrowPaymentCondition.new({ from: deployer })
+    await escrowPaymentCondition.initialize(
         owner,
         conditionStoreManager.address,
         token.address,
@@ -45,9 +46,9 @@ const deployConditions = async function(
     )
 
     return {
-        accessSecretStoreCondition,
-        escrowReward,
-        lockRewardCondition,
+        accessCondition,
+        escrowPaymentCondition,
+        lockPaymentCondition,
         computeExecutionCondition
     }
 }

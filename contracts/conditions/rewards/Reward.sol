@@ -15,9 +15,6 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
  * @dev Implementation of the Reward.
  *
  *      Generic reward condition
- *      For more information, please refer the following link:
- *      https://github.com/oceanprotocol/OEPs/issues/133
- *      TODO: update the OEP link 
  */
 contract Reward is Condition {
     IERC20Upgradeable internal token;

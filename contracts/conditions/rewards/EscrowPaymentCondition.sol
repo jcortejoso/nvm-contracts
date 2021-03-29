@@ -26,7 +26,7 @@ contract EscrowPaymentCondition is Reward {
         bytes32 _conditionId,
         uint256[] _amounts
     );
-    
+
     /**
      * @notice initialize init the 
      *       contract with the following parameters
@@ -139,11 +139,11 @@ contract EscrowPaymentCondition is Reward {
         );
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
         .getCondition(_lockCondition);
 
-        uint256 _totalAmount = 0;
-        for(uint i = 0; i < _amounts.length; i++)
+        uint256 _totalAmount;
+        for(uint i; i < _amounts.length; i++)
             _totalAmount = _totalAmount + _amounts[i];
 
         bytes32 generatedLockConditionId = keccak256(
@@ -171,19 +171,19 @@ contract EscrowPaymentCondition is Reward {
         );
 
         ConditionStoreLibrary.ConditionState state = conditionStoreManager
-            .getConditionState(_releaseCondition);
+        .getConditionState(_releaseCondition);
 
         if (state == ConditionStoreLibrary.ConditionState.Fulfilled)
         {
             state = _transferAndFulfill(id, _receivers, _amounts);
             emit Fulfilled(_agreementId, _receivers, id, _amounts);
-                
+
         } else if (state == ConditionStoreLibrary.ConditionState.Aborted)
         {
             uint256[] memory _totalAmounts = new uint256[](1);
             _totalAmounts[0] = _totalAmount;
             address[] memory _originalSender = new address[](1);
-            _originalSender[0] = lockConditionTypeRef;
+            _originalSender[0] = conditionStoreManager.getConditionCreatedBy(_lockCondition);
             state = _transferAndFulfill(id, _originalSender, _totalAmounts);
             emit Fulfilled(_agreementId, _originalSender, id, _totalAmounts);
         } else
@@ -232,6 +232,3 @@ contract EscrowPaymentCondition is Reward {
     }
 
 }
-
-
-

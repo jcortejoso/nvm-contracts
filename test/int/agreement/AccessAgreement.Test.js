@@ -7,24 +7,25 @@ const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
-const EscrowAccessSecretStoreTemplate = artifacts.require('EscrowAccessSecretStoreTemplate')
+const AccessTemplate = artifacts.require('AccessTemplate')
 
 const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
 const getBalance = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.ts')
+const testUtils = require('../../helpers/utils')
 
-contract('Escrow Access Secret Store integration test', (accounts) => {
+contract('Access Template integration test', (accounts) => {
     let token,
         didRegistry,
         agreementStoreManager,
         conditionStoreManager,
         templateStoreManager,
-        escrowAccessSecretStoreTemplate,
-        accessSecretStoreCondition,
-        lockRewardCondition,
-        escrowReward
+        accessTemplate,
+        accessCondition,
+        lockPaymentCondition,
+        escrowPaymentCondition
 
     async function setupTest({
         deployer = accounts[8],
@@ -42,9 +43,9 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
         ));
 
         ({
-            accessSecretStoreCondition,
-            lockRewardCondition,
-            escrowReward
+            accessCondition,
+            lockPaymentCondition,
+            escrowPaymentCondition
         } = await deployConditions(
             deployer,
             owner,
@@ -54,19 +55,19 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
             token
         ))
 
-        escrowAccessSecretStoreTemplate = await EscrowAccessSecretStoreTemplate.new()
-        await escrowAccessSecretStoreTemplate.methods['initialize(address,address,address,address,address,address)'](
+        accessTemplate = await AccessTemplate.new()
+        await accessTemplate.methods['initialize(address,address,address,address,address,address)'](
             owner,
             agreementStoreManager.address,
             didRegistry.address,
-            accessSecretStoreCondition.address,
-            lockRewardCondition.address,
-            escrowReward.address,
+            accessCondition.address,
+            lockPaymentCondition.address,
+            escrowPaymentCondition.address,
             { from: deployer }
         )
 
         // propose and approve template
-        const templateId = escrowAccessSecretStoreTemplate.address
+        const templateId = accessTemplate.address
         await templateStoreManager.proposeTemplate(templateId)
         await templateStoreManager.approveTemplate(templateId, { from: owner })
 
@@ -76,62 +77,24 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
         }
     }
 
-    async function prepareEscrowAgreement({
-        agreementId = constants.bytes32.one,
-        sender = accounts[0],
-        receiver = accounts[1],
-        escrowAmount = 10,
-        timeLockAccess = 0,
-        timeOutAccess = 0,
-        did = constants.did[0],
-        url = constants.registry.url,
-        checksum = constants.bytes32.one
-    } = {}) {
-        // generate IDs from attributes
-        const conditionIdAccess = await accessSecretStoreCondition.generateId(agreementId, await accessSecretStoreCondition.hashValues(did, receiver))
-        const conditionIdLock = await lockRewardCondition.generateId(agreementId, await lockRewardCondition.hashValues(escrowReward.address, escrowAmount))
-        const conditionIdEscrow = await escrowReward.generateId(agreementId, await escrowReward.hashValues([escrowAmount], [receiver], sender, conditionIdLock, conditionIdAccess))
-
-        // construct agreement
-        const agreement = {
-            did: did,
-            conditionIds: [
-                conditionIdAccess,
-                conditionIdLock,
-                conditionIdEscrow
-            ],
-            timeLocks: [timeLockAccess, 0, 0],
-            timeOuts: [timeOutAccess, 0, 0],
-            consumer: receiver
-        }
-        return {
-            agreementId,
-            agreement,
-            sender,
-            receiver,
-            escrowAmount,
-            timeLockAccess,
-            timeOutAccess,
-            checksum,
-            url
-        }
-    }
-
-    async function prepareEscrowAgreementMultileEscrow({
-        agreementId = constants.bytes32.two,
+    async function prepareEscrowAgreementMultipleEscrow({
+        agreementId = testUtils.generateId(),
         sender = accounts[0],
         receivers = [accounts[2], accounts[3]],
         escrowAmounts = [11, 4],
         timeLockAccess = 0,
         timeOutAccess = 0,
-        did = constants.did[0],
+        did = testUtils.generateId(),
         url = constants.registry.url,
         checksum = constants.bytes32.one
     } = {}) {
         // generate IDs from attributes
-        const conditionIdAccess = await accessSecretStoreCondition.generateId(agreementId, await accessSecretStoreCondition.hashValues(did, receivers[0]))
-        const conditionIdLock = await lockRewardCondition.generateId(agreementId, await lockRewardCondition.hashValues(escrowReward.address, escrowAmounts[0] + escrowAmounts[1]))
-        const conditionIdEscrow = await escrowReward.generateId(agreementId, await escrowReward.hashValues(escrowAmounts, receivers, sender, conditionIdLock, conditionIdAccess))
+        const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
+            await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, escrowAmounts, receivers))
+        const conditionIdAccess = await accessCondition.generateId(agreementId,
+            await accessCondition.hashValues(did, receivers[0]))
+        const conditionIdEscrow = await escrowPaymentCondition.generateId(agreementId,
+            await escrowPaymentCondition.hashValues(did, escrowAmounts, receivers, escrowPaymentCondition.address, conditionIdLock, conditionIdAccess))
 
         // construct agreement
         const agreement = {
@@ -143,10 +106,11 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
             ],
             timeLocks: [timeLockAccess, 0, 0],
             timeOuts: [timeOutAccess, 0, 0],
-            consumer: receivers[0]
+            consumer: sender
         }
         return {
             agreementId,
+            did,
             agreement,
             sender,
             receivers,
@@ -163,20 +127,20 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, agreement, sender, receivers, escrowAmounts, checksum, url } = await prepareEscrowAgreementMultileEscrow()
+            const { agreementId, did, agreement, sender, receivers, escrowAmounts, checksum, url } = await prepareEscrowAgreementMultipleEscrow()
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
             // register DID
             await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
 
             // create agreement
-            await escrowAccessSecretStoreTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
             // check state of agreement and conditions
             expect((await agreementStoreManager.getAgreement(agreementId)).did)
-                .to.equal(constants.did[0])
+                .to.equal(did)
 
-            const conditionTypes = await escrowAccessSecretStoreTemplate.getConditionTypes()
+            const conditionTypes = await accessTemplate.getConditionTypes()
             let storedCondition
             agreement.conditionIds.forEach(async (conditionId, i) => {
                 storedCondition = await conditionStoreManager.getCondition(conditionId)
@@ -188,17 +152,17 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
             await token.mint(sender, totalAmount, { from: owner })
 
             assert.strictEqual(await getBalance(token, sender), totalAmount)
-            assert.strictEqual(await getBalance(token, lockRewardCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowReward.address), 0)
+            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
+            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
             assert.strictEqual(await getBalance(token, receiver), 0)
 
             // fulfill lock reward
-            await token.approve(lockRewardCondition.address, totalAmount, { from: sender })
-            await lockRewardCondition.fulfill(agreementId, escrowReward.address, totalAmount, { from: sender })
+            await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
+            await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, escrowAmounts, receivers, { from: sender })
 
             assert.strictEqual(await getBalance(token, sender), 0)
-            assert.strictEqual(await getBalance(token, lockRewardCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowReward.address), totalAmount)
+            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
+            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), totalAmount)
             assert.strictEqual(await getBalance(token, receiver), 0)
 
             assert.strictEqual(
@@ -206,14 +170,14 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
                 constants.condition.state.fulfilled)
 
             // fulfill access
-            await accessSecretStoreCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
+            await accessCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
 
             // get reward
-            await escrowReward.fulfill(agreementId, escrowAmounts, receivers, sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
+            await escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
@@ -221,8 +185,8 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
             )
 
             assert.strictEqual(await getBalance(token, sender), 0)
-            assert.strictEqual(await getBalance(token, lockRewardCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowReward.address), 0)
+            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
+            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
             assert.strictEqual(await getBalance(token, receivers[0]), escrowAmounts[0])
             assert.strictEqual(await getBalance(token, receivers[1]), escrowAmounts[1])
         })
@@ -231,27 +195,29 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, agreement, sender, receiver, escrowAmount, timeOutAccess, checksum, url } = await prepareEscrowAgreement({ timeOutAccess: 10 })
+            const { agreementId, did, agreement, sender, receivers, escrowAmounts, checksum, url, timeOutAccess } = await prepareEscrowAgreementMultipleEscrow({ timeOutAccess: 10 })
+            const totalAmount = escrowAmounts[0] + escrowAmounts[1]
+            const receiver = receivers[0]
 
             // register DID
             await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
 
             // create agreement
-            await escrowAccessSecretStoreTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
             // fill up wallet
-            await token.mint(sender, escrowAmount, { from: owner })
+            await token.mint(sender, totalAmount, { from: owner })
 
             // fulfill lock reward
-            await token.approve(lockRewardCondition.address, escrowAmount, { from: sender })
-            await lockRewardCondition.fulfill(agreementId, escrowReward.address, escrowAmount, { from: sender })
+            await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
+            await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, escrowAmounts, receivers, { from: sender })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
 
             // No update since access is not fulfilled yet
             // refund
-            const result = await escrowReward.fulfill(agreementId, [escrowAmount], [receiver], sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
+            const result = await escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
                 constants.condition.state.unfulfilled
@@ -262,19 +228,21 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
             await increaseTime.mineBlocks(timeOutAccess)
 
             // abort: fulfill access after timeout
-            await accessSecretStoreCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
+            await accessCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
                 constants.condition.state.aborted)
 
             // refund
-            await escrowReward.fulfill(agreementId, [escrowAmount], [receiver], sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: sender })
+            await escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: sender })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
                 constants.condition.state.fulfilled
             )
-            assert.strictEqual(await getBalance(token, receiver), 0)
-            assert.strictEqual(await getBalance(token, sender), escrowAmount)
+            assert.strictEqual(await getBalance(token, receivers[0]), 0)
+            assert.strictEqual(await getBalance(token, receivers[1]), 0)
+            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
+            assert.strictEqual(await getBalance(token, sender), totalAmount)
         })
     })
 
@@ -283,49 +251,51 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, agreement, sender, receiver, escrowAmount, timeLockAccess, checksum, url } = await prepareEscrowAgreement({ timeLockAccess: 10 })
+            const { agreementId, did, agreement, sender, receivers, escrowAmounts, checksum, url, timeLockAccess } = await prepareEscrowAgreementMultipleEscrow({ timeLockAccess: 10 })
+            const totalAmount = escrowAmounts[0] + escrowAmounts[1]
+            const receiver = receivers[0]
 
             // register DID
             await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
             // fill up wallet
-            await token.mint(sender, escrowAmount, { from: owner })
+            await token.mint(sender, totalAmount, { from: owner })
 
             // create agreement
-            await escrowAccessSecretStoreTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
             // fulfill lock reward
-            await token.approve(lockRewardCondition.address, escrowAmount, { from: sender })
-            await lockRewardCondition.fulfill(agreementId, escrowReward.address, escrowAmount, { from: sender })
+            await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
+            await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, escrowAmounts, receivers, { from: sender })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
             // receiver is a DID owner
-            // expect(await accessSecretStoreCondition.checkPermissions(receiver, agreement.did)).to.equal(false)
 
             // fail: fulfill access before time lock
             await assert.isRejected(
-                accessSecretStoreCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver }),
+                accessCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver }),
                 constants.condition.epoch.error.isTimeLocked
             )
             // receiver is a DID owner
-            // expect(await accessSecretStoreCondition.checkPermissions(receiver, agreement.did)).to.equal(false)
+            // expect(await accessCondition.checkPermissions(receiver, agreement.did)).to.equal(false)
 
             // wait: for time lock
             await increaseTime.mineBlocks(timeLockAccess)
 
             // execute: fulfill access after time lock
-            await accessSecretStoreCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
+            await accessCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
-            expect(await accessSecretStoreCondition.checkPermissions(receiver, agreement.did)).to.equal(true)
+            expect(await accessCondition.checkPermissions(receiver, agreement.did)).to.equal(true)
 
             // execute payment
-            await escrowReward.fulfill(
+            await escrowPaymentCondition.fulfill(
                 agreementId,
-                [escrowAmount],
-                [receiver],
-                sender,
+                agreement.did,
+                escrowAmounts,
+                receivers,
+                escrowPaymentCondition.address,
                 agreement.conditionIds[1],
                 agreement.conditionIds[0],
                 { from: receiver }
@@ -335,7 +305,7 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
                 constants.condition.state.fulfilled
             )
             assert.strictEqual(await getBalance(token, sender), 0)
-            assert.strictEqual(await getBalance(token, receiver), escrowAmount)
+            assert.strictEqual(await getBalance(token, receiver), escrowAmounts[0])
         })
 
         describe('drain escrow reward', () => {
@@ -343,46 +313,49 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
                 const { owner } = await setupTest()
 
                 // prepare: escrow agreement
-                const { agreementId, agreement, sender, receiver, escrowAmount, checksum, url } = await prepareEscrowAgreement()
+                const { agreementId, did, agreement, sender, receivers, escrowAmounts, checksum, url } = await prepareEscrowAgreementMultipleEscrow()
+                const totalAmount = escrowAmounts[0] + escrowAmounts[1]
+                const receiver = receivers[0]
 
                 // register DID
                 await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
 
                 // create agreement
-                await escrowAccessSecretStoreTemplate.createAgreement(agreementId, ...Object.values(agreement))
+                await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
-                const { agreementId: agreementId2, agreement: agreement2 } = await prepareEscrowAgreement(
-                    { agreementId: constants.bytes32.two }
+                const { agreementId: agreementId2, agreement: agreement2 } = await prepareEscrowAgreementMultipleEscrow(
+                    { agreementId: constants.bytes32.two, did: did }
                 )
-                agreement2.conditionIds[2] = await escrowReward.generateId(
+                const agreement2Amounts = [escrowAmounts[0] * 2, escrowAmounts[1]]
+                agreement2.conditionIds[2] = await escrowPaymentCondition.generateId(
                     agreementId2,
-                    await escrowReward.hashValues(
-                        [escrowAmount * 2],
-                        [receiver],
-                        sender,
+                    await escrowPaymentCondition.hashValues(
+                        agreement2.did,
+                        agreement2Amounts,
+                        receivers,
+                        escrowPaymentCondition.address,
                         agreement2.conditionIds[1],
                         agreement2.conditionIds[0]))
 
                 // create agreement2
-                await escrowAccessSecretStoreTemplate.createAgreement(agreementId2, ...Object.values(agreement2))
+                await accessTemplate.createAgreement(agreementId2, ...Object.values(agreement2))
 
                 // fill up wallet
-                await token.mint(sender, escrowAmount * 2, { from: owner })
+                await token.mint(sender, totalAmount * 2, { from: owner })
 
                 // fulfill lock reward
-                await token.approve(lockRewardCondition.address, escrowAmount, { from: sender })
-                await lockRewardCondition.fulfill(agreementId, escrowReward.address, escrowAmount, { from: sender })
+                await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
+                await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, escrowAmounts, receivers, { from: sender })
 
-                await token.approve(lockRewardCondition.address, escrowAmount, { from: sender })
-                await lockRewardCondition.fulfill(agreementId2, escrowReward.address, escrowAmount, { from: sender })
+                await token.approve(lockPaymentCondition.address, totalAmount * 2, { from: sender })
+                await lockPaymentCondition.fulfill(agreementId2, did, escrowPaymentCondition.address, escrowAmounts, receivers, { from: sender })
                 // fulfill access
-                await accessSecretStoreCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
-                await accessSecretStoreCondition.fulfill(agreementId2, agreement2.did, receiver, { from: receiver })
+                await accessCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
+                await accessCondition.fulfill(agreementId2, agreement2.did, receiver, { from: receiver })
 
                 // get reward
                 await assert.isRejected(
-                    escrowReward.fulfill(agreementId2, [escrowAmount * 2], [receiver], sender, agreement2.conditionIds[1], agreement2.conditionIds[0], { from: receiver }),
-                    constants.condition.reward.escrowReward.error.lockConditionIdDoesNotMatch
+                    escrowPaymentCondition.fulfill(agreementId2, agreement2.did, agreement2Amounts, receivers, agreement2.conditionIds[1], agreement2.conditionIds[0], { from: receiver })
                 )
 
                 assert.strictEqual(
@@ -390,16 +363,15 @@ contract('Escrow Access Secret Store integration test', (accounts) => {
                     constants.condition.state.unfulfilled
                 )
 
-                await escrowReward.fulfill(agreementId, [escrowAmount], [receiver], sender, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
+                await escrowPaymentCondition.fulfill(agreementId, agreement.did, escrowAmounts, receivers, escrowPaymentCondition.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
                 assert.strictEqual(
                     (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
                     constants.condition.state.fulfilled
                 )
 
                 assert.strictEqual(await getBalance(token, sender), 0)
-                assert.strictEqual(await getBalance(token, lockRewardCondition.address), 0)
-                assert.strictEqual(await getBalance(token, escrowReward.address), escrowAmount)
-                assert.strictEqual(await getBalance(token, receiver), escrowAmount)
+                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
+                assert.strictEqual(await getBalance(token, receivers[0]), escrowAmounts[0])
             })
         })
     })

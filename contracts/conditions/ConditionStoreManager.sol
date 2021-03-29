@@ -280,7 +280,8 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
      * @return timeLock the time lock
      * @return timeOut time out
      * @return blockNumber block number
-     * @return lastUpdatedBy block number
+     * @return createdBy address
+     * @return lastUpdatedBy address
      * @return blockNumberUpdated block number updated
      */
     function getCondition(bytes32 _id)
@@ -292,6 +293,7 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
             uint timeLock,
             uint timeOut,
             uint blockNumber,
+            address createdBy,
             address lastUpdatedBy,
             uint blockNumberUpdated
         )
@@ -301,6 +303,7 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
         timeLock = epochList.epochs[_id].timeLock;
         timeOut = epochList.epochs[_id].timeOut;
         blockNumber = epochList.epochs[_id].blockNumber;
+        createdBy = conditionList.conditions[_id].createdBy;
         lastUpdatedBy = conditionList.conditions[_id].lastUpdatedBy;
         blockNumberUpdated = conditionList.conditions[_id].blockNumberUpdated;
     }
@@ -317,6 +320,20 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
     {
         return conditionList.conditions[_id].state;
     }
+
+    /**
+     * @dev getConditionCreatedBy  
+     * @return condition createdBy address
+     */
+    function getConditionCreatedBy(bytes32 _id)
+    external
+    view
+    virtual
+    returns (address)
+    {
+        return conditionList.conditions[_id].createdBy;
+    }
+
 
     /**
      * @dev isConditionTimeLocked  

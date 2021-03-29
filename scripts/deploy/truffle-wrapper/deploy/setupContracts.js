@@ -77,28 +77,28 @@ async function setupContracts({
         const TemplateStoreManagerInstance =
             await TemplateStoreManager.at(addressBook.TemplateStoreManager)
 
-        if (addressBook.EscrowAccessSecretStoreTemplate) {
+        if (addressBook.AccessTemplate) {
             if (verbose) {
                 console.log(
-                    `Proposing template ${addressBook.EscrowAccessSecretStoreTemplate} from ${roles.deployer}`
+                    `Proposing template ${addressBook.AccessTemplate} from ${roles.deployer}`
                 )
             }
 
             await TemplateStoreManagerInstance.proposeTemplate(
-                addressBook.EscrowAccessSecretStoreTemplate,
+                addressBook.AccessTemplate,
                 { from: roles.deployer }
             )
 
             if (verbose) {
                 console.log(
-                    `Approving template ${addressBook.EscrowAccessSecretStoreTemplate} from ${roles.deployer}`
+                    `Approving template ${addressBook.AccessTemplate} from ${roles.deployer}`
                 )
             }
 
             await approveTemplate({
                 TemplateStoreManagerInstance,
                 roles,
-                templateAddress: addressBook.EscrowAccessSecretStoreTemplate
+                templateAddress: addressBook.AccessTemplate
             })
         }
 

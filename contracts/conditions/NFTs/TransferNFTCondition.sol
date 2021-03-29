@@ -102,6 +102,9 @@ contract TransferNFTCondition is Condition {
      * @param _did refers to the DID in which secret store will issue the decryption keys
      * @param _nftReceiver is the address of the account to receive the NFT
      * @param _nftAmount amount of NFTs to transfer  
+     * @param _rewardAddress is the lock payment contract address
+     * @param _amounts token amounts to be locked/released
+     * @param _receivers receiver's addresses     
      * @param _lockPaymentCondition lock payment condition identifier
      * @return condition state (Fulfilled/Aborted)
      */
@@ -126,7 +129,7 @@ contract TransferNFTCondition is Condition {
 
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
         .getCondition(_lockPaymentCondition);
 
         require(
@@ -190,9 +193,6 @@ contract TransferNFTCondition is Condition {
         bytes32 _did,
         address _nftReceiver,
         uint256 _nftAmount,
-//        address _lockPaymentAddress,
-//        uint256[] memory _paymentAmounts,
-//        address[] memory _paymentReceivers,    
         bytes32 _nftLockCondition
     )
         public
@@ -206,7 +206,7 @@ contract TransferNFTCondition is Condition {
 
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
             .getCondition(_nftLockCondition);
 
         require(

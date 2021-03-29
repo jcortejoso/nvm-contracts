@@ -5,40 +5,41 @@ pragma solidity 0.6.12;
 
 
 import './BaseEscrowTemplate.sol';
-import '../registry/DIDRegistry.sol';
+import '../conditions/AccessCondition.sol';
 import '../conditions/LockPaymentCondition.sol';
 import '../conditions/rewards/EscrowPaymentCondition.sol';
-import '../conditions/ComputeExecutionCondition.sol';
+import '../registry/DIDRegistry.sol';
 
 /**
- * @title Escrow Compute Template
+ * @title Agreement Template
  * @author Keyko
  *
- * @dev Implementation of a Compute Execution Agreement Template
+ * @dev Implementation of Access Agreement Template
  *
- *      EscrowComputeExecutionTemplate is use case specific template.
+ *      Access template is use case specific template.
  *      Anyone (consumer/provider/publisher) can use this template in order
  *      to setup an on-chain SEA. The template is a composite of three basic
  *      conditions. Once the agreement is created, the consumer will lock an amount
  *      of tokens (as listed in the DID document - off-chain metadata) to the 
  *      the lock reward contract which in turn will fire an event. ON the other hand 
  *      the provider is listening to all the emitted events, the provider 
- *      will catch the event and grant permissions to trigger a computation granting
- *      the execution via the ComputeExecutionCondition contract. 
- *      The consumer now is able to trigger that computation
- *      by asking the off-chain gateway to start the execution of a compute workflow.
+ *      will catch the event and grant permissions to the consumer through 
+ *      secret store contract, the consumer now is able to download the data set
+ *      by asking the off-chain component of secret store to decrypt the DID and 
+ *      encrypt it using the consumer's public key. Then the secret store will 
+ *      provide an on-chain proof that the consumer had access to the data set.
  *      Finally, the provider can call the escrow reward condition in order 
  *      to release the payment. Every condition has a time window (time lock and 
- *      time out). This implies that if the provider didn't grant the execution to 
- *      the consumer within this time window, the consumer 
+ *      time out). This implies that if the provider didn't grant the access to 
+ *      the consumer through secret store within this time window, the consumer 
  *      can ask for refund.
  */
-contract EscrowComputeExecutionTemplate is BaseEscrowTemplate {
+contract AccessTemplate is BaseEscrowTemplate {
 
     DIDRegistry internal didRegistry;
-    ComputeExecutionCondition internal computeExecutionCondition;
-    LockPaymentCondition internal lockPaymentCondition;
-    EscrowPaymentCondition internal escrowPayment;
+    AccessCondition internal accessCondition;
+    LockPaymentCondition internal lockCondition;
+    EscrowPaymentCondition internal escrowReward;
 
    /**
     * @notice initialize init the 
@@ -46,21 +47,21 @@ contract EscrowComputeExecutionTemplate is BaseEscrowTemplate {
     * @dev this function is called only once during the contract
     *       initialization. It initializes the ownable feature, and 
     *       set push the required condition types including 
-    *       service executor condition, lock reward and escrow reward conditions.
+    *       access secret store, lock reward and escrow reward conditions.
     * @param _owner contract's owner account address
     * @param _agreementStoreManagerAddress agreement store manager contract address
     * @param _didRegistryAddress DID registry contract address
-    * @param _computeExecutionConditionAddress service executor condition contract address
-    * @param _lockPaymentConditionAddress lock reward condition contract address
-    * @param _escrowPaymentAddress escrow reward contract address
+    * @param _accessConditionAddress access condition address
+    * @param _lockConditionAddress lock reward condition contract address
+    * @param _escrowConditionAddress escrow reward contract address
     */
     function initialize(
         address _owner,
         address _agreementStoreManagerAddress,
         address _didRegistryAddress,
-        address _computeExecutionConditionAddress,
-        address _lockPaymentConditionAddress,
-        address _escrowPaymentAddress
+        address _accessConditionAddress,
+        address _lockConditionAddress,
+        address _escrowConditionAddress
     )
         external
         initializer()
@@ -69,9 +70,9 @@ contract EscrowComputeExecutionTemplate is BaseEscrowTemplate {
             _owner != address(0) &&
             _agreementStoreManagerAddress != address(0) &&
             _didRegistryAddress != address(0) &&
-            _computeExecutionConditionAddress != address(0) &&
-            _lockPaymentConditionAddress != address(0) &&
-            _escrowPaymentAddress != address(0),
+            _accessConditionAddress != address(0) &&
+            _lockConditionAddress != address(0) &&
+            _escrowConditionAddress != address(0),
             'Invalid address'
         );
 
@@ -86,20 +87,20 @@ contract EscrowComputeExecutionTemplate is BaseEscrowTemplate {
             _didRegistryAddress
         );
 
-        computeExecutionCondition = ComputeExecutionCondition(
-            _computeExecutionConditionAddress
+        accessCondition = AccessCondition(
+            _accessConditionAddress
         );
 
-        lockPaymentCondition = LockPaymentCondition(
-            _lockPaymentConditionAddress
+        lockCondition = LockPaymentCondition(
+            _lockConditionAddress
         );
 
-        escrowPayment = EscrowPaymentCondition(
-            _escrowPaymentAddress
+        escrowReward = EscrowPaymentCondition(
+            _escrowConditionAddress
         );
 
-        conditionTypes.push(address(computeExecutionCondition));
-        conditionTypes.push(address(lockPaymentCondition));
-        conditionTypes.push(address(escrowPayment));
+        conditionTypes.push(address(accessCondition));
+        conditionTypes.push(address(lockCondition));
+        conditionTypes.push(address(escrowReward));
     }
 }
