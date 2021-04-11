@@ -34,6 +34,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
         agreementStoreManager,
         conditionStoreManager,
         lockPaymentCondition,
+        escrowCondition,
         transferCondition
 
     async function setupTest({
