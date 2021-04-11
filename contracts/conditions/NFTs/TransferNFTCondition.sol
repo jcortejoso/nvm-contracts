@@ -75,6 +75,9 @@ contract TransferNFTCondition is Condition {
     * @param _did refers to the DID in which secret store will issue the decryption keys
     * @param _nftReceiver is the address of the granted user or the DID provider
     * @param _nftAmount amount of NFTs to transfer
+    * @param _rewardAddress is the lock payment contract address
+    * @param _amounts token amounts to be locked/released
+    * @param _receivers receiver's addresses         
     * @param _lockCondition lock condition identifier    
     * @return bytes32 hash of all these values 
     */
@@ -82,15 +85,40 @@ contract TransferNFTCondition is Condition {
         bytes32 _did,
         address _nftReceiver,
         uint256 _nftAmount,
+        address _rewardAddress,
+        uint256[] memory _amounts,
+        address[] memory _receivers,
         bytes32 _lockCondition
     )
         public
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_did, _nftReceiver, _nftAmount, _lockCondition));
+        return keccak256(abi.encodePacked(_did, _nftReceiver, _nftAmount, _rewardAddress, _amounts, _receivers, _lockCondition));
     }
 
+
+    /**
+     * @notice hashValues generates the hash of condition inputs 
+     *        with the following parameters
+     * @param _did refers to the DID in which secret store will issue the decryption keys
+     * @param _nftReceiver is the address of the granted user or the DID provider
+     * @param _nftAmount amount of NFTs to transfer
+     * @param _lockCondition lock condition identifier    
+     * @return bytes32 hash of all these values 
+     */
+    function hashValuesNFTLock(
+        bytes32 _did,
+        address _nftReceiver,
+        uint256 _nftAmount,
+        bytes32 _lockCondition
+    )
+    public
+    pure
+    returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(_did, _nftReceiver, _nftAmount, _lockCondition));
+    }    
 
     /**
      * @notice fulfill the transfer NFT condition
@@ -124,7 +152,7 @@ contract TransferNFTCondition is Condition {
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition)
+            hashValues(_did, _nftReceiver, _nftAmount, _rewardAddress, _amounts, _receivers, _lockPaymentCondition)
         );
 
         address lockConditionTypeRef;
@@ -201,7 +229,7 @@ contract TransferNFTCondition is Condition {
         
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _nftLockCondition)
+            hashValuesNFTLock(_did, _nftReceiver, _nftAmount, _nftLockCondition)
         );
 
         address lockConditionTypeRef;
@@ -247,7 +275,7 @@ contract TransferNFTCondition is Condition {
         emit Fulfilled(
             _agreementId,
             _did,
-                _nftReceiver, 
+            _nftReceiver, 
             _nftAmount,
             _id
         );

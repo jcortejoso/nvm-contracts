@@ -224,7 +224,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await lockPaymentCondition.hashValues(did, escrowCondition.address, _amounts, _receivers))
 
         const conditionIdTransferNFT = await transferCondition.generateId(agreementId,
-            await transferCondition.hashValues(did, _buyer, _numberNFTs, conditionIdLockPayment))
+            await transferCondition.hashValues(did, _buyer, _numberNFTs, escrowCondition.address, _amounts, _receivers, conditionIdLockPayment))
 
         const conditionIdEscrow = await escrowCondition.generateId(agreementId,
             await escrowCondition.hashValues(did, _amounts, _receivers, escrowCondition.address, conditionIdLockPayment, conditionIdTransferNFT))
@@ -290,6 +290,9 @@ contract('End to End NFT Scenarios', (accounts) => {
         })
 
         it('The artist can check the payment and transfer the NFT to the collector', async () => {
+            const nftBalanceArtistBefore = await didRegistry.balanceOf(artist, did)
+            const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
+
             await transferCondition.fulfill(
                 agreementId,
                 did,
@@ -305,8 +308,11 @@ contract('End to End NFT Scenarios', (accounts) => {
                 nftSalesAgreement.conditionIds[1])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
 
-            const nftBalance = await didRegistry.balanceOf(collector1, did)
-            assert.strictEqual(nftBalance.toNumber(), numberNFTs)
+            const nftBalanceArtistAfter = await didRegistry.balanceOf(artist, did)
+            const nftBalanceCollectorAfter = await didRegistry.balanceOf(collector1, did)
+
+            assert.strictEqual(nftBalanceArtistAfter.toNumber(), nftBalanceArtistBefore.toNumber() - numberNFTs)
+            assert.strictEqual(nftBalanceCollectorAfter.toNumber(), nftBalanceCollectorBefore.toNumber() + numberNFTs)
         })
 
         it('The artist ask and receives the payment', async () => {
