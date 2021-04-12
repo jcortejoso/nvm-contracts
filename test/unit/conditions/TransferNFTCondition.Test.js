@@ -171,7 +171,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
                 constants.condition.state.fulfilled)
 
             const hashValues = await transferCondition.hashValues(
-                did, rewardAddress, numberNFTs, escrowCondition.address, paymentAmounts, paymentReceivers, conditionIdPayment)
+                did, rewardAddress, numberNFTs, conditionIdPayment)
 
             const conditionId = await transferCondition.generateId(agreementId, hashValues)
 
@@ -181,7 +181,6 @@ contract('TransferNFT Condition constructor', (accounts) => {
 
             const result = await transferCondition.fulfill(
                 agreementId, did, rewardAddress, numberNFTs,
-                escrowCondition.address, paymentAmounts, paymentReceivers,
                 conditionIdPayment)
 
             assert.strictEqual(
@@ -226,7 +225,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
                 constants.condition.state.fulfilled)
 
             const hashValues = await transferCondition.hashValues(
-                did, rewardAddress, numberNFTs, escrowCondition.address, paymentAmounts, paymentReceivers, conditionIdPayment)
+                did, rewardAddress, numberNFTs, conditionIdPayment)
 
             const conditionId = await transferCondition.generateId(agreementId, hashValues)
 
