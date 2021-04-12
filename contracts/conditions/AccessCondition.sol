@@ -11,10 +11,10 @@ import '../interfaces/ISecretStorePermission.sol';
 import '../agreements/AgreementStoreManager.sol';
 
 /**
- * @title Access Secret Store Condition
+ * @title Access Condition
  * @author Keyko
  *
- * @dev Implementation of the Access Secret Store Condition
+ * @dev Implementation of the Access Condition
  *
  *      Access Secret Store Condition is special condition
  *      where parity secret store can encrypt/decrypt documents 

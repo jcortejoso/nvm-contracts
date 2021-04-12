@@ -74,7 +74,7 @@ contract TransferNFTCondition is Condition {
     *        with the following parameters
     * @param _did refers to the DID in which secret store will issue the decryption keys
     * @param _nftReceiver is the address of the granted user or the DID provider
-    * @param _nftAmount amount of NFTs to transfer
+    * @param _nftAmount amount of NFTs to transfer   
     * @param _lockCondition lock condition identifier    
     * @return bytes32 hash of all these values 
     */
@@ -91,7 +91,6 @@ contract TransferNFTCondition is Condition {
         return keccak256(abi.encodePacked(_did, _nftReceiver, _nftAmount, _lockCondition));
     }
 
-
     /**
      * @notice fulfill the transfer NFT condition
      * @dev only DID owner or DID provider can call this
@@ -102,9 +101,6 @@ contract TransferNFTCondition is Condition {
      * @param _did refers to the DID in which secret store will issue the decryption keys
      * @param _nftReceiver is the address of the account to receive the NFT
      * @param _nftAmount amount of NFTs to transfer  
-     * @param _rewardAddress is the lock payment contract address
-     * @param _amounts token amounts to be locked/released
-     * @param _receivers receiver's addresses     
      * @param _lockPaymentCondition lock payment condition identifier
      * @return condition state (Fulfilled/Aborted)
      */
@@ -113,9 +109,6 @@ contract TransferNFTCondition is Condition {
         bytes32 _did,
         address _nftReceiver,
         uint256 _nftAmount,
-        address _rewardAddress,
-        uint256[] memory _amounts,
-        address[] memory _receivers,    
         bytes32 _lockPaymentCondition
     )
     public
@@ -135,20 +128,6 @@ contract TransferNFTCondition is Condition {
         require(
             lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
             'LockCondition needs to be Fulfilled'
-        );
-        bytes32 generatedLockConditionId = keccak256(
-            abi.encodePacked(
-                _agreementId,
-                lockConditionTypeRef,
-                keccak256(
-                    abi.encodePacked(_did, _rewardAddress, _amounts, _receivers)
-                )
-            )
-        );
-
-        require(
-            generatedLockConditionId == _lockPaymentCondition,
-            'LockCondition ID does not match'
         );
 
         require(
@@ -247,7 +226,7 @@ contract TransferNFTCondition is Condition {
         emit Fulfilled(
             _agreementId,
             _did,
-                _nftReceiver, 
+            _nftReceiver, 
             _nftAmount,
             _id
         );

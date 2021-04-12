@@ -290,14 +290,14 @@ contract('End to End NFT Scenarios', (accounts) => {
         })
 
         it('The artist can check the payment and transfer the NFT to the collector', async () => {
+            const nftBalanceArtistBefore = await didRegistry.balanceOf(artist, did)
+            const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
+
             await transferCondition.fulfill(
                 agreementId,
                 did,
                 collector1,
                 numberNFTs,
-                escrowCondition.address,
-                amounts,
-                receivers,
                 nftSalesAgreement.conditionIds[0],
                 { from: artist })
 
@@ -305,8 +305,11 @@ contract('End to End NFT Scenarios', (accounts) => {
                 nftSalesAgreement.conditionIds[1])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
 
-            const nftBalance = await didRegistry.balanceOf(collector1, did)
-            assert.strictEqual(nftBalance.toNumber(), numberNFTs)
+            const nftBalanceArtistAfter = await didRegistry.balanceOf(artist, did)
+            const nftBalanceCollectorAfter = await didRegistry.balanceOf(collector1, did)
+
+            assert.strictEqual(nftBalanceArtistAfter.toNumber(), nftBalanceArtistBefore.toNumber() - numberNFTs)
+            assert.strictEqual(nftBalanceCollectorAfter.toNumber(), nftBalanceCollectorBefore.toNumber() + numberNFTs)
         })
 
         it('The artist ask and receives the payment', async () => {
@@ -396,9 +399,6 @@ contract('End to End NFT Scenarios', (accounts) => {
                 did,
                 collector2,
                 numberNFTs2,
-                escrowCondition.address,
-                amounts2,
-                receivers2,
                 nftSalesAgreement.conditionIds[0],
                 { from: collector1 })
 
