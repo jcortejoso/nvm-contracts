@@ -159,21 +159,6 @@ contract NFTAccessCondition is Condition {
     {
         nftPermissions[_documentId].permission[_grantee] = true;
     }
-
-   /**
-    * @notice renouncePermission is called only by DID owner or provider
-    * @param _grantee is the address of the granted user or the DID provider
-    * @param _documentId refers to the DID in which secret store will issue the decryption keys
-    */
-    function renouncePermission(
-        address _grantee,
-        bytes32 _documentId
-    )
-        public
-        onlyDIDOwnerOrProvider(_documentId)
-    {
-        nftPermissions[_documentId].permission[_grantee] = false;
-    }
     
    /**
     * @notice checkPermissions is called to validate the permissions of user related to the NFT attached to an asset
