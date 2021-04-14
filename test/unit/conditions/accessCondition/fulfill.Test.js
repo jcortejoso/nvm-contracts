@@ -13,6 +13,7 @@ const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const DIDRegistry = artifacts.require('DIDRegistry')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const AccessCondition = artifacts.require('AccessCondition')
+const NFTAccessCondition = artifacts.require('NFTAccessCondition')
 
 const constants = require('../../../helpers/constants.js')
 const testUtils = require('../../../helpers/utils.js')
@@ -32,8 +33,16 @@ contract('AccessCondition constructor', (accounts) => {
             const didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(accounts[0])
             const accessCondition = await AccessCondition.new()
+            const nftAccessCondition = await NFTAccessCondition.new()
 
             await accessCondition.methods['initialize(address,address,address)'](
+                accounts[0],
+                conditionStoreManager.address,
+                agreementStoreManager.address,
+                { from: accounts[0] }
+            )
+
+            await nftAccessCondition.methods['initialize(address,address,address)'](
                 accounts[0],
                 conditionStoreManager.address,
                 agreementStoreManager.address,
@@ -45,7 +54,7 @@ contract('AccessCondition constructor', (accounts) => {
     describe('fulfill non existing condition', () => {
         it('should not fulfill if condition does not exist', async () => {
             const {
-                accessCondition
+                accessCondition, nftAccessCondition
             } = await common.setupTest({ accounts: accounts })
 
             const agreementId = constants.bytes32.one

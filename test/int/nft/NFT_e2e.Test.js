@@ -21,7 +21,7 @@ const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const NeverminedToken = artifacts.require('NeverminedToken')
-const AccessCondition = artifacts.require('AccessCondition')
+const NFTAccessCondition = artifacts.require('NFTAccessCondition')
 const NFTHolderCondition = artifacts.require('NFTHolderCondition')
 
 const constants = require('../../helpers/constants.js')
@@ -133,7 +133,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             { from: deployer }
         )
 
-        accessCondition = await AccessCondition.new()
+        accessCondition = await NFTAccessCondition.new()
         await accessCondition.methods['initialize(address,address,address)'](
             owner,
             conditionStoreManager.address,
@@ -348,7 +348,7 @@ contract('End to End NFT Scenarios', (accounts) => {
 
             // Collector1: I demonstrate I have the NFT
             await nftHolderCondition.fulfill(
-                agreementAccessId, nftAccessAgreement.did, collector1, nftAmount)
+                agreementAccessId, nftAccessAgreement.did, collector1, nftAmount, {from: gallery})
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(nftAccessAgreement.conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
