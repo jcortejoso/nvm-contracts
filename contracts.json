@@ -10,6 +10,7 @@
   "NFTLockCondition",
   "TransferNFTCondition",
   "AccessCondition",
+  "NFTAccessCondition",
   "EscrowPaymentCondition",
   "TransferDIDOwnershipCondition",
   "ThresholdCondition",
