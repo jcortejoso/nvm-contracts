@@ -54,7 +54,7 @@ contract('AccessCondition constructor', (accounts) => {
     describe('fulfill non existing condition', () => {
         it('should not fulfill if condition does not exist', async () => {
             const {
-                accessCondition, nftAccessCondition
+                accessCondition
             } = await common.setupTest({ accounts: accounts })
 
             const agreementId = constants.bytes32.one

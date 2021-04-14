@@ -348,7 +348,7 @@ contract('End to End NFT Scenarios', (accounts) => {
 
             // Collector1: I demonstrate I have the NFT
             await nftHolderCondition.fulfill(
-                agreementAccessId, nftAccessAgreement.did, collector1, nftAmount, {from: gallery})
+                agreementAccessId, nftAccessAgreement.did, collector1, nftAmount, { from: gallery })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(nftAccessAgreement.conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
