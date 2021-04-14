@@ -236,6 +236,18 @@ async function initializeContracts({
                 verbose
             })
         }
+        if (contracts.indexOf('NFTAccessCondition') > -1) {
+            addressBook.NFTAccessCondition = zosCreate({
+                contract: 'NFTAccessCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('AgreementStoreManager')
+                ],
+                verbose
+            })
+        }
         if (contracts.indexOf('ComputeExecutionCondition') > -1) {
             addressBook.ComputeExecutionCondition = zosCreate({
                 contract: 'ComputeExecutionCondition',
@@ -319,7 +331,7 @@ async function initializeContracts({
     }
 
     if (getAddress('AgreementStoreManager') &&
-        getAddress('AccessCondition') &&
+        getAddress('NFTAccessCondition') &&
         getAddress('NFTHolderCondition')) {
         if (contracts.indexOf('NFTAccessTemplate') > -1) {
             addressBook.NFTAccessTemplate = zosCreate({
@@ -329,7 +341,7 @@ async function initializeContracts({
                     roles.ownerWallet,
                     getAddress('AgreementStoreManager'),
                     getAddress('NFTHolderCondition'),
-                    getAddress('AccessCondition')
+                    getAddress('NFTAccessCondition')
                 ],
                 verbose
             })
