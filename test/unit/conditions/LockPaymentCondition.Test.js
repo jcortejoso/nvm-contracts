@@ -80,7 +80,7 @@ contract('LockPaymentCondition', (accounts) => {
             await didRegistry.registerMintableDID(
                 did, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
 
-            const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, amounts, receivers)
+            const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
             const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
@@ -90,7 +90,7 @@ contract('LockPaymentCondition', (accounts) => {
             await token.mint(sender, 10, { from: owner })
             await token.approve(lockPaymentCondition.address, 10, { from: sender })
 
-            const result = await lockPaymentCondition.fulfill(agreementId, did, rewardAddress, amounts, receivers)
+            const result = await lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers)
             const { state } = await conditionStoreManager.getCondition(conditionId)
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
             const rewardBalance = await getBalance(token, rewardAddress)
@@ -120,7 +120,7 @@ contract('LockPaymentCondition', (accounts) => {
             await token.approve(lockPaymentCondition.address, 10, { from: sender })
 
             await assert.isRejected(
-                lockPaymentCondition.fulfill(agreementId, did, rewardAddress, amounts, receivers),
+                lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers),
                 constants.acl.error.invalidUpdateRole
             )
         })
@@ -140,7 +140,7 @@ contract('LockPaymentCondition', (accounts) => {
             await token.approve(lockPaymentCondition.address, 10, { from: sender })
 
             await assert.isRejected(
-                lockPaymentCondition.fulfill(agreementId, did, rewardAddress, amounts, receivers),
+                lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers),
                 constants.acl.error.invalidUpdateRole
             )
         })
@@ -159,7 +159,7 @@ contract('LockPaymentCondition', (accounts) => {
             await token.mint(sender, 5, { from: owner })
             await token.approve(lockPaymentCondition.address, 5, { from: sender })
 
-            const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, amounts, receivers)
+            const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
             const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
@@ -167,7 +167,7 @@ contract('LockPaymentCondition', (accounts) => {
                 lockPaymentCondition.address)
 
             await assert.isRejected(
-                lockPaymentCondition.fulfill(agreementId, did, rewardAddress, amounts, receivers),
+                lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers),
                 undefined
             )
         })
@@ -186,7 +186,7 @@ contract('LockPaymentCondition', (accounts) => {
             await token.mint(sender, 10, { from: owner })
             await token.approve(lockPaymentCondition.address, 10, { from: sender })
 
-            const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, amounts, receivers)
+            const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
             const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
@@ -196,14 +196,14 @@ contract('LockPaymentCondition', (accounts) => {
 
             await token.approve(lockPaymentCondition.address, 10, { from: sender })
 
-            await lockPaymentCondition.fulfill(agreementId, did, rewardAddress, amounts, receivers)
+            await lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers)
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
                 constants.condition.state.fulfilled
             )
 
             await assert.isRejected(
-                lockPaymentCondition.fulfill(agreementId, did, rewardAddress, amounts, receivers),
+                lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers),
                 undefined
             )
 
@@ -224,7 +224,7 @@ contract('LockPaymentCondition', (accounts) => {
             await didRegistry.registerMintableDID(
                 did, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
 
-            const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, amounts, receivers)
+            const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
             const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
@@ -242,7 +242,7 @@ contract('LockPaymentCondition', (accounts) => {
             await token.approve(lockPaymentCondition.address, 10, { from: sender })
 
             await assert.isRejected(
-                lockPaymentCondition.fulfill(agreementId, did, rewardAddress, amounts, receivers),
+                lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers),
                 constants.acl.error.invalidUpdateRole
             )
         })

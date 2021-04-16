@@ -106,6 +106,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                     amounts,
                     receivers,
                     sender,
+                    token.address,
                     lockConditionId,
                     releaseConditionId),
                 constants.condition.reward.escrowReward.error.lockConditionIdDoesNotMatch
@@ -123,7 +124,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             const totalAmount = amounts[0]
             const balanceBefore = await getBalance(token, escrowPayment.address)
 
-            const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, amounts, receivers)
+            const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
             const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
             await conditionStoreManager.createCondition(
@@ -138,6 +139,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 amounts,
                 receivers,
                 escrowPayment.address,
+                token.address,
                 lockConditionId,
                 releaseConditionId)
 
@@ -153,7 +155,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 totalAmount,
                 { from: sender })
 
-            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, amounts, receivers)
+            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
             assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
             assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
@@ -164,6 +166,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 amounts,
                 receivers,
                 escrowPayment.address,
+                token.address,
                 lockConditionId,
                 releaseConditionId)
 
@@ -188,7 +191,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
 
             assert.strictEqual(await getBalance(token, escrowPayment.address), totalAmount)
             await assert.isRejected(
-                escrowPayment.fulfill(agreementId, did, amounts, receivers, escrowPayment.address, lockConditionId, releaseConditionId),
+                escrowPayment.fulfill(agreementId, did, amounts, receivers, escrowPayment.address, token.address, lockConditionId, releaseConditionId),
                 constants.condition.state.error.invalidStateTransition
             )
         })
@@ -202,7 +205,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             const totalAmount = amounts[0]
             const balanceBefore = await getBalance(token, escrowPayment.address)
 
-            const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, amounts, receivers)
+            const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
             const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
             await conditionStoreManager.createCondition(
@@ -217,6 +220,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 amounts,
                 receivers,
                 sender,
+                token.address,
                 lockConditionId,
                 releaseConditionId)
             const conditionId = await escrowPayment.generateId(agreementId, hashValues)
@@ -235,7 +239,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 totalAmount,
                 { from: sender })
 
-            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, amounts, receivers)
+            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
             assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
             assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
@@ -247,10 +251,11 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                     amounts,
                     receivers,
                     escrowPayment.address,
+                    token.address,
                     lockConditionId,
                     releaseConditionId
                 ),
-                'Null address is impossible to fulfill'
+                'ERC20: transfer to the zero address'
             )
         })
         it('should not fulfill if the receiver address is Escrow contract address', async () => {
@@ -262,7 +267,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             const totalAmount = amounts[0]
             const balanceBefore = await getBalance(token, escrowPayment.address)
 
-            const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, amounts, receivers)
+            const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
             const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
             await conditionStoreManager.createCondition(
@@ -277,6 +282,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 amounts,
                 receivers,
                 sender,
+                token.address,
                 lockConditionId,
                 releaseConditionId)
             const conditionId = await escrowPayment.generateId(agreementId, hashValues)
@@ -295,7 +301,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 totalAmount,
                 { from: sender })
 
-            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, amounts, receivers)
+            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
             assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
             assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
@@ -307,6 +313,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                     amounts,
                     receivers,
                     escrowPayment.address,
+                    token.address,
                     lockConditionId,
                     releaseConditionId
                 ),
@@ -325,7 +332,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             const amounts = [10]
             const totalAmount = amounts[0]
 
-            const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, amounts, receivers)
+            const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
             const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
             await conditionStoreManager.createCondition(
@@ -350,7 +357,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 totalAmount,
                 { from: sender })
 
-            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, amounts, receivers)
+            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
             const escrowPaymentBalance = 110
 
@@ -367,6 +374,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                     amounts,
                     attacker,
                     attacker[0],
+                    token.address,
                     lockConditionId,
                     releaseConditionId)
                 const attackerConditionId = await escrowPayment.generateId(attackerAgreementId, attackerHashValues)
@@ -383,6 +391,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                         amounts,
                         attacker,
                         attacker[0],
+                        token.address,
                         lockConditionId,
                         releaseConditionId),
                     constants.condition.reward.escrowReward.error.lockConditionIdDoesNotMatch

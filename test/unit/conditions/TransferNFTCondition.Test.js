@@ -154,7 +154,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
             } = await setupTest({ accounts: accounts, registerDID: true })
 
             const hashValuesPayment = await lockPaymentCondition.hashValues(
-                did, escrowCondition.address, paymentAmounts, paymentReceivers)
+                did, escrowCondition.address, token.address, paymentAmounts, paymentReceivers)
             const conditionIdPayment = await lockPaymentCondition.generateId(agreementId, hashValuesPayment)
 
             await conditionStoreManager.createCondition(
@@ -164,7 +164,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
             await token.mint(accounts[0], 10, { from: owner })
             await token.approve(lockPaymentCondition.address, 10)
 
-            await lockPaymentCondition.fulfill(agreementId, did, escrowCondition.address, paymentAmounts, paymentReceivers)
+            await lockPaymentCondition.fulfill(agreementId, did, escrowCondition.address, token.address, paymentAmounts, paymentReceivers)
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionIdPayment)).toNumber(),
@@ -208,7 +208,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
             } = await setupTest({ accounts: accounts, registerDID: true })
 
             const hashValuesPayment = await lockPaymentCondition.hashValues(
-                did, lockPaymentCondition.address, paymentAmounts, paymentReceivers)
+                did, lockPaymentCondition.address, token.address, paymentAmounts, paymentReceivers)
             const conditionIdPayment = await lockPaymentCondition.generateId(agreementId, hashValuesPayment)
 
             await conditionStoreManager.createCondition(
@@ -218,7 +218,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
             await token.mint(accounts[0], 10, { from: owner })
             await token.approve(lockPaymentCondition.address, 10)
 
-            await lockPaymentCondition.fulfill(agreementId, did, lockPaymentCondition.address, paymentAmounts, paymentReceivers)
+            await lockPaymentCondition.fulfill(agreementId, did, lockPaymentCondition.address, token.address, paymentAmounts, paymentReceivers)
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionIdPayment)).toNumber(),

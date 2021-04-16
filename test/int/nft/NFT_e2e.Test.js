@@ -221,7 +221,7 @@ contract('End to End NFT Scenarios', (accounts) => {
         _numberNFTs = numberNFTs
     } = {}) {
         const conditionIdLockPayment = await lockPaymentCondition.generateId(agreementId,
-            await lockPaymentCondition.hashValues(did, escrowCondition.address, _amounts, _receivers))
+            await lockPaymentCondition.hashValues(did, escrowCondition.address, token.address, _amounts, _receivers))
 
         const conditionIdTransferNFT = await transferCondition.generateId(agreementId,
             await transferCondition.hashValues(did, _buyer, _numberNFTs, conditionIdLockPayment))
@@ -281,7 +281,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await token.approve(lockPaymentCondition.address, nftPrice, { from: collector1 })
             await token.approve(escrowCondition.address, nftPrice, { from: collector1 })
 
-            await lockPaymentCondition.fulfill(agreementId, did, escrowCondition.address, amounts, receivers, { from: collector1 })
+            await lockPaymentCondition.fulfill(agreementId, did, escrowCondition.address, token.address, amounts, receivers, { from: collector1 })
 
             const { state } = await conditionStoreManager.getCondition(nftSalesAgreement.conditionIds[0])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
@@ -384,7 +384,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await token.approve(lockPaymentCondition.address, nftPrice2, { from: collector2 })
             await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
 
-            await lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, amounts2, receivers2, { from: collector2 })
+            await lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, token.address, amounts2, receivers2, { from: collector2 })
 
             const { state } = await conditionStoreManager.getCondition(
                 nftSalesAgreement.conditionIds[0])
@@ -461,7 +461,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
 
             await assert.isRejected(
-                lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, amountsNoRoyalties, receiversNoRoyalties, { from: collector2 })
+                lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, token.address, amountsNoRoyalties, receiversNoRoyalties, { from: collector2 })
             )
         })
     })

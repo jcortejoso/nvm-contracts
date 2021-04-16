@@ -62,8 +62,8 @@ contract EscrowPaymentCondition is Reward {
      * @param _did asset decentralized identifier               
      * @param _amounts token amounts to be locked/released
      * @param _receivers receiver's addresses
-     * @param _tokenAddress the ERC20 contract address to use during the payment 
      * @param _lockPaymentAddress lock payment contract address
+     * @param _tokenAddress the ERC20 contract address to use during the payment 
      * @param _lockCondition lock condition identifier
      * @param _releaseCondition release condition identifier
      * @return bytes32 hash of all these values 
@@ -72,8 +72,8 @@ contract EscrowPaymentCondition is Reward {
         bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
-        address _tokenAddress,
         address _lockPaymentAddress,
+        address _tokenAddress,
         bytes32 _lockCondition,
         bytes32 _releaseCondition
     )
@@ -89,15 +89,15 @@ contract EscrowPaymentCondition is Reward {
                 _did,
                 _amounts,
                 _receivers,
+                _lockPaymentAddress, 
                 _tokenAddress,
-                _lockPaymentAddress,
                 _lockCondition,
                 _releaseCondition
             )
         );
     }
-
-
+    
+    
     /**
      * @notice fulfill escrow reward condition
      * @dev fulfill method checks whether the lock and 
@@ -108,8 +108,8 @@ contract EscrowPaymentCondition is Reward {
      * @param _did asset decentralized identifier          
      * @param _amounts token amounts to be locked/released
      * @param _receivers receiver's address
-     * @param _tokenAddress the ERC20 contract address to use during the payment
      * @param _lockPaymentAddress lock payment contract address
+     * @param _tokenAddress the ERC20 contract address to use during the payment
      * @param _lockCondition lock condition identifier
      * @param _lockPaymentAddress release condition identifier
      * @return condition state (Fulfilled/Aborted)
@@ -119,8 +119,8 @@ contract EscrowPaymentCondition is Reward {
         bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
-        address _tokenAddress,
         address _lockPaymentAddress,
+        address _tokenAddress,
         bytes32 _lockCondition,
         bytes32 _releaseCondition
     )
@@ -155,8 +155,8 @@ contract EscrowPaymentCondition is Reward {
                 _did,
                 _amounts,
                 _receivers,
-                _tokenAddress,
                 _lockPaymentAddress,
+                _tokenAddress,
                 _lockCondition,
                 _releaseCondition
             )
@@ -217,6 +217,10 @@ contract EscrowPaymentCondition is Reward {
         IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
         
         for(uint i = 0; i < _receivers.length; i++)    {
+            require(
+                _receivers[i] != address(this),
+                'Escrow contract can not be a receiver'
+            );
             require(
                 token.transfer(_receivers[i], _amounts[i]),
                 'Could not transfer token'
