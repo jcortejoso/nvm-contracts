@@ -3,7 +3,7 @@
 
 Documentation:
 ```
-@title Nft Holder Condition
+@title NFT Holder Condition
 @author Keyko
  * @dev Allows to fulfill a condition to users holding some amount of NFTs for a specific DID
 ```
