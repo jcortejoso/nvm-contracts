@@ -128,29 +128,22 @@ contract EscrowPaymentCondition is Reward {
     returns (ConditionStoreLibrary.ConditionState)
     {
 
-        address lockConditionTypeRef;
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
-        .getCondition(_lockCondition);
-
         uint256 _totalAmount = _calculateTotalAmount(_amounts);
 
-        bytes32 generatedLockConditionId = keccak256(
+        require(keccak256(
             abi.encodePacked(
                 _agreementId,
-                lockConditionTypeRef,
+                conditionStoreManager.getConditionTypeRef(_lockCondition),
                 keccak256(
                     abi.encodePacked(_did, _lockPaymentAddress, _tokenAddress, _amounts, _receivers)
                 )
             )
-        );
-
-        require(
-            generatedLockConditionId == _lockCondition,
+        ) == _lockCondition,
             'LockCondition ID does not match'
         );
+        
         require(
-            lockConditionState ==
+            conditionStoreManager.getConditionState(_lockCondition) ==
             ConditionStoreLibrary.ConditionState.Fulfilled,
             'LockCondition needs to be Fulfilled'
         );
