@@ -227,7 +227,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await transferCondition.hashValues(did, _buyer, _numberNFTs, conditionIdLockPayment))
 
         const conditionIdEscrow = await escrowCondition.generateId(agreementId,
-            await escrowCondition.hashValues(did, _amounts, _receivers, escrowCondition.address, conditionIdLockPayment, conditionIdTransferNFT))
+            await escrowCondition.hashValues(did, _amounts, _receivers, escrowCondition.address, token.address, conditionIdLockPayment, conditionIdTransferNFT))
 
         nftSalesAgreement = {
             did: did,
@@ -319,6 +319,7 @@ contract('End to End NFT Scenarios', (accounts) => {
                 amounts,
                 receivers,
                 escrowCondition.address,
+                token.address,
                 nftSalesAgreement.conditionIds[0],
                 nftSalesAgreement.conditionIds[1],
                 { from: artist })
@@ -416,6 +417,7 @@ contract('End to End NFT Scenarios', (accounts) => {
                 amounts2,
                 receivers2,
                 escrowCondition.address,
+                token.address,
                 nftSalesAgreement.conditionIds[0],
                 nftSalesAgreement.conditionIds[1],
                 { from: collector1 })
