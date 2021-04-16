@@ -18,7 +18,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
  */
 contract LockPaymentCondition is Condition {
 
-    IERC20Upgradeable private token;
+    address private defaultTokenAddress;
     DIDRegistry internal didRegistry;
 
     bytes32 constant public CONDITION_TYPE = keccak256('LockPaymentCondition');
@@ -28,6 +28,7 @@ contract LockPaymentCondition is Condition {
         bytes32 indexed _did,
         bytes32 indexed _conditionId,
         address _rewardAddress,
+        address _tokenAddress,
         address[] _receivers,
         uint256[] _amounts
     );
@@ -37,7 +38,7 @@ contract LockPaymentCondition is Condition {
     * @dev this function is called only once during the contract initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address
-    * @param _tokenAddress Token contract address
+    * @param _tokenAddress Default Token contract address
     */
     function initialize(
         address _owner,
@@ -58,7 +59,7 @@ contract LockPaymentCondition is Condition {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        token = ERC20Upgradeable(_tokenAddress);
+        defaultTokenAddress = _tokenAddress;
         
         didRegistry = DIDRegistry(
             _didRegistryAddress
@@ -71,6 +72,8 @@ contract LockPaymentCondition is Condition {
     *        with the following parameters
     * @param _did the asset decentralized identifier 
     * @param _rewardAddress the contract address where the reward is locked       
+    * @param _tokenAddress the ERC20 contract address to use during the lock payment. 
+    *        If the address is 0x0 means we won't use a ERC20 but ETH for payment     
     * @param _amounts token amounts to be locked/released
     * @param _receivers receiver's addresses
     * @return bytes32 hash of all these values 
@@ -78,6 +81,7 @@ contract LockPaymentCondition is Condition {
     function hashValues(
         bytes32 _did,
         address _rewardAddress,
+        address _tokenAddress,
         uint256[] memory _amounts,
         address[] memory _receivers
     )
@@ -85,7 +89,7 @@ contract LockPaymentCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_did, _rewardAddress, _amounts, _receivers));
+        return keccak256(abi.encodePacked(_did, _rewardAddress, _tokenAddress, _amounts, _receivers));
     }
 
    /**
@@ -94,6 +98,8 @@ contract LockPaymentCondition is Condition {
     * @param _agreementId the agreement identifier
     * @param _did the asset decentralized identifier
     * @param _rewardAddress the contract address where the reward is locked
+    * @param _tokenAddress the ERC20 contract address to use during the lock payment. 
+    *        If the address is 0x0 means we won't use a ERC20 but ETH for payment      
     * @param _amounts token amounts to be locked/released
     * @param _receivers receiver's addresses
     * @return condition state
@@ -102,6 +108,7 @@ contract LockPaymentCondition is Condition {
         bytes32 _agreementId,
         bytes32 _did,
         address _rewardAddress,
+        address _tokenAddress,
         uint256[] memory _amounts,
         address[] memory _receivers
     )
@@ -121,7 +128,8 @@ contract LockPaymentCondition is Condition {
         uint256 _totalAmount = 0;
         for(uint i = 0; i < _amounts.length; i++)
             _totalAmount = _totalAmount + _amounts[i];
-        
+
+        IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
         require(
             token.transferFrom(msg.sender, _rewardAddress, _totalAmount),
             'Could not transfer token'
@@ -129,7 +137,7 @@ contract LockPaymentCondition is Condition {
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _rewardAddress, _amounts, _receivers)
+            hashValues(_did, _rewardAddress, _tokenAddress, _amounts, _receivers)
         );
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
@@ -141,6 +149,7 @@ contract LockPaymentCondition is Condition {
             _did,
             _id,
             _rewardAddress,
+            _tokenAddress,
             _receivers, 
             _amounts
         );

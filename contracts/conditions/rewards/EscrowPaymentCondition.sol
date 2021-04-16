@@ -22,6 +22,7 @@ contract EscrowPaymentCondition is Reward {
 
     event Fulfilled(
         bytes32 indexed _agreementId,
+        address indexed _tokenAddress,
         address[] _receivers,
         bytes32 _conditionId,
         uint256[] _amounts
@@ -32,7 +33,7 @@ contract EscrowPaymentCondition is Reward {
      *       contract with the following parameters
      * @param _owner contract's owner account address
      * @param _conditionStoreManagerAddress condition store manager address
-     * @param _tokenAddress Ocean token contract address
+     * @param _tokenAddress Default token contract address
      */
     function initialize(
         address _owner,
@@ -52,7 +53,7 @@ contract EscrowPaymentCondition is Reward {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        token = ERC20Upgradeable(_tokenAddress);
+        defaultTokenAddress = _tokenAddress;
     }
 
     /**
@@ -61,6 +62,7 @@ contract EscrowPaymentCondition is Reward {
      * @param _did asset decentralized identifier               
      * @param _amounts token amounts to be locked/released
      * @param _receivers receiver's addresses
+     * @param _tokenAddress the ERC20 contract address to use during the payment 
      * @param _lockPaymentAddress lock payment contract address
      * @param _lockCondition lock condition identifier
      * @param _releaseCondition release condition identifier
@@ -70,6 +72,7 @@ contract EscrowPaymentCondition is Reward {
         bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
+        address _tokenAddress,
         address _lockPaymentAddress,
         bytes32 _lockCondition,
         bytes32 _releaseCondition
@@ -86,6 +89,7 @@ contract EscrowPaymentCondition is Reward {
                 _did,
                 _amounts,
                 _receivers,
+                _tokenAddress,
                 _lockPaymentAddress,
                 _lockCondition,
                 _releaseCondition
@@ -104,6 +108,7 @@ contract EscrowPaymentCondition is Reward {
      * @param _did asset decentralized identifier          
      * @param _amounts token amounts to be locked/released
      * @param _receivers receiver's address
+     * @param _tokenAddress the ERC20 contract address to use during the payment
      * @param _lockPaymentAddress lock payment contract address
      * @param _lockCondition lock condition identifier
      * @param _lockPaymentAddress release condition identifier
@@ -114,6 +119,7 @@ contract EscrowPaymentCondition is Reward {
         bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
+        address _tokenAddress,
         address _lockPaymentAddress,
         bytes32 _lockCondition,
         bytes32 _releaseCondition
@@ -121,37 +127,20 @@ contract EscrowPaymentCondition is Reward {
     external
     returns (ConditionStoreLibrary.ConditionState)
     {
-        require(
-            _amounts.length == _receivers.length,
-            'Amounts and Receivers arguments have wrong length'
-        );
 
-        bytes32 id = generateId(
-            _agreementId,
-            hashValues(
-                _did,
-                _amounts,
-                _receivers,
-                _lockPaymentAddress,
-                _lockCondition,
-                _releaseCondition
-            )
-        );
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
         (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
         .getCondition(_lockCondition);
 
-        uint256 _totalAmount;
-        for(uint i; i < _amounts.length; i++)
-            _totalAmount = _totalAmount + _amounts[i];
+        uint256 _totalAmount = _calculateTotalAmount(_amounts);
 
         bytes32 generatedLockConditionId = keccak256(
             abi.encodePacked(
                 _agreementId,
                 lockConditionTypeRef,
                 keccak256(
-                    abi.encodePacked(_did, _lockPaymentAddress, _amounts, _receivers)
+                    abi.encodePacked(_did, _lockPaymentAddress, _tokenAddress, _amounts, _receivers)
                 )
             )
         );
@@ -165,18 +154,27 @@ contract EscrowPaymentCondition is Reward {
             ConditionStoreLibrary.ConditionState.Fulfilled,
             'LockCondition needs to be Fulfilled'
         );
-        require(
-            token.balanceOf(_lockPaymentAddress) >= _totalAmount,
-            'Not enough balance'
-        );
 
         ConditionStoreLibrary.ConditionState state = conditionStoreManager
         .getConditionState(_releaseCondition);
-
+        
+        bytes32 id = generateId(
+            _agreementId,
+            hashValues(
+                _did,
+                _amounts,
+                _receivers,
+                _tokenAddress,
+                _lockPaymentAddress,
+                _lockCondition,
+                _releaseCondition
+            )
+        );        
+        
         if (state == ConditionStoreLibrary.ConditionState.Fulfilled)
         {
-            state = _transferAndFulfill(id, _receivers, _amounts);
-            emit Fulfilled(_agreementId, _receivers, id, _amounts);
+            state = _transferAndFulfill(id, _tokenAddress, _receivers, _amounts);
+            emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
 
         } else if (state == ConditionStoreLibrary.ConditionState.Aborted)
         {
@@ -184,8 +182,8 @@ contract EscrowPaymentCondition is Reward {
             _totalAmounts[0] = _totalAmount;
             address[] memory _originalSender = new address[](1);
             _originalSender[0] = conditionStoreManager.getConditionCreatedBy(_lockCondition);
-            state = _transferAndFulfill(id, _originalSender, _totalAmounts);
-            emit Fulfilled(_agreementId, _originalSender, id, _totalAmounts);
+            state = _transferAndFulfill(id, _tokenAddress, _originalSender, _totalAmounts);
+            emit Fulfilled(_agreementId, _tokenAddress, _originalSender, id, _totalAmounts);
         } else
         {
             return conditionStoreManager.getConditionState(id);
@@ -194,31 +192,40 @@ contract EscrowPaymentCondition is Reward {
         return state;
     }
 
+    function _calculateTotalAmount(
+        uint256[] memory _amounts
+    )
+    internal
+    pure
+    returns (uint256)
+    {
+        uint256 _totalAmount;
+        for(uint i; i < _amounts.length; i++)
+            _totalAmount = _totalAmount + _amounts[i];
+        return _totalAmount;
+    }
+    
     /**
     * @notice _transferAndFulfill transfer tokens and 
     *       fulfill the condition
     * @param _id condition identifier
+    * @param _tokenAddress the ERC20 contract address to use during the payment    
     * @param _receivers receiver's address
     * @param _amounts token amount to be locked/released
     * @return condition state (Fulfilled/Aborted)
     */
     function _transferAndFulfill(
         bytes32 _id,
+        address _tokenAddress,
         address[] memory _receivers,
         uint256[] memory _amounts
     )
     private
     returns (ConditionStoreLibrary.ConditionState)
     {
+        IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
+        
         for(uint i = 0; i < _receivers.length; i++)    {
-            require(
-                _receivers[i] != address(0),
-                'Null address is impossible to fulfill'
-            );
-            require(
-                _receivers[i] != address(this),
-                'Escrow contract can not be a receiver'
-            );
             require(
                 token.transfer(_receivers[i], _amounts[i]),
                 'Could not transfer token'

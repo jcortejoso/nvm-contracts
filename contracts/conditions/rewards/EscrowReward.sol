@@ -21,6 +21,7 @@ import '../ConditionStoreLibrary.sol';
  */
 contract EscrowReward is Reward {
 
+    IERC20Upgradeable private token;
     bytes32 constant public CONDITION_TYPE = keccak256('EscrowReward');
 
     event Fulfilled(
