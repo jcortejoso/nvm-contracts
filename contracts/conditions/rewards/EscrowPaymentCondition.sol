@@ -128,8 +128,6 @@ contract EscrowPaymentCondition is Reward {
     returns (ConditionStoreLibrary.ConditionState)
     {
 
-        uint256 _totalAmount = _calculateTotalAmount(_amounts);
-
         require(keccak256(
             abi.encodePacked(
                 _agreementId,
@@ -172,7 +170,7 @@ contract EscrowPaymentCondition is Reward {
         } else if (state == ConditionStoreLibrary.ConditionState.Aborted)
         {
             uint256[] memory _totalAmounts = new uint256[](1);
-            _totalAmounts[0] = _totalAmount;
+            _totalAmounts[0] = _calculateTotalAmount(_amounts);
             address[] memory _originalSender = new address[](1);
             _originalSender[0] = conditionStoreManager.getConditionCreatedBy(_lockCondition);
             state = _transferAndFulfill(id, _tokenAddress, _originalSender, _totalAmounts);
