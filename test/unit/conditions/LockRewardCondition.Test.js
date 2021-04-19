@@ -12,7 +12,7 @@ const NeverminedToken = artifacts.require('NeverminedToken')
 const LockRewardCondition = artifacts.require('LockRewardCondition')
 
 const constants = require('../../helpers/constants.js')
-const getBalance = require('../../helpers/getBalance.js')
+const { getBalance } = require('../../helpers/getBalance.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('LockRewardCondition', (accounts) => {

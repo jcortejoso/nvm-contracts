@@ -4,6 +4,7 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 import './Reward.sol';
+import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
 
 /**
@@ -16,7 +17,7 @@ import '../ConditionStoreLibrary.sol';
  *      can release reward if lock and release conditions
  *      are fulfilled.
  */
-contract EscrowPaymentCondition is Reward {
+contract EscrowPaymentCondition is Reward, Common {
 
     bytes32 constant public CONDITION_TYPE = keccak256('EscrowPayment');
 
@@ -27,6 +28,15 @@ contract EscrowPaymentCondition is Reward {
         bytes32 _conditionId,
         uint256[] _amounts
     );
+
+    event Received(
+        address indexed _from, 
+        uint _value
+    );
+    
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+    }
 
     /**
      * @notice initialize init the 
@@ -56,6 +66,7 @@ contract EscrowPaymentCondition is Reward {
         defaultTokenAddress = _tokenAddress;
     }
 
+    
     /**
      * @notice hashValues generates the hash of condition inputs 
      *        with the following parameters
@@ -162,40 +173,35 @@ contract EscrowPaymentCondition is Reward {
             )
         );        
         
-        if (state == ConditionStoreLibrary.ConditionState.Fulfilled)
-        {
-            state = _transferAndFulfill(id, _tokenAddress, _receivers, _amounts);
+        if (state == ConditionStoreLibrary.ConditionState.Fulfilled) {
+            if (_tokenAddress != address(0))
+                state = _transferAndFulfillERC20(id, _tokenAddress, _receivers, _amounts);
+            else
+                state = _transferAndFulfillETH(id, _receivers, _amounts);
+            
             emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
 
-        } else if (state == ConditionStoreLibrary.ConditionState.Aborted)
-        {
+        } else if (state == ConditionStoreLibrary.ConditionState.Aborted) {
+            
             uint256[] memory _totalAmounts = new uint256[](1);
-            _totalAmounts[0] = _calculateTotalAmount(_amounts);
+            _totalAmounts[0] = calculateTotalAmount(_amounts);
             address[] memory _originalSender = new address[](1);
             _originalSender[0] = conditionStoreManager.getConditionCreatedBy(_lockCondition);
-            state = _transferAndFulfill(id, _tokenAddress, _originalSender, _totalAmounts);
+            
+            if (_tokenAddress != address(0))
+                state = _transferAndFulfillERC20(id, _tokenAddress, _originalSender, _totalAmounts);
+            else
+                state = _transferAndFulfillETH(id, _originalSender, _totalAmounts);
+            
             emit Fulfilled(_agreementId, _tokenAddress, _originalSender, id, _totalAmounts);
-        } else
-        {
+            
+        } else {
             return conditionStoreManager.getConditionState(id);
         }
 
         return state;
     }
 
-    function _calculateTotalAmount(
-        uint256[] memory _amounts
-    )
-    internal
-    pure
-    returns (uint256)
-    {
-        uint256 _totalAmount;
-        for(uint i; i < _amounts.length; i++)
-            _totalAmount = _totalAmount + _amounts[i];
-        return _totalAmount;
-    }
-    
     /**
     * @notice _transferAndFulfill transfer tokens and 
     *       fulfill the condition
@@ -205,7 +211,7 @@ contract EscrowPaymentCondition is Reward {
     * @param _amounts token amount to be locked/released
     * @return condition state (Fulfilled/Aborted)
     */
-    function _transferAndFulfill(
+    function _transferAndFulfillERC20(
         bytes32 _id,
         address _tokenAddress,
         address[] memory _receivers,
@@ -214,6 +220,7 @@ contract EscrowPaymentCondition is Reward {
     private
     returns (ConditionStoreLibrary.ConditionState)
     {
+        
         IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
         
         for(uint i = 0; i < _receivers.length; i++)    {
@@ -233,4 +240,37 @@ contract EscrowPaymentCondition is Reward {
         );
     }
 
+    /**
+    * @notice _transferAndFulfill transfer ETH and 
+    *       fulfill the condition
+    * @param _id condition identifier
+    * @param _receivers receiver's address
+    * @param _amounts token amount to be locked/released
+    * @return condition state (Fulfilled/Aborted)
+    */
+    function _transferAndFulfillETH(
+        bytes32 _id,
+        address[] memory _receivers,
+        uint256[] memory _amounts
+    )
+    private
+    returns (ConditionStoreLibrary.ConditionState)
+    {
+
+        for(uint i = 0; i < _receivers.length; i++)    {
+            require(
+                _receivers[i] != address(this),
+                'Escrow contract can not be a receiver'
+            );
+            (bool sent,) = _receivers[i].call{value: _amounts[i]}("");
+            require(sent, "Failed to send Ether");
+//            _receivers[i].transfer(_amounts[i]);
+        }
+
+        return super.fulfill(
+            _id,
+            ConditionStoreLibrary.ConditionState.Fulfilled
+        );
+    }    
+    
 }

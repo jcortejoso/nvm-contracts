@@ -15,7 +15,7 @@ const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
 
 const constants = require('../../../helpers/constants.js')
-const getBalance = require('../../../helpers/getBalance.js')
+const { getBalance, getETHBalance } = require('../../../helpers/getBalance.js')
 const testUtils = require('../../../helpers/utils.js')
 
 contract('EscrowPaymentCondition constructor', (accounts) => {
@@ -24,9 +24,14 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
     let token
     let lockPaymentCondition
     let escrowPayment
+    let didRegistry
+    let didRegistryLibrary
+
     const createRole = accounts[0]
     const owner = accounts[9]
     const deployer = accounts[8]
+    const checksum = testUtils.generateId()
+    const url = 'https://nevermined.io/did/test-attr-example.txt'
 
     beforeEach(async () => {
         await setupTest()
@@ -51,9 +56,9 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 { from: owner }
             )
 
-            const didRegistryLibrary = await DIDRegistryLibrary.new()
+            didRegistryLibrary = await DIDRegistryLibrary.new()
             await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
-            const didRegistry = await DIDRegistry.new()
+            didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner)
 
             token = await NeverminedToken.new()
@@ -115,7 +120,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
     })
 
     describe('fulfill existing condition', () => {
-        it('should fulfill if conditions exist for account address', async () => {
+        it('ERC20: should fulfill if conditions exist for account address', async () => {
             const agreementId = testUtils.generateId()
             const did = testUtils.generateId()
             const sender = accounts[0]
@@ -194,6 +199,104 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 escrowPayment.fulfill(agreementId, did, amounts, receivers, escrowPayment.address, token.address, lockConditionId, releaseConditionId),
                 constants.condition.state.error.invalidStateTransition
             )
+        })
+
+        it('ETH: should fulfill if conditions exist for account address', async () => {
+            const agreementId = testUtils.generateId()
+            const did = testUtils.generateId()
+            const totalAmount = 500000000000
+            const sender = accounts[0]
+            const amounts = [totalAmount]
+            const receivers = [accounts[1]]
+
+            // register DID
+            await didRegistry.registerMintableDID(
+                did, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
+
+            const hashValuesLock = await lockPaymentCondition.hashValues(
+                did, escrowPayment.address, constants.address.zero, amounts, receivers)
+            const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
+
+            await conditionStoreManager.createCondition(
+                conditionLockId,
+                lockPaymentCondition.address)
+
+            const lockConditionId = conditionLockId
+            const releaseConditionId = conditionLockId
+
+            const hashValues = await escrowPayment.hashValues(
+                did,
+                amounts,
+                receivers,
+                escrowPayment.address,
+                constants.address.zero,
+                lockConditionId,
+                releaseConditionId)
+
+            const escrowConditionId = await escrowPayment.generateId(agreementId, hashValues)
+
+            await conditionStoreManager.createCondition(
+                escrowConditionId,
+                escrowPayment.address)
+
+            const balanceSenderBefore = await getETHBalance(sender)
+            const balanceContractBefore = await getETHBalance(escrowPayment.address)
+            const balanceReceiverBefore = await getETHBalance(receivers[0])
+
+            //            console.log('Balance Sender Before: ' + balanceSenderBefore)
+            //            console.log('Balance Contract Before: ' + balanceContractBefore)
+            //            console.log('Balance Receiver Before: ' + balanceReceiverBefore)
+
+            assert.isAtLeast(balanceSenderBefore, totalAmount)
+
+            await lockPaymentCondition.fulfill(
+                agreementId, did, escrowPayment.address, constants.address.zero, amounts, receivers,
+                { from: sender, value: totalAmount })
+
+            const balanceSenderAfterLock = await getETHBalance(sender)
+            const balanceContractAfterLock = await getETHBalance(escrowPayment.address)
+            // const balanceReceiverAfterLock = await getETHBalance(receivers[0])
+
+            // console.log('Balance Sender Lock: ' + balanceSenderAfterLock)
+            // console.log('Balance Contract Lock: ' + balanceContractAfterLock)
+            // console.log('Balance Receiver Lock: ' + balanceReceiverAfterLock)
+
+            assert.isAtMost(balanceSenderAfterLock, balanceSenderBefore - totalAmount)
+            assert.isAtLeast(balanceContractAfterLock, balanceContractBefore + totalAmount)
+
+            const result = await escrowPayment.fulfill(
+                agreementId,
+                did,
+                amounts,
+                receivers,
+                escrowPayment.address,
+                constants.address.zero,
+                lockConditionId,
+                releaseConditionId)
+
+            assert.strictEqual(
+                (await conditionStoreManager.getConditionState(escrowConditionId)).toNumber(),
+                constants.condition.state.fulfilled
+            )
+
+            testUtils.assertEmitted(result, 1, 'Fulfilled')
+            const eventArgs = testUtils.getEventArgsFromTx(result, 'Fulfilled')
+            expect(eventArgs._agreementId).to.equal(agreementId)
+            expect(eventArgs._conditionId).to.equal(escrowConditionId)
+            expect(eventArgs._receivers[0]).to.equal(receivers[0])
+            expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
+
+            const balanceSenderAfterEscrow = await getETHBalance(sender)
+            const balanceContractAfterEscrow = await getETHBalance(escrowPayment.address)
+            const balanceReceiverAfterEscrow = await getETHBalance(receivers[0])
+
+            // console.log('Balance Sender Escrow: ' + balanceSenderAfterEscrow)
+            // console.log('Balance Contract Escrow: ' + balanceContractAfterEscrow)
+            // console.log('Balance Receiver Escrow: ' + balanceReceiverAfterEscrow)
+
+            assert.isAtMost(balanceSenderAfterEscrow, balanceSenderBefore - totalAmount)
+            assert.isAtMost(balanceContractAfterEscrow, balanceContractBefore)
+            assert.isAtLeast(balanceReceiverAfterEscrow, balanceReceiverBefore + totalAmount)
         })
 
         it('should not fulfill in case of null addresses', async () => {
@@ -403,6 +506,86 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 (await token.balanceOf(escrowPayment.address)).toNumber(),
                 0
             )
+        })
+
+        it('ERC20: should bit fulfill if was already fulfilled', async () => {
+            const agreementId = testUtils.generateId()
+            const did = testUtils.generateId()
+            const sender = accounts[0]
+            const receivers = [accounts[1]]
+            const amounts = [10]
+            const totalAmount = amounts[0]
+
+            const balanceContractBefore = await getBalance(token, escrowPayment.address)
+            const balanceReceiverBefore = await getBalance(token, receivers[0])
+
+            const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+            const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
+
+            await conditionStoreManager.createCondition(
+                conditionLockId,
+                lockPaymentCondition.address)
+
+            const lockConditionId = conditionLockId
+            const releaseConditionId = conditionLockId
+
+            const hashValues = await escrowPayment.hashValues(
+                did,
+                amounts,
+                receivers,
+                escrowPayment.address,
+                token.address,
+                lockConditionId,
+                releaseConditionId)
+
+            const escrowConditionId = await escrowPayment.generateId(agreementId, hashValues)
+
+            await conditionStoreManager.createCondition(
+                escrowConditionId,
+                escrowPayment.address)
+
+            await token.mint(sender, totalAmount, { from: owner })
+            await token.approve(
+                lockPaymentCondition.address,
+                totalAmount,
+                { from: sender })
+
+            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
+
+            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
+            assert.strictEqual(await getBalance(token, escrowPayment.address), balanceContractBefore + totalAmount)
+
+            await escrowPayment.fulfill(
+                agreementId,
+                did,
+                amounts,
+                receivers,
+                escrowPayment.address,
+                token.address,
+                lockConditionId,
+                releaseConditionId)
+
+            assert.strictEqual(
+                (await conditionStoreManager.getConditionState(escrowConditionId)).toNumber(),
+                constants.condition.state.fulfilled
+            )
+
+            assert.strictEqual(await getBalance(token, escrowPayment.address), balanceContractBefore)
+            assert.strictEqual(await getBalance(token, receivers[0]), balanceReceiverBefore + totalAmount)
+
+            await assert.isRejected(escrowPayment.fulfill(
+                agreementId,
+                did,
+                amounts,
+                receivers,
+                escrowPayment.address,
+                token.address,
+                lockConditionId,
+                releaseConditionId)
+            )
+
+            assert.strictEqual(await getBalance(token, escrowPayment.address), balanceContractBefore)
+            assert.strictEqual(await getBalance(token, receivers[0]), balanceReceiverBefore + totalAmount)
         })
     })
 })

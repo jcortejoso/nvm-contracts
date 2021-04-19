@@ -13,7 +13,7 @@ const LockRewardCondition = artifacts.require('LockRewardCondition')
 const EscrowReward = artifacts.require('EscrowReward')
 
 const constants = require('../../../helpers/constants.js')
-const getBalance = require('../../../helpers/getBalance.js')
+const { getBalance } = require('../../../helpers/getBalance.js')
 const testUtils = require('../../../helpers/utils.js')
 
 contract('EscrowReward constructor', (accounts) => {

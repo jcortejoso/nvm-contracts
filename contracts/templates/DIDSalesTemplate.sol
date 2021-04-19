@@ -55,7 +55,7 @@ contract DIDSalesTemplate is BaseEscrowTemplate {
         address _agreementStoreManagerAddress,
         address _lockConditionAddress,
         address _transferConditionAddress,
-        address _escrowRewardAddress
+        address payable _escrowRewardAddress
     )
         external
         initializer()

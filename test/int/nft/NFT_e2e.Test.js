@@ -25,7 +25,7 @@ const NFTAccessCondition = artifacts.require('NFTAccessCondition')
 const NFTHolderCondition = artifacts.require('NFTHolderCondition')
 
 const constants = require('../../helpers/constants.js')
-const getBalance = require('../../helpers/getBalance.js')
+const { getBalance } = require('../../helpers/getBalance.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('End to End NFT Scenarios', (accounts) => {

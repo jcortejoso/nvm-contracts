@@ -55,4 +55,18 @@ contract Common {
     {
         return ECDSAUpgradeable.recover(_hash, _signature) == _agentId;
     }
+
+    function calculateTotalAmount(
+        uint256[] memory _amounts
+    )
+    public
+    pure
+    returns (uint256)
+    {
+        uint256 _totalAmount;
+        for(uint i; i < _amounts.length; i++)
+            _totalAmount = _totalAmount + _amounts[i];
+        return _totalAmount;
+    }
+    
 }

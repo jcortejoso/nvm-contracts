@@ -60,7 +60,7 @@ contract EscrowComputeExecutionTemplate is BaseEscrowTemplate {
         address _didRegistryAddress,
         address _computeExecutionConditionAddress,
         address _lockPaymentConditionAddress,
-        address _escrowPaymentAddress
+        address payable _escrowPaymentAddress
     )
         external
         initializer()

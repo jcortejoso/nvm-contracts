@@ -54,10 +54,9 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
     function initialize(
         address _owner,
         address _agreementStoreManagerAddress,
-//        address _lockNFTConditionAddress,
         address _lockPaymentConditionAddress,
         address _transferConditionAddress,
-        address _escrowRewardAddress
+        address payable _escrowRewardAddress
     )
         external
         initializer()
@@ -65,7 +64,6 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         require(
             _owner != address(0) &&
             _agreementStoreManagerAddress != address(0) &&
-//            _lockNFTConditionAddress != address(0) &&
             _lockPaymentConditionAddress != address(0) &&
             _transferConditionAddress != address(0) &&
             _escrowRewardAddress != address(0),
@@ -83,10 +81,6 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
             agreementStoreManager.getDIDRegistryAddress()
         );
 
-//        lockNFTCondition = NFTLockCondition(
-//            _lockNFTConditionAddress
-//        );
-
         lockPaymentCondition = LockPaymentCondition(
             _lockPaymentConditionAddress
         );
@@ -99,7 +93,6 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
             _escrowRewardAddress
         );
 
-//        conditionTypes.push(address(lockNFTCondition));
         conditionTypes.push(address(lockPaymentCondition));
         conditionTypes.push(address(transferCondition));
         conditionTypes.push(address(rewardCondition));
