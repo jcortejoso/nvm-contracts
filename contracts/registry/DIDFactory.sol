@@ -180,6 +180,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @param _checksum includes a one-way HASH calculated using the DDO content.
      * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
+     * @param _providers ???
      * @param _activityId refers to activity
      * @param _attributes refers to the provenance attributes     
      * @return size refers to the size of the registry after the register action.
@@ -600,7 +601,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     }
 
     /**
-     * @return the length of the DID registry.
+     * @return the list of items in the DID registry.
      */
     function getDIDRegisterIds()
     public
