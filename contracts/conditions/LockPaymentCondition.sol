@@ -40,6 +40,7 @@ contract LockPaymentCondition is Condition, Common {
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address
     * @param _tokenAddress Default Token contract address
+    * @param _didRegistryAddress DID Registry address
     */
     function initialize(
         address _owner,
@@ -155,6 +156,13 @@ contract LockPaymentCondition is Condition, Common {
         return state;
     }
 
+    /**
+    * @notice _transferERC20 transfer ERC20 tokens 
+    * @param _rewardAddress the address to receive the tokens
+    * @param _tokenAddress the ERC20 contract address to use during the payment
+    * @param _amount token amount to be locked/released
+    * @return true if everything worked
+    */
     function _transferERC20(
         address _rewardAddress,
         address _tokenAddress,
@@ -169,7 +177,12 @@ contract LockPaymentCondition is Condition, Common {
         );
         return true;
     }
-    
+
+    /**
+    * @notice _transferETH transfer ETH 
+    * @param _rewardAddress the address to receive the ETH
+    * @param _amount ETH amount to be locked/released
+    */    
     function _transferETH(
         address payable _rewardAddress,
         uint256 _amount

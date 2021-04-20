@@ -122,7 +122,7 @@ contract EscrowPaymentCondition is Reward, Common {
      * @param _lockPaymentAddress lock payment contract address
      * @param _tokenAddress the ERC20 contract address to use during the payment
      * @param _lockCondition lock condition identifier
-     * @param _lockPaymentAddress release condition identifier
+     * @param _releaseCondition release condition identifier
      * @return condition state (Fulfilled/Aborted)
      */
     function fulfill(
@@ -203,7 +203,7 @@ contract EscrowPaymentCondition is Reward, Common {
     }
 
     /**
-    * @notice _transferAndFulfill transfer tokens and 
+    * @notice _transferAndFulfill transfer ERC20 tokens and 
     *       fulfill the condition
     * @param _id condition identifier
     * @param _tokenAddress the ERC20 contract address to use during the payment    

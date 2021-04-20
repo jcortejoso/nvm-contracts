@@ -3,16 +3,15 @@
 
 Documentation:
 ```
-@title Access Secret Store Condition
-@author Keyko & Ocean Protocol
- * @dev Implementation of the Access Secret Store Condition
- *      Access Secret Store Condition is special condition
-     where parity secret store can encrypt/decrypt documents
-     based on the on-chain granted permissions. For a given DID
-     document, and agreement ID, the owner/provider of the DID
-     will fulfill the condition. Consequently secret store
-     will check whether the permission is granted for the consumer
-     in order to encrypt/decrypt the document.
+@title Access Condition
+@author Keyko
+Access Secret Store Condition is special condition
+where a client or Parity secret store can encrypt/decrypt documents
+based on the on-chain granted permissions. For a given DID
+document, and agreement ID, the owner/provider of the DID
+will fulfill the condition. Consequently secret store
+will check whether the permission is granted for the consumer
+in order to encrypt/decrypt the document.
 ```
 
 ## Structs

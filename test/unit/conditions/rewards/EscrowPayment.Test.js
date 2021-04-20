@@ -446,7 +446,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 testUtils.generateId(),
                 escrowPayment.address)
 
-            /* simulate a real environment by giving the EscrowReward contract a bunch of tokens: */
+            /* simulate a real environment by giving the EscrowPayment contract a bunch of tokens: */
             await token.mint(escrowPayment.address, 100, { from: owner })
 
             const lockConditionId = conditionLockId
@@ -501,7 +501,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 )
             }
 
-            /* make sure the EscrowReward contract didn't get drained */
+            /* make sure the EscrowPayment contract didn't get drained */
             assert.notStrictEqual(
                 (await token.balanceOf(escrowPayment.address)).toNumber(),
                 0

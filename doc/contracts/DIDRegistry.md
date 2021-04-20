@@ -4,8 +4,8 @@
 Documentation:
 ```
 @title DID Registry
-@author Keyko & Ocean Protocol
- * @dev Implementation of the DID Registry.
+@author Keyko
+@dev Implementation of a Mintable DID Registry.
 ```
 
 ## Variables
@@ -81,24 +81,124 @@ Documentation:
 Parameters:
 * address _owner
 
-### public registerAttribute
+### public registerDID
 
 Documentation:
 
 ```
 @notice Register DID attributes.
-     * @dev The first attribute of a DID registered sets the DID owner.
+     *
+@dev The first attribute of a DID registered sets the DID owner.
      Subsequent updates record _checksum and update info.
-     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     *
+@param _did refers to decentralized identifier (a bytes32 length ID).
 @param _checksum includes a one-way HASH calculated using the DDO content.
-@param _value refers to the attribute value, limited to 2048 bytes.
-@return the size of the registry after the register action.
+@param _providers list of addresses that can act as an asset provider
+@param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
+@param _activityId refers to activity
+@param _attributes refers to the provenance attributes
+@return size refers to the size of the registry after the register action.
 ```
 Parameters:
 * bytes32 _did
 * bytes32 _checksum
 * address[] _providers
-* string _value
+* string _url
+* bytes32 _activityId
+* string _attributes
+
+### public registerMintableDID
+
+Documentation:
+
+```
+@notice Register a Mintable DID.
+     *
+@dev The first attribute of a DID registered sets the DID owner.
+     Subsequent updates record _checksum and update info.
+     *
+@param _did refers to decentralized identifier (a bytes32 length ID).
+@param _checksum includes a one-way HASH calculated using the DDO content.
+@param _providers list of addresses that can act as an asset provider
+@param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
+@param _cap refers to the mint cap
+@param _royalties refers to the royalties to reward to the DID creator in the secondary market
+@param _activityId refers to activity
+@param _attributes refers to the provenance attributes
+@return size refers to the size of the registry after the register action.
+```
+Parameters:
+* bytes32 _did
+* bytes32 _checksum
+* address[] _providers
+* string _url
+* uint256 _cap
+* uint8 _royalties
+* bytes32 _activityId
+* string _attributes
+
+### public enableAndMintDidNft
+
+Documentation:
+
+```
+
+@notice enableDidNft creates the initial setup of NFTs minting and royalties distribution.
+After this initial setup, this data can't be changed anymore for the DID given, even for the owner of the DID.
+The reason of this is to avoid minting additional NFTs after the initial agreement, what could affect the
+valuation of NFTs of a DID already created.
+
+@dev update the DID registry providers list by adding the mintCap and royalties configuration
+@param _did refers to decentralized identifier (a byte32 length ID)
+@param _cap refers to the mint cap
+@param _royalties refers to the royalties to reward to the DID creator in the secondary market
+@param _preMint if is true mint directly the amount capped tokens and lock in the _lockAddress
+
+```
+Parameters:
+* bytes32 _did
+* uint256 _cap
+* uint8 _royalties
+* bool _preMint
+
+
+### public mint
+
+Documentation:
+
+```
+
+@notice Mints a NFT associated to the DID
+     *
+@dev Because ERC-1155 uses uint256 and DID's are bytes32, there is a conversion between both
+     Only the DID owner can mint NFTs associated to the DID
+     *
+@param _did refers to decentralized identifier (a bytes32 length ID).
+@param _amount amount to mint
+```
+Parameters:
+* bytes32 _did
+* uint256 _amount
+
+
+### public burn
+
+Documentation:
+
+```
+@notice Burns NFTs associated to the DID
+     *
+@dev Because ERC-1155 uses uint256 and DID's are bytes32, there is a conversion between both
+     Only the DID owner can burn NFTs associated to the DID
+     *
+@param _did refers to decentralized identifier (a bytes32 length ID).
+@param _amount amount to burn
+```
+Parameters:
+* bytes32 _did
+* uint256 _amount
+
+
 
 ### external addDIDProvider
 
@@ -106,7 +206,7 @@ Documentation:
 
 ```
 @notice addDIDProvider add new DID provider.
-     * @dev it adds new DID provider to the providers list. A provider
+@dev it adds new DID provider to the providers list. A provider
      is any entity that can serve the registered asset
 @param _did refers to decentralized identifier (a bytes32 length ID).
 @param _provider provider's address.
@@ -146,9 +246,9 @@ Parameters:
 Documentation:
 
 ```
-@dev grantPermission grants access permission to grantee 
+@dev grantPermission grants access permission to grantee
 @param _did refers to decentralized identifier (a bytes32 length ID)
-@param _grantee address 
+@param _grantee address
 ```
 Parameters:
 * bytes32 _did
@@ -159,9 +259,9 @@ Parameters:
 Documentation:
 
 ```
-@dev revokePermission revokes access permission from grantee 
+@dev revokePermission revokes access permission from grantee
 @param _did refers to decentralized identifier (a bytes32 length ID)
-@param _grantee address 
+@param _grantee address
 ```
 Parameters:
 * bytes32 _did
@@ -248,9 +348,9 @@ Documentation:
 Documentation:
 
 ```
-@dev _grantPermission grants access permission to grantee 
+@dev _grantPermission grants access permission to grantee
 @param _did refers to decentralized identifier (a bytes32 length ID)
-@param _grantee address 
+@param _grantee address
 ```
 Parameters:
 * bytes32 _did
@@ -261,9 +361,9 @@ Parameters:
 Documentation:
 
 ```
-@dev _revokePermission revokes access permission from grantee 
+@dev _revokePermission revokes access permission from grantee
 @param _did refers to decentralized identifier (a bytes32 length ID)
-@param _grantee address 
+@param _grantee address
 ```
 Parameters:
 * bytes32 _did
@@ -276,8 +376,8 @@ Documentation:
 ```
 @dev _getPermission gets access permission of a grantee
 @param _did refers to decentralized identifier (a bytes32 length ID)
-@param _grantee address 
-@return true if grantee has access permission to a DID 
+@param _grantee address
+@return true if grantee has access permission to a DID
 ```
 Parameters:
 * bytes32 _did

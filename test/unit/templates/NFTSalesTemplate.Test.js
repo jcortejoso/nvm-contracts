@@ -8,10 +8,9 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const NFTSalesTemplate = artifacts.require('NFTSalesTemplate')
-// const NFTLockCondition = artifacts.require('NFTLockCondition')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const TransferNFTCondition = artifacts.require('TransferNFTCondition')
-const EscrowReward = artifacts.require('EscrowReward')
+const EscrowPayment = artifacts.require('EscrowPayment')
 
 const constants = require('../../helpers/constants.js')
 const deployManagers = require('../../helpers/deployManagers.js')
@@ -34,15 +33,6 @@ contract('DIDSalesTemplate', (accounts) => {
             templateStoreManager
         } = await deployManagers(deployer, owner)
 
-        //        lockNFTCondition = await NFTLockCondition.new()
-        //
-        //        await lockNFTCondition.initialize(
-        //            owner,
-        //            conditionStoreManager.address,
-        //            didRegistry.address,
-        //            { from: deployer }
-        //        )
-
         lockPaymentCondition = await LockPaymentCondition.new()
 
         await lockPaymentCondition.initialize(
@@ -62,7 +52,7 @@ contract('DIDSalesTemplate', (accounts) => {
             { from: deployer }
         )
 
-        escrowCondition = await EscrowReward.new()
+        escrowCondition = await EscrowPayment.new()
         await escrowCondition.initialize(
             owner,
             conditionStoreManager.address,
@@ -74,7 +64,6 @@ contract('DIDSalesTemplate', (accounts) => {
         await nftSalesTemplate.methods['initialize(address,address,address,address,address)'](
             owner,
             agreementStoreManager.address,
-            //            lockNFTCondition.address,
             lockPaymentCondition.address,
             transferCondition.address,
             escrowCondition.address,
@@ -86,7 +75,6 @@ contract('DIDSalesTemplate', (accounts) => {
             escrowCondition,
             transferCondition,
             lockPaymentCondition,
-            //            lockNFTCondition,
             didRegistry,
             agreementStoreManager,
             conditionStoreManager,

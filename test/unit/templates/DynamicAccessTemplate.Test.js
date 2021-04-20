@@ -10,7 +10,7 @@ chai.use(chaiAsPromised)
 const DynamicAccessTemplate = artifacts.require('DynamicAccessTemplate')
 const AccessCondition = artifacts.require('AccessCondition')
 const NFTHolderCondition = artifacts.require('NFTHolderCondition')
-const EscrowReward = artifacts.require('EscrowReward')
+const EscrowPayment = artifacts.require('EscrowPayment')
 
 const constants = require('../../helpers/constants.js')
 const deployManagers = require('../../helpers/deployManagers.js')
@@ -25,7 +25,7 @@ contract('DynamicAccessTemplate', (accounts) => {
     let dynamicAccessTemplate
     let accessCondition
     let nftHolderCondition
-    let escrowReward
+    let escrowPayment
     const deployer = accounts[8]
     const owner = accounts[9]
 
@@ -68,8 +68,8 @@ contract('DynamicAccessTemplate', (accounts) => {
                 { from: owner }
             )
 
-            escrowReward = await EscrowReward.new()
-            await escrowReward.initialize(
+            escrowPayment = await EscrowPayment.new()
+            await escrowPayment.initialize(
                 owner,
                 conditionStoreManager.address,
                 token.address,
@@ -146,7 +146,7 @@ contract('DynamicAccessTemplate', (accounts) => {
 
             await dynamicAccessTemplate.addTemplateCondition(accessCondition.address, { from: owner })
             await dynamicAccessTemplate.addTemplateCondition(nftHolderCondition.address, { from: owner })
-            await dynamicAccessTemplate.addTemplateCondition(escrowReward.address, { from: owner })
+            await dynamicAccessTemplate.addTemplateCondition(escrowPayment.address, { from: owner })
             const templateConditionTypes = await dynamicAccessTemplate.getConditionTypes()
             assert.strictEqual(3, templateConditionTypes.length)
 

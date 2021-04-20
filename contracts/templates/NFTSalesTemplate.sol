@@ -49,14 +49,14 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
     * @param _agreementStoreManagerAddress agreement store manager contract address
     * @param _lockPaymentConditionAddress lock reward condition contract address
     * @param _transferConditionAddress transfer NFT condition contract address
-    * @param _escrowRewardAddress escrow reward condition contract address    
+    * @param _escrowPaymentAddress escrow reward condition contract address    
     */
     function initialize(
         address _owner,
         address _agreementStoreManagerAddress,
         address _lockPaymentConditionAddress,
         address _transferConditionAddress,
-        address payable _escrowRewardAddress
+        address payable _escrowPaymentAddress
     )
         external
         initializer()
@@ -66,7 +66,7 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
             _agreementStoreManagerAddress != address(0) &&
             _lockPaymentConditionAddress != address(0) &&
             _transferConditionAddress != address(0) &&
-            _escrowRewardAddress != address(0),
+            _escrowPaymentAddress != address(0),
             'Invalid address'
         );
 
@@ -90,7 +90,7 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         );
 
         rewardCondition = EscrowPaymentCondition(
-            _escrowRewardAddress
+            _escrowPaymentAddress
         );
 
         conditionTypes.push(address(lockPaymentCondition));

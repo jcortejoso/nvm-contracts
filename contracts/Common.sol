@@ -56,6 +56,10 @@ contract Common {
         return ECDSAUpgradeable.recover(_hash, _signature) == _agentId;
     }
 
+    /**
+     * @dev Sum the total amount given an uint array
+     * @return the total amount
+     */
     function calculateTotalAmount(
         uint256[] memory _amounts
     )

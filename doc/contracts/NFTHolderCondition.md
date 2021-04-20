@@ -35,7 +35,7 @@ Documentation:
       initialization.
 @param _owner contract's owner account address
 @param _conditionStoreManagerAddress condition store manager address
-@param _tokenAddress DIDRegistry address
+@param _didRegistryAddress DIDRegistry address
 ```
 Parameters:
 * address _owner
@@ -51,7 +51,7 @@ Documentation:
        with the following parameters
 @param _did the Decentralized Identifier of the asset
 @param _holderAddress the address of the NFT holder
-@param  _amount is the amount NFTs that need to be hold by the holder
+@param  amount is the amount NFTs that need to be hold by the holder
 @return bytes32 hash of all these values
 ```
 Parameters:
