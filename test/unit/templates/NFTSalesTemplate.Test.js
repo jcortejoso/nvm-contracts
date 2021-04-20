@@ -10,7 +10,7 @@ chai.use(chaiAsPromised)
 const NFTSalesTemplate = artifacts.require('NFTSalesTemplate')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const TransferNFTCondition = artifacts.require('TransferNFTCondition')
-const EscrowPayment = artifacts.require('EscrowPayment')
+const EscrowPayment = artifacts.require('EscrowPaymentCondition')
 
 const constants = require('../../helpers/constants.js')
 const deployManagers = require('../../helpers/deployManagers.js')

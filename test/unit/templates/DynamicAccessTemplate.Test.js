@@ -10,7 +10,7 @@ chai.use(chaiAsPromised)
 const DynamicAccessTemplate = artifacts.require('DynamicAccessTemplate')
 const AccessCondition = artifacts.require('AccessCondition')
 const NFTHolderCondition = artifacts.require('NFTHolderCondition')
-const EscrowPayment = artifacts.require('EscrowPayment')
+const EscrowPayment = artifacts.require('EscrowPaymentCondition')
 
 const constants = require('../../helpers/constants.js')
 const deployManagers = require('../../helpers/deployManagers.js')
