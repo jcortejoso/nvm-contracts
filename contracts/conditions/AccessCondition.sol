@@ -17,7 +17,7 @@ import '../agreements/AgreementStoreManager.sol';
  * @dev Implementation of the Access Condition
  *
  *      Access Secret Store Condition is special condition
- *      where parity secret store can encrypt/decrypt documents 
+ *      where a client or Parity secret store can encrypt/decrypt documents 
  *      based on the on-chain granted permissions. For a given DID 
  *      document, and agreement ID, the owner/provider of the DID 
  *      will fulfill the condition. Consequently secret store 

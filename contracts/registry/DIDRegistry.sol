@@ -45,6 +45,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
      *
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @param _checksum includes a one-way HASH calculated using the DDO content.
+     * @param _providers list of addresses that can act as an asset provider     
      * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
      * @param _cap refers to the mint cap
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market

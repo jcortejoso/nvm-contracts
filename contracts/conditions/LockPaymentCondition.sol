@@ -6,6 +6,7 @@ pragma solidity 0.6.12;
 
 import './Condition.sol';
 import '../registry/DIDRegistry.sol';
+import '../Common.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
@@ -16,9 +17,9 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
  * This condition allows to lock payment for multiple receivers taking
  * into account the royalties to be paid to the original creators in a secondary market.  
  */
-contract LockPaymentCondition is Condition {
+contract LockPaymentCondition is Condition, Common {
 
-    IERC20Upgradeable private token;
+    address private defaultTokenAddress;
     DIDRegistry internal didRegistry;
 
     bytes32 constant public CONDITION_TYPE = keccak256('LockPaymentCondition');
@@ -28,6 +29,7 @@ contract LockPaymentCondition is Condition {
         bytes32 indexed _did,
         bytes32 indexed _conditionId,
         address _rewardAddress,
+        address _tokenAddress,
         address[] _receivers,
         uint256[] _amounts
     );
@@ -37,7 +39,8 @@ contract LockPaymentCondition is Condition {
     * @dev this function is called only once during the contract initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address
-    * @param _tokenAddress Token contract address
+    * @param _tokenAddress Default Token contract address
+    * @param _didRegistryAddress DID Registry address
     */
     function initialize(
         address _owner,
@@ -58,7 +61,7 @@ contract LockPaymentCondition is Condition {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        token = ERC20Upgradeable(_tokenAddress);
+        defaultTokenAddress = _tokenAddress;
         
         didRegistry = DIDRegistry(
             _didRegistryAddress
@@ -71,6 +74,8 @@ contract LockPaymentCondition is Condition {
     *        with the following parameters
     * @param _did the asset decentralized identifier 
     * @param _rewardAddress the contract address where the reward is locked       
+    * @param _tokenAddress the ERC20 contract address to use during the lock payment. 
+    *        If the address is 0x0 means we won't use a ERC20 but ETH for payment     
     * @param _amounts token amounts to be locked/released
     * @param _receivers receiver's addresses
     * @return bytes32 hash of all these values 
@@ -78,6 +83,7 @@ contract LockPaymentCondition is Condition {
     function hashValues(
         bytes32 _did,
         address _rewardAddress,
+        address _tokenAddress,
         uint256[] memory _amounts,
         address[] memory _receivers
     )
@@ -85,7 +91,7 @@ contract LockPaymentCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_did, _rewardAddress, _amounts, _receivers));
+        return keccak256(abi.encodePacked(_did, _rewardAddress, _tokenAddress, _amounts, _receivers));
     }
 
    /**
@@ -94,6 +100,7 @@ contract LockPaymentCondition is Condition {
     * @param _agreementId the agreement identifier
     * @param _did the asset decentralized identifier
     * @param _rewardAddress the contract address where the reward is locked
+    * @param _tokenAddress the ERC20 contract address to use during the lock payment. 
     * @param _amounts token amounts to be locked/released
     * @param _receivers receiver's addresses
     * @return condition state
@@ -101,12 +108,14 @@ contract LockPaymentCondition is Condition {
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
-        address _rewardAddress,
+        address payable _rewardAddress,
+        address _tokenAddress,
         uint256[] memory _amounts,
         address[] memory _receivers
     )
-        external
-        returns (ConditionStoreLibrary.ConditionState)
+    external
+    payable
+    returns (ConditionStoreLibrary.ConditionState)
     {
         require(
             _amounts.length == _receivers.length,
@@ -117,19 +126,18 @@ contract LockPaymentCondition is Condition {
             didRegistry.areRoyaltiesValid(_did, _amounts, _receivers),
             'Royalties are not satisfied'
         );
-        
-        uint256 _totalAmount = 0;
-        for(uint i = 0; i < _amounts.length; i++)
-            _totalAmount = _totalAmount + _amounts[i];
-        
-        require(
-            token.transferFrom(msg.sender, _rewardAddress, _totalAmount),
-            'Could not transfer token'
-        );
+
+        if (_tokenAddress != address(0))
+            require(
+                _transferERC20(_rewardAddress, _tokenAddress, calculateTotalAmount(_amounts)),
+                'Could not transfer token'
+            );
+        else
+            _transferETH(_rewardAddress, calculateTotalAmount(_amounts));
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _rewardAddress, _amounts, _receivers)
+            hashValues(_did, _rewardAddress, _tokenAddress, _amounts, _receivers)
         );
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
@@ -141,9 +149,48 @@ contract LockPaymentCondition is Condition {
             _did,
             _id,
             _rewardAddress,
+            _tokenAddress,
             _receivers, 
             _amounts
         );
         return state;
     }
+
+    /**
+    * @notice _transferERC20 transfer ERC20 tokens 
+    * @param _rewardAddress the address to receive the tokens
+    * @param _tokenAddress the ERC20 contract address to use during the payment
+    * @param _amount token amount to be locked/released
+    * @return true if everything worked
+    */
+    function _transferERC20(
+        address _rewardAddress,
+        address _tokenAddress,
+        uint256 _amount
+    )
+    internal
+    returns (bool)
+    {
+        IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
+        require(
+            token.transferFrom(msg.sender, _rewardAddress, _amount)
+        );
+        return true;
+    }
+
+    /**
+    * @notice _transferETH transfer ETH 
+    * @param _rewardAddress the address to receive the ETH
+    * @param _amount ETH amount to be locked/released
+    */    
+    function _transferETH(
+        address payable _rewardAddress,
+        uint256 _amount
+    )
+    internal
+    {
+        _rewardAddress.transfer(_amount);
+    }
+
+
 }

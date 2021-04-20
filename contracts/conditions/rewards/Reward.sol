@@ -10,14 +10,14 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
  * @title Reward
- * @author Keyko & Ocean Protocol
+ * @author Keyko
  *
  * @dev Implementation of the Reward.
  *
  *      Generic reward condition
  */
 contract Reward is Condition {
-    IERC20Upgradeable internal token;
+    address internal defaultTokenAddress;
 }
 
 

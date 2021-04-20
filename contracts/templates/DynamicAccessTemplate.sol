@@ -14,6 +14,8 @@ import '../conditions/Condition.sol';
  * @author Keyko
  *
  * @dev Implementation of Agreement Template
+ * This is a dynamic template that allows to setup flexible conditions depending 
+ * on the use case.
  *
  */
 contract DynamicAccessTemplate is BaseEscrowTemplate {

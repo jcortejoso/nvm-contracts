@@ -48,14 +48,14 @@ contract DIDSalesTemplate is BaseEscrowTemplate {
     * @param _agreementStoreManagerAddress agreement store manager contract address
     * @param _lockConditionAddress lock reward condition contract address
     * @param _transferConditionAddress transfer ownership condition contract address
-    * @param _escrowRewardAddress escrow reward condition contract address    
+    * @param _escrowPaymentAddress escrow reward condition contract address    
     */
     function initialize(
         address _owner,
         address _agreementStoreManagerAddress,
         address _lockConditionAddress,
         address _transferConditionAddress,
-        address _escrowRewardAddress
+        address payable _escrowPaymentAddress
     )
         external
         initializer()
@@ -65,7 +65,7 @@ contract DIDSalesTemplate is BaseEscrowTemplate {
             _agreementStoreManagerAddress != address(0) &&
             _lockConditionAddress != address(0) &&
             _transferConditionAddress != address(0) &&
-            _escrowRewardAddress != address(0),
+            _escrowPaymentAddress != address(0),
             'Invalid address'
         );
 
@@ -89,7 +89,7 @@ contract DIDSalesTemplate is BaseEscrowTemplate {
         );
 
         rewardCondition = EscrowPaymentCondition(
-            _escrowRewardAddress
+            _escrowPaymentAddress
         );
 
         conditionTypes.push(address(lockCondition));
