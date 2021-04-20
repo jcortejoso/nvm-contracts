@@ -20,7 +20,7 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  *      Condition store manager is responsible for enforcing the 
  *      the business logic behind creating/updating the condition state
  *      based on the assigned role to each party. Only specific type of
- *      contracts are allowed to call this contract, therefor there are 
+ *      contracts are allowed to call this contract, therefore there are 
  *      two types of roles, create role that in which is able to create conditions.
  *      The second role is the update role, which is can update the condition state.
  *      Also, it support delegating the roles to other contract(s)/account(s).
