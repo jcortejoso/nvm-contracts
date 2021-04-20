@@ -322,6 +322,19 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
     }
 
     /**
+     * @dev getConditionTypeRef  
+     * @return condition typeRef
+     */
+    function getConditionTypeRef(bytes32 _id)
+    external
+    view
+    virtual
+    returns (address)
+    {
+        return conditionList.conditions[_id].typeRef;
+    }    
+
+    /**
      * @dev getConditionCreatedBy  
      * @return condition createdBy address
      */

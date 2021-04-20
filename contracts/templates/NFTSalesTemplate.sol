@@ -49,15 +49,14 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
     * @param _agreementStoreManagerAddress agreement store manager contract address
     * @param _lockPaymentConditionAddress lock reward condition contract address
     * @param _transferConditionAddress transfer NFT condition contract address
-    * @param _escrowRewardAddress escrow reward condition contract address    
+    * @param _escrowPaymentAddress escrow reward condition contract address    
     */
     function initialize(
         address _owner,
         address _agreementStoreManagerAddress,
-//        address _lockNFTConditionAddress,
         address _lockPaymentConditionAddress,
         address _transferConditionAddress,
-        address _escrowRewardAddress
+        address payable _escrowPaymentAddress
     )
         external
         initializer()
@@ -65,10 +64,9 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         require(
             _owner != address(0) &&
             _agreementStoreManagerAddress != address(0) &&
-//            _lockNFTConditionAddress != address(0) &&
             _lockPaymentConditionAddress != address(0) &&
             _transferConditionAddress != address(0) &&
-            _escrowRewardAddress != address(0),
+            _escrowPaymentAddress != address(0),
             'Invalid address'
         );
 
@@ -83,10 +81,6 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
             agreementStoreManager.getDIDRegistryAddress()
         );
 
-//        lockNFTCondition = NFTLockCondition(
-//            _lockNFTConditionAddress
-//        );
-
         lockPaymentCondition = LockPaymentCondition(
             _lockPaymentConditionAddress
         );
@@ -96,10 +90,9 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         );
 
         rewardCondition = EscrowPaymentCondition(
-            _escrowRewardAddress
+            _escrowPaymentAddress
         );
 
-//        conditionTypes.push(address(lockNFTCondition));
         conditionTypes.push(address(lockPaymentCondition));
         conditionTypes.push(address(transferCondition));
         conditionTypes.push(address(rewardCondition));

@@ -67,22 +67,6 @@ contract NFTLockCondition is Condition, IERC1155ReceiverUpgradeable {
         registry = IERC1155Upgradeable(_didRegistryAddress);
     }
 
-    function grantTransferApproval(
-        address _nftRewardCondition
-    )
-    public
-    {
-        registry.setApprovalForAll(_nftRewardCondition, true);
-    }
-
-    function revokeTransferApproval(
-        address _nftRewardCondition
-    )
-    public
-    {
-        registry.setApprovalForAll(_nftRewardCondition, false);
-    }
-    
    /**
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters

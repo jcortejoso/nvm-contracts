@@ -47,7 +47,7 @@ contract AccessTemplate is BaseEscrowTemplate {
     * @dev this function is called only once during the contract
     *       initialization. It initializes the ownable feature, and 
     *       set push the required condition types including 
-    *       access secret store, lock reward and escrow reward conditions.
+    *       access , lock payment and escrow payment conditions.
     * @param _owner contract's owner account address
     * @param _agreementStoreManagerAddress agreement store manager contract address
     * @param _didRegistryAddress DID registry contract address
@@ -61,7 +61,7 @@ contract AccessTemplate is BaseEscrowTemplate {
         address _didRegistryAddress,
         address _accessConditionAddress,
         address _lockConditionAddress,
-        address _escrowConditionAddress
+        address payable _escrowConditionAddress
     )
         external
         initializer()
