@@ -86,7 +86,6 @@
     "solidity-coverage": "^0.7.13",
     "truffle-contract-size": "^2.0.1",
     "solhint": "^3.2.0",
-    "solidity-docgen": "~0.5.11",
     "truffle": "^5.1.56",
     "@truffle/contract": "~4.3.1",
     "@truffle/hdwallet-provider": "~1.2.0",
