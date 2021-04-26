@@ -95,6 +95,29 @@ module.exports = {
             gas: 7 * 1000000,
             gasPrice: utils.toWei('8', 'gwei')
         },
+        // Polygon Networks: https://docs.matic.network/docs/develop/network-details/network/
+        // Polygon: mumbai testnet
+        mumbai: {
+            provider: () => setupWallet(
+                url || `https://rpc-mumbai.maticvigil.com/`
+            ),
+            network_id: 80001,
+            confirmations: 2,
+            timeoutBlocks: 200,
+            skipDryRun: true,
+            from: '0x73943d14131268F23b721E668911bCDDEcA9da62'
+        },
+        // Polygon: matic mainnet
+        matic: {
+            provider: () => setupWallet(
+                url || `https://rpc-mainnet.maticvigil.com/`
+            ),
+            network_id: 137,
+            confirmations: 2,
+            timeoutBlocks: 200,
+            skipDryRun: true,
+            from: '0x73943d14131268F23b721E668911bCDDEcA9da62'
+        },
         // production mainnet
         production: {
             provider: () => setupWallet(

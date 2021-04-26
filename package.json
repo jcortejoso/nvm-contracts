@@ -23,6 +23,7 @@
     "deploy:integration": "export NETWORK=integration&&npm run deploy -- --network integration",
     "deploy:staging": "export NETWORK=staging&&npm run deploy -- --network staging",
     "deploy:production": "export NETWORK=production&&npm run deploy -- --network production",
+    "deploy:mumbai": "export NETWORK=mumbai&& npm run deploy -- --network mumbai",
     "upgrade": "npx truffle exec ./scripts/deploy/truffle-wrapper/upgradeContractsWrapper.js",
     "upgrade:development": "export NETWORK=development&&npm run upgrade -- --network development --testnet true",
     "upgrade:spree": "export NETWORK=spree&&npm run upgrade -- --network spree --testnet true",
