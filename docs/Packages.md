@@ -6,15 +6,15 @@ It allows to import those ABI's from different languages enabling an easier inte
 
 ## Javascript (NPM)
 
-NPM packages are published as part of the **Ocean Protocol** [NPM organization](https://www.npmjs.com/org/oceanprotocol).
-**Travis** is configured to release a new version of the **@oceanprotocol/keeper-contracts** NPM library after tagging.
+NPM packages are published as part of the **Nevermined** [NPM organization](https://www.npmjs.com/org/nevermined-io).
+**Github Actions** is configured to release a new version of the **@nevermined-io/contracts** NPM library after tagging.
 
 Versions of the library must be modified in the **package.json** file.
 
 ```json
 {
-  "name": "@oceanprotocol/keeper-contracts",
-  "version": "0.0.2",
+  "name": "@nevermined-io/contracts",
+  "version": "1.0.0",
 
   ..
 
@@ -38,12 +38,18 @@ If you need to release a new version of the library before tagging, you need to 
 npm publish --access public
 ```
 
-To do that you need to be an authorized user in the NPM Ocean Protocol organization.
+To do that you need to be an authorized user in the NPM Nevermined organization.
+
+
+## Python
+
+Python packages are generated automatically in Pypi format:
+
+https://pypi.org/project/nevermined-contracts/
+
 
 ## Java
 
-The projects includes a pom.xml file prepared to generate a JAR library. Maven packages can be generated using the following commands:
+Java packages are generated automatically for JVM applications and published into Maven central:
 
-```bash
-mvn package
-```
+https://search.maven.org/artifact/io.keyko.nevermined/contracts

@@ -1,12 +1,14 @@
-# Keeper-contracts upgradability
+# Nevermined Contracts Upgradeability
 
-This documents explains in detail how [nevermined-contracts](https://github.com/nevermined-io/contracts) should be deployed using zeppelinOS and how the contracts can be upgraded. The latest section describes the test procedure.
+This documents explains in detail how [nevermined-contracts](https://github.com/nevermined-io/contracts) should be
+deployed using zeppelinOS and how the contracts can be upgraded. The latest section describes the test procedure.
 
 ## Quickstart
 
 The first step to work with `zos` is to install dependencies then initialize the project. Then compile contracts and add contracts to the project.
 Finally push the contracts into the network and create the  upgradable instances. Once the contracts are deployed they can be tested and upgraded.
-Also we change the proxy administrator to a MultiSignature wallet to approve upgrades.  We are going to use the [Nevermined Contract Tools](https://github.com/nevermined-io/contract-tools) in order to perform
+Also we change the proxy administrator to a MultiSignature wallet to approve upgrades.
+We are going to use the [Nevermined Contract Tools](https://github.com/nevermined-io/contract-tools) in order to perform
 any future deployments/upgrades.
 
 ## Details
@@ -36,13 +38,16 @@ ownerWallet: represented as the owner from wallets.json
 - **OwnerWallet**: One instance of the multi sig wallet, defined as `owner`. This wallet will be assigned as the owner of all the contracts. It can be used to call specific functions in the contracts ie. change the configuration.
 
 ## Deploy & Upgrade
-`zos` does not support migrations, hence all the initial configuration should be performed with [Nevermined Contract Tools](https://github.com/nevermined-io/contract-tools).
-Contract constructors are ignored so the initial setup of the contract should be made in a [`initialize`](https://docs.zeppelinos.org/docs/advanced.html#initializers-vs-constructors)
+`zos` does not support migrations, hence all the initial configuration should be performed with
+[Nevermined Contract Tools](https://github.com/nevermined-io/contract-tools).
+Contract constructors are ignored so the initial setup of the contract should be made in a
+[`initialize`](https://docs.zeppelinos.org/docs/advanced.html#initializers-vs-constructors)
 function that will be executed only once after the initial deployment.
 
 ### 1. Configuration
 
-[Nevermined Contract Tools](https://github.com/nevermined-io/contract-tools) checks the `contracts.json` in order to detect the current contracts that are going to be deployed:
+[Nevermined Contract Tools](https://github.com/nevermined-io/contract-tools) checks the `contracts.json` in order to
+detect the current contracts that are going to be deployed:
 
 ```json
 [
@@ -61,7 +66,8 @@ function that will be executed only once after the initial deployment.
 ]
 ```
 
-Moreover for each network, [Nevermined Contract Tools](https://github.com/nevermined-io/contract-tools) needs to detect the roles and their addresses from a pre-defined wallets config file.
+Moreover for each network, [Nevermined Contract Tools](https://github.com/nevermined-io/contract-tools) needs to detect
+the roles and their addresses from a pre-defined wallets config file.
 The following configuration should be an example for `wallets-<NETWORK_NAME>.json`:
 
 ```json
@@ -101,7 +107,8 @@ The following steps shows how to perform contracts deployment and upgrade on `Ri
 
 ##### Deploy a single contracts
 
-- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:rinkeby -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script:
+  ie. `npm run deploy:rinkeby -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
@@ -142,6 +149,7 @@ The following steps shows how to perform contracts deployment and upgrade on `Ri
 - Commit all changes in `artifacts/*.kovan.json`
 
 ### 4. Approve Upgrade(s)
+
 All upgrades of the contracts have to be approved by the `upgrader` wallet configured in the `wallets.json` file.
 
 - go to https://wallet.gnosis.pm

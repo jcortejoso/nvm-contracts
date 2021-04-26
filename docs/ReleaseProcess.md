@@ -1,6 +1,9 @@
-# The `keeper-contracts` Release Process
+# Nevermined Contracts Release Process
 
 ## Build a new version
+
+The steps to build a new version are the following:
+
 - Create a new local feature branch, e.g. `git checkout -b release/v0.2.5`
 - Use the `bumpversion.sh` script to bump the project version. You can execute the script using {major|minor|patch} as first argument to bump the version accordingly:
   - To bump the patch version: `./bumpversion.sh patch`
@@ -111,17 +114,14 @@ All upgrades of the contracts have to be approved by the `upgrader` wallet confi
 - Select the transaction you want to confirm (the upgrade script will tell you which transactions have to be approved in which wallets)
 - Click Confirm
 
-#### General tasks
-
-- On the end of every deployment, the log has to be copied to [atlantic](https://github.com/oceanprotocol/atlantic/tree/master/keeper/logs)
 
 ## Document
 
 ### Contracts documentation
 
 - Update the contracts documentation
-- run `node ./scripts/contracts/doc-generator.js`
-- Commit the changes in `doc/contracts`
+- run `yarn doc:contracts`
+- Commit the changes in `docs/contracts` folder
 
 ### Address Documentation
 
@@ -131,7 +131,7 @@ All upgrades of the contracts have to be approved by the `upgrader` wallet confi
 It will output the current proxy addresses in the `README` friendly format.
 
 ```text
-| AccessCondition        | v0.9.0 | 0x45DE141F8Efc355F1451a102FB6225F1EDd2921d |
+| AccessCondition                   | v0.9.0 | 0x45DE141F8Efc355F1451a102FB6225F1EDd2921d |
 | AgreementStoreManager             | v0.9.0 | 0x62f84700b1A0ea6Bfb505aDC3c0286B7944D247C |
 | ConditionStoreManager             | v0.9.0 | 0x39b0AA775496C5ebf26f3B81C9ed1843f09eE466 |
 | DIDRegistry                       | v0.9.0 | 0x4A0f7F763B1A7937aED21D63b2A78adc89c5Db23 |
@@ -154,23 +154,27 @@ It will output the current proxy addresses in the `README` friendly format.
 
 ## Release and packages
 
-The release itself is done by `travis` based on the tagged commit.
+The release itself is done by `github actions` based on the tagged commit.
 
 It will deploy the following components:
 
-- [npm](https://www.npmjs.com/package/@oceanprotocol/keeper-contracts)
-- [pypi](https://pypi.org/project/keeper-contracts/)
-- [maven](https://search.maven.org/artifact/com.oceanprotocol/keeper-contracts/)
-- [docker](https://cloud.docker.com/u/oceanprotocol/repository/docker/oceanprotocol/keeper-contracts)
+- [npm](https://www.npmjs.com/package/@nevermined-io/contracts)
+- [pypi](https://pypi.org/project/nevermined-contracts/)
+- [maven](https://search.maven.org/artifact/io.keyko.nevermined/contracts)
+- [docker](https://hub.docker.com/r/neverminedio/contracts)
 
-The npm, pypi and maven packages contain the contract artifacts for the contracts already deployed in different networks (such as `Production`, `Staging`, `Testing`, or `Spree`).
-The docker image generated contains the contracts and script ready to be used to deploy the contracts to a network. It is used for deploying the contracts in the local network `Spree` in [oceanprotocol/barge](https://github.com/oceanprotocol/barge)
+The npm, pypi and maven packages contain the contract artifacts for the contracts already deployed in different networks
+(such as `Production`, `Staging`, `Testing`, or `Spree`).
+The docker image generated contains the contracts and script ready to be used to deploy the contracts to a network.
+It is used for deploying the contracts in the local network `Spree` in [nevermined-io/tools](https://github.com/nevermined-io/tools)
 
-Once the new version is tagged and released, you can edit the `Releases` section of GitHub with the information and changes about the new version (in the future, these will come from the changelog):
+Once the new version is tagged and released, you can edit the `Releases` section of GitHub with the information and
+changes about the new version (in the future, these will come from the changelog):
 
 ## Audit
 
-To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:staging` to get a list of all the current transactions and their current status.
+To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:staging`
+to get a list of all the current transactions and their current status.
 
 ```text
  Wallet: 0x24EB26D4042a2AB576E7E39b87c3f33f276AeF92
