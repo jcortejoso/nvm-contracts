@@ -45,7 +45,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             await transferCondition.methods['initialize(address,address,address)'](
                 owner,
                 conditionStoreManager.address,
-                agreementStoreManager.address,
+                didRegistry.address,
                 { from: deployer }
             )
         }

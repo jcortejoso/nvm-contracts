@@ -6,7 +6,6 @@ pragma solidity 0.6.12;
 
 import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
-import '../../agreements/AgreementStoreManager.sol';
 
 /**
  * @title Transfer NFT Condition
@@ -20,7 +19,6 @@ contract TransferNFTCondition is Condition {
 
     bytes32 constant public CONDITION_TYPE = keccak256('TransferNFTCondition');
 
-    AgreementStoreManager internal agreementStoreManager;
     IERC1155Upgradeable private registry;
     
     event Fulfilled(
@@ -37,19 +35,19 @@ contract TransferNFTCondition is Condition {
     *       initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address    
-    * @param _agreementStoreManagerAddress agreement store manager address
+    * @param _didRegistryAddress DID Registry address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _agreementStoreManagerAddress
+        address _didRegistryAddress
     )
         external
         initializer()
     {
         require(
             _owner != address(0) &&
-            _agreementStoreManagerAddress != address(0),
+            _didRegistryAddress != address(0),
             'Invalid address'
         );
         
@@ -59,13 +57,9 @@ contract TransferNFTCondition is Condition {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        
-        agreementStoreManager = AgreementStoreManager(
-            _agreementStoreManagerAddress
-        );
 
         registry = IERC1155Upgradeable(
-            agreementStoreManager.getDIDRegistryAddress()
+            _didRegistryAddress
         );        
     }
 

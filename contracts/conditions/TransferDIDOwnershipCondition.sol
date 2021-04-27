@@ -6,7 +6,6 @@ pragma solidity 0.6.12;
 
 import './Condition.sol';
 import '../registry/DIDRegistry.sol';
-import '../agreements/AgreementStoreManager.sol';
 
 /**
  * @title Transfer DID Ownership Condition
@@ -20,7 +19,6 @@ contract TransferDIDOwnershipCondition is Condition {
 
     bytes32 constant public CONDITION_TYPE = keccak256('TransferDIDOwnershipCondition');
 
-    AgreementStoreManager internal agreementStoreManager;
     DIDRegistry internal didRegistry;
     
     event Fulfilled(
@@ -36,19 +34,19 @@ contract TransferDIDOwnershipCondition is Condition {
     *       initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address    
-    * @param _agreementStoreManagerAddress agreement store manager address
+    * @param _didRegistryAddress DID Registry address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _agreementStoreManagerAddress
+        address _didRegistryAddress
     )
         external
         initializer()
     {
         require(
             _owner != address(0) &&
-            _agreementStoreManagerAddress != address(0),
+            _didRegistryAddress != address(0),
             'Invalid address'
         );
         
@@ -59,12 +57,8 @@ contract TransferDIDOwnershipCondition is Condition {
             _conditionStoreManagerAddress
         );
         
-        agreementStoreManager = AgreementStoreManager(
-            _agreementStoreManagerAddress
-        );
-
         didRegistry = DIDRegistry(
-            agreementStoreManager.getDIDRegistryAddress()
+            _didRegistryAddress
         );        
     }
 
