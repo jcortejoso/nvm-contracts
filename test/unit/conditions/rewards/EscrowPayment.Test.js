@@ -341,6 +341,69 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             assert.isAtMost(balanceSenderAfterEscrow, balanceSenderBefore - totalAmount)
             assert.isAtMost(balanceContractAfterEscrow, balanceContractBefore)
             assert.isAtLeast(balanceReceiverAfterEscrow, balanceReceiverBefore + totalAmount)
+            await assert.isRejected(
+                escrowPayment.fulfill(agreementId, did, amounts, receivers, escrowPayment.address, constants.address.zero, lockConditionId, releaseConditionId),
+                undefined
+            )
+        })
+
+        it('ETH: fail if escrow is receiver', async () => {
+            const agreementId = testUtils.generateId()
+            const did = testUtils.generateId()
+            const totalAmount = 500000000000
+            const sender = accounts[0]
+            const amounts = [totalAmount]
+            const receivers = [escrowPayment.address]
+
+            // register DID
+            await didRegistry.registerMintableDID(
+                did, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
+
+            const hashValuesLock = await lockPaymentCondition.hashValues(
+                did, escrowPayment.address, constants.address.zero, amounts, receivers)
+            const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
+
+            await conditionStoreManager.createCondition(
+                conditionLockId,
+                lockPaymentCondition.address)
+
+            const lockConditionId = conditionLockId
+            const releaseConditionId = conditionLockId
+
+            const hashValues = await escrowPayment.hashValues(
+                did,
+                amounts,
+                receivers,
+                escrowPayment.address,
+                constants.address.zero,
+                lockConditionId,
+                releaseConditionId)
+
+            const escrowConditionId = await escrowPayment.generateId(agreementId, hashValues)
+
+            await conditionStoreManager.createCondition(
+                escrowConditionId,
+                escrowPayment.address)
+
+            const balanceSenderBefore = await getETHBalance(sender)
+            const balanceContractBefore = await getETHBalance(escrowPayment.address)
+
+            assert.isAtLeast(balanceSenderBefore, totalAmount)
+
+            await lockPaymentCondition.fulfill(
+                agreementId, did, escrowPayment.address, constants.address.zero, amounts, receivers,
+                { from: sender, value: totalAmount })
+
+            const balanceSenderAfterLock = await getETHBalance(sender)
+            const balanceContractAfterLock = await getETHBalance(escrowPayment.address)
+
+            assert.isAtMost(balanceSenderAfterLock, balanceSenderBefore - totalAmount)
+            assert.isAtLeast(balanceContractAfterLock, balanceContractBefore + totalAmount)
+
+            await assert.isRejected(
+                escrowPayment.fulfill(agreementId, did, amounts, receivers, escrowPayment.address, constants.address.zero, lockConditionId, releaseConditionId),
+                undefined
+            )
         })
 
         it('receiver and amount lists need to have same length', async () => {
