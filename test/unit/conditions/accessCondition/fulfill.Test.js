@@ -38,7 +38,7 @@ contract('AccessCondition constructor', (accounts) => {
             await accessCondition.methods['initialize(address,address,address)'](
                 accounts[0],
                 conditionStoreManager.address,
-                agreementStoreManager.address,
+                didRegistry.address,
                 { from: accounts[0] }
             )
 

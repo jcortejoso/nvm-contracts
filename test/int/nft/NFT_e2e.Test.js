@@ -137,7 +137,7 @@ contract('End to End NFT Scenarios', (accounts) => {
         await accessCondition.methods['initialize(address,address,address)'](
             owner,
             conditionStoreManager.address,
-            agreementStoreManager.address,
+            didRegistry.address,
             { from: deployer }
         )
 

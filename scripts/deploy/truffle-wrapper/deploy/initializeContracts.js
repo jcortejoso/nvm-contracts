@@ -171,7 +171,18 @@ async function initializeContracts({
                 verbose
             })
         }
-
+        if (contracts.indexOf('NFTAccessCondition') > -1) {
+            addressBook.NFTAccessCondition = zosCreate({
+                contract: 'NFTAccessCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('DIDRegistry')
+                ],
+                verbose
+            })
+        }
         if (contracts.indexOf('NFTLockCondition') > -1) {
             addressBook.NFTLockCondition = zosCreate({
                 contract: 'NFTLockCondition',
@@ -227,18 +238,6 @@ async function initializeContracts({
         if (contracts.indexOf('AccessCondition') > -1) {
             addressBook.AccessCondition = zosCreate({
                 contract: 'AccessCondition',
-                network,
-                args: [
-                    roles.ownerWallet,
-                    getAddress('ConditionStoreManager'),
-                    getAddress('AgreementStoreManager')
-                ],
-                verbose
-            })
-        }
-        if (contracts.indexOf('NFTAccessCondition') > -1) {
-            addressBook.NFTAccessCondition = zosCreate({
-                contract: 'NFTAccessCondition',
                 network,
                 args: [
                     roles.ownerWallet,
