@@ -26,12 +26,12 @@ instances of their type by the users with custimzed conditions.
 
 The existing templates existing are:
 
-- [Access Template](contracts/AccessTemplate.md)
-- [Compute Execution Template](contracts/EscrowComputeExecutionTemplate.md)
-- [DID Sales Template](contracts/DIDSalesTemplate.md)
-- [NFT Sales Template](contracts/NFTSalesTemplate.md)
-- [NFT Access Template](contracts/NFTAccessTemplate.md)
-- [Dynamic Access Template](contracts/DynamicAccessTemplate.md)
+- [Access Template](contracts/templates/AccessTemplate.md)
+- [Compute Execution Template](contracts/templates/EscrowComputeExecutionTemplate.md)
+- [DID Sales Template](contracts/templates/DIDSalesTemplate.md)
+- [NFT Sales Template](contracts/templates/NFTSalesTemplate.md)
+- [NFT Access Template](contracts/templates/NFTAccessTemplate.md)
+- [Dynamic Access Template](contracts/templates/DynamicAccessTemplate.md)
 
 A part of this, the agreements contracts module provide some internal components to manage the registering of service
 agreements on-chain. This contracts typically don't need be instantiated directly by end-users:
@@ -55,7 +55,7 @@ The existing conditions ready to be used are:
 - [Lock Payment Condition](contracts/conditions/LockPaymentCondition.md)
 - [Rewards](#)
     - [Reward](contracts/conditions/rewards/Reward.md)
-    - [Escrow Payment](contracts/conditions/rewards/EscrowPayment.md)
+    - [Escrow Payment](contracts/conditions/rewards/EscrowPaymentCondition.md)
 - [Compute Execution Condition](contracts/conditions/ComputeExecutionCondition.md)
 - [Hash Lock Condition](contracts/conditions/HashLockCondition.md)
 - [NFT Access Condition](contracts/conditions/NFTs/NFTAccessCondition.md)
@@ -83,7 +83,7 @@ This are the contracts providing the following capabilities:
 - [EpochLibrary](contracts/libraries/EpochLibrary.md)
 - [HashListLibrary](contracts/libraries/HashListLibrary.md)
 - [Common](contracts/Common.md)
-- [Hash List](HashList.md)
+- [Hash List](contracts/HashLists.md)
 
 
 ### Contract Interfaces
@@ -98,15 +98,15 @@ This are the contracts providing the following capabilities:
 Allow the registration and management of Service Agreement Templates. Typically are not necessary by users, that can
 make use of the already pre-defined service agreement templates.
 
-- [Template Store Manager](contracts/TemplateStoreManager.md)
-- [Template Store Library](contracts/TemplateStoreLibrary.md)
-- [Agreement Template](contracts/AgreementTemplate.md)
+- [Template Store Manager](contracts/templates/TemplateStoreManager.md)
+- [Template Store Library](contracts/templates/TemplateStoreLibrary.md)
+- [Agreement Template](contracts/templates/AgreementTemplate.md)
 
 ### Condition Libraries
 
 Internal libraries allowing the management and support of conditions.
 
-- [Condition Store Manager](contracts/ConditionStoreManager.md)
-- [Condition Store Library](contracts/ConditionStoreLibrary.md)
-- [Condition Base Contract](contracts/Condition.md)
+- [Condition Store Manager](contracts/conditions/ConditionStoreManager.md)
+- [Condition Store Library](contracts/conditions/ConditionStoreLibrary.md)
+- [Condition Base Contract](contracts/conditions/Condition.md)
 
