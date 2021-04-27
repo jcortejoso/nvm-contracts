@@ -37,7 +37,7 @@
     "test:upgrade": "truffle test $(find ./test/upgrade -name '*.*s')",
     "test:cover": "truffle run coverage",
     "test:manticore": "./test/verification/manticore/run.sh",
-    "doc:contracts": "node scripts/contracts/doc-generator.js",
+    "doc:contracts": "solidity-docgen -i contracts -o docs/contracts/ -t docs/docgen_template/ ",
     "doc:addresses": "node scripts/contracts/get-addresses.js",
     "doc:copyright": "scripts/add-spdx.sh",
     "clean": "npm run clean:build && npm run clean:coverage && npm run clean:zos",
@@ -54,12 +54,12 @@
     "security:upgradeability": "npm run clean && npm run compile && ./scripts/upgradeability_checks.sh"
   },
   "directories": {
-    "doc": "doc",
+    "doc": "docs",
     "test": "test"
   },
   "files": [
     "artifacts/**/*",
-    "doc/**/*",
+    "docs/**/*",
     "README.md"
   ],
   "repository": {
@@ -98,5 +98,8 @@
   },
   "resolutions": {
     "@nevermined-io/contract-tools/zos/zos-lib": "2.2.3"
+  },
+  "dependencies": {
+    "solidity-docgen": "^0.5.11"
   }
 }
