@@ -33,8 +33,7 @@ contract('Threshold Condition', (accounts) => {
         includeRandomInputConditions = false,
         MaxNConditions = 50
     } = {}) {
-
-        if (!thresholdCondition)    {
+        if (!thresholdCondition) {
             epochLibrary = await EpochLibrary.new()
             await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
@@ -65,16 +64,16 @@ contract('Threshold Condition', (accounts) => {
             )
         }
 
-        const condition_1 = testUtils.generateId()
-        const condition_2 = testUtils.generateId()
+        const condition1 = testUtils.generateId()
+        const condition2 = testUtils.generateId()
 
         const firstConditionId = await hashLockCondition.generateId(
-            condition_1,
+            condition1,
             constants.condition.hashlock.uint.keccak
         )
 
         const secondConditionId = await hashLockCondition.generateId(
-            condition_2,
+            condition2,
             constants.condition.hashlock.uint.keccak
         )
 
@@ -90,12 +89,12 @@ contract('Threshold Condition', (accounts) => {
 
         if (fulfillInputConditions) {
             await hashLockCondition.fulfill(
-                condition_1,
+                condition1,
                 constants.condition.hashlock.uint.preimage
             )
 
             await hashLockCondition.fulfill(
-                condition_2,
+                condition2,
                 constants.condition.hashlock.uint.preimage
             )
 
@@ -132,8 +131,8 @@ contract('Threshold Condition', (accounts) => {
             owner,
             inputConditions,
             randomConditions,
-            condition_1,
-            condition_2
+            condition1,
+            condition2
         }
     }
 
@@ -218,8 +217,8 @@ contract('Threshold Condition', (accounts) => {
                 conditionStoreManager,
                 inputConditions,
                 createRole,
-                condition_1,
-                condition_2
+                condition1,
+                condition2
             } = await setupTest()
             const agreementId = constants.bytes32.three
 
@@ -244,8 +243,8 @@ contract('Threshold Condition', (accounts) => {
                 }
             )
             const invalidInputConditions = [
-                condition_1,
-                condition_2
+                condition1,
+                condition2
             ]
             await assert.isRejected(
                 thresholdCondition.methods['fulfill(bytes32,bytes32[],uint256)'](
