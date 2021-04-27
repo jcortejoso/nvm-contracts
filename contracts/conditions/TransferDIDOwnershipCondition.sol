@@ -47,7 +47,7 @@ contract TransferDIDOwnershipCondition is Condition {
         initializer()
     {
         require(
-            _owner != address(0) &&
+            _conditionStoreManagerAddress != address(0) &&
             _agreementStoreManagerAddress != address(0),
             'Invalid address'
         );
