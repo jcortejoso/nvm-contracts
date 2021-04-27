@@ -1,4 +1,4 @@
-# Nevermined Contracts Release Process
+# Release Process
 
 ## Build a new version
 

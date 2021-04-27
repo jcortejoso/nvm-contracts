@@ -1,4 +1,4 @@
-# Nevermined Contracts Upgradeability
+# Upgrade Process
 
 This documents explains in detail how [nevermined-contracts](https://github.com/nevermined-io/contracts) should be
 deployed using zeppelinOS and how the contracts can be upgraded. The latest section describes the test procedure.
