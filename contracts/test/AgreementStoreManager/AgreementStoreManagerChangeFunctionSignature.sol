@@ -17,6 +17,7 @@ contract AgreementStoreManagerChangeFunctionSignature is
         bytes32[] memory _conditionIds,
         uint[] memory _timeLocks,
         uint[] memory _timeOuts,
+        address _creator,
         address _sender
     )
         public
@@ -43,7 +44,7 @@ contract AgreementStoreManagerChangeFunctionSignature is
                 _conditionTypes[i],
                 _timeLocks[i],
                 _timeOuts[i],
-                msg.sender
+                _creator
             );
         }
         agreementList.create(

@@ -77,7 +77,7 @@ contract AgreementStoreManager is OwnableUpgradeable {
     }
 
     /**
-     * @dev Create a new agreement.
+     * @dev Create a new agreement and associate the agreement created to the address originating the transaction.
      *      The agreement will create conditions of conditionType with conditionId.
      *      Only "approved" templates can access this function.
      * @param _id is the ID of the new agreement. Must be unique.
@@ -95,6 +95,42 @@ contract AgreementStoreManager is OwnableUpgradeable {
         bytes32[] memory _conditionIds,
         uint[] memory _timeLocks,
         uint[] memory _timeOuts
+    )
+    public
+    returns (uint size)
+    {
+        return createAgreement(
+            _id,
+            _did,
+            _conditionTypes,
+            _conditionIds,
+            _timeLocks,
+            _timeOuts,
+            tx.origin // solhint-disable avoid-tx-origin
+        );
+    }
+    
+    /**
+     * @dev Create a new agreement.
+     *      The agreement will create conditions of conditionType with conditionId.
+     *      Only "approved" templates can access this function.
+     * @param _id is the ID of the new agreement. Must be unique.
+     * @param _did is the bytes32 DID of the asset. The DID must be registered beforehand.
+     * @param _conditionTypes is a list of addresses that point to Condition contracts.
+     * @param _conditionIds is a list of bytes32 content-addressed Condition IDs
+     * @param _timeLocks is a list of uint time lock values associated to each Condition
+     * @param _timeOuts is a list of uint time out values associated to each Condition
+     * @param _creator address of the account associated as agreement and conditions creator
+     * @return size the size of the agreement list after the create action.
+     */
+    function createAgreement(
+        bytes32 _id,
+        bytes32 _did,
+        address[] memory _conditionTypes,
+        bytes32[] memory _conditionIds,
+        uint[] memory _timeLocks,
+        uint[] memory _timeOuts,
+        address _creator
     )
         public
         returns (uint size)
@@ -121,7 +157,7 @@ contract AgreementStoreManager is OwnableUpgradeable {
                 _conditionTypes[i],
                 _timeLocks[i],
                 _timeOuts[i],
-                msg.sender
+                _creator
             );
         }
         agreementList.create(
