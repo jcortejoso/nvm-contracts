@@ -130,8 +130,8 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
             );
         }
         
-        super._mint(msg.sender, uint256(_did), _amount, '');
         didRegisterList.didRegisters[_did].nftSupply += _amount;
+        super._mint(msg.sender, uint256(_did), _amount, '');
         
         super.used(
             keccak256(abi.encodePacked(_did, msg.sender, 'mint', _amount, block.number)),

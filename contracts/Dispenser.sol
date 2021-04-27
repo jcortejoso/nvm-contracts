@@ -124,15 +124,15 @@ contract Dispenser is OwnableUpgradeable {
             );
             return false;
         } else {
-            require(
-                token.mint(msg.sender, amountWithDigits),
-                'Token minting failed.'
-            );
-
             /* solium-disable-next-line security/no-block-members */
             tokenRequests[msg.sender] = block.timestamp;
 
             totalMintAmount = totalMintAmount.add(amountWithDigits);
+
+            require(
+                token.mint(msg.sender, amountWithDigits),
+                'Token minting failed.'
+            );
 
             return true;
         }
