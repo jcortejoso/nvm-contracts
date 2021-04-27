@@ -262,8 +262,8 @@ contract EscrowPaymentCondition is Reward, Common {
                 _receivers[i] != address(this),
                 'Escrow contract can not be a receiver'
             );
-            (bool sent,) = _receivers[i].call{value: _amounts[i]}("");
-            require(sent, "Failed to send Ether");
+            (bool sent,) = _receivers[i].call{value: _amounts[i]}('');
+            require(sent, 'Failed to send Ether');
 //            _receivers[i].transfer(_amounts[i]);
         }
 

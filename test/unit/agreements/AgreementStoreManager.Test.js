@@ -165,6 +165,11 @@ contract('AgreementStoreManager', (accounts) => {
                 constants.initialize.error.invalidNumberParamsGot0Expected4
             )
         })
+
+        it('contract should have initialized', async () => {
+            expect(await agreementStoreManager.getDIDRegistryAddress()).to.equal(didRegistry.address)
+        })
+
     })
 
     describe('create agreement', () => {
@@ -234,6 +239,28 @@ contract('AgreementStoreManager', (accounts) => {
                     { from: templateId }
                 ),
                 constants.error.idAlreadyExists
+            )
+        })
+
+        it('should not create agreement with bad arguments', async () => {
+            const did = await registerNewDID()
+
+            const agreement = {
+                did: did,
+                conditionTypes: [common.address, common.address],
+                conditionIds: [constants.bytes32.zero, constants.bytes32.one],
+                timeLocks: [0],
+                timeOuts: [2, 3]
+            }
+            const agreementId = testUtils.generateId()
+
+            await assert.isRejected(
+                agreementStoreManager.createAgreement(
+                    agreementId,
+                    ...Object.values(agreement),
+                    { from: templateId }
+                ),
+                "Arguments have wrong length"
             )
         })
 
