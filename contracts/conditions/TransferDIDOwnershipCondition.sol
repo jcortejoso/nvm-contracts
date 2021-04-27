@@ -44,8 +44,7 @@ contract TransferDIDOwnershipCondition is Condition {
         external
         initializer()
     {
-        require(
-            _owner != address(0) &&
+        require(         
             _didRegistryAddress != address(0),
             'Invalid address'
         );

@@ -46,7 +46,6 @@ contract TransferNFTCondition is Condition {
         initializer()
     {
         require(
-            _owner != address(0) &&
             _didRegistryAddress != address(0),
             'Invalid address'
         );

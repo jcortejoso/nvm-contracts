@@ -95,7 +95,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(
@@ -145,7 +146,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(
@@ -185,7 +187,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(
@@ -232,7 +235,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
-                timeOuts: [timeOut]
+                timeOuts: [timeOut],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(
@@ -280,7 +284,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
-                timeOuts: [timeOut]
+                timeOuts: [timeOut],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(
@@ -326,7 +331,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
-                timeOuts: [timeOut]
+                timeOuts: [timeOut],
+                creator: templateId
             }
 
             expect(await accessCondition.checkPermissions(grantee, documentId))
