@@ -104,13 +104,6 @@ contract('LockPaymentCondition', (accounts) => {
                 didRegistry.address,
                 { from: createRole }
             ), 'Invalid address')
-            await lockPaymentCondition.initialize(
-                owner,
-                conditionStoreManager.address,
-                token.address,
-                didRegistry.address,
-                { from: createRole }
-            )
         })
     })
 
@@ -403,6 +396,45 @@ contract('LockPaymentCondition', (accounts) => {
             await assert.isRejected(
                 lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers),
                 undefined
+            )
+
+        })
+
+        it('should succeed with royalties', async () => {
+            const agreementId = testUtils.generateId()
+            const did = testUtils.generateId()
+            const rewardAddress = accounts[3]
+            const sender = accounts[0]
+            const current = accounts[4]
+            const amounts = [10, 10]
+            const receivers = [accounts[1], accounts[0]]
+
+            // register DID
+            await didRegistry.registerMintableDID(
+                did, checksum, [], url, amounts[0], 50, constants.activities.GENERATED, '')
+            
+            await didRegistry.transferDIDOwnership(did, current)
+
+            const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
+            const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
+
+            await conditionStoreManager.createCondition(
+                conditionId,
+                lockPaymentCondition.address)
+
+            await token.mint(current, 20, { from: owner })
+            await token.approve(lockPaymentCondition.address, 20, { from: current })
+
+            await lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers, {from: current})
+
+            assert.strictEqual(
+                (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
+                constants.condition.state.fulfilled
+            )
+
+            assert.strictEqual(
+                await getBalance(token, rewardAddress),
+                20
             )
 
         })

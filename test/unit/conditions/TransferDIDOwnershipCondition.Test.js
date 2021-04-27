@@ -94,7 +94,6 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
         })
     })
 
-
     describe('trying to fulfill invalid conditions', () => {
         it('should not fulfill if condition does not exist', async () => {
             const {
