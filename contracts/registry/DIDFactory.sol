@@ -21,15 +21,11 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      */
     using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
 
-//    using ProvenanceRegistry for ProvenanceRegistry.ProvenanceRegistryList;
-    
     /**
      * @dev state storage for the DID registry
      */
     DIDRegistryLibrary.DIDRegisterList internal didRegisterList;
 
-//    ProvenanceRegistry.ProvenanceRegistryList internal provenanceRegistryList;
-    
     // DID -> Address -> Boolean Permission
     mapping(bytes32 => mapping(address => bool)) internal didPermissions;
     
