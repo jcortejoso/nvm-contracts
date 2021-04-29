@@ -417,7 +417,7 @@ contract('LockPaymentCondition', (accounts) => {
             await conditionStoreManager.createCondition(
                 conditionId,
                 lockPaymentCondition.address)
-            
+
             const balanceBefore = await getBalance(token, rewardAddress)
 
             await token.mint(current, 20, { from: owner })
