@@ -42,12 +42,14 @@ library ConditionStoreLibrary {
     * @param _self is the ConditionList storage pointer
     * @param _id valid condition identifier
     * @param _typeRef condition contract address
+    * @param _creator address of the condition creator
     * @return size is the condition index
     */
     function create(
         ConditionList storage _self,
         bytes32 _id,
-        address _typeRef
+        address _typeRef,
+        address _creator
     )
         internal
         returns (uint size)
@@ -60,7 +62,7 @@ library ConditionStoreLibrary {
         _self.conditions[_id] = Condition({
             typeRef: _typeRef,
             state: ConditionState.Unfulfilled,
-            createdBy: tx.origin, // solhint-disable avoid-tx-origin
+            createdBy: _creator,
             lastUpdatedBy: msg.sender,
             blockNumberUpdated: block.number
         });

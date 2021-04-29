@@ -171,7 +171,42 @@ async function initializeContracts({
                 verbose
             })
         }
-
+        if (contracts.indexOf('NFTAccessCondition') > -1) {
+            addressBook.NFTAccessCondition = zosCreate({
+                contract: 'NFTAccessCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('DIDRegistry')
+                ],
+                verbose
+            })
+        }
+        if (contracts.indexOf('TransferNFTCondition') > -1) {
+            addressBook.TransferNFTCondition = zosCreate({
+                contract: 'TransferNFTCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('DIDRegistry')
+                ],
+                verbose
+            })
+        }
+        if (contracts.indexOf('TransferDIDOwnershipCondition') > -1) {
+            addressBook.TransferDIDOwnershipCondition = zosCreate({
+                contract: 'TransferDIDOwnershipCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('DIDRegistry')
+                ],
+                verbose
+            })
+        }
         if (contracts.indexOf('NFTLockCondition') > -1) {
             addressBook.NFTLockCondition = zosCreate({
                 contract: 'NFTLockCondition',
@@ -236,45 +271,9 @@ async function initializeContracts({
                 verbose
             })
         }
-        if (contracts.indexOf('NFTAccessCondition') > -1) {
-            addressBook.NFTAccessCondition = zosCreate({
-                contract: 'NFTAccessCondition',
-                network,
-                args: [
-                    roles.ownerWallet,
-                    getAddress('ConditionStoreManager'),
-                    getAddress('AgreementStoreManager')
-                ],
-                verbose
-            })
-        }
         if (contracts.indexOf('ComputeExecutionCondition') > -1) {
             addressBook.ComputeExecutionCondition = zosCreate({
                 contract: 'ComputeExecutionCondition',
-                network,
-                args: [
-                    roles.ownerWallet,
-                    getAddress('ConditionStoreManager'),
-                    getAddress('AgreementStoreManager')
-                ],
-                verbose
-            })
-        }
-        if (contracts.indexOf('TransferDIDOwnershipCondition') > -1) {
-            addressBook.TransferDIDOwnershipCondition = zosCreate({
-                contract: 'TransferDIDOwnershipCondition',
-                network,
-                args: [
-                    roles.ownerWallet,
-                    getAddress('ConditionStoreManager'),
-                    getAddress('AgreementStoreManager')
-                ],
-                verbose
-            })
-        }
-        if (contracts.indexOf('TransferNFTCondition') > -1) {
-            addressBook.TransferNFTCondition = zosCreate({
-                contract: 'TransferNFTCondition',
                 network,
                 args: [
                     roles.ownerWallet,
