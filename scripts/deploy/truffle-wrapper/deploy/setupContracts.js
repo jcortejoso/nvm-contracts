@@ -236,6 +236,16 @@ async function setupContracts({
         })
     }
 
+    if (addressBook.TransferDIDOwnershipCondition && addressBook.DIDRegistry) {
+        const DIDRegistry = artifacts.require('DIDRegistry')
+        const DIDRegistryInstance =
+            await DIDRegistry.at(addressBook.DIDRegistry)
+
+        console.log('TransferDIDOwnershipCondition : ' + addressBook.TransferDIDOwnershipCondition)
+        await DIDRegistryInstance.setManager(
+            addressBook.TransferDIDOwnershipCondition, { from: roles.deployer })
+    }
+
     if (addressBook.TransferNFTCondition && addressBook.DIDRegistry) {
         const DIDRegistry = artifacts.require('DIDRegistry')
         const DIDRegistryInstance =
