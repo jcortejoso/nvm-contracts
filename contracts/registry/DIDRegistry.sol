@@ -35,6 +35,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
         OwnableUpgradeable.__Ownable_init();
         NFTUpgradeable.__NFTUpgradeable_init('');
         transferOwnership(_owner);
+        manager = _owner;
     }
 
     /**

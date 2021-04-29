@@ -99,7 +99,7 @@ contract TransferDIDOwnershipCondition is Condition {
         returns (ConditionStoreLibrary.ConditionState)
     {
         // Only DID Owner can fulfill
-        didRegistry.transferDIDOwnership(_did, _receiver);
+        didRegistry.transferDIDOwnershipManaged(msg.sender, _did, _receiver);
         
         bytes32 _id = generateId(
             _agreementId,
