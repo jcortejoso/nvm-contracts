@@ -180,7 +180,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [constants.bytes32.zero, constants.bytes32.one],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -212,7 +213,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes,
                 conditionIds,
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -227,7 +229,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes,
                 conditionIds,
                 timeLocks: [3, 4],
-                timeOuts: [100, 110]
+                timeOuts: [100, 110],
+                creator: templateId
             }
             const otherAgreementId = testUtils.generateId()
 
@@ -272,7 +275,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -295,7 +299,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [constants.bytes32.zero],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -320,7 +325,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [constants.bytes32.zero],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -342,7 +348,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -361,7 +368,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [2],
-                timeOuts: [3]
+                timeOuts: [3],
+                creator: templateId
             }
 
             await assert.isRejected(
@@ -382,7 +390,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -420,7 +429,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -441,7 +451,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -464,7 +475,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [testUtils.generateId(), testUtils.generateId()],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
 
             const blockNumber = await common.getCurrentBlockNumber()
@@ -500,7 +512,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -515,7 +528,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [2],
-                timeOuts: [3]
+                timeOuts: [3],
+                creator: templateId
             }
             const otherAgreementId = testUtils.generateId()
 
@@ -543,7 +557,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [testUtils.generateId(), testUtils.generateId()],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
 
             const agreementId = testUtils.generateId()
@@ -571,7 +586,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [testUtils.generateId(), testUtils.generateId()],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
 
             const agreementId = testUtils.generateId()

@@ -56,7 +56,7 @@ contract('NFT Access integration test', (accounts) => {
         await accessCondition.methods['initialize(address,address,address)'](
             owner,
             conditionStoreManager.address,
-            agreementStoreManager.address,
+            didRegistry.address,
             { from: deployer }
         )
 

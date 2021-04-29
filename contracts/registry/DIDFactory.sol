@@ -29,6 +29,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     // DID -> Address -> Boolean Permission
     mapping(bytes32 => mapping(address => bool)) internal didPermissions;
     
+    address public manager;
 
     //////////////////////////////////////////////////////////////
     ////////  MODIFIERS   ////////////////////////////////////////
@@ -37,9 +38,18 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     
     modifier onlyDIDOwner(bytes32 _did)
     {
-        require(// solhint-disable-next-line avoid-tx-origin
-            isDIDOwner(tx.origin, _did),
+        require(
+            isDIDOwner(msg.sender, _did),
             'Only DID Owner allowed'
+        );
+        _;
+    }
+
+    modifier onlyManager
+    {
+        require(
+            msg.sender == manager,
+            'Only DIDRegistry manager allowed'
         );
         _;
     }
@@ -140,6 +150,11 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
+        manager = _owner;
+    }
+
+    function setManager(address _addr) external onlyOwner {
+        manager = _addr;
     }
 
     /**
@@ -442,13 +457,31 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      */
     function transferDIDOwnership(bytes32 _did, address _newOwner)
     external
-    onlyDIDOwner(_did)
     {
+        _transferDIDOwnership(msg.sender, _did, _newOwner);
+    }
+
+    /**
+     * @notice transferDIDOwnershipManaged transfer DID ownership
+     * @param _did refers to decentralized identifier (a bytes32 length ID)
+     * @param _newOwner new owner address
+     */
+    function transferDIDOwnershipManaged(address _sender, bytes32 _did, address _newOwner)
+    external
+    onlyManager
+    {
+        _transferDIDOwnership(_sender, _did, _newOwner);
+    }
+
+    function _transferDIDOwnership(address _sender, bytes32 _did, address _newOwner) internal
+    {
+        require(isDIDOwner(_sender, _did), 'Only DID Owner allowed');
+
         address _previousOwner = didRegisterList.didRegisters[_did].owner;
         didRegisterList.updateDIDOwner(_did, _newOwner);
 
         _wasAssociatedWith(
-            keccak256(abi.encodePacked(_did, msg.sender, 'transferDID', _newOwner, block.number)),
+            keccak256(abi.encodePacked(_did, _sender, 'transferDID', _newOwner, block.number)),
             _did, _newOwner, keccak256('transferDID'), 'transferDID');
         
         emit DIDOwnershipTransferred(

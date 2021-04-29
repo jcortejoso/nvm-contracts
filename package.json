@@ -1,6 +1,6 @@
 {
   "name": "@nevermined-io/contracts",
-  "version": "1.0.0-rc4",
+  "version": "1.0.0-rc5",
   "description": "Nevermined implementation of Nevermined in Solidity",
   "bugs": {
     "url": "https://github.com/nevermined-io/contracts/issues"
@@ -37,7 +37,7 @@
     "test:upgrade": "truffle test $(find ./test/upgrade -name '*.*s')",
     "test:cover": "truffle run coverage",
     "test:manticore": "./test/verification/manticore/run.sh",
-    "doc:contracts": "node scripts/contracts/doc-generator.js",
+    "doc:contracts": "solidity-docgen -i contracts -o docs/contracts/ -t docs/docgen_template/ ",
     "doc:addresses": "node scripts/contracts/get-addresses.js",
     "doc:copyright": "scripts/add-spdx.sh",
     "clean": "npm run clean:build && npm run clean:coverage && npm run clean:zos",
@@ -54,12 +54,12 @@
     "security:upgradeability": "npm run clean && npm run compile && ./scripts/upgradeability_checks.sh"
   },
   "directories": {
-    "doc": "doc",
+    "doc": "docs",
     "test": "test"
   },
   "files": [
     "artifacts/**/*",
-    "doc/**/*",
+    "docs/**/*",
     "README.md"
   ],
   "repository": {
@@ -83,7 +83,7 @@
     "glob": "^7.1.4",
     "mathjs": "~7.0.0",
     "prettier": "^2.1.2",
-    "solidity-coverage": "^0.7.13",
+    "solidity-coverage": "^0.7.16",
     "truffle-contract-size": "^2.0.1",
     "solhint": "^3.2.0",
     "truffle": "^5.1.56",
@@ -98,5 +98,8 @@
   },
   "resolutions": {
     "@nevermined-io/contract-tools/zos/zos-lib": "2.2.3"
+  },
+  "dependencies": {
+    "solidity-docgen": "^0.5.11"
   }
 }
