@@ -169,7 +169,6 @@ contract('AgreementStoreManager', (accounts) => {
         it('contract should have initialized', async () => {
             expect(await agreementStoreManager.getDIDRegistryAddress()).to.equal(didRegistry.address)
         })
-
     })
 
     describe('create agreement', () => {
@@ -260,7 +259,7 @@ contract('AgreementStoreManager', (accounts) => {
                     ...Object.values(agreement),
                     { from: templateId }
                 ),
-                "Arguments have wrong length"
+                'Arguments have wrong length'
             )
         })
 

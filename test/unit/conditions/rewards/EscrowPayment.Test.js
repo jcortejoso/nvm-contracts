@@ -134,7 +134,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 token.address,
                 { from: deployer }
             ), undefined)
-
         })
     })
 
@@ -431,8 +430,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 token.address,
                 lockConditionId,
                 releaseConditionId),
-                undefined)
-
+            undefined)
         })
 
         it('lock condition not fulfilled', async () => {
@@ -475,8 +473,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 token.address,
                 lockConditionId,
                 releaseConditionId),
-                'LockCondition needs to be Fulfilled')
-
+            'LockCondition needs to be Fulfilled')
         })
 
         it('release condition not fulfilled', async () => {
@@ -503,7 +500,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             await conditionStoreManager.createCondition(
                 releaseConditionId,
                 lockPaymentCondition.address)
-
 
             const hashValues = await escrowPayment.hashValues(
                 did,
@@ -547,7 +543,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             )
 
             assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
-
         })
 
         it('ERC20: release condition aborted', async () => {
@@ -574,7 +569,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             await conditionStoreManager.createCondition(
                 releaseConditionId,
                 lockPaymentCondition.address,
-                1, 
+                1,
                 2
             )
 
@@ -623,7 +618,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             )
 
             assert.strictEqual(await getBalance(token, sender), totalAmount)
-
         })
 
         it('ETH: release condition aborted', async () => {
@@ -650,7 +644,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             await conditionStoreManager.createCondition(
                 releaseConditionId,
                 lockPaymentCondition.address,
-                1, 
+                1,
                 2
             )
 
@@ -695,7 +689,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 await getETHBalance(sender),
                 balanceBefore
             )
-
         })
 
         it('should not fulfill in case of null addresses', async () => {

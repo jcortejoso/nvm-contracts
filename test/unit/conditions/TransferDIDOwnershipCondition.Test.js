@@ -73,10 +73,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             const deployer = accounts[8]
             const owner = accounts[0]
             const {
-                didRegistry,
-                agreementStoreManager,
-                conditionStoreManager,
-                templateStoreManager
+                agreementStoreManager
             } = await deployManagers(
                 deployer,
                 owner
@@ -90,7 +87,6 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 agreementStoreManager.address,
                 { from: deployer }
             ), 'Invalid address')
-
         })
     })
 
