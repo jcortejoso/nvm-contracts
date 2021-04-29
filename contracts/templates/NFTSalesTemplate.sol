@@ -5,7 +5,6 @@ pragma solidity 0.6.12;
 
 
 import './BaseEscrowTemplate.sol';
-import '../conditions/NFTs/NFTLockCondition.sol';
 import '../conditions/LockPaymentCondition.sol';
 import '../conditions/NFTs/TransferNFTCondition.sol';
 import '../conditions/rewards/EscrowPaymentCondition.sol';

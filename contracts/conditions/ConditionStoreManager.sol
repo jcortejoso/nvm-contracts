@@ -173,6 +173,34 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
         bytes32 _id,
         address _typeRef
     )
+    external
+    returns (uint size)
+    {
+        return createCondition(
+            _id,
+            _typeRef,
+            uint(0),
+            uint(0),
+            msg.sender
+        );
+    }
+    
+    /**
+     * @dev createCondition only called by create role address 
+     *      the condition should use a valid condition contract 
+     *      address, valid time lock and timeout. Moreover, it 
+     *      enforce the condition state transition from 
+     *      Uninitialized to Unfulfilled.
+     * @param _id unique condition identifier
+     * @param _typeRef condition contract address
+     * @param _creator address of the condition creator    
+     * @return size the index of the created condition 
+     */
+    function createCondition(
+        bytes32 _id,
+        address _typeRef,
+        address _creator
+    )
         external
         returns (uint size)
     {
@@ -180,7 +208,8 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
             _id,
             _typeRef,
             uint(0),
-            uint(0)
+            uint(0),
+            _creator
         );
     }
 
@@ -194,13 +223,15 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
      * @param _typeRef condition contract address
      * @param _timeLock start of the time window
      * @param _timeOut end of the time window
+     * @param _creator address of the condition creator     
      * @return size the index of the created condition 
      */
     function createCondition(
         bytes32 _id,
         address _typeRef,
         uint _timeLock,
-        uint _timeOut
+        uint _timeOut,
+        address _creator
     )
         public
         onlyCreateRole
@@ -209,7 +240,7 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
     {
         epochList.create(_id, _timeLock, _timeOut);
 
-        uint listSize = conditionList.create(_id, _typeRef);
+        uint listSize = conditionList.create(_id, _typeRef, _creator);
 
         emit ConditionCreated(
             _id,

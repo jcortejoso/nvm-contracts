@@ -45,7 +45,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             await transferCondition.methods['initialize(address,address,address)'](
                 owner,
                 conditionStoreManager.address,
-                agreementStoreManager.address,
+                didRegistry.address,
                 { from: deployer }
             )
         }
@@ -127,7 +127,8 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 conditionTypes: [transferCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(
@@ -188,7 +189,8 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 conditionTypes: [transferCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(
