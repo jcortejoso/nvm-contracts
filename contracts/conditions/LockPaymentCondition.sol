@@ -52,7 +52,7 @@ contract LockPaymentCondition is Condition, Common {
         initializer()
     {
         require(
-            _tokenAddress != address(0) &&
+            _didRegistryAddress != address(0) &&
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
@@ -172,10 +172,7 @@ contract LockPaymentCondition is Condition, Common {
     returns (bool)
     {
         IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
-        require(
-            token.transferFrom(msg.sender, _rewardAddress, _amount)
-        );
-        return true;
+        return token.transferFrom(msg.sender, _rewardAddress, _amount);
     }
 
     /**

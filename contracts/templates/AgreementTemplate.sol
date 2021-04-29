@@ -21,9 +21,6 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  */
 contract AgreementTemplate is OwnableUpgradeable {
 
-    using TemplateStoreLibrary for TemplateStoreLibrary.TemplateList;
-
-    TemplateStoreLibrary.TemplateList internal templateList;
     address[] internal conditionTypes;
 
     AgreementStoreManager internal agreementStoreManager;

@@ -46,6 +46,7 @@ contract TransferNFTCondition is Condition {
         initializer()
     {
         require(
+            _conditionStoreManagerAddress != address(0) &&
             _didRegistryAddress != address(0),
             'Invalid address'
         );
@@ -147,7 +148,7 @@ contract TransferNFTCondition is Condition {
     }    
     
     
-   /**
+   /*
     * @notice fulfill the transfer NFT condition
     * @dev only DID owner or DID provider can call this
     *       method. Fulfill method transfer a certain amount of NFTs 
@@ -160,6 +161,7 @@ contract TransferNFTCondition is Condition {
     * @param _nftLockCondition lock payment condition identifier
     * @return condition state (Fulfilled/Aborted)
     */
+    /*
     function fulfillWithNFTLock(
         bytes32 _agreementId,
         bytes32 _did,
@@ -226,6 +228,6 @@ contract TransferNFTCondition is Condition {
 
         return state;
     }
-    
+*/    
 }
 

@@ -167,6 +167,7 @@ contract AgreementStoreManager is OwnableUpgradeable {
             _conditionIds
         );
 
+        // same as above
         return getAgreementListSize();
     }
 

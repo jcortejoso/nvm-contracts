@@ -21,15 +21,11 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      */
     using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
 
-//    using ProvenanceRegistry for ProvenanceRegistry.ProvenanceRegistryList;
-    
     /**
      * @dev state storage for the DID registry
      */
     DIDRegistryLibrary.DIDRegisterList internal didRegisterList;
 
-//    ProvenanceRegistry.ProvenanceRegistryList internal provenanceRegistryList;
-    
     // DID -> Address -> Boolean Permission
     mapping(bytes32 => mapping(address => bool)) internal didPermissions;
     
@@ -196,6 +192,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      * @param _checksum includes a one-way HASH calculated using the DDO content.
      * @param _providers list of addresses that can act as an asset provider     
      * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
+     * @param _providers list of DID providers addresses
      * @param _activityId refers to activity
      * @param _attributes refers to the provenance attributes     
      * @return size refers to the size of the registry after the register action.
@@ -634,7 +631,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     }
 
     /**
-     * @return the length of the DID registry.
+     * @return the list of items in the DID registry.
      */
     function getDIDRegisterIds()
     public
