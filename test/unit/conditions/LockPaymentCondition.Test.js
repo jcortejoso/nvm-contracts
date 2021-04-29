@@ -202,7 +202,6 @@ contract('LockPaymentCondition', (accounts) => {
             assert.isAtMost(balanceSenderAfter, balanceSenderBefore - totalAmount)
             assert.isAtMost(balanceReceiverAfter, balanceReceiverBefore + totalAmount)
         })
-
     })
 
     describe('fulfill non existing condition', () => {
@@ -376,14 +375,13 @@ contract('LockPaymentCondition', (accounts) => {
             const agreementId = testUtils.generateId()
             const did = testUtils.generateId()
             const rewardAddress = accounts[3]
-            const sender = accounts[0]
             const amounts = [10]
             const receivers = [accounts[1]]
 
             // register DID
             await didRegistry.registerMintableDID(
                 did, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
-            
+
             await didRegistry.transferDIDOwnership(did, accounts[4])
 
             const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
@@ -397,14 +395,12 @@ contract('LockPaymentCondition', (accounts) => {
                 lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers),
                 undefined
             )
-
         })
 
         it('should succeed with royalties', async () => {
             const agreementId = testUtils.generateId()
             const did = testUtils.generateId()
             const rewardAddress = accounts[3]
-            const sender = accounts[0]
             const current = accounts[4]
             const amounts = [10, 10]
             const receivers = [accounts[1], accounts[0]]
@@ -412,7 +408,7 @@ contract('LockPaymentCondition', (accounts) => {
             // register DID
             await didRegistry.registerMintableDID(
                 did, checksum, [], url, amounts[0], 50, constants.activities.GENERATED, '')
-            
+
             await didRegistry.transferDIDOwnership(did, current)
 
             const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
@@ -425,7 +421,7 @@ contract('LockPaymentCondition', (accounts) => {
             await token.mint(current, 20, { from: owner })
             await token.approve(lockPaymentCondition.address, 20, { from: current })
 
-            await lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers, {from: current})
+            await lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers, { from: current })
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
@@ -436,8 +432,6 @@ contract('LockPaymentCondition', (accounts) => {
                 await getBalance(token, rewardAddress),
                 20
             )
-
         })
-
     })
 })
