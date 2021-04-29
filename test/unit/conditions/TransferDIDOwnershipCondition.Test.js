@@ -48,6 +48,8 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 didRegistry.address,
                 { from: deployer }
             )
+
+            await didRegistry.setManager(transferCondition.address, { from: owner })
         }
 
         if (registerDID) {
