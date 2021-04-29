@@ -570,7 +570,8 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 releaseConditionId,
                 lockPaymentCondition.address,
                 1,
-                2
+                2,
+                sender
             )
 
             const hashValues = await escrowPayment.hashValues(
@@ -645,7 +646,8 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 releaseConditionId,
                 lockPaymentCondition.address,
                 1,
-                2
+                2,
+                sender
             )
 
             const hashValues = await escrowPayment.hashValues(

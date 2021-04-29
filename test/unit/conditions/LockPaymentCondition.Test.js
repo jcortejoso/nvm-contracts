@@ -417,6 +417,8 @@ contract('LockPaymentCondition', (accounts) => {
             await conditionStoreManager.createCondition(
                 conditionId,
                 lockPaymentCondition.address)
+            
+            const balanceBefore = await getBalance(token, rewardAddress)
 
             await token.mint(current, 20, { from: owner })
             await token.approve(lockPaymentCondition.address, 20, { from: current })
@@ -430,7 +432,7 @@ contract('LockPaymentCondition', (accounts) => {
 
             assert.strictEqual(
                 await getBalance(token, rewardAddress),
-                20
+                20 + balanceBefore
             )
         })
     })

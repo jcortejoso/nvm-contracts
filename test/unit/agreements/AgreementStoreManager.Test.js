@@ -252,7 +252,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [constants.bytes32.zero, constants.bytes32.one],
                 timeLocks: [0],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
