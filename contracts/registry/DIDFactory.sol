@@ -192,7 +192,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      * @param _checksum includes a one-way HASH calculated using the DDO content.
      * @param _providers list of addresses that can act as an asset provider     
      * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
-     * @param _providers ???
+     * @param _providers list of DID providers addresses
      * @param _activityId refers to activity
      * @param _attributes refers to the provenance attributes     
      * @return size refers to the size of the registry after the register action.
