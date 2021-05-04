@@ -125,26 +125,33 @@ The contract addresses deployed on Nevermined `Rinkeby` Test Network:
 
 | Contract                          | Version | Address                                      |
 |-----------------------------------|---------|----------------------------------------------|
-| AccessCondition        | v0.6.0 | `0xA5910a44C88cF4B576F11b07719C8dD05b5a78a5` |
-| AgreementStoreManager             | v0.6.0 | `0x4C08EEA6A721b4DF66B6BD5479089b1CE18B0159` |
-| ComputeExecutionCondition         | v0.6.0 | `0xdD70eec059d810Ac77d42038Ea3979Eba1af2d52` |
-| ConditionStoreManager             | v0.6.0 | `0x8e023fDDe4400f93B2ae2db5512Cd9d3C9A544Db` |
-| DIDRegistry                       | v0.6.0 | `0x7d1789644b70C802e597cf5542e21bAA06a7b1dC` |
-| DIDRegistryLibrary                | v0.6.0 | `0x534AFb339c9D78EcBB26eef4f02744530d06e647` |
-| Dispenser                         | v0.6.0 | `0xbC8f58230D0D7BfC6871dec5df327895DB6496b5` |
-| EpochLibrary                      | v0.6.0 | `0x8816b25b5DB2b4A92aEC480E0A7302aAC3878BF5` |
-| EscrowAccessSecretStoreTemplate   | v0.6.0 | `0xE91472719B4a401063322C1b15A02D0f63D02790` |
-| EscrowComputeExecutionTemplate    | v0.6.0 | `0x4d296c095e8a060A611ff8F48f22c563A2AB36Eb` |
-| EscrowReward                      | v0.6.0 | `0x3B8D1fD7778D498ca0A683512a962907BC9EAb70` |
-| HashLockCondition                 | v0.6.0 | `0xE92Ea1A9bCa9f62b23c1941bB189Fa1bF09e3f2e` |
-| LockRewardCondition               | v0.6.0 | `0x2873FDCdF6d11c24499C1bdeBd5292fb98260D9b` |
-| NeverminedToken                   | v0.6.0 | `0xB8b367394F3A1b8ddC705306026e993097461F8D` |
-| ProvenanceRegistry                | v0.5.0 | `0xec3b7A08206c5f5062503cee1DAE83beea2Bd5AA` |
-| ProvenanceRegistryLibrary         | v0.5.0 | `0xF38176FfD1ee5Af8DaCA0521323e660C49573178` |
-| SignCondition                     | v0.6.0 | `0xf3a006ba80f53B139182F5abDF01C5A547587fCD` |
-| TemplateStoreManager              | v0.6.0 | `0x0a0f1b35949fab5b37C017fD1281B05792Edf713` |
-| ThresholdCondition                | v0.6.0 | `0xCA3b806DeD9BB7812347c4Bb09741b25459A5B96` |
-| WhitelistingCondition             | v0.6.0 | `0x6D24f8C24694C3c9376b7954A22A88B4842CFDa3` |
+| AccessCondition                   | v1.0.0-rc5 | `0xfBa38fa846E5c38845AA87Eb43Ed571Df6f71938` |
+| AccessTemplate                    | v1.0.0-rc5 | `0x5DFd35399B64bD8457b3667Ba79D83A31Bc08D28` |
+| AgreementStoreManager             | v1.0.0-rc5 | `0x2d8BCaDdf251384C28644155bB853fd200f2Ff2B` |
+| ComputeExecutionCondition         | v1.0.0-rc5 | `0xa99b7B332CFd88b127513A1f55BD13c5d7de4C16` |
+| ConditionStoreManager             | v1.0.0-rc5 | `0xa42e0C25Ef78e7DC1676384fecE2e54B291a99fc` |
+| DIDRegistry                       | v1.0.0-rc5 | `0x38fc69a8b1A347677D713420Fc9E8EaCcBE3C3C2` |
+| DIDRegistryLibrary                | v1.0.0-rc5 | `0x48639b9712C847b3dd5b8a751719B59aB62c2C9F` |
+| DIDSalesTemplate                  | v1.0.0-rc5 | `0xfBe606e48ca0DD942a1D055DcfD58Fdf507b6725` |
+| Dispenser                         | v1.0.0-rc5 | `0x7218c9880e139258E6c90C124cde058A6A2dF896` |
+| EpochLibrary                      | v1.0.0-rc5 | `0xf92465Ec1BEfc3dE58bBfbA2F2d5A72aaAfb06C2` |
+| EscrowComputeExecutionTemplate    | v1.0.0-rc5 | `0x943C561Be307749f65B8A884A3388B6439dCeeec` |
+| EscrowPaymentCondition            | v1.0.0-rc5 | `0x3C4C38F5cdBF706a8f6355a60Fbcfd92d58Aad8a` |
+| HashLockCondition                 | v1.0.0-rc5 | `0x19c50775D9B93D6C1b9C0b2Ac9651F9a8281CaFD` |
+| LockPaymentCondition              | v1.0.0-rc5 | `0xC57e97bC1602FF9F970B4C94884178134b4CD9De` |
+| NFTAccessCondition                | v1.0.0-rc5 | `0xFC46F8B2272D1aFbFae4d35357D618F10f7ba11F` |
+| NFTAccessTemplate                 | v1.0.0-rc5 | `0x761A7cC5def5C2413141B3Ae0652937A0aB95609` |
+| NFTHolderCondition                | v1.0.0-rc5 | `0x1B62A9418eb908535251dfD15ac252505EB81567` |
+| NFTLockCondition                  | v1.0.0-rc5 | `0x4d3a045ECec1EA3D9Ee063af7127177958f5cfc6` |
+| NFTSalesTemplate                  | v1.0.0-rc5 | `0x88B96A210e8f6f27BA59f0CAF7F39cA2653B647F` |
+| NeverminedToken                   | v1.0.0-rc5 | `0x623f78d38C72BbC034B0425aEa5238EB8d1D2d0D` |
+| SignCondition                     | v1.0.0-rc5 | `0xDF2854d1116220C6C9397b592761f8b20D44471a` |
+| TemplateStoreManager              | v1.0.0-rc5 | `0x21d13f36c65Bb51764d05b81d2cB2fbabCbc9E8d` |
+| ThresholdCondition                | v1.0.0-rc5 | `0x2e33C50DBfc7Ee2cf12E118CE09F65c24ed02583` |
+| TransferDIDOwnershipCondition     | v1.0.0-rc5 | `0xb84cCBb63e37DE7c0AD0eBd9694C5781df8354Df` |
+| TransferNFTCondition              | v1.0.0-rc5 | `0x205bC979BC5aF48f7925005b6E1a5E0280bde823` |
+| WhitelistingCondition             | v1.0.0-rc5 | `0xE5C62FF3f5fCC3dE062a5002f538a7027c3D355c` |
+
 
 #### Integration Testnet
 
