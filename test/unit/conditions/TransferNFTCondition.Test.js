@@ -101,7 +101,6 @@ contract('TransferNFT Condition constructor', (accounts) => {
             await lockPaymentCondition.initialize(
                 owner,
                 conditionStoreManager.address,
-                token.address,
                 didRegistry.address,
                 { from: createRole }
             )
@@ -110,7 +109,6 @@ contract('TransferNFT Condition constructor', (accounts) => {
             await escrowCondition.initialize(
                 owner,
                 conditionStoreManager.address,
-                token.address,
                 { from: createRole }
             )
 
