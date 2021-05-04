@@ -96,8 +96,7 @@ async function initializeContracts({
                 network,
                 args: [
                     roles.ownerWallet,
-                    getAddress('ConditionStoreManager'),
-                    getAddress('Token')
+                    getAddress('ConditionStoreManager')
                 ],
                 verbose
             })
@@ -179,7 +178,6 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('Token'),
                     getAddress('DIDRegistry')
                 ],
                 verbose

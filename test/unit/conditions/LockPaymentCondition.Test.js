@@ -98,7 +98,6 @@ contract('LockPaymentCondition', (accounts) => {
             await assert.isRejected(lockPaymentCondition.initialize(
                 owner,
                 '0x0000000000000000000000000000000000000000',
-                token.address,
                 didRegistry.address,
                 { from: createRole }
             ), 'Invalid address')
