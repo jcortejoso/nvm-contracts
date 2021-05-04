@@ -19,9 +19,13 @@ contract('Threshold Condition', (accounts) => {
     const createRole = accounts[0]
     let hashLockCondition
     let randomConditionID
+    let epochLibrary
+    let conditionStoreManager
+    let thresholdCondition
     const randomConditions = []
+
     async function setupTest({
-        conditionId = constants.bytes32.one,
+        conditionId = testUtils.generateId(),
         conditionType = constants.address.dummy,
         createRole = accounts[0],
         owner = accounts[1],
@@ -29,42 +33,47 @@ contract('Threshold Condition', (accounts) => {
         includeRandomInputConditions = false,
         MaxNConditions = 50
     } = {}) {
-        const epochLibrary = await EpochLibrary.new()
-        await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
+        if (!thresholdCondition) {
+            epochLibrary = await EpochLibrary.new()
+            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
-        const conditionStoreManager = await ConditionStoreManager.new()
-        await conditionStoreManager.initialize(
-            owner,
-            { from: accounts[0] }
-        )
+            conditionStoreManager = await ConditionStoreManager.new()
+            await conditionStoreManager.initialize(
+                owner,
+                { from: accounts[0] }
+            )
 
-        await conditionStoreManager.delegateCreateRole(
-            createRole,
-            { from: owner }
-        )
+            await conditionStoreManager.delegateCreateRole(
+                createRole,
+                { from: owner }
+            )
 
-        const thresholdCondition = await ThresholdCondition.new()
-        await thresholdCondition.initialize(
-            owner,
-            conditionStoreManager.address,
-            { from: accounts[0] }
-        )
+            thresholdCondition = await ThresholdCondition.new()
+            await thresholdCondition.initialize(
+                owner,
+                conditionStoreManager.address,
+                { from: accounts[0] }
+            )
 
-        // create dummy and real input conditions
-        hashLockCondition = await HashLockCondition.new()
-        await hashLockCondition.initialize(
-            owner,
-            conditionStoreManager.address,
-            { from: owner }
-        )
+            // create dummy and real input conditions
+            hashLockCondition = await HashLockCondition.new()
+            await hashLockCondition.initialize(
+                owner,
+                conditionStoreManager.address,
+                { from: owner }
+            )
+        }
+
+        const condition1 = testUtils.generateId()
+        const condition2 = testUtils.generateId()
 
         const firstConditionId = await hashLockCondition.generateId(
-            constants.bytes32.one,
+            condition1,
             constants.condition.hashlock.uint.keccak
         )
 
         const secondConditionId = await hashLockCondition.generateId(
-            constants.bytes32.two,
+            condition2,
             constants.condition.hashlock.uint.keccak
         )
 
@@ -80,12 +89,12 @@ contract('Threshold Condition', (accounts) => {
 
         if (fulfillInputConditions) {
             await hashLockCondition.fulfill(
-                constants.bytes32.one,
+                condition1,
                 constants.condition.hashlock.uint.preimage
             )
 
             await hashLockCondition.fulfill(
-                constants.bytes32.two,
+                condition2,
                 constants.condition.hashlock.uint.preimage
             )
 
@@ -121,7 +130,9 @@ contract('Threshold Condition', (accounts) => {
             createRole,
             owner,
             inputConditions,
-            randomConditions
+            randomConditions,
+            condition1,
+            condition2
         }
     }
 
@@ -205,7 +216,9 @@ contract('Threshold Condition', (accounts) => {
                 thresholdCondition,
                 conditionStoreManager,
                 inputConditions,
-                createRole
+                createRole,
+                condition1,
+                condition2
             } = await setupTest()
             const agreementId = constants.bytes32.three
 
@@ -230,8 +243,8 @@ contract('Threshold Condition', (accounts) => {
                 }
             )
             const invalidInputConditions = [
-                constants.bytes32.one,
-                constants.bytes32.two
+                condition1,
+                condition2
             ]
             await assert.isRejected(
                 thresholdCondition.methods['fulfill(bytes32,bytes32[],uint256)'](

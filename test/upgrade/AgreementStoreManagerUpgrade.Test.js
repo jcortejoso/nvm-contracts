@@ -124,13 +124,14 @@ contract('AgreementStoreManager', (accounts) => {
                 await AgreementStoreManagerChangeFunctionSignature.at(agreementStoreManagerAddress)
 
             await assert.isRejected(
-                AgreementStoreManagerChangeFunctionSignatureInstance.createAgreement(
+                AgreementStoreManagerChangeFunctionSignatureInstance.methods['createAgreement(bytes32,bytes32,address[],bytes32[],uint256[],uint256[],address,address)'](
                     agreementId,
                     did,
                     conditionTypes,
                     conditionIds,
                     timeLocks,
                     timeOuts,
+                    accounts[7],
                     accounts[7],
                     { from: accounts[8] }
                 ),
@@ -193,15 +194,16 @@ contract('AgreementStoreManager', (accounts) => {
 
             // act & assert
             await assert.isRejected(
-                AgreementStoreManagerChangeInStorageAndLogicInstance.createAgreement(
+                AgreementStoreManagerChangeInStorageAndLogicInstance.methods['createAgreement(bytes32,bytes32,address[],bytes32[],uint256[],uint256[],address,address)'](
                     agreementId,
                     did,
                     conditionTypes,
                     conditionIds,
                     timeLocks,
                     timeOuts,
-                    accounts[8],
-                    { from: accounts[7] }
+                    accounts[7],
+                    accounts[7],
+                    { from: accounts[8] }
                 ),
                 'Invalid sender address, should fail in function signature check'
             )

@@ -45,9 +45,11 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             await transferCondition.methods['initialize(address,address,address)'](
                 owner,
                 conditionStoreManager.address,
-                agreementStoreManager.address,
+                didRegistry.address,
                 { from: deployer }
             )
+
+            await didRegistry.setManager(transferCondition.address, { from: owner })
         }
 
         if (registerDID) {
@@ -67,6 +69,28 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             transferCondition
         }
     }
+
+    describe('init fail', () => {
+        it('initialization fails if needed contracts are 0', async () => {
+            const deployer = accounts[8]
+            const owner = accounts[0]
+            const {
+                agreementStoreManager
+            } = await deployManagers(
+                deployer,
+                owner
+            )
+
+            const transferCondition = await TransferDIDOwnershipCondition.new({ from: deployer })
+
+            await assert.isRejected(transferCondition.methods['initialize(address,address,address)'](
+                owner,
+                constants.address.zero,
+                agreementStoreManager.address,
+                { from: deployer }
+            ), 'Invalid address')
+        })
+    })
 
     describe('trying to fulfill invalid conditions', () => {
         it('should not fulfill if condition does not exist', async () => {
@@ -127,7 +151,8 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 conditionTypes: [transferCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(
@@ -188,7 +213,8 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
                 conditionTypes: [transferCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(

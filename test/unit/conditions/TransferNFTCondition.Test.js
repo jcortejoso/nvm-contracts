@@ -93,7 +93,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
             await transferCondition.methods['initialize(address,address,address)'](
                 owner,
                 conditionStoreManager.address,
-                agreementStoreManager.address
+                didRegistry.address
             )
 
             lockPaymentCondition = await LockPaymentCondition.new()
@@ -142,6 +142,56 @@ contract('TransferNFT Condition constructor', (accounts) => {
             escrowCondition
         }
     }
+
+    describe('init fail', () => {
+        it('initialization fails if needed contracts are 0', async () => {
+            const token = await NeverminedToken.new()
+            await token.initialize(owner, owner)
+
+            const didRegistryLibrary = await DIDRegistryLibrary.new()
+            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
+            const didRegistry = await DIDRegistry.new()
+            didRegistry.initialize(owner)
+
+            const epochLibrary = await EpochLibrary.new()
+            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
+            const conditionStoreManager = await ConditionStoreManager.new()
+
+            const templateStoreManager = await TemplateStoreManager.new()
+            await templateStoreManager.initialize(
+                owner,
+                { from: owner }
+            )
+
+            const agreementStoreLibrary = await AgreementStoreLibrary.new()
+            await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
+            const agreementStoreManager = await AgreementStoreManager.new()
+            await agreementStoreManager.methods['initialize(address,address,address,address)'](
+                owner,
+                conditionStoreManager.address,
+                templateStoreManager.address,
+                didRegistry.address
+            )
+
+            await conditionStoreManager.initialize(
+                owner,
+                { from: owner }
+            )
+
+            await conditionStoreManager.delegateCreateRole(
+                createRole,
+                { from: owner }
+            )
+
+            const transferCondition = await TransferNFTCondition.new()
+
+            await assert.isRejected(transferCondition.methods['initialize(address,address,address)'](
+                owner,
+                constants.address.zero,
+                agreementStoreManager.address
+            ), undefined)
+        })
+    })
 
     describe('fulfill correctly', () => {
         it('should fulfill if condition exist', async () => {

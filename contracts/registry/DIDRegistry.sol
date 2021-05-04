@@ -35,6 +35,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
         OwnableUpgradeable.__Ownable_init();
         NFTUpgradeable.__NFTUpgradeable_init('');
         transferOwnership(_owner);
+        manager = _owner;
     }
 
     /**
@@ -130,8 +131,8 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
             );
         }
         
+        didRegisterList.didRegisters[_did].nftSupply = didRegisterList.didRegisters[_did].nftSupply.add(_amount);
         super._mint(msg.sender, uint256(_did), _amount, '');
-        didRegisterList.didRegisters[_did].nftSupply += _amount;
         
         super.used(
             keccak256(abi.encodePacked(_did, msg.sender, 'mint', _amount, block.number)),

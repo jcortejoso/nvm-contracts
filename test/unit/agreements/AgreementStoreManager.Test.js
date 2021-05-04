@@ -165,6 +165,10 @@ contract('AgreementStoreManager', (accounts) => {
                 constants.initialize.error.invalidNumberParamsGot0Expected4
             )
         })
+
+        it('contract should have initialized', async () => {
+            expect(await agreementStoreManager.getDIDRegistryAddress()).to.equal(didRegistry.address)
+        })
     })
 
     describe('create agreement', () => {
@@ -176,7 +180,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [constants.bytes32.zero, constants.bytes32.one],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -208,7 +213,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes,
                 conditionIds,
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -223,7 +229,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes,
                 conditionIds,
                 timeLocks: [3, 4],
-                timeOuts: [100, 110]
+                timeOuts: [100, 110],
+                creator: templateId
             }
             const otherAgreementId = testUtils.generateId()
 
@@ -237,6 +244,29 @@ contract('AgreementStoreManager', (accounts) => {
             )
         })
 
+        it('should not create agreement with bad arguments', async () => {
+            const did = await registerNewDID()
+
+            const agreement = {
+                did: did,
+                conditionTypes: [common.address, common.address],
+                conditionIds: [constants.bytes32.zero, constants.bytes32.one],
+                timeLocks: [0],
+                timeOuts: [2, 3],
+                creator: templateId
+            }
+            const agreementId = testUtils.generateId()
+
+            await assert.isRejected(
+                agreementStoreManager.createAgreement(
+                    agreementId,
+                    ...Object.values(agreement),
+                    { from: templateId }
+                ),
+                'Arguments have wrong length'
+            )
+        })
+
         it('should not create agreement with uninitialized template', async () => {
             const did = await registerNewDID()
             const templateId = accounts[5]
@@ -246,7 +276,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -269,7 +300,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [constants.bytes32.zero],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -294,7 +326,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [constants.bytes32.zero],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -316,7 +349,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -335,7 +369,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [2],
-                timeOuts: [3]
+                timeOuts: [3],
+                creator: templateId
             }
 
             await assert.isRejected(
@@ -356,7 +391,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -394,7 +430,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -415,7 +452,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -438,7 +476,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [testUtils.generateId(), testUtils.generateId()],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
 
             const blockNumber = await common.getCurrentBlockNumber()
@@ -474,7 +513,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -489,7 +529,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [2],
-                timeOuts: [3]
+                timeOuts: [3],
+                creator: templateId
             }
             const otherAgreementId = testUtils.generateId()
 
@@ -517,7 +558,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [testUtils.generateId(), testUtils.generateId()],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
 
             const agreementId = testUtils.generateId()
@@ -545,7 +587,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [testUtils.generateId(), testUtils.generateId()],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
 
             const agreementId = testUtils.generateId()

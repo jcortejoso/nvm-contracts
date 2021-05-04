@@ -48,7 +48,7 @@ contract('DIDSalesTemplate', (accounts) => {
         await transferCondition.methods['initialize(address,address,address)'](
             owner,
             conditionStoreManager.address,
-            agreementStoreManager.address,
+            didRegistry.address,
             { from: deployer }
         )
 

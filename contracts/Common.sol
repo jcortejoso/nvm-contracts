@@ -4,12 +4,16 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 import '@openzeppelin/contracts-upgradeable/cryptography/ECDSAUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol';
 
 /**
  * @title Common functions
  * @author Keyko
  */
 contract Common {
+
+    using SafeMathUpgradeable for uint256;
+
    /**
     * @notice getCurrentBlockNumber get block number
     * @return the current block number
@@ -69,7 +73,7 @@ contract Common {
     {
         uint256 _totalAmount;
         for(uint i; i < _amounts.length; i++)
-            _totalAmount = _totalAmount + _amounts[i];
+            _totalAmount = _totalAmount.add(_amounts[i]);
         return _totalAmount;
     }
     

@@ -11,7 +11,8 @@ contract ConditionStoreChangeFunctionSignature is ConditionStoreManager {
     function createCondition(
         bytes32 _id,
         address _typeRef,
-        address _sender
+        address _sender,
+        address _creator
     )
         public
         returns (uint size)
@@ -26,7 +27,8 @@ contract ConditionStoreChangeFunctionSignature is ConditionStoreManager {
             _id,
             _typeRef,
             uint(0),
-            uint(0)
+            uint(0),
+            _creator
         );
     }
 }
