@@ -83,6 +83,8 @@ module.exports = {
             ),
             network_id: 0x4, // 4
             from: '0x73943d14131268F23b721E668911bCDDEcA9da62'
+//			gas: 7 * 1000000,
+//            gasPrice: utils.toWei('8', 'gwei')
         },
         // mainnet the ethereum mainnet
         mainnet: {

@@ -19,7 +19,7 @@
     "deploy": "npx truffle exec ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js",
     "deploy:development": "export NETWORK=development&&npm run deploy -- --network development --testnet true",
     "deploy:spree": "export NETWORK=spree&&npm run deploy -- --network spree --testnet true",
-    "deploy:rinkeby": "export NETWORK=rinkeby&&npm run deploy -- --network rinkeby",
+    "deploy:rinkeby": "export NETWORK=rinkeby&&npm run deploy -- --network rinkeby --testnet true",
     "deploy:integration": "export NETWORK=integration&&npm run deploy -- --network integration",
     "deploy:staging": "export NETWORK=staging&&npm run deploy -- --network staging",
     "deploy:production": "export NETWORK=production&&npm run deploy -- --network production",
