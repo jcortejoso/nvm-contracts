@@ -49,7 +49,7 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 - run `npm run clean` to clean the work dir.
 - run `npm run compile` to compile the contracts.
 
-#### Rinkeby
+#### Rinkeby (Testnet)
 
 - Copy the wallet file for `rinkeby`
   - `cp wallets_rinkeby.json wallets.json`
@@ -75,7 +75,34 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 
 - Commit all changes in `artifacts/*.rinkeby.json`
 
-#### Kovan
+#### Mumbai (PolygonTestnet)
+
+- Copy the wallet file for `mumbai`
+    - `cp wallets_mumbai.json wallets.json`
+- run `export MNEMONIC=<your mumbai mnemonic>`. You will find them in the password manager.
+
+##### Deploy the whole application
+
+- To deploy all contracts run `npm run deploy:mumbai`
+
+##### Deploy a single contracts
+
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:mumbai -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
+
+##### Upgrade the whole application
+
+- To upgrade all contracts run `npm run upgrade:mumbai`
+
+##### Upgrade a single contract
+
+- To upgrade a single contract run `npm run upgrade:mumbai -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
+
+##### Persist artifacts
+
+- Commit all changes in `artifacts/*.mumbai.json`
+
+
+#### Kovan (Testnet)
 
 - Copy the wallet file for `kovan` > `cp wallets_kovan.json wallets.json`
 - run `export MNEMONIC=<your kovan mnemonic>`. You will find them in the password manager.

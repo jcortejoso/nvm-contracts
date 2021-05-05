@@ -88,7 +88,7 @@ module.exports = {
         // Polygon: mumbai testnet
         mumbai: {
             provider: () => setupWallet(
-                url || 'https://rpc-mumbai.maticvigil.com/'
+                url || `https://matic-mumbai.chainstacklabs.com`
             ),
             network_id: 80001,
             confirmations: 2,
@@ -99,7 +99,7 @@ module.exports = {
         // Polygon: matic mainnet
         matic: {
             provider: () => setupWallet(
-                url || 'https://rpc-mainnet.maticvigil.com/'
+                url || `https://matic-mainnet.chainstacklabs.com`
             ),
             network_id: 137,
             confirmations: 2,
@@ -121,7 +121,7 @@ module.exports = {
         // production mainnet
         production: {
             provider: () => setupWallet(
-                url || 'https://production.keyko.com'
+                url || 'https://mainnet.nevermined.io'
             ),
             network_id: 0xCEA11, // 846353
             from: '0xba3e0ec852dc24ca7f454ea545d40b1462501711',
