@@ -88,7 +88,7 @@ module.exports = {
         // Polygon: mumbai testnet
         mumbai: {
             provider: () => setupWallet(
-                url || `https://matic-mumbai.chainstacklabs.com`
+                url || 'https://matic-mumbai.chainstacklabs.com'
             ),
             network_id: 80001,
             confirmations: 2,
@@ -99,7 +99,7 @@ module.exports = {
         // Polygon: matic mainnet
         matic: {
             provider: () => setupWallet(
-                url || `https://matic-mainnet.chainstacklabs.com`
+                url || 'https://matic-mainnet.chainstacklabs.com'
             ),
             network_id: 137,
             confirmations: 2,
