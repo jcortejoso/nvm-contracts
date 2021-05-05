@@ -43,18 +43,15 @@ contract EscrowPaymentCondition is Reward, Common {
      *       contract with the following parameters
      * @param _owner contract's owner account address
      * @param _conditionStoreManagerAddress condition store manager address
-     * @param _tokenAddress Default token contract address
      */
     function initialize(
         address _owner,
-        address _conditionStoreManagerAddress,
-        address _tokenAddress
+        address _conditionStoreManagerAddress
     )
     external
     initializer()
     {
-        require(
-            _tokenAddress != address(0) &&
+        require(         
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
@@ -63,7 +60,6 @@ contract EscrowPaymentCondition is Reward, Common {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        defaultTokenAddress = _tokenAddress;
     }
 
     

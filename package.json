@@ -1,6 +1,6 @@
 {
   "name": "@nevermined-io/contracts",
-  "version": "1.0.0-rc5",
+  "version": "1.0.0-rc6",
   "description": "Nevermined implementation of Nevermined in Solidity",
   "bugs": {
     "url": "https://github.com/nevermined-io/contracts/issues"
@@ -11,15 +11,17 @@
     "compile": "truffle compile",
     "audit": "npx truffle exec ./scripts/deploy/truffle-wrapper/auditWrapper.js",
     "audit:development": "export NETWORK=development&&npm run audit -- --network development",
-    "audit:spree": "export NETWORK=spree&&npm run audit -- --network spree",
-    "audit:rinkeby": "export NETWORK=rinkeby&&npm run audit -- --network rinkeby",
+    "audit:spree": "export NETWORK=spree && npm run audit -- --network spree",
+    "audit:rinkeby": "export NETWORK=rinkeby && npm run audit -- --network rinkeby",
+    "audit:mumbai": "export NETWORK=mumbai && npm run audit -- --network mumbai",
     "audit:integration": "export NETWORK=integration&&npm run audit -- --network integration",
     "audit:staging": "export NETWORK=staging&&npm run audit -- --network staging",
     "audit:production": "export NETWORK=production&&npm run audit -- --network production",
     "deploy": "npx truffle exec ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js",
     "deploy:development": "export NETWORK=development&&npm run deploy -- --network development --testnet true",
     "deploy:spree": "export NETWORK=spree&&npm run deploy -- --network spree --testnet true",
-    "deploy:rinkeby": "export NETWORK=rinkeby&&npm run deploy -- --network rinkeby",
+    "deploy:rinkeby": "export NETWORK=rinkeby && npm run deploy -- --network rinkeby --testnet true",
+    "deploy:mumbai": "export NETWORK=mumbai && npm run deploy -- --network mumbai --testnet true",
     "deploy:integration": "export NETWORK=integration&&npm run deploy -- --network integration",
     "deploy:staging": "export NETWORK=staging&&npm run deploy -- --network staging",
     "deploy:production": "export NETWORK=production&&npm run deploy -- --network production",

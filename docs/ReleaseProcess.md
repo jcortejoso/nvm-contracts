@@ -49,33 +49,60 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 - run `npm run clean` to clean the work dir.
 - run `npm run compile` to compile the contracts.
 
-#### Staging
+#### Rinkeby (Testnet)
 
-- Copy the wallet file for `staging`
-  - `cp wallets_staging.json wallets.json`
-- run `export MNEMONIC=<your staging mnemonic>`. You will find them in the password manager.
+- Copy the wallet file for `rinkeby`
+  - `cp wallets_rinkeby.json wallets.json`
+- run `export MNEMONIC=<your rinkeby mnemonic>`. You will find them in the password manager.
 
 ##### Deploy the whole application
 
-- To deploy all contracts run `npm run deploy:staging`
+- To deploy all contracts run `npm run deploy:rinkeby`
 
 ##### Deploy a single contracts
 
-- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:staging -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:rinkeby -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
-- To upgrade all contracts run `npm run upgrade:staging`
+- To upgrade all contracts run `npm run upgrade:rinkeby`
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:staging -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
+- To upgrade a single contract run `npm run upgrade:rinkeby -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
 
 ##### Persist artifacts
 
-- Commit all changes in `artifacts/*.staging.json`
+- Commit all changes in `artifacts/*.rinkeby.json`
 
-#### Kovan
+#### Mumbai (PolygonTestnet)
+
+- Copy the wallet file for `mumbai`
+    - `cp wallets_mumbai.json wallets.json`
+- run `export MNEMONIC=<your mumbai mnemonic>`. You will find them in the password manager.
+
+##### Deploy the whole application
+
+- To deploy all contracts run `npm run deploy:mumbai`
+
+##### Deploy a single contracts
+
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:mumbai -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
+
+##### Upgrade the whole application
+
+- To upgrade all contracts run `npm run upgrade:mumbai`
+
+##### Upgrade a single contract
+
+- To upgrade a single contract run `npm run upgrade:mumbai -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
+
+##### Persist artifacts
+
+- Commit all changes in `artifacts/*.mumbai.json`
+
+
+#### Kovan (Testnet)
 
 - Copy the wallet file for `kovan` > `cp wallets_kovan.json wallets.json`
 - run `export MNEMONIC=<your kovan mnemonic>`. You will find them in the password manager.
@@ -164,7 +191,7 @@ It will deploy the following components:
 - [docker](https://hub.docker.com/r/neverminedio/contracts)
 
 The npm, pypi and maven packages contain the contract artifacts for the contracts already deployed in different networks
-(such as `Production`, `Staging`, `Testing`, or `Spree`).
+(such as `Production`, `Rinkeby`, `Mumbai`, `Testing`, or `Spree`).
 The docker image generated contains the contracts and script ready to be used to deploy the contracts to a network.
 It is used for deploying the contracts in the local network `Spree` in [nevermined-io/tools](https://github.com/nevermined-io/tools)
 
@@ -173,7 +200,7 @@ changes about the new version (in the future, these will come from the changelog
 
 ## Audit
 
-To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:staging`
+To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:rinkeby`
 to get a list of all the current transactions and their current status.
 
 ```text

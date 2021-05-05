@@ -68,7 +68,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             await lockPaymentCondition.initialize(
                 owner,
                 conditionStoreManager.address,
-                token.address,
                 didRegistry.address,
                 { from: deployer }
             )
@@ -77,7 +76,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             await escrowPayment.initialize(
                 owner,
                 conditionStoreManager.address,
-                token.address,
                 { from: deployer }
             )
         }
@@ -122,7 +120,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             await lockPaymentCondition.initialize(
                 owner,
                 conditionStoreManager.address,
-                token.address,
                 didRegistry.address,
                 { from: deployer }
             )
@@ -131,7 +128,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             await assert.isRejected(escrowPayment.initialize(
                 owner,
                 '0x0000000000000000000000000000000000000000',
-                token.address,
                 { from: deployer }
             ), undefined)
         })

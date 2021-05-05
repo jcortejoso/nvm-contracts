@@ -90,6 +90,18 @@ async function initializeContracts({
     }
 
     if (getAddress('ConditionStoreManager')) {
+        if (contracts.indexOf('EscrowPaymentCondition') > -1) {
+            addressBook.EscrowPaymentCondition = zosCreate({
+                contract: 'EscrowPaymentCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager')
+                ],
+                verbose
+            })
+        }
+
         if (contracts.indexOf('SignCondition') > -1) {
             addressBook.SignCondition = zosCreate({
                 contract: 'SignCondition',
@@ -159,6 +171,18 @@ async function initializeContracts({
 
     if (getAddress('ConditionStoreManager') &&
         getAddress('DIDRegistry')) {
+        if (contracts.indexOf('LockPaymentCondition') > -1) {
+            addressBook.LockPaymentCondition = zosCreate({
+                contract: 'LockPaymentCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('DIDRegistry')
+                ],
+                verbose
+            })
+        }
         if (contracts.indexOf('NFTHolderCondition') > -1) {
             addressBook.NFTHolderCondition = zosCreate({
                 contract: 'NFTHolderCondition',
@@ -214,42 +238,6 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('DIDRegistry')
-                ],
-                verbose
-            })
-        }
-    }
-
-    if (
-        getAddress('ConditionStoreManager') &&
-        getAddress('Token')
-    ) {
-        if (contracts.indexOf('EscrowPaymentCondition') > -1) {
-            addressBook.EscrowPaymentCondition = zosCreate({
-                contract: 'EscrowPaymentCondition',
-                network,
-                args: [
-                    roles.ownerWallet,
-                    getAddress('ConditionStoreManager'),
-                    getAddress('Token')
-                ],
-                verbose
-            })
-        }
-    }
-
-    if (getAddress('ConditionStoreManager') &&
-        getAddress('Token') &&
-        getAddress('DIDRegistry')) {
-        if (contracts.indexOf('LockPaymentCondition') > -1) {
-            addressBook.LockPaymentCondition = zosCreate({
-                contract: 'LockPaymentCondition',
-                network,
-                args: [
-                    roles.ownerWallet,
-                    getAddress('ConditionStoreManager'),
-                    getAddress('Token'),
                     getAddress('DIDRegistry')
                 ],
                 verbose

@@ -17,7 +17,6 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
  *      Generic reward condition
  */
 contract Reward is Condition {
-    address internal defaultTokenAddress;
 }
 
 

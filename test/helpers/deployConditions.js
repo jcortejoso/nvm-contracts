@@ -16,7 +16,6 @@ const deployConditions = async function(
     await lockPaymentCondition.initialize(
         owner,
         conditionStoreManager.address,
-        token.address,
         didRegistry.address,
         { from: deployer }
     )
@@ -33,7 +32,6 @@ const deployConditions = async function(
     await escrowPaymentCondition.initialize(
         owner,
         conditionStoreManager.address,
-        token.address,
         { from: deployer }
     )
 

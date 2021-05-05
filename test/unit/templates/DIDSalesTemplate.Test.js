@@ -38,7 +38,6 @@ contract('DIDSalesTemplate', (accounts) => {
         await lockPaymentCondition.initialize(
             owner,
             conditionStoreManager.address,
-            token.address,
             didRegistry.address,
             { from: deployer }
         )
@@ -56,7 +55,6 @@ contract('DIDSalesTemplate', (accounts) => {
         await escrowCondition.initialize(
             owner,
             conditionStoreManager.address,
-            token.address,
             { from: deployer }
         )
 

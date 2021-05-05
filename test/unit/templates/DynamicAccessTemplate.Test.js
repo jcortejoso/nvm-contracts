@@ -72,7 +72,6 @@ contract('DynamicAccessTemplate', (accounts) => {
             await escrowPayment.initialize(
                 owner,
                 conditionStoreManager.address,
-                token.address,
                 { from: owner }
             )
         }

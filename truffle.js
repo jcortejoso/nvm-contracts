@@ -84,6 +84,29 @@ module.exports = {
             network_id: 0x4, // 4
             from: '0x73943d14131268F23b721E668911bCDDEcA9da62'
         },
+        // Polygon Networks: https://docs.matic.network/docs/develop/network-details/network/
+        // Polygon: mumbai testnet
+        mumbai: {
+            provider: () => setupWallet(
+                url || 'https://matic-mumbai.chainstacklabs.com'
+            ),
+            network_id: 80001,
+            confirmations: 2,
+            timeoutBlocks: 200,
+            skipDryRun: true,
+            from: '0x73943d14131268F23b721E668911bCDDEcA9da62'
+        },
+        // Polygon: matic mainnet
+        matic: {
+            provider: () => setupWallet(
+                url || 'https://matic-mainnet.chainstacklabs.com'
+            ),
+            network_id: 137,
+            confirmations: 2,
+            timeoutBlocks: 200,
+            skipDryRun: true,
+            from: '0x73943d14131268F23b721E668911bCDDEcA9da62'
+        },
         // mainnet the ethereum mainnet
         mainnet: {
             provider: () => setupWallet(
@@ -98,7 +121,7 @@ module.exports = {
         // production mainnet
         production: {
             provider: () => setupWallet(
-                url || 'https://production.keyko.com'
+                url || 'https://mainnet.nevermined.io'
             ),
             network_id: 0xCEA11, // 846353
             from: '0xba3e0ec852dc24ca7f454ea545d40b1462501711',

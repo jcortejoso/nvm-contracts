@@ -16,7 +16,7 @@ const constants = require('../../helpers/constants.js')
 const deployManagers = require('../../helpers/deployManagers.js')
 const testUtils = require('../../helpers/utils')
 
-contract('DIDSalesTemplate', (accounts) => {
+contract('NFTSalesTemplate', (accounts) => {
     let lockPaymentCondition,
         transferCondition,
         escrowCondition
@@ -38,7 +38,6 @@ contract('DIDSalesTemplate', (accounts) => {
         await lockPaymentCondition.initialize(
             owner,
             conditionStoreManager.address,
-            token.address,
             didRegistry.address,
             { from: deployer }
         )
@@ -56,7 +55,6 @@ contract('DIDSalesTemplate', (accounts) => {
         await escrowCondition.initialize(
             owner,
             conditionStoreManager.address,
-            token.address,
             { from: deployer }
         )
 

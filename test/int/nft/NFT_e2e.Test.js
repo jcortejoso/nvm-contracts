@@ -112,7 +112,6 @@ contract('End to End NFT Scenarios', (accounts) => {
         await lockPaymentCondition.initialize(
             owner,
             conditionStoreManager.address,
-            token.address,
             didRegistry.address,
             { from: deployer }
         )
@@ -129,7 +128,6 @@ contract('End to End NFT Scenarios', (accounts) => {
         await escrowCondition.initialize(
             owner,
             conditionStoreManager.address,
-            token.address,
             { from: deployer }
         )
 

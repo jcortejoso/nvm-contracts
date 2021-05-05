@@ -19,7 +19,6 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
  */
 contract LockPaymentCondition is Condition, Common {
 
-    address private defaultTokenAddress;
     DIDRegistry internal didRegistry;
 
     bytes32 constant public CONDITION_TYPE = keccak256('LockPaymentCondition');
@@ -39,13 +38,11 @@ contract LockPaymentCondition is Condition, Common {
     * @dev this function is called only once during the contract initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address
-    * @param _tokenAddress Default Token contract address
     * @param _didRegistryAddress DID Registry address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _tokenAddress,
         address _didRegistryAddress
     )
         external
@@ -61,7 +58,6 @@ contract LockPaymentCondition is Condition, Common {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        defaultTokenAddress = _tokenAddress;
         
         didRegistry = DIDRegistry(
             _didRegistryAddress
