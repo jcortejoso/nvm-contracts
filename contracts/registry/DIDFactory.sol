@@ -477,7 +477,6 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(isDIDOwner(_sender, _did), 'Only DID Owner allowed');
 
-        address _previousOwner = didRegisterList.didRegisters[_did].owner;
         didRegisterList.updateDIDOwner(_did, _newOwner);
 
         _wasAssociatedWith(
@@ -485,8 +484,8 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
             _did, _newOwner, keccak256('transferDID'), 'transferDID');
         
         emit DIDOwnershipTransferred(
-            _did,
-            _previousOwner,
+            _did, 
+            _sender,
             _newOwner
         );
     }
