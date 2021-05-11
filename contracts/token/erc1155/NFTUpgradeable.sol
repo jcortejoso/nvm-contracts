@@ -32,6 +32,11 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
     // Mapping from account to proxy approvals
     mapping (address => bool) private _proxyApprovals;
     
+    /** 
+     * Event for recording proxy approvals.
+     */
+    event ProxyApproval(address sender, address operator, address approved);
+
     // Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/{id}.json
     string public _uri;
 
@@ -169,7 +174,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
     
     function setProxyApproval(address operator, bool approved) onlyOwner public virtual {
         _proxyApprovals[operator] = approved;
-        emit ApprovalForAll(_msgSender(), operator, approved);
+        emit ProxyApproval(_msgSender(), operator, approved);
     }    
     
     /**
