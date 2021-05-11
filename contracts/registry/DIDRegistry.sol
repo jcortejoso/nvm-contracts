@@ -126,7 +126,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
     {
         if (didRegisterList.didRegisters[_did].mintCap > 0) {
             require(
-                didRegisterList.didRegisters[_did].nftSupply + _amount <= didRegisterList.didRegisters[_did].mintCap,
+                didRegisterList.didRegisters[_did].nftSupply.add(_amount) <= didRegisterList.didRegisters[_did].mintCap,
                 'Cap exceeded'
             );
         }

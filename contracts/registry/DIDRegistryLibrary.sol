@@ -3,6 +3,7 @@ pragma solidity 0.6.12;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
+import '@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol';
 
 /**
  * @title DID Registry Library
@@ -11,6 +12,8 @@ pragma solidity 0.6.12;
  * @dev All function calls are currently implemented without side effects
  */
 library DIDRegistryLibrary {
+
+    using SafeMathUpgradeable for uint256;
 
     // DIDRegistry Entity
     struct DIDRegister {
@@ -156,7 +159,7 @@ library DIDRegistryLibrary {
         // returns true;
         uint256 _totalAmount = 0;
         for(uint i = 0; i < _amounts.length; i++)
-            _totalAmount = _totalAmount + _amounts[i];
+            _totalAmount = _totalAmount.add(_amounts[i]);
         if (_totalAmount == 0)
             return true;
         
@@ -176,7 +179,7 @@ library DIDRegistryLibrary {
         
         // If the amount to receive by the creator is lower than royalties the calculation is not valid
         // return false;
-        uint256 _requiredRoyalties = ((_totalAmount * _self.didRegisters[_did].royalties) / 100);
+        uint256 _requiredRoyalties = ((_totalAmount.mul(_self.didRegisters[_did].royalties)) / 100);
 
         // Check if royalties are enough
         // Are we paying enough royalties in the secondary market to the original creator?
