@@ -141,6 +141,7 @@ contract LockPaymentCondition is Condition, Common {
             _agreementId,
             hashValues(_did, _rewardAddress, _tokenAddress, _amounts, _receivers)
         );
+        // fulfill can be called only once, so prevents reentrancy to this method
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
             ConditionStoreLibrary.ConditionState.Fulfilled

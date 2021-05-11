@@ -153,6 +153,9 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         manager = _owner;
     }
 
+    /**
+     * Sets the manager role. Should be the TransferCondition contract address
+     */
     function setManager(address _addr) external onlyOwner {
         manager = _addr;
     }
