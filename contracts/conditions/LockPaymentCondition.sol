@@ -188,6 +188,7 @@ contract LockPaymentCondition is Condition, Common {
     )
     internal
     {
+        // solhint-disable-next-line
         (bool sent,) = _rewardAddress.call{value: _amount}('');
         require(sent, 'Failed to send Ether');
     }
