@@ -203,8 +203,8 @@ ISecretStore, ISecretStorePermission {
             agreementStoreManager.getDIDRegistryAddress()
         );
         return (
-            didRegistry.isDIDProvider(_documentId, _grantee) || 
-            _grantee == didRegistry.getDIDOwner(_documentId) ||
+            didRegistry.isDIDProvider(_documentId, _grantee) ||
+            didRegistry.isDIDOwner(_grantee, _documentId) ||
             documentPermissions[_documentId].permission[_grantee] ||
             didRegistry.getPermission(_documentId, _grantee)
         );
