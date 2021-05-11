@@ -113,10 +113,8 @@ library DIDRegistryLibrary {
         require(_self.didRegisters[_did].owner != address(0), 'DID not stored');
         
         require(!_self.didRegisters[_did].nftInitialized, 'NFTs only can be initialized once');
-    
-        require(_cap >= 0, 'Cap must be >=0'); // tautology
-    
-        require(_royalties >= 0 && _royalties < 100, 'Invalid royalties number'); // first clause is tautology
+        
+        require(_royalties < 100, 'Invalid royalties number');
 
         _self.didRegisters[_did].mintCap = _cap;
         _self.didRegisters[_did].royalties = _royalties;
