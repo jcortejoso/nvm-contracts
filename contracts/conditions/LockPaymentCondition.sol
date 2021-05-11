@@ -181,7 +181,8 @@ contract LockPaymentCondition is Condition, Common {
     )
     internal
     {
-        _rewardAddress.transfer(_amount);
+        (bool sent,) = _rewardAddress.call{value: _amount}('');
+        require(sent, 'Failed to send Ether');
     }
 
 
