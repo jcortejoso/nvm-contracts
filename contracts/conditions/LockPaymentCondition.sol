@@ -8,6 +8,7 @@ import './Condition.sol';
 import '../registry/DIDRegistry.sol';
 import '../Common.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol';
 
 /**
  * @title Lock Payment Condition
@@ -18,6 +19,8 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
  * into account the royalties to be paid to the original creators in a secondary market.  
  */
 contract LockPaymentCondition is Condition, Common {
+
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
     DIDRegistry internal didRegistry;
 
@@ -124,10 +127,7 @@ contract LockPaymentCondition is Condition, Common {
         );
 
         if (_tokenAddress != address(0))
-            require(
-                _transferERC20(_rewardAddress, _tokenAddress, calculateTotalAmount(_amounts)),
-                'Could not transfer token'
-            );
+            _transferERC20(_rewardAddress, _tokenAddress, calculateTotalAmount(_amounts));
         else
             _transferETH(_rewardAddress, calculateTotalAmount(_amounts));
 
@@ -157,7 +157,7 @@ contract LockPaymentCondition is Condition, Common {
     * @param _rewardAddress the address to receive the tokens
     * @param _tokenAddress the ERC20 contract address to use during the payment
     * @param _amount token amount to be locked/released
-    * @return true if everything worked
+    * @dev Will throw if transfer fails
     */
     function _transferERC20(
         address _rewardAddress,
@@ -165,10 +165,9 @@ contract LockPaymentCondition is Condition, Common {
         uint256 _amount
     )
     internal
-    returns (bool)
     {
         IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
-        return token.transferFrom(msg.sender, _rewardAddress, _amount);
+        token.safeTransferFrom(msg.sender, _rewardAddress, _amount);
     }
 
     /**

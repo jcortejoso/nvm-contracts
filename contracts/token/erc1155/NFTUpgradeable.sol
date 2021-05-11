@@ -35,7 +35,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
     /** 
      * Event for recording proxy approvals.
      */
-    event ProxyApproval(address sender, address operator, address approved);
+    event ProxyApproval(address sender, address operator, bool approved);
 
     // Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/{id}.json
     string public _uri;
