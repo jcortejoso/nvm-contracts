@@ -170,7 +170,7 @@ contract NFTAccessCondition is Condition {
     {
         return (
             didRegistry.isDIDProvider(_documentId, _grantee) || 
-            _grantee == didRegistry.getDIDOwner(_documentId) ||
+            didRegistry.isDIDOwner(_grantee, _documentId) ||
             nftPermissions[_documentId].permission[_grantee]
         );
     }
