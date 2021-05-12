@@ -40,7 +40,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             isDIDOwner(msg.sender, _did),
-            'Only DID Owner allowed'
+            'Only owner'
         );
         _;
     }
@@ -49,7 +49,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             msg.sender == manager,
-            'Only DIDRegistry manager allowed'
+            'Only manager'
         );
         _;
     }
@@ -57,7 +57,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     modifier onlyOwnerProviderOrDelegated(bytes32 _did)
     {
         require(isOwnerProviderOrDelegate(_did),
-            'Only owner, provider or delegate'
+            'Invalid user'
         );
         _;
     }
@@ -75,7 +75,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             didRegisterList.didRegisters[_did].nftInitialized,
-            'The NFTs needs to be initialized'
+            'NFT not initialized'
         );
         _;
     }    
@@ -478,7 +478,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
 
     function _transferDIDOwnership(address _sender, bytes32 _did, address _newOwner) internal
     {
-        require(isDIDOwner(_sender, _did), 'Only DID Owner allowed');
+        require(isDIDOwner(_sender, _did), 'Only owner');
 
         didRegisterList.updateDIDOwner(_did, _newOwner);
 
@@ -656,7 +656,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             _grantee != address(0),
-            'Invalid grantee address'
+            'Invalid grantee'
         );
         didPermissions[_did][_grantee] = true;
         emit DIDPermissionGranted(
@@ -679,7 +679,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             didPermissions[_did][_grantee],
-            'Grantee already was revoked'
+            'Grantee already revoked'
         );
         didPermissions[_did][_grantee] = false;
         emit DIDPermissionRevoked(

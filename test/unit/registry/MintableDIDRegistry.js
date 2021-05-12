@@ -75,13 +75,13 @@ contract('Mintable DIDRegistry', (accounts) => {
             await assert.isRejected(
                 // Must not allow to mint tokens without previous initialization
                 didRegistry.mint(did, 10, { from: owner }),
-                'The NFTs needs to be initialized'
+                'NFT not initialized'
             )
 
             await assert.isRejected(
                 // Must not allow to mint tokens without previous initialization
                 didRegistry.burn(did, 1, { from: owner }),
-                'The NFTs needs to be initialized'
+                'NFT not initialized'
             )
         })
 
@@ -181,14 +181,14 @@ contract('Mintable DIDRegistry', (accounts) => {
             await assert.isRejected(
                 // Must not allow to initialize NFTs if not the owner
                 didRegistry.enableAndMintDidNft(did, 5, 0, true, { from: other }),
-                'Only DID Owner allowed'
+                'Only owner'
             )
 
             await didRegistry.enableAndMintDidNft(did, 5, 0, true, { from: owner })
             await assert.isRejected(
                 // Must not allow to mint tokens without previous initialization
                 didRegistry.mint(did, 1, { from: other }),
-                'Only DID Owner allowed'
+                'Only owner'
             )
         })
 
