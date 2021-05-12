@@ -232,7 +232,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         uint256 reservedBlock = didRegisterList.didReserves[keccak256(abi.encodePacked(_did, msg.sender))];
         require(
-            reservedBlock != 0,
+            reservedBlock != 0 || reservedBlock > block.number + 100,
             'DID not reserved'
         );
         require(
