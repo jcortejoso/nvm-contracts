@@ -41,12 +41,13 @@ library DIDRegistryLibrary {
         uint256 nftSupply;        
         // The max number of NFTs associated to the DID that can be minted 
         uint256 mintCap;
+        uint256 blockCreated;
     }
 
     // List of DID's registered in the system
     struct DIDRegisterList {
         mapping(bytes32 => DIDRegister) didRegisters;
-        mapping(bytes32 => address) didReserves;
+        mapping(bytes32 => uint) didReserves;
         bytes32[] didRegisterIds;
     }
     
@@ -62,17 +63,22 @@ library DIDRegistryLibrary {
         DIDRegisterList storage _self,
         bytes32 _did,
         bytes32 _checksum,
-        string calldata _url
+        string calldata _url,
+        uint256 reservedBlock
     )
     external
     returns (uint size)
     {
         address didOwner = _self.didRegisters[_did].owner;
         address creator = _self.didRegisters[_did].creator;
+        uint createdAt = _self.didRegisters[_did].blockCreated;
         
         if (didOwner == address(0)) {
             didOwner = msg.sender;
             _self.didRegisterIds.push(_did);
+            creator = didOwner;
+        } else if (reservedBlock < createdAt) {
+            didOwner = msg.sender;
             creator = didOwner;
         }
 
@@ -88,7 +94,8 @@ library DIDRegistryLibrary {
             nftSupply: 0,
             mintCap: 0,
             royalties: 0,
-            nftInitialized: false
+            nftInitialized: false,
+            blockCreated: reservedBlock
         });
 
         return _self.didRegisterIds.length;

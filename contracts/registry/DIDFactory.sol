@@ -196,10 +196,10 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     public
     {
         require(
-            didRegisterList.didReserves[_didHash] == address(0x0),
+            didRegisterList.didReserves[_didHash] == 0,
             'DID reserved'
         );
-        didRegisterList.didReserves[_didHash] = msg.sender;
+        didRegisterList.didReserves[_didHash] = block.number;
     }
     
     /**
@@ -230,17 +230,19 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     onlyValidAttributes(_attributes)
     returns (uint size)
     {
+        uint256 reservedBlock = didRegisterList.didReserves[keccak256(abi.encodePacked(_did, msg.sender))];
         require(
-            didRegisterList.didReserves[keccak256(abi.encodePacked(_did))] == msg.sender,
+            reservedBlock != 0,
             'DID not reserved'
         );
         require(
             didRegisterList.didRegisters[_did].owner == address(0x0) ||
-            didRegisterList.didRegisters[_did].owner == msg.sender,
+            didRegisterList.didRegisters[_did].owner == msg.sender ||
+            didRegisterList.didRegisters[_did].blockCreated > reservedBlock,
             'Only DID Owners'
         );
 
-        uint updatedSize = didRegisterList.update(_did, _checksum, _url);
+        uint updatedSize = didRegisterList.update(_did, _checksum, _url, reservedBlock);
 
         // push providers to storage
         for (uint256 i = 0; i < _providers.length; i++) {

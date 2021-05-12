@@ -42,7 +42,7 @@ contract DIDRegistryLibraryProxy {
     public
     returns (uint size)
     {
-        return didRegisterList.update(_did, _checksum, _url);
+        return didRegisterList.update(_did, _checksum, _url, 0);
     }
 
     function initializeNftConfig(

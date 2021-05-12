@@ -31,7 +31,7 @@ contract DIDRegistryChangeFunctionSignature is DIDFactory {
             'Invalid value size'
         );
 
-        didRegisterList.update(_did, _checksum, _url);
+        didRegisterList.update(_did, _checksum, _url, 0);
 
         // push providers to storage
         for(uint256 i = 0; i < _providers.length; i++) {
