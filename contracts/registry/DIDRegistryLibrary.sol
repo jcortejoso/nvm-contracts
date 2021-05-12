@@ -46,10 +46,9 @@ library DIDRegistryLibrary {
     // List of DID's registered in the system
     struct DIDRegisterList {
         mapping(bytes32 => DIDRegister) didRegisters;
-        mapping(bytes32 => address) didReserves;
         bytes32[] didRegisterIds;
     }
-    
+
     /**
      * @notice update the DID store
      * @dev access modifiers and storage pointer should be implemented in DIDRegistry
@@ -116,9 +115,9 @@ library DIDRegistryLibrary {
     {
         require(_self.didRegisters[_did].owner != address(0), 'DID not stored');
         
-        require(!_self.didRegisters[_did].nftInitialized, 'NFT already initialized');
+        require(!_self.didRegisters[_did].nftInitialized, 'NFTs only can be initialized once');
         
-        require(_royalties < 100, 'Invalid royalties');
+        require(_royalties < 100, 'Invalid royalties number');
 
         _self.didRegisters[_did].mintCap = _cap;
         _self.didRegisters[_did].royalties = _royalties;
@@ -202,7 +201,7 @@ library DIDRegistryLibrary {
     {
         require(
             provider != address(0) && provider != address(this),
-            'Invalid provider'
+            'Invalid provider address'
         );
         
         if (!isProvider(_self, _did, provider)) {
@@ -228,7 +227,7 @@ library DIDRegistryLibrary {
     {
         require(
             _provider != address(0),
-            'Invalid provider'
+            'Invalid asset provider address'
         );
 
         int256 i = getProviderIndex(_self, _did, _provider);
@@ -256,7 +255,8 @@ library DIDRegistryLibrary {
     internal
     {
         require(
-            _newOwner != address(0)
+            _newOwner != address(0),
+            'Invalid new DID owner address'
         );
         _self.didRegisters[_did].owner = _newOwner;
     }
@@ -327,7 +327,8 @@ library DIDRegistryLibrary {
     internal
     {
         require(
-            delegate != address(0) && delegate != address(this)
+            delegate != address(0) && delegate != address(this),
+            'Invalid delegate address'
         );
 
         if (!isDelegate(_self, _did, delegate)) {
@@ -352,7 +353,8 @@ library DIDRegistryLibrary {
     returns(bool)
     {
         require(
-            _delegate != address(0)
+            _delegate != address(0),
+            'Invalid asset delegate address'
         );
 
         int256 i = getDelegateIndex(_self, _did, _delegate);

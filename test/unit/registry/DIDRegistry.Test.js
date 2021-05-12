@@ -48,8 +48,6 @@ contract('DIDRegistry', (accounts) => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did))
             const result = await didRegistry.registerAttribute(did, checksum, providers, value)
 
             testUtils.assertEmitted(
@@ -69,8 +67,6 @@ contract('DIDRegistry', (accounts) => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did))
             const result = await didRegistry.registerAttribute(did, checksum, providers, value)
 
             testUtils.assertEmitted(
@@ -112,8 +108,6 @@ contract('DIDRegistry', (accounts) => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -136,21 +130,15 @@ contract('DIDRegistry', (accounts) => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerAttribute(did, checksum, providers, value)
 
             const anotherPerson = { from: accounts[1] }
 
-            await assert.isRejected(
-                didRegistry.reserveDID(testUtils.hashString(did, anotherPerson)),
-                'DID reserved'
-            )
             // a different owner can register his own DID
             await assert.isRejected(
                 // must not be able to add attributes to someone else's DID
                 didRegistry.registerAttribute(did, checksum, providers, value, anotherPerson),
-                'DID not reserved'
+                constants.registry.error.onlyDIDOwner
             )
         })
     })
@@ -161,8 +149,6 @@ contract('DIDRegistry', (accounts) => {
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
             const blockNumber = await common.getCurrentBlockNumber()
-
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerAttribute(did, checksum, providers, value)
             const storedDIDRegister = await didRegistry.getDIDRegister(did)
             assert.strictEqual(
@@ -177,7 +163,7 @@ contract('DIDRegistry', (accounts) => {
                 storedDIDRegister.lastUpdatedBy,
                 accounts[0]
             )
-            assert.isAtLeast(
+            assert.strictEqual(
                 storedDIDRegister.blockNumberUpdated.toNumber(),
                 blockNumber.toNumber() + 1
             )
@@ -196,8 +182,6 @@ contract('DIDRegistry', (accounts) => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerAttribute(did, checksum, providers, value)
             const storedDIDRegister = await didRegistry.getDIDRegister(did)
             assert.strictEqual(
@@ -214,8 +198,6 @@ contract('DIDRegistry', (accounts) => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerAttribute(did, checksum, providers, value)
             const storedDIDRegister = await didRegistry.getDIDRegister(did)
             assert.strictEqual(
@@ -236,8 +218,6 @@ contract('DIDRegistry', (accounts) => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerAttribute(did, checksum, providers, value)
             const storedDIDRegister = await didRegistry.getDIDRegister(did)
             assert.strictEqual(
@@ -273,8 +253,6 @@ contract('DIDRegistry', (accounts) => {
             const did = testUtils.generateId()
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerAttribute(did, checksum, [], value)
             const storedDIDRegister = await didRegistry.getDIDRegister(did)
             assert.strictEqual(
@@ -301,32 +279,9 @@ contract('DIDRegistry', (accounts) => {
             const checksum = testUtils.generateId()
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
 
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await assert.isRejected(
                 didRegistry.registerAttribute(did, checksum, [didRegistry.address], value),
-                'Invalid provider'
-            )
-        })
-
-        it('should not register a did if its not previously reserved', async () => {
-            const did = testUtils.generateId()
-            const checksum = testUtils.generateId()
-            const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await assert.isRejected(
-                didRegistry.registerAttribute(did, checksum, [didRegistry.address], value),
-                'DID not reserved'
-            )
-        })
-
-        it('should not allow to reserve a DID more than once', async () => {
-            const did = testUtils.generateId()
-
-            await didRegistry.reserveDID(testUtils.hashString(did))
-
-            await assert.isRejected(
-                didRegistry.reserveDID(testUtils.hashString(did)),
-                'DID reserved'
+                'Invalid provider address'
             )
         })
     })
@@ -338,8 +293,6 @@ contract('DIDRegistry', (accounts) => {
             const didOwner = accounts[2]
             const newDIDOwner = accounts[3]
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did), { from: didOwner})
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -372,8 +325,6 @@ contract('DIDRegistry', (accounts) => {
             const didOwner = accounts[2]
             const newDIDOwner = accounts[3]
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did), { from: didOwner})
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -390,7 +341,7 @@ contract('DIDRegistry', (accounts) => {
                     did,
                     newDIDOwner
                 ),
-                'Only owner'
+                'Only DID Owner allowed'
             )
         })
     })
@@ -402,8 +353,6 @@ contract('DIDRegistry', (accounts) => {
             const didOwner = accounts[2]
             const grantee = accounts[3]
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did), { from: didOwner})
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -437,8 +386,6 @@ contract('DIDRegistry', (accounts) => {
             const grantee = accounts[3]
             const newDIDOwner = accounts[4]
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did), { from: didOwner})
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -457,7 +404,7 @@ contract('DIDRegistry', (accounts) => {
                         from: newDIDOwner
                     }
                 ),
-                'Only owner'
+                'Only DID Owner allowed'
             )
             // act & assert
             assert.strictEqual(
@@ -477,8 +424,6 @@ contract('DIDRegistry', (accounts) => {
             const didOwner = accounts[2]
             const grantee = accounts[3]
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did), { from: didOwner})
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -521,8 +466,6 @@ contract('DIDRegistry', (accounts) => {
             const didOwner = accounts[2]
             const grantee = accounts[3]
             const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-
-            await didRegistry.reserveDID(testUtils.hashString(did), { from: didOwner})
             await didRegistry.registerAttribute(
                 did,
                 checksum,
@@ -541,7 +484,7 @@ contract('DIDRegistry', (accounts) => {
                         from: didOwner
                     }
                 ),
-                'Grantee already revoked'
+                'Grantee already was revoked'
             )
 
             // act & assert
@@ -557,11 +500,10 @@ contract('DIDRegistry', (accounts) => {
 
     describe('Provenance #wasGeneratedBy()', () => {
         it('should generate an entity', async () => {
-            const did = testUtils.generateId()
+            const _did = testUtils.generateId()
 
-            await didRegistry.reserveDID(testUtils.hashString(did))
             const result = await didRegistry.registerDID(
-                did,
+                _did,
                 testUtils.generateId(),
                 providers,
                 value,
@@ -569,7 +511,7 @@ contract('DIDRegistry', (accounts) => {
                 'hi there'
             )
 
-            didRegistry.getProvenanceEntry(did)
+            didRegistry.getProvenanceEntry(_did)
 
             testUtils.assertEmitted(
                 result,
@@ -589,11 +531,10 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should fetch a provenance entry', async () => {
-            const did = testUtils.generateId()
+            const _did = testUtils.generateId()
 
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerDID(
-                did,
+                _did,
                 testUtils.generateId(),
                 providers,
                 value,
@@ -601,26 +542,25 @@ contract('DIDRegistry', (accounts) => {
                 'hi there'
             )
 
-            const storedProvEntry = await didRegistry.getProvenanceEntry(did)
+            const storedProvEntry = await didRegistry.getProvenanceEntry(_did)
             assert.strictEqual(
                 storedProvEntry.createdBy,
                 accounts[0]
             )
             assert.strictEqual(
                 storedProvEntry.did,
-                did
+                _did
             )
         })
     })
 
     describe('Provenance #used()', () => {
         it('should use an entity from owner', async () => {
-            const did = testUtils.generateId()
+            const _did = testUtils.generateId()
             const _provId = testUtils.generateId()
 
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerDID(
-                did,
+                _did,
                 testUtils.generateId(),
                 providers,
                 value,
@@ -628,7 +568,7 @@ contract('DIDRegistry', (accounts) => {
                 'hi there'
             )
 
-            const result = await didRegistry.used(_provId, did, owner, Activities.USED, [], 'doing something')
+            const result = await didRegistry.used(_provId, _did, owner, Activities.USED, [], 'doing something')
             testUtils.assertEmitted(
                 result,
                 1,
@@ -642,16 +582,15 @@ contract('DIDRegistry', (accounts) => {
             )
             assert.strictEqual(
                 storedProvEntry.did,
-                did
+                _did
             )
         })
 
         it('should use an entity from delegate', async () => {
-            const did = testUtils.generateId()
+            const _did = testUtils.generateId()
 
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerDID(
-                did,
+                _did,
                 testUtils.generateId(),
                 providers,
                 value,
@@ -659,19 +598,18 @@ contract('DIDRegistry', (accounts) => {
                 'hi there'
             )
 
-            didRegistry.addDIDProvenanceDelegate(did, someone)
+            didRegistry.addDIDProvenanceDelegate(_did, someone)
 
-            await didRegistry.used(testUtils.generateId(), did, owner, Activities.USED, [], '', {
+            await didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, [], '', {
                 from: someone
             })
         })
 
         it('should fail to use an entity from someone', async () => {
-            const did = testUtils.generateId()
+            const _did = testUtils.generateId()
 
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerDID(
-                did,
+                _did,
                 testUtils.generateId(),
                 providers,
                 value,
@@ -681,7 +619,7 @@ contract('DIDRegistry', (accounts) => {
 
             await assert.isRejected(
                 // must not be able to add attributes to someone else's DID
-                didRegistry.used(testUtils.generateId(), did, owner, Activities.USED, [], '', {
+                didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, [], '', {
                     from: someone
                 }),
                 'Only owner, provider or delegate'
@@ -691,13 +629,12 @@ contract('DIDRegistry', (accounts) => {
 
     describe('Provenance #wasDerivedFrom()', () => {
         it('should use an entity from owner', async () => {
-            const did = testUtils.generateId()
+            const _did = testUtils.generateId()
             const _newDid = testUtils.generateId()
             const _provId = testUtils.generateId()
 
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerDID(
-                did,
+                _did,
                 testUtils.generateId(),
                 providers,
                 value,
@@ -705,7 +642,7 @@ contract('DIDRegistry', (accounts) => {
                 'hi there'
             )
 
-            const result = await didRegistry.wasDerivedFrom(_provId, _newDid, did, owner, Activities.DERIVED_FROM, 'derived')
+            const result = await didRegistry.wasDerivedFrom(_provId, _newDid, _did, owner, Activities.DERIVED_FROM, 'derived')
             testUtils.assertEmitted(
                 result,
                 1,
@@ -726,12 +663,11 @@ contract('DIDRegistry', (accounts) => {
 
     describe('Provenance #wasAssociatedWith()', () => {
         it('should use an entity from owner', async () => {
-            const did = testUtils.generateId()
+            const _did = testUtils.generateId()
             const _provId = testUtils.generateId()
 
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerDID(
-                did,
+                _did,
                 testUtils.generateId(),
                 providers,
                 value,
@@ -739,7 +675,7 @@ contract('DIDRegistry', (accounts) => {
                 'hi there'
             )
 
-            const result = await didRegistry.wasAssociatedWith(_provId, did, owner, Activities.ASSOCIATED_WITH, 'associated')
+            const result = await didRegistry.wasAssociatedWith(_provId, _did, owner, Activities.ASSOCIATED_WITH, 'associated')
             testUtils.assertEmitted(
                 result,
                 1,
@@ -753,14 +689,14 @@ contract('DIDRegistry', (accounts) => {
             )
             assert.strictEqual(
                 storedProvEntry.did,
-                did
+                _did
             )
         })
     })
 
     describe('Provenance #actedOnBehalf()', () => {
         it('we can validate owner signature', async () => {
-            const _sourceMessage = 'hi there' // did + owner
+            const _sourceMessage = 'hi there' // _did + owner
 
             const _message = testUtils.toEthSignedMessageHash(
                 web3.utils.sha3(_sourceMessage))
@@ -776,10 +712,10 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('we can generate the same signatures', async () => {
-            const did = testUtils.generateId()
+            const _did = testUtils.generateId()
 
             const _message = testUtils.toEthSignedMessageHash(
-                web3.utils.sha3(did + delegates[1]))
+                web3.utils.sha3(_did + delegates[1]))
             const _messageHash = testUtils.toEthSignedMessageHash(_message)
             const _signature = testUtils.fixSignature(
                 await web3.eth.sign(_message, delegates[1])
@@ -792,11 +728,10 @@ contract('DIDRegistry', (accounts) => {
         })
 
         it('should act in behalf of delegate 2', async () => {
-            const did = testUtils.generateId()
+            const _did = testUtils.generateId()
 
-            await didRegistry.reserveDID(testUtils.hashString(did))
             await didRegistry.registerDID(
-                did,
+                _did,
                 testUtils.generateId(),
                 providers,
                 value,
@@ -804,10 +739,10 @@ contract('DIDRegistry', (accounts) => {
                 'hi there'
             )
 
-            await didRegistry.addDIDProvenanceDelegate(did, delegates[1])
+            await didRegistry.addDIDProvenanceDelegate(_did, delegates[1])
 
             const _message = web3.utils.sha3(
-                did + delegates[1])
+                _did + delegates[1])
 
             const _signatureDelegate = testUtils.fixSignature(
                 await web3.eth.sign(_message, delegates[1])
@@ -818,7 +753,7 @@ contract('DIDRegistry', (accounts) => {
 
             const result = await didRegistry.actedOnBehalf(
                 testUtils.toEthSignedMessageHash(_message),
-                did,
+                _did,
                 delegates[1],
                 owner,
                 Activities.ACTED_IN_BEHALF,
