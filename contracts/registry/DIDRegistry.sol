@@ -126,17 +126,18 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
     {
         if (didRegisterList.didRegisters[_did].mintCap > 0) {
             require(
-                didRegisterList.didRegisters[_did].nftSupply + _amount <= didRegisterList.didRegisters[_did].mintCap,
+                didRegisterList.didRegisters[_did].nftSupply.add(_amount) <= didRegisterList.didRegisters[_did].mintCap,
                 'Cap exceeded'
             );
         }
         
         didRegisterList.didRegisters[_did].nftSupply = didRegisterList.didRegisters[_did].nftSupply.add(_amount);
-        super._mint(msg.sender, uint256(_did), _amount, '');
         
         super.used(
             keccak256(abi.encodePacked(_did, msg.sender, 'mint', _amount, block.number)),
             _did, msg.sender, keccak256('mint'), '', 'mint');
+
+        super._mint(msg.sender, uint256(_did), _amount, '');
     }
 
     /**

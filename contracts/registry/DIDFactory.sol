@@ -40,7 +40,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             isDIDOwner(msg.sender, _did),
-            'Only DID Owner allowed'
+            'Only owner'
         );
         _;
     }
@@ -49,7 +49,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             msg.sender == manager,
-            'Only DIDRegistry manager allowed'
+            'Only manager'
         );
         _;
     }
@@ -57,7 +57,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     modifier onlyOwnerProviderOrDelegated(bytes32 _did)
     {
         require(isOwnerProviderOrDelegate(_did),
-            'Only owner, provider or delegate'
+            'Invalid user'
         );
         _;
     }
@@ -75,7 +75,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             didRegisterList.didRegisters[_did].nftInitialized,
-            'The NFTs needs to be initialized'
+            'NFT not initialized'
         );
         _;
     }    
@@ -153,6 +153,9 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         manager = _owner;
     }
 
+    /**
+     * Sets the manager role. Should be the TransferCondition contract address
+     */
     function setManager(address _addr) external onlyOwner {
         manager = _addr;
     }
@@ -475,9 +478,8 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
 
     function _transferDIDOwnership(address _sender, bytes32 _did, address _newOwner) internal
     {
-        require(isDIDOwner(_sender, _did), 'Only DID Owner allowed');
+        require(isDIDOwner(_sender, _did), 'Only owner');
 
-        address _previousOwner = didRegisterList.didRegisters[_did].owner;
         didRegisterList.updateDIDOwner(_did, _newOwner);
 
         _wasAssociatedWith(
@@ -485,8 +487,8 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
             _did, _newOwner, keccak256('transferDID'), 'transferDID');
         
         emit DIDOwnershipTransferred(
-            _did,
-            _previousOwner,
+            _did, 
+            _sender,
             _newOwner
         );
     }
@@ -654,7 +656,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             _grantee != address(0),
-            'Invalid grantee address'
+            'Invalid grantee'
         );
         didPermissions[_did][_grantee] = true;
         emit DIDPermissionGranted(
@@ -677,7 +679,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             didPermissions[_did][_grantee],
-            'Grantee already was revoked'
+            'Grantee already revoked'
         );
         didPermissions[_did][_grantee] = false;
         emit DIDPermissionRevoked(

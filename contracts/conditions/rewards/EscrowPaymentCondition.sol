@@ -6,6 +6,7 @@ pragma solidity 0.6.12;
 import './Reward.sol';
 import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol';
 
 /**
  * @title Escrow Payment Condition
@@ -18,6 +19,8 @@ import '../ConditionStoreLibrary.sol';
  *      are fulfilled.
  */
 contract EscrowPaymentCondition is Reward, Common {
+
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
     bytes32 constant public CONDITION_TYPE = keccak256('EscrowPayment');
 
@@ -94,8 +97,8 @@ contract EscrowPaymentCondition is Reward, Common {
         return keccak256(
             abi.encodePacked(
                 _did,
-                _amounts,
-                _receivers,
+                keccak256(abi.encodePacked(_amounts)),
+                keccak256(abi.encodePacked(_receivers)),
                 _lockPaymentAddress, 
                 _tokenAddress,
                 _lockCondition,
@@ -104,6 +107,36 @@ contract EscrowPaymentCondition is Reward, Common {
         );
     }
     
+   /**
+    * @notice hashValuesLockPayment generates the hash of condition inputs 
+    *        with the following parameters
+    * @param _did the asset decentralized identifier 
+    * @param _rewardAddress the contract address where the reward is locked       
+    * @param _tokenAddress the ERC20 contract address to use during the lock payment. 
+    *        If the address is 0x0 means we won't use a ERC20 but ETH for payment     
+    * @param _amounts token amounts to be locked/released
+    * @param _receivers receiver's addresses
+    * @return bytes32 hash of all these values 
+    */
+    function hashValuesLockPayment(
+        bytes32 _did,
+        address _rewardAddress,
+        address _tokenAddress,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    )
+        public
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(
+            _did,
+            _rewardAddress,
+            _tokenAddress,
+            keccak256(abi.encodePacked(_amounts)),
+            keccak256(abi.encodePacked(_receivers))
+        ));
+    }
     
     /**
      * @notice fulfill escrow reward condition
@@ -139,9 +172,7 @@ contract EscrowPaymentCondition is Reward, Common {
             abi.encodePacked(
                 _agreementId,
                 conditionStoreManager.getConditionTypeRef(_lockCondition),
-                keccak256(
-                    abi.encodePacked(_did, _lockPaymentAddress, _tokenAddress, _amounts, _receivers)
-                )
+                hashValuesLockPayment(_did, _lockPaymentAddress, _tokenAddress, _amounts, _receivers)
             )
         ) == _lockCondition,
             'LockCondition ID does not match'
@@ -224,10 +255,7 @@ contract EscrowPaymentCondition is Reward, Common {
                 _receivers[i] != address(this),
                 'Escrow contract can not be a receiver'
             );
-            require(
-                token.transfer(_receivers[i], _amounts[i]),
-                'Could not transfer token'
-            );
+            token.safeTransfer(_receivers[i], _amounts[i]);
         }
 
         return super.fulfill(
@@ -260,7 +288,6 @@ contract EscrowPaymentCondition is Reward, Common {
             );
             (bool sent,) = _receivers[i].call{value: _amounts[i]}('');
             require(sent, 'Failed to send Ether');
-//            _receivers[i].transfer(_amounts[i]);
         }
 
         return super.fulfill(

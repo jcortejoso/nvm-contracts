@@ -281,7 +281,7 @@ contract('DIDRegistry', (accounts) => {
 
             await assert.isRejected(
                 didRegistry.registerAttribute(did, checksum, [didRegistry.address], value),
-                'Invalid provider address'
+                'Invalid provider'
             )
         })
     })
@@ -341,7 +341,7 @@ contract('DIDRegistry', (accounts) => {
                     did,
                     newDIDOwner
                 ),
-                'Only DID Owner allowed'
+                'Only owner'
             )
         })
     })
@@ -404,7 +404,7 @@ contract('DIDRegistry', (accounts) => {
                         from: newDIDOwner
                     }
                 ),
-                'Only DID Owner allowed'
+                'Only owner'
             )
             // act & assert
             assert.strictEqual(
@@ -484,7 +484,7 @@ contract('DIDRegistry', (accounts) => {
                         from: didOwner
                     }
                 ),
-                'Grantee already was revoked'
+                'Grantee already revoked'
             )
 
             // act & assert
@@ -622,7 +622,7 @@ contract('DIDRegistry', (accounts) => {
                 didRegistry.used(testUtils.generateId(), _did, owner, Activities.USED, [], '', {
                     from: someone
                 }),
-                'Only owner, provider or delegate'
+                'Invalid user'
             )
         })
     })
