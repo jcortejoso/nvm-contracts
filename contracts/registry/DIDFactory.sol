@@ -40,7 +40,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             isDIDOwner(msg.sender, _did),
-            'Only DID Owner allowed'
+            'Only owner'
         );
         _;
     }
@@ -49,7 +49,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             msg.sender == manager,
-            'Only DIDRegistry manager allowed'
+            'Only manager'
         );
         _;
     }
@@ -75,7 +75,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             didRegisterList.didRegisters[_did].nftInitialized,
-            'The NFTs needs to be initialized'
+            'NFT not initialized'
         );
         _;
     }    
@@ -184,7 +184,24 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         return registerDID(_did, _checksum, _providers, _url, '', '');
     }
 
-
+    /**
+     * @notice It reserves a DID for further registration using the `registerDID` method.
+     *
+     * @param _didHash refers to the keccak256 of the did that can be used to reserve the DID associated to 
+     *        the msg.sender address     
+    */
+    function reserveDID(
+        bytes32 _didHash
+    )
+    public
+    {
+        require(
+            didRegisterList.didReserves[_didHash] == address(0x0),
+            'DID reserved'
+        );
+        didRegisterList.didReserves[_didHash] = msg.sender;
+    }
+    
     /**
      * @notice Register DID attributes.
      *
@@ -213,6 +230,10 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     onlyValidAttributes(_attributes)
     returns (uint size)
     {
+        require(
+            didRegisterList.didReserves[keccak256(abi.encodePacked(_did))] == msg.sender,
+            'DID not reserved'
+        );
         require(
             didRegisterList.didRegisters[_did].owner == address(0x0) ||
             didRegisterList.didRegisters[_did].owner == msg.sender,
@@ -478,7 +499,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
 
     function _transferDIDOwnership(address _sender, bytes32 _did, address _newOwner) internal
     {
-        require(isDIDOwner(_sender, _did), 'Only DID Owner allowed');
+        require(isDIDOwner(_sender, _did), 'Only owner');
 
         didRegisterList.updateDIDOwner(_did, _newOwner);
 
@@ -656,7 +677,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             _grantee != address(0),
-            'Invalid grantee address'
+            'Invalid grantee'
         );
         didPermissions[_did][_grantee] = true;
         emit DIDPermissionGranted(
@@ -679,7 +700,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     {
         require(
             didPermissions[_did][_grantee],
-            'Grantee already was revoked'
+            'Grantee already revoked'
         );
         didPermissions[_did][_grantee] = false;
         emit DIDPermissionRevoked(

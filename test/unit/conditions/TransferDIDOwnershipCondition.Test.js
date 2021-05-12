@@ -104,7 +104,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
 
             await assert.isRejected(
                 transferCondition.fulfill(agreementId, did, receiver, { from: receiver }),
-                'Only DID Owner allowed'
+                'Only owner'
             )
         })
 
@@ -119,7 +119,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
 
             await assert.isRejected(
                 transferCondition.fulfill(agreementId, did, receiver),
-                'Only DID Owner allowed'
+                'Only owner'
             )
         })
     })
@@ -163,7 +163,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
 
             await assert.isRejected(
                 transferCondition.fulfill(agreementId, did, receiver, { from: receiver }),
-                'Only DID Owner allowed'
+                'Only owner'
             )
 
             const storedDIDRegister = await didRegistry.getDIDRegister(did)

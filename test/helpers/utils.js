@@ -5,7 +5,9 @@ const utils = {
     generateId: () => {
         return web3.utils.sha3(Math.random().toString())
     },
-
+    hashString: (_str) => {
+        return web3.utils.sha3(_str)
+    },
     generateAccount: () => {
         return web3.eth.accounts.create()
     },
