@@ -129,12 +129,12 @@ contract EscrowPaymentCondition is Reward, Common {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(
+        return keccak256(abi.encode(
             _did,
             _rewardAddress,
             _tokenAddress,
-            keccak256(abi.encodePacked(_amounts)),
-            keccak256(abi.encodePacked(_receivers))
+            _amounts,
+            _receivers
         ));
     }
     
