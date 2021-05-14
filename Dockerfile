@@ -12,7 +12,9 @@ RUN apk add --no-cache --update\
       make\
       python
 
-COPY . /nevermined-contracts
+RUN echo 
+
+COPY .   /nevermined-contracts
 WORKDIR /nevermined-contracts
 
 RUN yarn
