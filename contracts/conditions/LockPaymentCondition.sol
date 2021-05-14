@@ -144,7 +144,6 @@ contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
             _agreementId,
             hashValues(_did, _rewardAddress, _tokenAddress, _amounts, _receivers)
         );
-        // fulfill can be called only once, so prevents problematic reentrancy to this method (maybe not)
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
             ConditionStoreLibrary.ConditionState.Fulfilled
@@ -177,8 +176,7 @@ contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
     internal
     {
         IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
-        // token.safeTransferFrom(msg.sender, _rewardAddress, _amount);
-        token.transferFrom(msg.sender, _rewardAddress, _amount);
+        token.safeTransferFrom(msg.sender, _rewardAddress, _amount);
     }
 
     /**
