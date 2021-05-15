@@ -33,7 +33,7 @@ module.exports = {
         // only used locally, i.e. ganache
         development: {
             host: rpcHost || 'localhost',
-            port: rpcPort || 8545,
+            port: rpcPort || 18545,
             // has to be '*' because this is usually ganache
             network_id: '*',
             gas: 6721975

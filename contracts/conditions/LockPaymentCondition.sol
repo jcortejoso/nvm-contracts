@@ -90,7 +90,7 @@ contract LockPaymentCondition is Condition, Common {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encode(
+        return keccak256(abi.encodePacked(
             _did,
             _rewardAddress,
             _tokenAddress,
