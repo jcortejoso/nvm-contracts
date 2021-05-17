@@ -92,7 +92,7 @@ contract NFTAccessCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_documentId, _grantee));
+        return keccak256(abi.encode(_documentId, _grantee));
     }
 
    /**

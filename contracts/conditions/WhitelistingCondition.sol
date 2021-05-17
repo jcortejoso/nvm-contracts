@@ -58,7 +58,7 @@ contract WhitelistingCondition is Condition, Common {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_listAddress, _item));
+        return keccak256(abi.encode(_listAddress, _item));
     }
 
    /**
@@ -88,7 +88,7 @@ contract WhitelistingCondition is Condition, Common {
         
         require(
             list.has(
-                keccak256(abi.encodePacked(msg.sender)),
+                keccak256(abi.encode(msg.sender)),
                 _item
             ),
             'Item does not exist'

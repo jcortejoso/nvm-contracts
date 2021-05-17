@@ -82,7 +82,7 @@ contract TransferNFTCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_did, _nftReceiver, _nftAmount, _lockCondition));
+        return keccak256(abi.encode(_did, _nftReceiver, _nftAmount, _lockCondition));
     }
 
     /**
@@ -188,11 +188,11 @@ contract TransferNFTCondition is Condition {
             'LockCondition needs to be Fulfilled'
         );
         bytes32 generatedLockConditionId = keccak256(
-            abi.encodePacked(
+            abi.encode(
                 _agreementId,
                 lockConditionTypeRef,
                 keccak256(
-                    abi.encodePacked(
+                    abi.encode(
                         _did,
                         _nftReceiver,
                         _nftAmount

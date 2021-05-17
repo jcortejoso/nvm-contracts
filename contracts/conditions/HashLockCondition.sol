@@ -54,7 +54,7 @@ contract HashLockCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_preimage));
+        return keccak256(abi.encode(_preimage));
     }
 
    /**
@@ -68,7 +68,7 @@ contract HashLockCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_preimage));
+        return keccak256(abi.encode(_preimage));
     }
 
    /**
@@ -83,7 +83,7 @@ contract HashLockCondition is Condition {
         returns
         (bytes32)
     {
-        return keccak256(abi.encodePacked(_preimage));
+        return keccak256(abi.encode(_preimage));
     }
 
    /**

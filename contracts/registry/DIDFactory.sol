@@ -483,7 +483,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         didRegisterList.updateDIDOwner(_did, _newOwner);
 
         _wasAssociatedWith(
-            keccak256(abi.encodePacked(_did, _sender, 'transferDID', _newOwner, block.number)),
+            keccak256(abi.encode(_did, _sender, 'transferDID', _newOwner, block.number)),
             _did, _newOwner, keccak256('transferDID'), 'transferDID');
         
         emit DIDOwnershipTransferred(

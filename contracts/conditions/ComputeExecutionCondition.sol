@@ -96,7 +96,7 @@ contract ComputeExecutionCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_did, _computeConsumer));
+        return keccak256(abi.encode(_did, _computeConsumer));
     }
 
    /**

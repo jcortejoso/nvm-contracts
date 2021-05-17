@@ -84,7 +84,7 @@ contract NFTLockCondition is Condition, IERC1155ReceiverUpgradeable {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_did, _rewardAddress, _amount));
+        return keccak256(abi.encode(_did, _rewardAddress, _amount));
     }
 
    /**

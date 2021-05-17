@@ -92,7 +92,7 @@ contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(
+        return keccak256(abi.encode(
             _did,
             _rewardAddress,
             _tokenAddress,

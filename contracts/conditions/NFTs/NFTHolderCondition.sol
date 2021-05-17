@@ -75,7 +75,7 @@ contract NFTHolderCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_did, _holderAddress, _amount));
+        return keccak256(abi.encode(_did, _holderAddress, _amount));
     }
 
    /**

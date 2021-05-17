@@ -39,7 +39,7 @@ contract Condition is OwnableUpgradeable {
         returns (bytes32)
     {
         return keccak256(
-            abi.encodePacked(
+            abi.encode(
                 _agreementId,
                 address(this),
                 _valueHash

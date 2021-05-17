@@ -103,7 +103,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
         }
         
         return super.used(
-            keccak256(abi.encodePacked(_did, _cap, _royalties, msg.sender)),
+            keccak256(abi.encode(_did, _cap, _royalties, msg.sender)),
             _did, msg.sender, keccak256('enableNft'), '', 'nft initialization');
     }
     
@@ -134,7 +134,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
         didRegisterList.didRegisters[_did].nftSupply = didRegisterList.didRegisters[_did].nftSupply.add(_amount);
         
         super.used(
-            keccak256(abi.encodePacked(_did, msg.sender, 'mint', _amount, block.number)),
+            keccak256(abi.encode(_did, msg.sender, 'mint', _amount, block.number)),
             _did, msg.sender, keccak256('mint'), '', 'mint');
 
         super._mint(msg.sender, uint256(_did), _amount, '');
@@ -162,7 +162,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
         didRegisterList.didRegisters[_did].nftSupply -= _amount;
 
         super.used(
-            keccak256(abi.encodePacked(_did, msg.sender, 'burn', _amount, block.number)),
+            keccak256(abi.encode(_did, msg.sender, 'burn', _amount, block.number)),
             _did, msg.sender, keccak256('burn'), '', 'burn');
     }
     
