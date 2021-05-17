@@ -7,6 +7,7 @@ import './Reward.sol';
 import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
 
 /**
  * @title Escrow Payment Condition
@@ -18,7 +19,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol
  *      can release reward if lock and release conditions
  *      are fulfilled.
  */
-contract EscrowPaymentCondition is Reward, Common {
+contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
 
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
@@ -165,6 +166,7 @@ contract EscrowPaymentCondition is Reward, Common {
         bytes32 _releaseCondition
     )
     external
+    nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
 

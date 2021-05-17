@@ -9,6 +9,7 @@ import '../registry/DIDRegistry.sol';
 import '../Common.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
 
 /**
  * @title Lock Payment Condition
@@ -18,7 +19,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol
  * This condition allows to lock payment for multiple receivers taking
  * into account the royalties to be paid to the original creators in a secondary market.  
  */
-contract LockPaymentCondition is Condition, Common {
+contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
 
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
@@ -57,6 +58,7 @@ contract LockPaymentCondition is Condition, Common {
             'Invalid address'
         );
         OwnableUpgradeable.__Ownable_init();
+        ReentrancyGuardUpgradeable.__ReentrancyGuard_init();
         transferOwnership(_owner);
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
@@ -120,6 +122,7 @@ contract LockPaymentCondition is Condition, Common {
     )
     external
     payable
+    nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
         require(
@@ -141,7 +144,6 @@ contract LockPaymentCondition is Condition, Common {
             _agreementId,
             hashValues(_did, _rewardAddress, _tokenAddress, _amounts, _receivers)
         );
-        // fulfill can be called only once, so prevents reentrancy to this method
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
             ConditionStoreLibrary.ConditionState.Fulfilled
