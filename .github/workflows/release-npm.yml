@@ -20,7 +20,8 @@ jobs:
       - name: Pre-install
         run: |
           yarn
-          npx ganache-cli@~6.9.1 > ganache-cli.log &
+          npm install ganache-cli@~6.12.2 -g
+          ganache-cli -p 18545 &
       - name: Generate dev artifacts
         run: |
           yarn compile
