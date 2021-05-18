@@ -32,7 +32,7 @@ jobs:
         run: |
           yarn test:integration
         env:
-          NODE_OPTIONS: "--max-old-space-size=7500"
+          NODE_OPTIONS: "--max-old-space-size=8192"
 
   upgradability:
     runs-on: ubuntu-latest
@@ -55,4 +55,4 @@ jobs:
           yarn deploy:development --deeper-clean
           git status
         env:
-          NODE_OPTIONS: "--max-old-space-size=7500"
+          NODE_OPTIONS: "--max-old-space-size=8192"
