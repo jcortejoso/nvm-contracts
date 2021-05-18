@@ -21,7 +21,7 @@ jobs:
         run: |
           yarn
           npm install ganache-cli@~6.12.2 -g
-          ganache-cli -p 18545 &
+          ganache-cli -q -p 18545 &
       - name: Compile and Lint
         run: |
           yarn lint
@@ -31,7 +31,7 @@ jobs:
         run: |
           yarn test:unit
           pkill --signal 9 -f ganache-cli
-          ganache-cli -p 18545 &
+          ganache-cli -q -p 18545 &
       - name: Run Integration Tests
         run: |
           yarn test:integration
@@ -49,7 +49,7 @@ jobs:
         run: |
           yarn
           npm install ganache-cli@~6.12.2 -g
-          ganache-cli -p 18545 &
+          ganache-cli -q -p 18545 &
       - name: Compile and Lint
         run: |
           yarn lint

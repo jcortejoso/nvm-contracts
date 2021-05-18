@@ -21,7 +21,7 @@ jobs:
         run: |
           yarn
           npm install ganache-cli@~6.12.2 -g
-          ganache-cli -p 18545 &
+          ganache-cli -q -p 18545 &
       - name: Generate dev artifacts
         run: |
           yarn compile
