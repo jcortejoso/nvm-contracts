@@ -12,13 +12,13 @@ contract DIDRegistryWithBug is DIDFactory {
     /**
      * @notice registerAttribute is called only by DID owner.
      * @dev this function registers DID attributes
-     * @param _did refers to decentralized identifier (a byte32 length ID)
+     * @param _didSeed refers to decentralized identifier (a byte32 length ID)
      * @param _checksum includes a one-way HASH calculated using the DDO content    
      * @param _url refers to the attribute value
      */
     function registerAttribute (
         bytes32 _checksum,
-        bytes32 _did,
+        bytes32 _didSeed,
         address[] memory _providers,
         string memory _url
     )
@@ -26,6 +26,7 @@ contract DIDRegistryWithBug is DIDFactory {
     override
     returns (uint size)
     {
+        bytes32 _did = hashDID(_didSeed, msg.sender);
         require(
             didRegisterList.didRegisters[_did].owner == address(0x0) ||
             didRegisterList.didRegisters[_did].owner == msg.sender,
