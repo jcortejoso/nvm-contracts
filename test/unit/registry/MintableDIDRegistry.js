@@ -39,10 +39,11 @@ contract('Mintable DIDRegistry', (accounts) => {
 
     describe('Register an Asset with a DID', () => {
         it('A Mintable DID can be found in the regular DIDRegistry', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
             await didRegistry.registerAttribute(
-                did, checksum, [], value, { from: owner })
+                didSeed, checksum, [], value, { from: owner })
 
             const storedDIDRegister = await didRegistry.getDIDRegister(did)
 
@@ -57,20 +58,22 @@ contract('Mintable DIDRegistry', (accounts) => {
         })
 
         it('Should not mint automatically a NFT associated with the DID', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
             await didRegistry.registerAttribute(
-                did, checksum, [], value, { from: owner })
+                didSeed, checksum, [], value, { from: owner })
 
             const balance = await didRegistry.balanceOf(owner, did)
             assert.strictEqual(0, balance.toNumber())
         })
 
         it('Should not mint or burn a NFTs without previous initialization', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
             await didRegistry.registerAttribute(
-                did, checksum, [], value, { from: owner })
+                didSeed, checksum, [], value, { from: owner })
 
             await assert.isRejected(
                 // Must not allow to mint tokens without previous initialization
@@ -86,11 +89,12 @@ contract('Mintable DIDRegistry', (accounts) => {
         })
 
         it('Should mint and burn NFTs after initialization', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
 
             await didRegistry.registerMintableDID(
-                did, checksum, [], value, 20, 0, constants.activities.GENERATED, '', { from: owner })
+                didSeed, checksum, [], value, 20, 0, constants.activities.GENERATED, '', { from: owner })
             const result = await didRegistry.mint(did, 10, { from: owner })
 
             testUtils.assertEmitted(
@@ -113,10 +117,11 @@ contract('Mintable DIDRegistry', (accounts) => {
         })
 
         it('Should initialize the NFT in the registration', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
             await didRegistry.registerMintableDID(
-                did, checksum, [], value, 10, 0, constants.activities.GENERATED, '', { from: owner })
+                didSeed, checksum, [], value, 10, 0, constants.activities.GENERATED, '', { from: owner })
 
             await didRegistry.mint(did, 10, { from: owner })
 
@@ -125,10 +130,11 @@ contract('Mintable DIDRegistry', (accounts) => {
         })
 
         it('Should Mint automatically if is configured that way', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
             await didRegistry.registerAttribute(
-                did, checksum, [], value, { from: owner })
+                didSeed, checksum, [], value, { from: owner })
 
             await didRegistry.enableAndMintDidNft(did, 5, 0, true, { from: owner })
 
@@ -137,11 +143,12 @@ contract('Mintable DIDRegistry', (accounts) => {
         })
 
         it('Should mint if is not capped', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
 
             await didRegistry.registerMintableDID(
-                did, checksum, [], value, 0, 0, constants.activities.GENERATED, '', { from: owner })
+                didSeed, checksum, [], value, 0, 0, constants.activities.GENERATED, '', { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
 
             const balance = await didRegistry.balanceOf(owner, did)
@@ -149,10 +156,11 @@ contract('Mintable DIDRegistry', (accounts) => {
         })
 
         it('Should not mint a NFTs over minting cap', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
             await didRegistry.registerMintableDID(
-                did, checksum, [], value, 5, 0, constants.activities.GENERATED, '', { from: owner })
+                didSeed, checksum, [], value, 5, 0, constants.activities.GENERATED, '', { from: owner })
 
             await assert.isRejected(
                 // Must not allow to mint tokens without previous initialization
@@ -173,10 +181,11 @@ contract('Mintable DIDRegistry', (accounts) => {
         })
 
         it('Should not mint or burn if not DID Owner', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
             await didRegistry.registerAttribute(
-                did, checksum, [], value, { from: owner })
+                didSeed, checksum, [], value, { from: owner })
 
             await assert.isRejected(
                 // Must not allow to initialize NFTs if not the owner
@@ -193,7 +202,8 @@ contract('Mintable DIDRegistry', (accounts) => {
         })
 
         it('Checks the royalties are right', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
 
             await didRegistryLibraryProxy.update(did, checksum, value, { from: owner })

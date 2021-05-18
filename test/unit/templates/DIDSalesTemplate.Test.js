@@ -19,19 +19,24 @@ const testUtils = require('../../helpers/utils')
 contract('DIDSalesTemplate', (accounts) => {
     let lockPaymentCondition,
         transferCondition,
-        escrowCondition
+        escrowCondition,
+        token,
+        didRegistry,
+        agreementStoreManager,
+        conditionStoreManager,
+        templateStoreManager
 
     async function setupTest({
         deployer = accounts[8],
         owner = accounts[9]
     } = {}) {
-        const {
+        ({
             token,
             didRegistry,
             agreementStoreManager,
             conditionStoreManager,
             templateStoreManager
-        } = await deployManagers(deployer, owner)
+        } = await deployManagers(deployer, owner))
 
         lockPaymentCondition = await LockPaymentCondition.new()
 
@@ -94,8 +99,10 @@ contract('DIDSalesTemplate', (accounts) => {
         timeOuts = [0, 0, 0],
         sender = accounts[0],
         receiver = accounts[1],
-        did = testUtils.generateId()
+        didSeed = testUtils.generateId()
     } = {}) {
+        const did = await didRegistry.hashDID(didSeed, accounts[0])
+
         // construct agreement
         const agreement = {
             did,
@@ -106,7 +113,9 @@ contract('DIDSalesTemplate', (accounts) => {
         }
         return {
             agreementId,
-            agreement
+            agreement,
+            did,
+            didSeed
         }
     }
 
@@ -121,7 +130,7 @@ contract('DIDSalesTemplate', (accounts) => {
                 owner
             } = await setupTest()
 
-            const { agreementId, agreement } = await prepareAgreement()
+            const { agreementId, agreement, didSeed } = await prepareAgreement()
 
             await assert.isRejected(
                 didSalesTemplate.createAgreement(agreementId, ...Object.values(agreement)),
@@ -139,7 +148,7 @@ contract('DIDSalesTemplate', (accounts) => {
             )
 
             // register DID
-            await didRegistry.registerAttribute(agreement.did, constants.bytes32.one, [], constants.registry.url)
+            await didRegistry.registerAttribute(didSeed, constants.bytes32.one, [], constants.registry.url)
 
             await didSalesTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
@@ -176,10 +185,10 @@ contract('DIDSalesTemplate', (accounts) => {
                 owner
             } = await setupTest()
 
-            const { agreementId, agreement } = await prepareAgreement()
+            const { agreementId, agreement, didSeed } = await prepareAgreement()
 
             // register DID
-            await didRegistry.registerAttribute(agreement.did, constants.bytes32.one, [], constants.registry.url)
+            await didRegistry.registerAttribute(didSeed, constants.bytes32.one, [], constants.registry.url)
 
             // propose and approve template
             const templateId = didSalesTemplate.address

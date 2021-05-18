@@ -67,13 +67,15 @@ contract('NFTLockCondition', (accounts) => {
 
     describe('fulfill correctly', () => {
         it('should fulfill if conditions exist for account address', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const agreementId = testUtils.generateId()
             const rewardAddress = testUtils.generateAccount().address
 
             // register DID
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
             await didRegistry.mint(did, amount)
             await didRegistry.setApprovalForAll(lockCondition.address, true)
 
@@ -103,12 +105,14 @@ contract('NFTLockCondition', (accounts) => {
     describe('trying to fulfill but is invalid', () => {
         it('should not fulfill if conditions do not exist', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[2]
 
             // register DID
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
             await didRegistry.mint(did, amount)
             await didRegistry.setApprovalForAll(lockCondition.address, true)
 
@@ -120,12 +124,14 @@ contract('NFTLockCondition', (accounts) => {
 
         it('out of balance should fail to fulfill', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[2]
 
             // register DID
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
             await didRegistry.mint(did, amount)
             await didRegistry.setApprovalForAll(lockCondition.address, true)
 
@@ -144,12 +150,14 @@ contract('NFTLockCondition', (accounts) => {
 
         it('right transfer should fail to fulfill if conditions already fulfilled', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[2]
 
             // register DID
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
             await didRegistry.mint(did, amount)
             await didRegistry.setApprovalForAll(lockCondition.address, true)
 
@@ -180,12 +188,14 @@ contract('NFTLockCondition', (accounts) => {
 
         it('should fail to fulfill if conditions has different type ref', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[2]
 
             // register DID
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
             await didRegistry.mint(did, amount)
             await didRegistry.setApprovalForAll(lockCondition.address, true)
 

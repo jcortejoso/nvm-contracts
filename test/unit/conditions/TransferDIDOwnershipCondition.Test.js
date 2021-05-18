@@ -21,7 +21,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
         accounts = [],
         conditionId = testUtils.generateId(),
         conditionType = constants.address.dummy,
-        did = testUtils.generateId(),
+        didSeed = testUtils.generateId(),
         checksum = testUtils.generateId(),
         value = constants.registry.url,
         deployer = accounts[8],
@@ -52,8 +52,10 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             await didRegistry.setManager(transferCondition.address, { from: owner })
         }
 
+        const did = await didRegistry.hashDID(didSeed, owner)
+
         if (registerDID) {
-            await didRegistry.registerAttribute(did, checksum, [DIDProvider], value, { from: owner })
+            await didRegistry.registerAttribute(didSeed, checksum, [DIDProvider], value, { from: owner })
         }
 
         return {

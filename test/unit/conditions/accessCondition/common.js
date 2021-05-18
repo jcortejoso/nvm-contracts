@@ -17,7 +17,7 @@ const common = {
         accounts = [],
         conditionId = constants.bytes32.one,
         conditionType = constants.address.dummy,
-        did = constants.did[0],
+        didSeed = constants.did[0],
         checksum = testUtils.generateId(),
         value = constants.registry.url,
         deployer = accounts[8],
@@ -44,12 +44,14 @@ const common = {
             { from: owner }
         )
 
+        const did = await didRegistry.hashDID(didSeed, accounts[0])
         if (registerDID) {
-            await didRegistry.registerAttribute(did, checksum, [DIDProvider], value)
+            await didRegistry.registerAttribute(didSeed, checksum, [DIDProvider], value)
         }
 
         return {
             did,
+            didSeed,
             conditionId,
             conditionType,
             owner,

@@ -84,10 +84,11 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
         escrowAmounts = [11, 4],
         timeLockAccess = 0,
         timeOutAccess = 0,
-        did = testUtils.generateId(),
+        didSeed = testUtils.generateId(),
         url = constants.registry.url,
         checksum = constants.bytes32.one
     } = {}) {
+        const did = await didRegistry.hashDID(didSeed, receivers[0])
         // generate IDs from attributes
         const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
             await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers))
@@ -111,6 +112,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
         return {
             agreementId,
             did,
+            didSeed,
             agreement,
             sender,
             receivers,
@@ -127,12 +129,12 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, did, agreement, sender, receivers, escrowAmounts, checksum, url } = await prepareEscrowAgreement()
+            const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url } = await prepareEscrowAgreement()
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
 
             // register DID
-            await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
+            await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
             // create agreement
             await escrowComputeExecutionTemplate.createAgreement(agreementId, ...Object.values(agreement))
@@ -195,12 +197,12 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, did, agreement, sender, receivers, escrowAmounts, checksum, url, timeOutAccess } = await prepareEscrowAgreement({ timeOutAccess: 10 })
+            const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeOutAccess } = await prepareEscrowAgreement({ timeOutAccess: 10 })
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
 
             // register DID
-            await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
+            await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
             // create agreement
             await escrowComputeExecutionTemplate.createAgreement(agreementId, ...Object.values(agreement))
@@ -251,12 +253,12 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, did, agreement, sender, receivers, escrowAmounts, checksum, url, timeLockAccess } = await prepareEscrowAgreement({ timeLockAccess: 10 })
+            const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeLockAccess } = await prepareEscrowAgreement({ timeLockAccess: 10 })
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
 
             // register DID
-            await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
+            await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
             // fill up wallet
             await token.mint(sender, totalAmount, { from: owner })
 
@@ -311,18 +313,18 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
                 const { owner } = await setupTest()
 
                 // prepare: escrow agreement
-                const { agreementId, did, agreement, sender, receivers, escrowAmounts, checksum, url } = await prepareEscrowAgreement()
+                const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url } = await prepareEscrowAgreement()
                 const totalAmount = escrowAmounts[0] + escrowAmounts[1]
                 const receiver = receivers[0]
 
                 // register DID
-                await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
+                await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
                 // create agreement
                 await escrowComputeExecutionTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
                 const { agreementId: agreementId2, agreement: agreement2 } = await prepareEscrowAgreement(
-                    { agreementId: constants.bytes32.two, did: did }
+                    { agreementId: constants.bytes32.two, didSeed: didSeed }
                 )
                 const agreement2Amounts = [escrowAmounts[0] * 2, escrowAmounts[1]]
                 agreement2.conditionIds[2] = await escrowPaymentCondition.generateId(

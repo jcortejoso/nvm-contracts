@@ -166,13 +166,13 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      * @dev The first attribute of a DID registered sets the DID owner.
      *      Subsequent updates record _checksum and update info.
      *
-     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _didSeed refers to decentralized identifier seed (a bytes32 length ID). 
      * @param _checksum includes a one-way HASH calculated using the DDO content.
      * @param _url refers to the attribute value, limited to 2048 bytes.
      * @return size refers to the size of the registry after the register action.
      */
     function registerAttribute(
-        bytes32 _did,
+        bytes32 _didSeed,
         bytes32 _checksum,
         address[] memory _providers,
         string memory _url
@@ -181,7 +181,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     virtual
     returns (uint size)
     {
-        return registerDID(_did, _checksum, _providers, _url, '', '');
+        return registerDID(_didSeed, _checksum, _providers, _url, '', '');
     }
 
 
@@ -191,7 +191,8 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      * @dev The first attribute of a DID registered sets the DID owner.
      *      Subsequent updates record _checksum and update info.
      *
-     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _didSeed refers to decentralized identifier seed (a bytes32 length ID). 
+     *          The final DID will be calculated with the creator address using the `hashDID` function
      * @param _checksum includes a one-way HASH calculated using the DDO content.
      * @param _providers list of addresses that can act as an asset provider     
      * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
@@ -201,7 +202,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      * @return size refers to the size of the registry after the register action.
      */
     function registerDID(
-        bytes32 _did,
+        bytes32 _didSeed,
         bytes32 _checksum,
         address[] memory _providers,
         string memory _url,
@@ -213,6 +214,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     onlyValidAttributes(_attributes)
     returns (uint size)
     {
+        bytes32 _did = hashDID(_didSeed, msg.sender);
         require(
             didRegisterList.didRegisters[_did].owner == address(0x0) ||
             didRegisterList.didRegisters[_did].owner == msg.sender,
@@ -244,6 +246,23 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         return updatedSize;
     }
 
+    /**
+     * @notice It generates a DID using as seed a bytes32 and the address of the DID creator
+     * @param _didSeed refers to DID Seed used as base to generate the final DID
+     * @param _creator address of the creator of the DID     
+     * @return the new DID created
+    */
+    function hashDID(
+        bytes32 _didSeed, 
+        address _creator
+    ) 
+    public 
+    pure 
+    returns (bytes32) 
+    {
+        return keccak256(abi.encode(_didSeed, _creator));
+    }
+    
     /**
      * @notice areRoyaltiesValid checks if for a given DID and rewards distribution, this allocate the  
      * original creator royalties properly

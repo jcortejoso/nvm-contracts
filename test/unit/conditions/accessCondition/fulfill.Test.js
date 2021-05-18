@@ -91,7 +91,7 @@ contract('AccessCondition constructor', (accounts) => {
             const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
-                did: constants.did[0],
+                did: did,
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
@@ -142,7 +142,7 @@ contract('AccessCondition constructor', (accounts) => {
             const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
-                did: constants.did[0],
+                did: did,
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
@@ -183,7 +183,7 @@ contract('AccessCondition constructor', (accounts) => {
             const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
-                did: constants.did[0],
+                did: did,
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
@@ -231,7 +231,7 @@ contract('AccessCondition constructor', (accounts) => {
             const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
-                did: constants.did[0],
+                did: did,
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
@@ -280,7 +280,7 @@ contract('AccessCondition constructor', (accounts) => {
             const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
-                did: constants.did[0],
+                did: did,
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
@@ -327,7 +327,7 @@ contract('AccessCondition constructor', (accounts) => {
             const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
-                did: constants.did[0],
+                did: did,
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],

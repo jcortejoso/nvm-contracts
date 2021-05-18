@@ -27,7 +27,7 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
         accounts = [],
         conditionId = testUtils.generateId(),
         conditionType = constants.address.dummy,
-        did = testUtils.generateId(),
+        didSeed = testUtils.generateId(),
         checksum = testUtils.generateId(),
         value = constants.registry.url,
         deployer = accounts[8],
@@ -55,8 +55,9 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             )
         }
 
+        const did = await didRegistry.hashDID(didSeed, accounts[0])
         if (registerDID) {
-            await didRegistry.registerAttribute(did, checksum, [DIDProvider], value)
+            await didRegistry.registerAttribute(didSeed, checksum, [DIDProvider], value)
         }
 
         return {

@@ -43,7 +43,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
         conditionType = constants.address.dummy,
         rewardAddress = testUtils.generateAccount().address,
         agreementId = testUtils.generateId(),
-        did = testUtils.generateId(),
+        didSeed = testUtils.generateId(),
         checksum = testUtils.generateId(),
         url = constants.registry.url,
         registerDID = false,
@@ -116,9 +116,11 @@ contract('TransferNFT Condition constructor', (accounts) => {
             await didRegistry.setProxyApproval(transferCondition.address, true, { from: owner })
         }
 
+        const did = await didRegistry.hashDID(didSeed, accounts[0])
+
         if (registerDID) {
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, numberNFTs, 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, numberNFTs, 0, constants.activities.GENERATED, '')
             await didRegistry.mint(did, numberNFTs)
             //            await didRegistry.setApprovalForAll(lockNFTCondition.address, true)
         }

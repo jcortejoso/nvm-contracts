@@ -95,10 +95,11 @@ contract('NFT Access integration test', (accounts) => {
         nftAmount = 1,
         timeLockAccess = 0,
         timeOutAccess = 0,
-        did = testUtils.generateId(),
+        didSeed = testUtils.generateId(),
         url = constants.registry.url,
         checksum = constants.bytes32.one
     } = {}) {
+        const did = await didRegistry.hashDID(didSeed, sender)
         // generate IDs from attributes
         const conditionIdNFT = await nftHolderCondition.generateId(agreementId,
             await nftHolderCondition.hashValues(did, receiver, nftAmount))
@@ -120,6 +121,8 @@ contract('NFT Access integration test', (accounts) => {
             agreementId,
             agreement,
             sender,
+            did,
+            didSeed,
             receiver,
             nftAmount,
             timeLockAccess,
@@ -134,11 +137,11 @@ contract('NFT Access integration test', (accounts) => {
             await setupTest()
 
             // prepare: nft agreement
-            const { agreementId, agreement, sender, receiver, nftAmount, checksum, url } = await prepareNFTAccessAgreement({ timeOutAccess: 10 })
+            const { agreementId, didSeed, agreement, sender, receiver, nftAmount, checksum, url } = await prepareNFTAccessAgreement({ timeOutAccess: 10 })
 
             // register DID
             await didRegistry.registerMintableDID(
-                agreement.did, checksum, [], url, 10, 0, constants.activities.GENERATED, '', { from: sender })
+                didSeed, checksum, [], url, 10, 0, constants.activities.GENERATED, '', { from: sender })
 
             // create agreement
             await nftAccessTemplate.createAgreement(agreementId, ...Object.values(agreement))

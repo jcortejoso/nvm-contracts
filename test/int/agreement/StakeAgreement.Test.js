@@ -77,12 +77,13 @@ contract('Stake Agreement integration test', (accounts) => {
         stakePeriod = 5,
         // uses signature as release, could also be hash of secret
         sign = constants.condition.sign.bytes32,
-        did = testUtils.generateId(),
+        didSeed = testUtils.generateId(),
         url = constants.registry.url,
         checksum = constants.bytes32.one
     } = {}) {
         // generate IDs from attributes
 
+        const did = await didRegistry.hashDID(didSeed, accounts[0])
         const conditionIdSign = await signCondition.generateId(agreementId, await signCondition.hashValues(sign.message, sign.publicKey))
         const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
             await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, [stakeAmount], [staker]))
@@ -108,6 +109,7 @@ contract('Stake Agreement integration test', (accounts) => {
         return {
             agreementId,
             did,
+            didSeed,
             agreement,
             stakeAmount,
             staker,
@@ -127,13 +129,13 @@ contract('Stake Agreement integration test', (accounts) => {
             await approveTemplateAccount(owner, alice)
 
             // prepare: stake agreement
-            const { agreementId, did, stakeAmount, staker, stakePeriod, sign, checksum, url, agreement } = await prepareStakeAgreement()
+            const { agreementId, did, didSeed, stakeAmount, staker, stakePeriod, sign, checksum, url, agreement } = await prepareStakeAgreement()
 
             // fill up wallet
             await token.mint(alice, stakeAmount, { from: owner })
 
             // register DID
-            await didRegistry.registerAttribute(agreement.did, checksum, [], url)
+            await didRegistry.registerAttribute(didSeed, checksum, [], url)
 
             // create agreement: as approved account - not for production ;)
             await agreementStoreManager.createAgreement(agreementId, ...Object.values(agreement))

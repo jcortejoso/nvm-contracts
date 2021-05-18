@@ -100,10 +100,11 @@ contract('Dynamic Access Template integration test', (accounts) => {
         nftAmount = 1,
         timeLockAccess = 0,
         timeOutAccess = 0,
-        did = constants.did[0],
+        didSeed = constants.did[0],
         url = constants.registry.url,
         checksum = constants.bytes32.one
     } = {}) {
+        const did = await didRegistry.hashDID(didSeed, receiver)
         // generate IDs from attributes
         const conditionIdAccess = await accessCondition.generateId(agreementId, await accessCondition.hashValues(did, receiver))
         const conditionIdNft = await nftHolderCondition.generateId(agreementId, await nftHolderCondition.hashValues(did, holder, nftAmount))
@@ -121,6 +122,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
         }
         return {
             agreementId,
+            didSeed,
             agreement,
             holder,
             receiver,
@@ -137,12 +139,12 @@ contract('Dynamic Access Template integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, agreement, holder, receiver, nftAmount, checksum, url } = await prepareAgreement()
+            const { agreementId, didSeed, agreement, holder, receiver, nftAmount, checksum, url } = await prepareAgreement()
 
             // register DID
             //            await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
             await didRegistry.registerMintableDID(
-                agreement.did, checksum, [], url, 10, 0, Activities.GENERATED, '', { from: receiver })
+                didSeed, checksum, [], url, 10, 0, Activities.GENERATED, '', { from: receiver })
 
             // Mint and Transfer
             await didRegistry.mint(agreement.did, 10, { from: receiver })
@@ -164,8 +166,9 @@ contract('Dynamic Access Template integration test', (accounts) => {
             await dynamicAccessTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
             // check state of agreement and conditions
+            const _did = await didRegistry.hashDID(constants.did[0], receiver)
             expect((await agreementStoreManager.getAgreement(agreementId)).did)
-                .to.equal(constants.did[0])
+                .to.equal(_did)
 
             const conditionTypes = await dynamicAccessTemplate.getConditionTypes()
             let storedCondition

@@ -100,8 +100,9 @@ contract('DynamicAccessTemplate', (accounts) => {
         sender = accounts[0],
         receiver = accounts[1],
         amount = 1,
-        did = constants.did[0]
+        didSeed = constants.did[0]
     } = {}) {
+        const did = await didRegistry.hashDID(didSeed, sender)
         // construct agreement
         const agreement = {
             did,
@@ -112,13 +113,14 @@ contract('DynamicAccessTemplate', (accounts) => {
         }
         return {
             agreementId,
-            agreement
+            agreement,
+            didSeed
         }
     }
 
     describe('create agreement', () => {
         it('correct create should get data, agreement & conditions', async () => {
-            const { agreementId, agreement } = await prepareAgreement()
+            const { agreementId, agreement, didSeed } = await prepareAgreement()
 
             await assert.isRejected(
                 dynamicAccessTemplate.createAgreement(agreementId, ...Object.values(agreement)),
@@ -136,7 +138,7 @@ contract('DynamicAccessTemplate', (accounts) => {
             )
 
             // register DID
-            await didRegistry.registerAttribute(agreement.did, constants.bytes32.one, [], constants.registry.url)
+            await didRegistry.registerAttribute(didSeed, constants.bytes32.one, [], constants.registry.url)
 
             await assert.isRejected(
                 dynamicAccessTemplate.createAgreement(agreementId, ...Object.values(agreement)),
@@ -154,7 +156,7 @@ contract('DynamicAccessTemplate', (accounts) => {
 
             const eventArgs = testUtils.getEventArgsFromTx(result, 'AgreementCreated')
             expect(eventArgs._agreementId).to.equal(agreementId)
-            expect(eventArgs._did).to.equal(constants.did[0])
+            expect(eventArgs._did).to.equal(agreement.did)
             expect(eventArgs._accessProvider).to.equal(accounts[0])
             expect(eventArgs._accessConsumer).to.equal(agreement.accessConsumer)
 
