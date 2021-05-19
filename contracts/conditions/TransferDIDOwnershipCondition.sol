@@ -77,7 +77,7 @@ contract TransferDIDOwnershipCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_did, _receiver));
+        return keccak256(abi.encode(_did, _receiver));
     }
 
    /**

@@ -15,10 +15,10 @@ const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('TemplateStoreManager', (accounts) => {
-    let common
-    let templateStoreLibrary
-    let templateStoreManager
-    let templateId
+    let common,
+        templateStoreLibrary,
+        templateStoreManager,
+        templateId
 
     beforeEach(async () => {
         await setupTest()

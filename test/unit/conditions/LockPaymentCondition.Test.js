@@ -107,7 +107,9 @@ contract('LockPaymentCondition', (accounts) => {
     describe('fulfill condition', () => {
         it('ERC20: should fulfill if conditions exist and everything is okay', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[3]
             const sender = accounts[0]
             const amounts = [10]
@@ -115,7 +117,7 @@ contract('LockPaymentCondition', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
 
             const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
             const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
@@ -153,7 +155,9 @@ contract('LockPaymentCondition', (accounts) => {
 
         it('ETH: should fulfill if conditions exist and everything is okay', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const totalAmount = 100000000000
             const rewardAddress = accounts[3]
             const sender = accounts[0]
@@ -162,7 +166,7 @@ contract('LockPaymentCondition', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amounts[0], 10, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 10, constants.activities.GENERATED, '')
 
             const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, constants.address.zero, amounts, receivers)
             const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
@@ -204,7 +208,9 @@ contract('LockPaymentCondition', (accounts) => {
     describe('fulfill non existing condition', () => {
         it('should not fulfill if DID do not exist', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[3]
             const sender = accounts[0]
             const amounts = [10]
@@ -221,14 +227,16 @@ contract('LockPaymentCondition', (accounts) => {
 
         it('should not fulfill if conditions do not exist', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[3]
             const sender = accounts[0]
             const amounts = [10]
             const receivers = [accounts[1]]
 
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
 
             await token.mint(sender, 10, { from: owner })
             await token.approve(lockPaymentCondition.address, 10, { from: sender })
@@ -241,14 +249,16 @@ contract('LockPaymentCondition', (accounts) => {
 
         it('out of balance should fail to fulfill if conditions exist', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[3]
             const sender = accounts[0]
             const amounts = [10]
             const receivers = [accounts[1]]
 
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
 
             await token.mint(sender, 5, { from: owner })
             await token.approve(lockPaymentCondition.address, 5, { from: sender })
@@ -268,14 +278,16 @@ contract('LockPaymentCondition', (accounts) => {
 
         it('different number of amounts and receivers', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[3]
             const sender = accounts[0]
             const amounts = [10, 23]
             const receivers = [accounts[1]]
 
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
 
             await token.mint(sender, 500, { from: owner })
             await token.approve(lockPaymentCondition.address, 500, { from: sender })
@@ -295,14 +307,16 @@ contract('LockPaymentCondition', (accounts) => {
 
         it('right transfer should fail to fulfill if conditions already fulfilled', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[3]
             const sender = accounts[0]
             const amounts = [10]
             const receivers = [accounts[1]]
 
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
 
             await token.mint(sender, 10, { from: owner })
             await token.approve(lockPaymentCondition.address, 10, { from: sender })
@@ -336,14 +350,16 @@ contract('LockPaymentCondition', (accounts) => {
 
         it('should fail to fulfill if conditions has different type ref', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[3]
             const sender = accounts[0]
             const amounts = [10]
             const receivers = [accounts[1]]
 
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
 
             const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
             const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
@@ -370,14 +386,16 @@ contract('LockPaymentCondition', (accounts) => {
 
         it('should fail if royalties fail', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[3]
             const amounts = [10]
             const receivers = [accounts[1]]
 
             // register DID
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
 
             await didRegistry.transferDIDOwnership(did, accounts[4])
 
@@ -396,7 +414,9 @@ contract('LockPaymentCondition', (accounts) => {
 
         it('should succeed with royalties', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
             const rewardAddress = accounts[3]
             const current = accounts[4]
             const amounts = [10, 10]
@@ -404,7 +424,7 @@ contract('LockPaymentCondition', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amounts[0], 50, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 50, constants.activities.GENERATED, '')
 
             await didRegistry.transferDIDOwnership(did, current)
 

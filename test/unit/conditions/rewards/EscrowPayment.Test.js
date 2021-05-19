@@ -241,16 +241,17 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
         })
 
         it('ETH: should fulfill if conditions exist for account address', async () => {
-            const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
-            const totalAmount = 500000000000
             const sender = accounts[0]
+            const agreementId = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+            const totalAmount = 500000000000
             const amounts = [totalAmount]
             const receivers = [accounts[1]]
 
             // register DID
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
 
             const hashValuesLock = await lockPaymentCondition.hashValues(
                 did, escrowPayment.address, constants.address.zero, amounts, receivers)
@@ -344,7 +345,8 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
 
         it('ETH: fail if escrow is receiver', async () => {
             const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
             const totalAmount = 500000000000
             const sender = accounts[0]
             const amounts = [totalAmount]
@@ -352,7 +354,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
 
             const hashValuesLock = await lockPaymentCondition.hashValues(
                 did, escrowPayment.address, constants.address.zero, amounts, receivers)

@@ -11,7 +11,7 @@ contract DIDRegistryChangeFunctionSignature is DIDFactory {
 
     // swap _checksum with _did
     function registerAttribute (
-        bytes32 _did,
+        bytes32 _didSeed,
         address[] memory _providers,
         bytes32 _checksum,
         string memory _url
@@ -19,6 +19,7 @@ contract DIDRegistryChangeFunctionSignature is DIDFactory {
         public
         returns (uint size)
     {
+        bytes32 _did = hashDID(_didSeed, msg.sender);
         require(
             didRegisterList.didRegisters[_did].owner == address(0x0) ||
             didRegisterList.didRegisters[_did].owner == msg.sender,

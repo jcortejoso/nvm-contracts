@@ -5,7 +5,6 @@ const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
-const constants = require('../helpers/constants.js')
 const testUtils = require('../helpers/utils.js')
 
 const {
@@ -36,16 +35,17 @@ contract('DIDRegistry', (accounts) => {
     const verbose = true
 
     async function setupTest({
-        did = constants.did[0],
+        didSeed = testUtils.generateId(),
         checksum = testUtils.generateId(),
         value = 'https://nevermined.io/did/test.txt'
     } = {}) {
         //        const didRegistryLibrary = await DIDRegistryLibrary.new()
         //        await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
-        const DIDRegistryInstance = await DIDRegistry.at(DIDRegistryProxyAddress)
 
+        const DIDRegistryInstance = await DIDRegistry.at(DIDRegistryProxyAddress)
+        const did = await DIDRegistryInstance.hashDID(didSeed, didOwner)
         const result = await DIDRegistryInstance.registerAttribute(
-            did, checksum, [], value,
+            didSeed, checksum, [], value,
             { from: didOwner }
         )
         // some quick checks
@@ -59,7 +59,7 @@ contract('DIDRegistry', (accounts) => {
         assert.strictEqual(checksum, payload._checksum)
         assert.strictEqual(value, payload._value)
 
-        return { did, checksum, value }
+        return { did, didSeed, checksum, value }
     }
 
     describe('Test upgradability for DIDRegistry [ @skip-on-coverage ]', () => {
@@ -101,11 +101,12 @@ contract('DIDRegistry', (accounts) => {
             )
 
             // check functionality works
-            const newDid = constants.did[1]
+            const newDidSeed = testUtils.generateId()
+            const newDid = await DIDRegistryWithBugInstance.hashDID(newDidSeed, didOwner)
             const newChecksum = testUtils.generateId()
             const newValue = 'https://example.com/newdid/ocean/test.txt'
             const result = await DIDRegistryWithBugInstance.registerAttribute(
-                newChecksum, newDid, [], newValue,
+                newChecksum, newDidSeed, [], newValue,
                 { from: didOwner }
             )
 
@@ -144,13 +145,15 @@ contract('DIDRegistry', (accounts) => {
                             await DIDRegistryChangeFunctionSignature.at(DIDRegistryProxyAddress)
 
             // check functionality works
-            const newDid = constants.did[1]
+
             const newChecksum = testUtils.generateId()
-            const newValue = 'https://example.com/newdid/ocean/test.txt'
+            const newDidSeed = testUtils.generateId()
+            const newDid = await DIDRegistryChangeFunctionSignatureInstance.hashDID(newDidSeed, didOwner)
+            const newValue = 'https://example.com/newdid/test.txt'
 
             // act
             const result = await DIDRegistryChangeFunctionSignatureInstance.registerAttribute(
-                newDid, [], newChecksum, newValue,
+                newDidSeed, [], newChecksum, newValue,
                 { from: didOwner }
             )
 
@@ -224,13 +227,15 @@ contract('DIDRegistry', (accounts) => {
             )
 
             // check functionality works
-            const newDid = constants.did[1]
+            const didSeed = testUtils.generateId()
+            const newDid = await DIDRegistryChangeInStorageAndLogicInstance.hashDID(didSeed, didOwner)
+
             const newChecksum = testUtils.generateId()
-            const newValue = 'https://example.com/newdid/ocean/test.txt'
+            const newValue = 'https://example.com/newdid/test.txt'
 
             // act
             const result = await DIDRegistryChangeInStorageAndLogicInstance.registerAttribute(
-                newDid, [], newChecksum, newValue,
+                didSeed, [], newChecksum, newValue,
                 { from: didOwner }
             )
 

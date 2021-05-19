@@ -44,7 +44,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
      * @dev The first attribute of a DID registered sets the DID owner.
      *      Subsequent updates record _checksum and update info.
      *
-     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _didSeed refers to decentralized identifier seed (a bytes32 length ID).
      * @param _checksum includes a one-way HASH calculated using the DDO content.
      * @param _providers list of addresses that can act as an asset provider     
      * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
@@ -55,7 +55,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
      * @return size refers to the size of the registry after the register action.
      */
     function registerMintableDID(
-        bytes32 _did,
+        bytes32 _didSeed,
         bytes32 _checksum,
         address[] memory _providers,
         string memory _url,
@@ -68,8 +68,13 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
     onlyValidAttributes(_attributes)
     returns (uint size)
     {
-        uint result = registerDID(_did, _checksum, _providers, _url, _activityId, _attributes);
-        enableAndMintDidNft(_did, _cap, _royalties, false);
+        uint result = registerDID(_didSeed, _checksum, _providers, _url, _activityId, _attributes);
+        enableAndMintDidNft(
+            hashDID(_didSeed, msg.sender), 
+            _cap, 
+            _royalties, 
+            false
+        );
         return result;
     }
 
@@ -103,7 +108,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
         }
         
         return super.used(
-            keccak256(abi.encodePacked(_did, _cap, _royalties, msg.sender)),
+            keccak256(abi.encode(_did, _cap, _royalties, msg.sender)),
             _did, msg.sender, keccak256('enableNft'), '', 'nft initialization');
     }
     
@@ -134,7 +139,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
         didRegisterList.didRegisters[_did].nftSupply = didRegisterList.didRegisters[_did].nftSupply.add(_amount);
         
         super.used(
-            keccak256(abi.encodePacked(_did, msg.sender, 'mint', _amount, block.number)),
+            keccak256(abi.encode(_did, msg.sender, 'mint', _amount, block.number)),
             _did, msg.sender, keccak256('mint'), '', 'mint');
 
         super._mint(msg.sender, uint256(_did), _amount, '');
@@ -162,7 +167,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
         didRegisterList.didRegisters[_did].nftSupply -= _amount;
 
         super.used(
-            keccak256(abi.encodePacked(_did, msg.sender, 'burn', _amount, block.number)),
+            keccak256(abi.encode(_did, msg.sender, 'burn', _amount, block.number)),
             _did, msg.sender, keccak256('burn'), '', 'burn');
     }
     

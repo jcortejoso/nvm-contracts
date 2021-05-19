@@ -56,7 +56,7 @@ contract SignCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(_message, _publicKey));
+        return keccak256(abi.encode(_message, _publicKey));
     }
 
    /**

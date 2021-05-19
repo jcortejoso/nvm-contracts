@@ -53,7 +53,9 @@ contract('NFTHolderCondition', (accounts) => {
 
     describe('fulfill existing condition', () => {
         it('should fulfill if conditions exist for account address', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
+
             const checksum = testUtils.generateId()
             const agreementId = testUtils.generateId()
             const holderAddress = accounts[2]
@@ -67,7 +69,7 @@ contract('NFTHolderCondition', (accounts) => {
                 nftHolderCondition.address)
 
             await didRegistry.registerMintableDID(
-                did, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
+                didSeed, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
 
             await didRegistry.safeTransferFrom(
@@ -89,14 +91,16 @@ contract('NFTHolderCondition', (accounts) => {
 
     describe('fulfill non existing condition', () => {
         it('should not fulfill if conditions do not exist', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
+
             const checksum = testUtils.generateId()
             const agreementId = testUtils.generateId()
             const holderAddress = accounts[2]
             const amount = 10
 
             await didRegistry.registerMintableDID(
-                did, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
+                didSeed, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
 
             await didRegistry.safeTransferFrom(
@@ -111,7 +115,9 @@ contract('NFTHolderCondition', (accounts) => {
 
     describe('fail to fulfill existing condition', () => {
         it('out of balance should fail to fulfill if conditions exist', async () => {
-            const did = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
+
             const checksum = testUtils.generateId()
             const agreementId = testUtils.generateId()
             const holderAddress = accounts[2]
@@ -125,7 +131,7 @@ contract('NFTHolderCondition', (accounts) => {
                 nftHolderCondition.address)
 
             await didRegistry.registerMintableDID(
-                did, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
+                didSeed, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
 
             await didRegistry.safeTransferFrom(

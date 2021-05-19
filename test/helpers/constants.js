@@ -37,8 +37,8 @@ const constants = {
         },
         hashlock: {
             string: {
-                preimage: 'oceanprotocol',
-                keccak: '0x59121d7fa7841527fcd5769dfc19998cbc47fdb534f6355db06ce6f563e80af4'
+                preimage: 'nevermined',
+                keccak: '0x1734045ee6ecea753a25290b88f25af70846dd5d6b7065c7fc7f1f8782feae2d'
             },
             uint: {
                 preimage: 420,

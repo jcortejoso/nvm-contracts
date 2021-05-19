@@ -132,6 +132,11 @@ contract('HashLockCondition constructor', (accounts) => {
             await conditionStoreManager.createCondition(
                 conditionId,
                 hashLockCondition.address)
+            await hashLockCondition.hashValues(
+                constants.condition.hashlock.string.preimage
+            )
+            // DEV: Uncomment in case you need to update the preimage variable
+            // console.log('Hash of preImage: ' + _hash)
 
             await hashLockCondition.methods['fulfill(bytes32,string)'](
                 agreementId,

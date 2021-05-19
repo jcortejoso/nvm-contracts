@@ -31,7 +31,7 @@ contract HashListLibraryProxy is OwnableUpgradeable {
         pure
         returns(bytes32)
     {
-        return keccak256(abi.encodePacked(_address));
+        return keccak256(abi.encode(_address));
     }
         
     function add(

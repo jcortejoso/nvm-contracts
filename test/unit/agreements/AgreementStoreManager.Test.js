@@ -83,9 +83,10 @@ contract('AgreementStoreManager', (accounts) => {
     }
 
     async function registerNewDID() {
-        const newDid = testUtils.generateId()
-        await didRegistry.registerAttribute(newDid, checksum, providers, value)
-        return newDid
+        const didSeed = testUtils.generateId()
+        const did = await didRegistry.hashDID(didSeed, accounts[0])
+        await didRegistry.registerAttribute(didSeed, checksum, providers, value)
+        return did
     }
 
     describe('deploy and setup', () => {

@@ -31,7 +31,8 @@ const testUtils = require('../../helpers/utils.js')
 contract('End to End NFT Scenarios', (accounts) => {
     const royalties = 10 // 10% of royalties in the secondary market
     const cappedAmount = 5
-    const did = testUtils.generateId()
+    const didSeed = testUtils.generateId()
+    let did
     const agreementId = testUtils.generateId()
     const agreementAccessId = testUtils.generateId()
     const agreementId2 = testUtils.generateId()
@@ -248,8 +249,10 @@ contract('End to End NFT Scenarios', (accounts) => {
         it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
             const { didRegistry } = await setupTest()
 
+            did = await didRegistry.hashDID(didSeed, artist)
+
             await didRegistry.registerMintableDID(
-                did, checksum, [], url, cappedAmount, royalties, constants.activities.GENERATED, '', { from: artist })
+                didSeed, checksum, [], url, cappedAmount, royalties, constants.activities.GENERATED, '', { from: artist })
             await didRegistry.mint(did, 5, { from: artist })
             await didRegistry.setApprovalForAll(transferCondition.address, true, { from: artist })
 

@@ -96,10 +96,10 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             'Amounts and Receivers arguments have wrong length'
         );
         return keccak256(
-            abi.encodePacked(
+            abi.encode(
                 _did,
-                keccak256(abi.encodePacked(_amounts)),
-                keccak256(abi.encodePacked(_receivers)),
+                _amounts,
+                _receivers,
                 _lockPaymentAddress, 
                 _tokenAddress,
                 _lockCondition,
@@ -171,7 +171,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
     {
 
         require(keccak256(
-            abi.encodePacked(
+            abi.encode(
                 _agreementId,
                 conditionStoreManager.getConditionTypeRef(_lockCondition),
                 hashValuesLockPayment(_did, _lockPaymentAddress, _tokenAddress, _amounts, _receivers)

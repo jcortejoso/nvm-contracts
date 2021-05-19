@@ -49,7 +49,7 @@ contract HashLists is OwnableUpgradeable, IList {
         pure
         returns(bytes32)
     {
-        return keccak256(abi.encodePacked(account));
+        return keccak256(abi.encode(account));
     }
     
     /**

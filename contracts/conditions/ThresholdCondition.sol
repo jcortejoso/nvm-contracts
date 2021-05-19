@@ -64,7 +64,7 @@ contract ThresholdCondition is Condition {
         returns (bytes32)
     {
         return keccak256(
-            abi.encodePacked(
+            abi.encode(
                 inputConditions, 
                 threshold
             )
