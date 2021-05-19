@@ -92,7 +92,8 @@ contract('TemplateStoreManager', (accounts) => {
         it('should not approve if not createRole', async () => {
             await templateStoreManager.proposeTemplate(templateId)
             await assert.isRejected(
-                templateStoreManager.approveTemplate(templateId, { from: accounts[1] })
+                templateStoreManager.approveTemplate(templateId, { from: accounts[1] }),
+                constants.error.revert
             )
         })
     })
