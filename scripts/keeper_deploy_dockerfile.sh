@@ -28,7 +28,7 @@ then
       curl --data '{"method":"web3_clientVersion","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
 
     # remove ready flag if we deploy contracts
-    rm -f /nevermined-contracts/artifacts/ready
+    rm -f /nevermined-contracts/artifacts/*
 
     npm run clean
     npm run compile
