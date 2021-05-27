@@ -1,7 +1,7 @@
 require('ts-node/register')
 
-const HDWalletProvider = require('truffle-hdwallet-provider')
-const NonceTrackerSubprovider = require('web3-provider-engine/subproviders/nonce-tracker')
+const HDWalletProvider = require('@truffle/hdwallet-provider')
+const NonceTrackerSubprovider = require('@trufflesuite/web3-provider-engine/subproviders/nonce-tracker.js')
 const utils = require('web3-utils')
 
 const rpcHost = process.env.KEEPER_RPC_HOST
@@ -18,11 +18,14 @@ const setupWallet = (
     url
 ) => {
     if (!hdWalletProvider) {
-        hdWalletProvider = new HDWalletProvider(
-            MNEMONIC,
-            url,
-            hdWalletStartIndex,
-            hdWalletAccounts)
+        hdWalletProvider = new HDWalletProvider({
+            mnemonic: MNEMONIC,
+            providerOrUrl: url,
+            addressIndex: hdWalletStartIndex,
+            numberOfAddresses: hdWalletAccounts,
+            shareNonce: false
+        })
+
         hdWalletProvider.engine.addProvider(new NonceTrackerSubprovider())
     }
     return hdWalletProvider
@@ -83,6 +86,22 @@ module.exports = {
             ),
             network_id: 0x4, // 4
             from: '0x73943d14131268F23b721E668911bCDDEcA9da62'
+        },
+        // alfajores the celo testnet
+        'celo-alfajores': {
+            provider: () => setupWallet(
+                url || 'https://alfajores-forno.celo-testnet.org'
+            ),
+            network_id: 44787,
+            from: '0x4747eAb1698a5c72DC3fD07A3074B2E1795D7294'
+        },
+        // baklava the celo testnet
+        'celo-baklava': {
+            provider: () => setupWallet(
+                url || 'https://baklava-forno.celo-testnet.org'
+            ),
+            network_id: 62320,
+            from: '0x4747eAb1698a5c72DC3fD07A3074B2E1795D7294'
         },
         // Polygon Networks: https://docs.matic.network/docs/develop/network-details/network/
         // Polygon: mumbai testnet
