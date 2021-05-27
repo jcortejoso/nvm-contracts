@@ -10,7 +10,6 @@ The steps to build a new version are the following:
   - To bump the minor version: `./bumpversion.sh minor`
   - To bump the major version: `./bumpversion.sh major`
 - assuming we are on version `v0.2.4` and the desired version is `v0.2.5` `./bumpversion.sh patch` has to be run.
-- run `npm i` to update the version in `package-lock.json`
 
 ## Interact with networks
 
@@ -46,8 +45,8 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 
 ### Deploy & Upgrade
 
-- run `npm run clean` to clean the work dir.
-- run `npm run compile` to compile the contracts.
+- run `yarn clean` to clean the work dir.
+- run `yarn compile` to compile the contracts.
 
 #### Rinkeby (Testnet)
 
@@ -57,19 +56,19 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 
 ##### Deploy the whole application
 
-- To deploy all contracts run `npm run deploy:rinkeby`
+- To deploy all contracts run `yarn deploy:rinkeby`
 
 ##### Deploy a single contracts
 
-- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:rinkeby -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `yarn deploy:rinkeby -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
-- To upgrade all contracts run `npm run upgrade:rinkeby`
+- To upgrade all contracts run `yarn upgrade:rinkeby`
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:rinkeby -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
+- To upgrade a single contract run `yarn upgrade:rinkeby -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
 
 ##### Persist artifacts
 
@@ -83,19 +82,19 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 
 ##### Deploy the whole application
 
-- To deploy all contracts run `npm run deploy:mumbai`
+- To deploy all contracts run `yarn deploy:mumbai`
 
 ##### Deploy a single contracts
 
-- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:mumbai -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
+- To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script: ie. `yarn deploy:mumbai -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
-- To upgrade all contracts run `npm run upgrade:mumbai`
+- To upgrade all contracts run `yarn upgrade:mumbai`
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:mumbai -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
+- To upgrade a single contract run `yarn upgrade:mumbai -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
 
 ##### Persist artifacts
 
@@ -110,19 +109,19 @@ One instance of the multi sig wallet, defined as `owner`. This wallet will be as
 
 ##### Deploy the whole application
 
-- To deploy all the contracts run `npm run deploy:kovan`
+- To deploy all the contracts run `yarn deploy:kovan`
 
 ##### Deploy a single contracts
 
-- To deploy a single contracts you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:kovan -- NeverminedToken Dispenser` will deploy `NeverminedToken` and `Dispenser`.
+- To deploy a single contracts you need to specify the contracts to deploy as a parameter to the deploy script: ie. `yarn deploy:kovan -- NeverminedToken Dispenser` will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
-- To upgrade all contracts run `npm run upgrade:kovan`
+- To upgrade all contracts run `yarn upgrade:kovan`
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:kovan -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
+- To upgrade a single contract run `yarn upgrade:kovan -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
 
 ##### Persist artifacts
 
@@ -200,7 +199,7 @@ changes about the new version (in the future, these will come from the changelog
 
 ## Audit
 
-To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:rinkeby`
+To check or document that all transactions have been approved in the multi sig wallet you can run `yarn audit:rinkeby`
 to get a list of all the current transactions and their current status.
 
 ```text

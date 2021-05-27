@@ -29,8 +29,8 @@ This package uses [Semantic Versioning](https://semver.org/), so if you are test
 If you need to build a local version of the package you need to run the following commands:
 
 ```bash
-npm install
-npm run build
+yarn
+yarn build
 ```
 
 If you need to release a new version of the library before tagging, you need to execute the following command:
