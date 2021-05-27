@@ -87,9 +87,9 @@ The following configuration should be an example for `wallets-<NETWORK_NAME>.jso
 
 The following commands clean, install dependencies and compile the contracts:
 ```console
-$ npm run clean #to clean the work dir
-$ npm i #install dependencies
-$ npm run compile #to compile the contracts
+$ yarn clean #to clean the work dir
+$ yarn #install dependencies
+$ yarn compile #to compile the contracts
 ```
 
 ### 3. Deploy & Upgrade
@@ -103,20 +103,20 @@ The following steps shows how to perform contracts deployment and upgrade on `Ri
 
 ##### Deploy the whole application
 
-- To deploy all contracts run `npm run deploy:rinkeby`
+- To deploy all contracts run `yarn deploy:rinkeby`
 
 ##### Deploy a single contracts
 
 - To deploy a single contract you need to specify the contracts to deploy as a parameter to the deploy script:
-  ie. `npm run deploy:rinkeby -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
+  ie. `yarn deploy:rinkeby -- NeverminedToken Dispenser`will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
-- To upgrade all contracts run `npm run upgrade:rinkeby`
+- To upgrade all contracts run `yarn upgrade:rinkeby`
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:rinkeby -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
+- To upgrade a single contract run `yarn upgrade:rinkeby -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
 
 ##### Persist artifacts
 
@@ -130,19 +130,19 @@ The following steps shows how to perform contracts deployment and upgrade on `Ri
 
 ##### Deploy the whole application
 
-- To deploy all the contracts run `npm run deploy:kovan`
+- To deploy all the contracts run `yarn deploy:kovan`
 
 ##### Deploy a single contracts
 
-- To deploy a single contracts you need to specify the contracts to deploy as a parameter to the deploy script: ie. `npm run deploy:kovan -- NeverminedToken Dispenser` will deploy `NeverminedToken` and `Dispenser`.
+- To deploy a single contracts you need to specify the contracts to deploy as a parameter to the deploy script: ie. `yarn deploy:kovan -- NeverminedToken Dispenser` will deploy `NeverminedToken` and `Dispenser`.
 
 ##### Upgrade the whole application
 
-- To upgrade all contracts run `npm run upgrade:kovan`
+- To upgrade all contracts run `yarn upgrade:kovan`
 
 ##### Upgrade a single contract
 
-- To upgrade a single contract run `npm run upgrade:kovan -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
+- To upgrade a single contract run `yarn upgrade:kovan -- NeverminedToken`. For upgrading the `NeverminedToken` contract.
 
 ##### Persist artifacts
 
@@ -164,7 +164,7 @@ All upgrades of the contracts have to be approved by the `upgrader` wallet confi
 
 ### 5. Audit Contracts
 
-To check or document that all transactions have been approved in the multi sig wallet you can run `npm run audit:rinkeby` to get a list of all the current transactions and their current status.
+To check or document that all transactions have been approved in the multi sig wallet you can run `yarn audit:rinkeby` to get a list of all the current transactions and their current status.
 
 ```text
  Wallet: 0x24EB26D4042a2AB576E7E39b87c3f33f276AeF92
