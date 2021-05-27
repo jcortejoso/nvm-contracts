@@ -88,20 +88,20 @@ module.exports = {
             from: '0x73943d14131268F23b721E668911bCDDEcA9da62'
         },
         // alfajores the celo testnet
-        "celo-alfajores": {
+        'celo-alfajores': {
             provider: () => setupWallet(
-                 url ||`https://alfajores-forno.celo-testnet.org`
+                url || 'https://alfajores-forno.celo-testnet.org'
             ),
             network_id: 44787,
-            from: "0x4747eAb1698a5c72DC3fD07A3074B2E1795D7294"
+            from: '0x4747eAb1698a5c72DC3fD07A3074B2E1795D7294'
         },
         // baklava the celo testnet
-        "celo-baklava": {
+        'celo-baklava': {
             provider: () => setupWallet(
-                url || `https://baklava-forno.celo-testnet.org`
+                url || 'https://baklava-forno.celo-testnet.org'
             ),
             network_id: 62320,
-            from: "0x4747eAb1698a5c72DC3fD07A3074B2E1795D7294"
+            from: '0x4747eAb1698a5c72DC3fD07A3074B2E1795D7294'
         },
         // Polygon Networks: https://docs.matic.network/docs/develop/network-details/network/
         // Polygon: mumbai testnet
