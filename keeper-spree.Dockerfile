@@ -1,4 +1,4 @@
-FROM openethereum/openethereum:v3.1.0 as openethereum
+FROM openethereum/openethereum:v3.2.6 as openethereum
 
 COPY networks/spree/config /home/openethereum/config
 COPY networks/spree/authorities/validator0.json /home/openethereum/.local/keys/spree/validator.json
