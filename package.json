@@ -1,6 +1,6 @@
 {
   "name": "@nevermined-io/contracts",
-  "version": "1.0.0-rc8",
+  "version": "1.0.0",
   "description": "Nevermined implementation of Nevermined in Solidity",
   "bugs": {
     "url": "https://github.com/nevermined-io/contracts/issues"
@@ -90,7 +90,7 @@
     "solhint": "^3.2.0",
     "truffle": "^5.1.56",
     "@truffle/contract": "~4.3.1",
-    "@truffle/hdwallet-provider": "~1.2.0",
+    "@truffle/hdwallet-provider": "~1.4.0",
     "truffle-typings": "^1.0.8",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5",
