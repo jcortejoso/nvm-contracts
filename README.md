@@ -119,6 +119,40 @@ yarn lint
 
 ### Testnets
 
+The contract addresses deployed on Nevermined `Alfajores` Test Network:
+
+#### Alfajores Testnet
+
+| Contract                          | Version | Address                                      |
+|-----------------------------------|---------|----------------------------------------------|
+| AccessCondition                   | v1.0.0 | `0x81b5764e3A79b195bfe6887B18e232b17e22d356` |
+| AccessTemplate                    | v1.0.0 | `0x1fF6fBf77cc417674462A356905C033cc5a5dc97` |
+| AgreementStoreManager             | v1.0.0 | `0x5Ab356eCeF4f1041Eefb13A66118b0ddCeD9E544` |
+| ComputeExecutionCondition         | v1.0.0 | `0x9F0f6AA800199323D8894f03ac4dA8Eea62Fe882` |
+| ConditionStoreManager             | v1.0.0 | `0x7d30e7462351d3287DF51280f4954585a5BaF952` |
+| DIDRegistry                       | v1.0.0 | `0xb5E59f4BaCDC5cBb5ace97e37DD4b34A718Befbe` |
+| DIDRegistryLibrary                | v1.0.0 | `0xf3b4547dD0f2475400121C7595c18172b40B50F0` |
+| DIDSalesTemplate                  | v1.0.0 | `0x50D5c496e35b9A8f2aE42a6430e198DdB644Db53` |
+| Dispenser                         | v1.0.0 | `0x611A767a6aD5EFfF3F9824CFa83d5BCdD1b0eE29` |
+| EpochLibrary                      | v1.0.0 | `0xfFfa1141156fEE5ad3E0a1cA7f7D0aD1454FE7e8` |
+| EscrowComputeExecutionTemplate    | v1.0.0 | `0xe183896ecF5864c25cfEedCF66a6D09259D89408` |
+| EscrowPaymentCondition            | v1.0.0 | `0xaC79aC52b944B0b3058A12d8E29141E58A15c668` |
+| HashLockCondition                 | v1.0.0 | `0xF2d2885343076e7B5BA5344F4603c15C412Db6eB` |
+| LockPaymentCondition              | v1.0.0 | `0x8721df21E964d8ff10a69C60eef6Da46B003e67A` |
+| NFTAccessCondition                | v1.0.0 | `0xed33f04A3a4Afdb263359f9D45fd235709Ce4577` |
+| NFTAccessTemplate                 | v1.0.0 | `0xA6342881e0A93485e8819e5BeDfb062be25c451f` |
+| NFTHolderCondition                | v1.0.0 | `0x209D112C4D1a0dfD10E2A900049ba46C03d8E139` |
+| NFTLockCondition                  | v1.0.0 | `0x59FD917C0D8eE2D861828bFdc460f6c47A5214B5` |
+| NFTSalesTemplate                  | v1.0.0 | `0xb55fF4Ed2001D006AC687793938ED68eD55BE96F` |
+| NeverminedToken                   | v1.0.0 | `0x697881320067572788FC29e16ae6d635970C3bc5` |
+| SignCondition                     | v1.0.0 | `0xf94D02a89ceB8f0013292782902937D3a2F8C25B` |
+| TemplateStoreManager              | v1.0.0 | `0x14787AC28C7B6dCC4B856abd4E7Dee555B0170ab` |
+| ThresholdCondition                | v1.0.0 | `0x47589D3f675037F4Ff174ceb40577743bCFd622d` |
+| TransferDIDOwnershipCondition     | v1.0.0 | `0x52d2D0529EEDECE81aD381b21d860D54F55Da1dc` |
+| TransferNFTCondition              | v1.0.0 | `0x6479Bc5ff22C66ac50641460dE90CD52d0118274` |
+| WhitelistingCondition             | v1.0.0 | `0xAD1DD4D63aA874f677FD8Eafc227bEd81DD93834` |
+
+
 #### Bakalva Testnet
 
 The contract addresses deployed on Nevermined `Baklava` Test Network:
