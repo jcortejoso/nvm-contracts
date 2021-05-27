@@ -10,10 +10,10 @@ then
     # remove ready flag if we deploy contracts
     rm -f /nevermined-contracts/artifacts/ready
 
-    npm run clean
-    npm run compile
+    yarn clean
+    yarn compile
     export NETWORK="${NETWORK_NAME:-development}"
-    npm run deploy:${NETWORK}
+    yarn deploy:${NETWORK}
 
     # set flag to indicate contracts are ready
     touch /nevermined-contracts/artifacts/ready
