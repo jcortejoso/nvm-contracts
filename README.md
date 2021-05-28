@@ -16,24 +16,30 @@
 Table of Contents
 =================
 
-   * [Nevermined Smart Contracts](#nevermined-smart-contracts)
-      * [Table of Contents](#table-of-contents)
-      * [Get Started](#get-started)
-         * [Docker](#docker)
-         * [Local development](#local-development)
-      * [Testing](#testing)
-         * [Code Linting](#code-linting)
-      * [Networks](#networks)
-         * [Testnets](#testnets)
+* [Nevermined Smart Contracts](#nevermined-smart-contracts)
+* [Table of Contents](#table-of-contents)
+    * [Get Started](#get-started)
+        * [Docker](#docker)
+        * [Local development](#local-development)
+    * [Testing](#testing)
+        * [Code Linting](#code-linting)
+    * [Networks](#networks)
+        * [Testnets](#testnets)
+            * [Alfajores (Celo) Testnet](#alfajores-celo-testnet)
+            * [Bakalva (Celo) Testnet](#bakalva-celo-testnet)
+            * [Rinkeby (Ethereum) Testnet](#rinkeby-ethereum-testnet)
+            * [Mumbai (Polygon) Testnet](#mumbai-polygon-testnet)
             * [Integration Testnet](#integration-testnet)
             * [Staging Testnet](#staging-testnet)
-         * [Mainnets](#mainnets)
-         * [Production Mainnet](#production-mainnet)
-      * [Packages](#packages)
-      * [Documentation](#documentation)
-      * [Prior Art](#prior-art)
-      * [Attribution](#attribution)
-      * [License](#license)
+        * [Mainnets](#mainnets)
+        * [Production Mainnet](#production-mainnet)
+    * [Packages](#packages)
+    * [Documentation](#documentation)
+    * [Prior Art](#prior-art)
+    * [Attribution](#attribution)
+    * [License](#license)
+
+
 
 
 ---
@@ -295,7 +301,7 @@ The packages provided currently are:
   to be imported from your `JavaScript` code.
 * Python `Pypi` package - The [Pypi nevermined-contracts package](https://pypi.org/project/nevermined-contracts/) provides
   the same ABI's to be used from `Python`.
-* Java `Maven` package - The [Maven nevermined-contracts package](https://search.maven.org/artifact/io.keyko/nevermined-contracts)
+* Java `Maven` package - The [Maven nevermined-contracts package](https://search.maven.org/artifact/io.keyko.nevermined/contracts)
   provides the same ABI's to be used from `Java`.
 
 The packages contains all the content from the `doc/` and `artifacts/` folders.
