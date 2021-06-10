@@ -34,6 +34,7 @@
     "upgrade:production": "export NETWORK=production&&npm run upgrade -- --network production",
     "test": "truffle test",
     "test:unit": "truffle test $(find ./test/unit -name '*.*s')",
+    "test:collateral": "truffle test ./test/int/nft/NFT_Collateral_Aave.js",
     "test:integration": "truffle test $(find ./test/int -name '*.*s')",
     "test:fast": "truffle test $(find ./test/unit -name '*.*s') $(find ./test/int -name '*.*s')",
     "test:upgrade": "truffle test $(find ./test/upgrade -name '*.*s')",
