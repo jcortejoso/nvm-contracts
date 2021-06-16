@@ -23,6 +23,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
     const createRole = accounts[0]
     const owner = accounts[1]
     const numberNFTs = 2 // NFTs
+    const mintCap = 10
     const paymentAmounts = [10]
     const paymentReceivers = [accounts[3]]
     const other = accounts[4]
@@ -121,9 +122,8 @@ contract('TransferNFT Condition constructor', (accounts) => {
 
         if (registerDID) {
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, numberNFTs, 0, constants.activities.GENERATED, '')
-            await didRegistry.mint(did, numberNFTs)
-            //            await didRegistry.setApprovalForAll(lockNFTCondition.address, true)
+                didSeed, checksum, [], url, mintCap, 0, constants.activities.GENERATED, '')
+            await didRegistry.mint(did, mintCap)
         }
 
         return {
@@ -389,10 +389,10 @@ contract('TransferNFT Condition constructor', (accounts) => {
                 constants.condition.state.fulfilled)
             testUtils.assertEmitted(result, 1, 'Fulfilled')
 
-            // Trying to fulfill the same condition again
             await assert.isRejected(
                 transferCondition.fulfill(agreementId, did, rewardAddress, numberNFTs,
-                    conditionIdPayment, { from: other })
+                    conditionIdPayment, { from: other }),
+                /Invalid state transition/
             )
         })
     })
