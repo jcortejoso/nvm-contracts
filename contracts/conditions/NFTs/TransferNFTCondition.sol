@@ -19,7 +19,7 @@ contract TransferNFTCondition is Condition {
 
     bytes32 constant public CONDITION_TYPE = keccak256('TransferNFTCondition');
 
-    IERC1155Upgradeable private registry;
+    DIDRegistry private registry;
     
     event Fulfilled(
         bytes32 indexed _agreementId,
@@ -58,7 +58,7 @@ contract TransferNFTCondition is Condition {
             _conditionStoreManagerAddress
         );
 
-        registry = IERC1155Upgradeable(
+        registry = DIDRegistry(
             _didRegistryAddress
         );        
     }
@@ -123,13 +123,13 @@ contract TransferNFTCondition is Condition {
             lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
             'LockCondition needs to be Fulfilled'
         );
-
+        
         require(
-            registry.balanceOf(msg.sender, uint256(_did)) >= _nftAmount,
+            registry.balanceOf(registry.getDIDOwner(_did), uint256(_did)) >= _nftAmount,
             'Not enough balance'
         );
 
-        registry.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did), _nftAmount, '');
+        registry.safeTransferFrom(registry.getDIDOwner(_did), _nftReceiver, uint256(_did), _nftAmount, '');
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,

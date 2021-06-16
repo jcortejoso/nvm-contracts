@@ -23,8 +23,10 @@ contract('TransferNFT Condition constructor', (accounts) => {
     const createRole = accounts[0]
     const owner = accounts[1]
     const numberNFTs = 2 // NFTs
+    const mintCap = 10
     const paymentAmounts = [10]
     const paymentReceivers = [accounts[3]]
+    const other = accounts[4]
     let token,
         didRegistry,
         didRegistryLibrary,
@@ -120,9 +122,8 @@ contract('TransferNFT Condition constructor', (accounts) => {
 
         if (registerDID) {
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, numberNFTs, 0, constants.activities.GENERATED, '')
-            await didRegistry.mint(did, numberNFTs)
-            //            await didRegistry.setApprovalForAll(lockNFTCondition.address, true)
+                didSeed, checksum, [], url, mintCap, 0, constants.activities.GENERATED, '')
+            await didRegistry.mint(did, mintCap)
         }
 
         return {
@@ -245,6 +246,51 @@ contract('TransferNFT Condition constructor', (accounts) => {
             expect(eventArgs._receiver).to.equal(rewardAddress)
             expect(eventArgs._amount.toNumber()).to.equal(numberNFTs)
         })
+
+        it('anyone should be able to fulfill if condition exist', async () => {
+            const {
+                rewardAddress,
+                agreementId,
+                did,
+                transferCondition,
+                conditionStoreManager
+            } = await setupTest({ accounts: accounts, registerDID: true })
+
+            const hashValuesPayment = await lockPaymentCondition.hashValues(
+                did, escrowCondition.address, token.address, paymentAmounts, paymentReceivers)
+            const conditionIdPayment = await lockPaymentCondition.generateId(agreementId, hashValuesPayment)
+
+            await conditionStoreManager.createCondition(
+                conditionIdPayment,
+                lockPaymentCondition.address)
+
+            await token.mint(accounts[0], 10, { from: owner })
+            await token.approve(lockPaymentCondition.address, 10)
+
+            await lockPaymentCondition.fulfill(agreementId, did, escrowCondition.address, token.address, paymentAmounts, paymentReceivers)
+
+            assert.strictEqual(
+                (await conditionStoreManager.getConditionState(conditionIdPayment)).toNumber(),
+                constants.condition.state.fulfilled)
+
+            const hashValues = await transferCondition.hashValues(
+                did, rewardAddress, numberNFTs, conditionIdPayment)
+
+            const conditionId = await transferCondition.generateId(agreementId, hashValues)
+
+            await conditionStoreManager.createCondition(
+                conditionId,
+                transferCondition.address)
+
+            const result = await transferCondition.fulfill(
+                agreementId, did, rewardAddress, numberNFTs,
+                conditionIdPayment, { from: other })
+
+            assert.strictEqual(
+                (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
+                constants.condition.state.fulfilled)
+            testUtils.assertEmitted(result, 1, 'Fulfilled')
+        })
     })
 
     describe('trying to fulfill invalid conditions', () => {
@@ -283,13 +329,6 @@ contract('TransferNFT Condition constructor', (accounts) => {
                 conditionId,
                 transferCondition.address)
 
-            const other = testUtils.generateAccount().address
-            // Invalid user executing the fulfill
-            await assert.isRejected(
-                transferCondition.fulfill(agreementId, did, rewardAddress, numberNFTs, conditionIdPayment,
-                    { from: other })
-            )
-
             // Invalid reward address
             await assert.isRejected(
                 transferCondition.fulfill(agreementId, did, other, numberNFTs, conditionIdPayment)
@@ -303,6 +342,57 @@ contract('TransferNFT Condition constructor', (accounts) => {
             // Invalid agreementID
             await assert.isRejected(
                 transferCondition.fulfill(testUtils.generateId(), did, rewardAddress, numberNFTs, conditionIdPayment)
+            )
+        })
+
+        it('should not be able to fulfill the same condition twice if condition exist', async () => {
+            const {
+                rewardAddress,
+                agreementId,
+                did,
+                transferCondition,
+                conditionStoreManager
+            } = await setupTest({ accounts: accounts, registerDID: true })
+
+            const hashValuesPayment = await lockPaymentCondition.hashValues(
+                did, escrowCondition.address, token.address, paymentAmounts, paymentReceivers)
+            const conditionIdPayment = await lockPaymentCondition.generateId(agreementId, hashValuesPayment)
+
+            await conditionStoreManager.createCondition(
+                conditionIdPayment,
+                lockPaymentCondition.address)
+
+            await token.mint(accounts[0], 10, { from: owner })
+            await token.approve(lockPaymentCondition.address, 10)
+
+            await lockPaymentCondition.fulfill(agreementId, did, escrowCondition.address, token.address, paymentAmounts, paymentReceivers)
+
+            assert.strictEqual(
+                (await conditionStoreManager.getConditionState(conditionIdPayment)).toNumber(),
+                constants.condition.state.fulfilled)
+
+            const hashValues = await transferCondition.hashValues(
+                did, rewardAddress, numberNFTs, conditionIdPayment)
+
+            const conditionId = await transferCondition.generateId(agreementId, hashValues)
+
+            await conditionStoreManager.createCondition(
+                conditionId,
+                transferCondition.address)
+
+            const result = await transferCondition.fulfill(
+                agreementId, did, rewardAddress, numberNFTs,
+                conditionIdPayment, { from: other })
+
+            assert.strictEqual(
+                (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
+                constants.condition.state.fulfilled)
+            testUtils.assertEmitted(result, 1, 'Fulfilled')
+
+            await assert.isRejected(
+                transferCondition.fulfill(agreementId, did, rewardAddress, numberNFTs,
+                    conditionIdPayment, { from: other }),
+                /Invalid state transition/
             )
         })
     })
