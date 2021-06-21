@@ -29,9 +29,12 @@ contract AaveCreditVault {
   }
 
   function deposit(address _collateralAsset, uint256 _amount) public payable {
-    if (_collateralAsset != address(0))
-      _transferERC20(_collateralAsset, _amount);
-    else _transferETH(_collateralAsset, _amount);
+    if (msg.value == 0) _transferERC20(_collateralAsset, _amount);
+    else {
+      weth.deposit{value: msg.value}();
+      weth.approve(address(lendingPool), _amount);
+      lendingPool.deposit(_collateralAsset, _amount, address(this), 0);
+    }
   }
 
   function approveBorrower(
@@ -114,12 +117,4 @@ contract AaveCreditVault {
     lendingPool.deposit(_collateralAsset, _amount, address(this), 0);
   }
 
-  function _transferETH(address _collateralAsset, uint256 _collateralAmount)
-    public
-    payable
-  {
-    weth.deposit{value: msg.value}();
-    weth.approve(address(lendingPool), _collateralAmount);
-    lendingPool.deposit(_collateralAsset, _collateralAmount, address(this), 0);
-  }
 }

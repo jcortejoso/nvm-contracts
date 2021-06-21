@@ -7,6 +7,7 @@ import "./Condition.sol";
 import "../registry/DIDRegistry.sol";
 import "../AaveCreditVault.sol";
 import "../Common.sol";
+import "../templates/AaveCreditTemplate.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
 /**
@@ -55,21 +56,39 @@ contract AaveCollateralDeposit is Condition, Common {
     didRegistry = DIDRegistry(_didRegistryAddress);
   }
 
-  function hashValues(bytes32 _did) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(_did));
+  function hashValues(
+    bytes32 _did,
+    address _borrower,
+    address _collateralAsset,
+    uint256 _collateralAmount,
+    address _delegatedAsset,
+    uint256 _delegatedAmount
+  ) public pure returns (bytes32) {
+    return
+      keccak256(
+        abi.encodePacked(
+          _did,
+          _borrower,
+          _collateralAsset,
+          _delegatedAsset,
+          _delegatedAmount,
+          _collateralAmount
+        )
+      );
   }
 
   function fulfill(
-    // bytes32 _agreementId,
-    // bytes32 _did,
-    // address _borrower,
+    bytes32 _agreementId,
+    bytes32 _did,
+    address _vaultAddress,
+    address _borrower,
     address _collateralAsset,
-    // address _delegatedAsset,
-    // uint256 _delegatedAmount,
+    address _delegatedAsset,
+    uint256 _delegatedAmount,
     uint256 _collateralAmount
   ) external payable returns (ConditionStoreLibrary.ConditionState) {
     //Deposits the collateral in the Aave Lending pool contract
-    if (_collateralAsset != address(0)) {
+    if (msg.value == 0) {
       IERC20Upgradeable token = ERC20Upgradeable(_collateralAsset);
       token.transferFrom(
         msg.sender,
@@ -77,5 +96,27 @@ contract AaveCollateralDeposit is Condition, Common {
         _collateralAmount
       );
     }
+
+    AaveCreditVault vault = AaveCreditVault(_vaultAddress);
+    vault.deposit{value: msg.value}(_collateralAsset, _collateralAmount);
+    vault.approveBorrower(_borrower, _delegatedAmount, _delegatedAsset);
+
+    bytes32 _id =
+      generateId(
+        _agreementId,
+        hashValues(
+          _did,
+          _borrower,
+          _collateralAsset,
+          _collateralAmount,
+          _delegatedAsset,
+          _delegatedAmount
+        )
+      );
+
+    ConditionStoreLibrary.ConditionState state =
+      super.fulfill(_id, ConditionStoreLibrary.ConditionState.Fulfilled);
+
+    return state;
   }
 }
