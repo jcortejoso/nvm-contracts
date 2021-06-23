@@ -88,16 +88,18 @@ contract AaveCollateralDeposit is Condition, Common {
     uint256 _collateralAmount
   ) external payable returns (ConditionStoreLibrary.ConditionState) {
     //Deposits the collateral in the Aave Lending pool contract
+
+    AaveCreditVault vault = AaveCreditVault(_vaultAddress);
+
     if (msg.value == 0) {
       IERC20Upgradeable token = ERC20Upgradeable(_collateralAsset);
       token.transferFrom(
         msg.sender,
-        address(aaveCreditVault),
+        address(vault),
         _collateralAmount
       );
     }
 
-    AaveCreditVault vault = AaveCreditVault(_vaultAddress);
     vault.deposit{value: msg.value}(_collateralAsset, _collateralAmount);
     vault.approveBorrower(_borrower, _delegatedAmount, _delegatedAsset);
 

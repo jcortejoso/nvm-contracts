@@ -55,13 +55,43 @@ contract AaveBorrowCredit is Condition, Common {
     didRegistry = DIDRegistry(_didRegistryAddress);
   }
 
-  function hashValues(bytes32 _did) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(_did));
+  function hashValues(
+    bytes32 _did,
+    address _borrower,
+    address _assetToBorrow,
+    uint256 _amount
+  ) public pure returns (bytes32) {
+    return
+      keccak256(
+        abi.encodePacked(
+          _did,
+          _borrower,
+          _assetToBorrow,
+          _assetToBorrow,
+          _amount
+        )
+      );
   }
 
-  function fulfill()
-    external
-    payable
-    returns (ConditionStoreLibrary.ConditionState)
-  {}
+  function fulfill(
+    bytes32 _agreementId,
+    bytes32 _did,
+    address _vaultAddress,
+    address _assetToBorrow,
+    uint256 _amount
+  ) external returns (ConditionStoreLibrary.ConditionState) {
+    AaveCreditVault vault = AaveCreditVault(_vaultAddress);
+    vault.borrow(_assetToBorrow, _amount, msg.sender);
+
+    bytes32 _id =
+      generateId(
+        _agreementId,
+        hashValues(_did, msg.sender, _assetToBorrow, _amount)
+      );
+
+    ConditionStoreLibrary.ConditionState state =
+      super.fulfill(_id, ConditionStoreLibrary.ConditionState.Fulfilled);
+
+    return state;
+  }
 }

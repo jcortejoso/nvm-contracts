@@ -1,14 +1,9 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.6.12;
 
-import {
-  IERC20,
-  ILendingPool,
-  IProtocolDataProvider,
-  IStableDebtToken
-} from "./interfaces/IAaveInterfaces.sol";
+import {IERC20, ILendingPool, IProtocolDataProvider, IStableDebtToken} from "./interfaces/IAaveInterfaces.sol";
 import {SafeERC20} from "./libraries/AaveLibrary.sol";
-import "./interfaces/IWETH.sol";
+import "./interfaces/IWETHGateway.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
 contract AaveCreditVault {
@@ -16,7 +11,7 @@ contract AaveCreditVault {
 
   ILendingPool private lendingPool;
   IProtocolDataProvider private dataProvider;
-  IWETH private weth;
+  IWETHGateway private weth;
 
   constructor(
     address _lendingPool,
@@ -25,15 +20,13 @@ contract AaveCreditVault {
   ) public {
     lendingPool = ILendingPool(_lendingPool);
     dataProvider = IProtocolDataProvider(_dataProvider);
-    weth = IWETH(_weth);
+    weth = IWETHGateway(_weth);
   }
 
   function deposit(address _collateralAsset, uint256 _amount) public payable {
     if (msg.value == 0) _transferERC20(_collateralAsset, _amount);
     else {
-      weth.deposit{value: msg.value}();
-      weth.approve(address(lendingPool), _amount);
-      lendingPool.deposit(_collateralAsset, _amount, address(this), 0);
+      weth.depositETH{value: msg.value}(address(lendingPool), address(this), 0);
     }
   }
 
@@ -42,8 +35,8 @@ contract AaveCreditVault {
     uint256 amount,
     address asset
   ) public {
-    (, address stableDebtTokenAddress, ) =
-      dataProvider.getReserveTokensAddresses(asset);
+    (, address stableDebtTokenAddress, ) = dataProvider
+    .getReserveTokensAddresses(asset);
     IStableDebtToken(stableDebtTokenAddress).approveDelegation(
       borrower,
       amount
@@ -61,8 +54,8 @@ contract AaveCreditVault {
     view
     returns (uint256)
   {
-    (, address stableDebtTokenAddress, ) =
-      dataProvider.getReserveTokensAddresses(asset);
+    (, address stableDebtTokenAddress, ) = dataProvider
+    .getReserveTokensAddresses(asset);
 
     return
       IStableDebtToken(stableDebtTokenAddress).borrowAllowance(
@@ -105,8 +98,9 @@ contract AaveCreditVault {
    *
    */
   function withdrawCollateral(address _asset, address _delegator) public {
-    (address aTokenAddress, , ) =
-      dataProvider.getReserveTokensAddresses(_asset);
+    (address aTokenAddress, , ) = dataProvider.getReserveTokensAddresses(
+      _asset
+    );
     uint256 assetBalance = IERC20(aTokenAddress).balanceOf(address(this));
     lendingPool.withdraw(_asset, assetBalance, _delegator);
   }
@@ -116,5 +110,4 @@ contract AaveCreditVault {
     token.approve(address(lendingPool), _amount);
     lendingPool.deposit(_collateralAsset, _amount, address(this), 0);
   }
-
 }
