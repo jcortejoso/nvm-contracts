@@ -67,7 +67,6 @@ contract AaveBorrowCredit is Condition, Common {
           _did,
           _borrower,
           _assetToBorrow,
-          _assetToBorrow,
           _amount
         )
       );

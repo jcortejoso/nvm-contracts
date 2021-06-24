@@ -55,13 +55,46 @@ contract AaveRepayCredit is Condition, Common {
     didRegistry = DIDRegistry(_didRegistryAddress);
   }
 
-  function hashValues(bytes32 _did) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(_did));
+  function hashValues(
+    bytes32 _did,
+    address _borrower,
+    address _assetToRepay,
+    uint256 _amount
+  ) public pure returns (bytes32) {
+        return
+      keccak256(
+        abi.encodePacked(
+          _did,
+          _borrower,
+          _assetToRepay,
+          _amount
+        )
+      );
   }
 
-  function fulfill()
-    external
-    payable
-    returns (ConditionStoreLibrary.ConditionState)
-  {}
+  function fulfill(
+    bytes32 _agreementId,
+    bytes32 _did,
+    address _vaultAddress,
+    address _assetToRepay,
+    uint256 _amount
+  ) external  returns (ConditionStoreLibrary.ConditionState) {
+    ERC20Upgradeable token = ERC20Upgradeable(_assetToRepay);
+    token.transferFrom(msg.sender, _vaultAddress, _amount);
+    
+    AaveCreditVault vault = AaveCreditVault(_vaultAddress);
+    vault.repay(_amount, _assetToRepay);
+
+    bytes32 _id = generateId(
+      _agreementId,
+      hashValues(_did, msg.sender, _assetToRepay, _amount)
+    );
+
+    ConditionStoreLibrary.ConditionState state = super.fulfill(
+      _id,
+      ConditionStoreLibrary.ConditionState.Fulfilled
+    );
+
+    return state;
+  }
 }

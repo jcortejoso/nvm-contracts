@@ -21,6 +21,9 @@ const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const NeverminedToken = artifacts.require('NeverminedToken')
 const AaveCreditVault = artifacts.require('AaveCreditVault')
+const ERC20Upgradeable = artifacts.require('ERC20Upgradeable')
+const ILendingPool = artifacts.require('ILendingPool')
+
 
 const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
@@ -168,13 +171,18 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             await aaveCollateralDeposit.hashValues(did, delegatee, collateralAsset, collateralAmount, delegatedAsset, delegatedAmount))
         const conditionIdBorrow = await aaveBorrowCredit.generateId(
             agreementId,
-            await aaveBorrowCredit.hashValues(did,
+            await aaveBorrowCredit.hashValues(
+                did,
                 delegatee,
                 delegatedAsset,
                 delegatedAmount))
         const conditionIdRepay = await aaveRepayCredit.generateId(
             agreementId,
-            await aaveRepayCredit.hashValues(did))
+            await aaveRepayCredit.hashValues(
+                did,
+                delegatee,
+                delegatedAsset,
+                delegatedAmount))
 
         // construct agreement
         const agreement = {
@@ -241,9 +249,9 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                     value: collateralAmount
                 }
             )
-            const { state } = await conditionStoreManager.getCondition(
+            const { state: stateDeposit } = await conditionStoreManager.getCondition(
                 agreement.conditionIds[1])
-            assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
+            assert.strictEqual(stateDeposit.toNumber(), constants.condition.state.fulfilled)
 
             //Vault instance
             const vault = await AaveCreditVault.at(vaultAddress)
@@ -254,7 +262,12 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 delegatedAsset
             )
 
+            //The delegated borrow amount in the vault should be the same that the
+            //Delegegator allowed on deposit
             assert.strictEqual(actualAmount.toString(), delegatedAmount)
+
+            const dai = await ERC20Upgradeable.at(delegatedAsset)
+            const before = await dai.balanceOf(delegatee)
 
             //Fullfill the aaveBorrowCredit condition
             //Delegatee borrows DAI from Aave on behalf of Delegator
@@ -268,8 +281,40 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                     from: delegatee
                 }
             )
+            const { state: stateCredit } = await conditionStoreManager.getCondition(
+                agreement.conditionIds[2])
+            assert.strictEqual(stateCredit.toNumber(), constants.condition.state.fulfilled)
+
+            const after = await dai.balanceOf(delegatee)
+            assert.strictEqual(String(after.toNumber() - before.toNumber()), delegatedAmount)
+
+            //Delegatee allows nevermined contracts spend DAI to repay the loan
+            await dai.approve(aaveRepayCredit.address, delegatedAmount,
+                { from: delegatee });
+
+            //Fullfill the aaveRepayCredit condition
+            //Delegatee repays the loan with DAI
+            await aaveRepayCredit.fulfill(
+                agreementId,
+                did,
+                vaultAddress,
+                delegatedAsset,
+                delegatedAmount,
+                {
+                    from: delegatee
+                }
+            )
+            const { state: stateRepay } = await conditionStoreManager.getCondition(
+                agreement.conditionIds[3])
+            assert.strictEqual(stateRepay.toNumber(), constants.condition.state.fulfilled)
+
+            const lendingPool = await ILendingPool.at(lendingPoolAddress)
+
+            const vaultBalances = await lendingPool.getUserAccountData(vaultAddress)
+            
+            //Compare the vault debt after repayment
+            assert.equal(vaultBalances.totalDebtETH.toNumber() < 100, true)
 
         })
     })
-
 })
