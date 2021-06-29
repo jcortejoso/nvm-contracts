@@ -7,19 +7,18 @@ pragma solidity 0.6.12;
 import '../Condition.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
 import "./INFTHolder.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 
 /**
- * @title Nft Holder Condition
+ * @title NFT ERC721 Holder Condition
  * Allows to fulfill a condition to users holding some amount of NFTs for a specific DID
  * @author Keyko
  *
  * @dev Implementation of the Nft Holder Condition
  */
-contract NFTHolderCondition is Condition, INFTHolder {
-
-    ERC1155BurnableUpgradeable private nftRegistry;
+contract NFT721HolderCondition is Condition, INFTHolder {
     
-    bytes32 constant public CONDITION_TYPE = keccak256('NFTHolderCondition');
+    bytes32 constant public CONDITION_TYPE = keccak256('NFT721HolderCondition');
 
    /**
     * @notice initialize init the 
@@ -28,18 +27,15 @@ contract NFTHolderCondition is Condition, INFTHolder {
     *       initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address
-    * @param _didRegistryAddress DIDRegistry address
     */
     function initialize(
         address _owner,
-        address _conditionStoreManagerAddress,
-        address _didRegistryAddress
+        address _conditionStoreManagerAddress
     )
         external
         initializer()
     {
         require(
-            _didRegistryAddress != address(0) &&
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
@@ -48,27 +44,6 @@ contract NFTHolderCondition is Condition, INFTHolder {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        nftRegistry = ERC1155BurnableUpgradeable(_didRegistryAddress);
-    }
-
-   /**
-    * @notice hashValues generates the hash of condition inputs 
-    *        with the following parameters
-    * @param _did the Decentralized Identifier of the asset
-    * @param _holderAddress the address of the NFT holder
-    * @param _amount is the amount NFTs that need to be hold by the holder
-    * @return bytes32 hash of all these values 
-    */
-    function hashValues(
-        bytes32 _did,
-        address _holderAddress,
-        uint256 _amount
-    )
-        public
-        view
-        returns (bytes32)
-    {
-        return this.hashValues(_did, _holderAddress, _amount, address(nftRegistry));
     }
 
     function hashValues(
@@ -83,28 +58,6 @@ contract NFTHolderCondition is Condition, INFTHolder {
         returns (bytes32)
     {
         return keccak256(abi.encode(_did, _holderAddress, _amount, _contractAddress));
-    }    
-    
-
-    /**
-     * @notice fulfill requires a validation that holder has enough
-     *       NFTs for a specific DID
-     * @param _agreementId SEA agreement identifier
-     * @param _did the Decentralized Identifier of the asset    
-     * @param _holderAddress the contract address where the reward is locked
-     * @param _amount is the amount of NFT to be hold
-     * @return condition state
-     */
-    function fulfill(
-        bytes32 _agreementId,
-        bytes32 _did,
-        address _holderAddress,
-        uint256 _amount
-    )
-        external
-        returns (ConditionStoreLibrary.ConditionState)
-    {
-        return this.fulfill(_agreementId, _did, _holderAddress, _amount, address(nftRegistry));
     }
     
     function fulfill(
@@ -118,9 +71,11 @@ contract NFTHolderCondition is Condition, INFTHolder {
         override
         returns (ConditionStoreLibrary.ConditionState)
     {
+        IERC721Upgradeable erc721 = IERC721Upgradeable(_contractAddress);
+        
         require(
-            nftRegistry.balanceOf(_holderAddress, uint256(_did)) >= _amount,
-            'The holder doesnt have enough NFT balance for the did given'
+            erc721.balanceOf(_holderAddress) >= _amount,
+            'The holder doesnt have enough balance for the NFT given'
         );
 
         bytes32 _id = generateId(
