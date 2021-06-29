@@ -357,13 +357,13 @@ contract('End to End NFT Scenarios', (accounts) => {
                 constants.condition.state.fulfilled)
 
             // Artist: I give access to the collector1 to the content
-//            await accessCondition.fulfill(agreementAccessId, nftAccessAgreement.did, collector1, { from: artist })
+            //            await accessCondition.fulfill(agreementAccessId, nftAccessAgreement.did, collector1, { from: artist })
             await accessCondition.methods['fulfill(bytes32,bytes32,address)'](
-                        agreementAccessId,
-                        nftAccessAgreement.did,
-                        collector1,
-                        { from: artist }
-                    )
+                agreementAccessId,
+                nftAccessAgreement.did,
+                collector1,
+                { from: artist }
+            )
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(nftAccessAgreement.conditionIds[1])).toNumber(),
