@@ -6,7 +6,7 @@ pragma solidity 0.6.12;
 
 import './BaseEscrowTemplate.sol';
 import '../conditions/NFTs/INFTAccess.sol';
-import '../conditions/NFTs/NFTHolderCondition.sol';
+import '../conditions/NFTs/INFTHolder.sol';
 import '../registry/DIDRegistry.sol';
 
 /**
@@ -33,7 +33,7 @@ import '../registry/DIDRegistry.sol';
 contract NFTAccessTemplate is BaseEscrowTemplate {
 
     DIDRegistry internal didRegistry;
-    NFTHolderCondition internal nftHolderCondition;
+    INFTHolder internal nftHolderCondition;
     INFTAccess internal accessCondition;
 
    /**
@@ -76,7 +76,7 @@ contract NFTAccessTemplate is BaseEscrowTemplate {
             agreementStoreManager.getDIDRegistryAddress()
         );
 
-        nftHolderCondition = NFTHolderCondition(
+        nftHolderCondition = INFTHolder(
             _nftHolderConditionAddress
         );
 
