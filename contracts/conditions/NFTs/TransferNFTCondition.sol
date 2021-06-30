@@ -24,6 +24,7 @@ contract TransferNFTCondition is Condition {
     event Fulfilled(
         bytes32 indexed _agreementId,
         bytes32 indexed _did,
+        address _holder,
         address indexed _receiver,
         uint256 _amount,
         bytes32 _conditionId
@@ -141,6 +142,7 @@ contract TransferNFTCondition is Condition {
         emit Fulfilled(
             _agreementId,
             _did,
+            _nftHolder,
             _nftReceiver,
             _nftAmount,
             _id
