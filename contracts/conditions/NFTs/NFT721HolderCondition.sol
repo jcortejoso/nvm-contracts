@@ -5,8 +5,8 @@ pragma solidity 0.6.12;
 
 
 import '../Condition.sol';
-import "./INFTHolder.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+import './INFTHolder.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
 
 /**
  * @title NFT ERC721 Holder Condition
@@ -73,7 +73,7 @@ contract NFT721HolderCondition is Condition, INFTHolder {
         IERC721Upgradeable erc721 = IERC721Upgradeable(_contractAddress);
         
         require(
-            erc721.balanceOf(_holderAddress) >= _amount,
+            _amount == 0 || (_amount == 1 && erc721.ownerOf(uint256(_did)) == _holderAddress),
             'The holder doesnt have enough balance for the NFT given'
         );
 

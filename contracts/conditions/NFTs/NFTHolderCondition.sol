@@ -6,7 +6,7 @@ pragma solidity 0.6.12;
 
 import '../Condition.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
-import "./INFTHolder.sol";
+import './INFTHolder.sol';
 
 /**
  * @title Nft Holder Condition
@@ -119,7 +119,7 @@ contract NFTHolderCondition is Condition, INFTHolder {
         returns (ConditionStoreLibrary.ConditionState)
     {
         require(
-            nftRegistry.balanceOf(_holderAddress, uint256(_did)) >= _amount,
+            IERC1155Upgradeable(_contractAddress).balanceOf(_holderAddress, uint256(_did)) >= _amount,
             'The holder doesnt have enough NFT balance for the did given'
         );
 
