@@ -34,7 +34,7 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
 
     DIDRegistry internal didRegistry;
     LockPaymentCondition internal lockPaymentCondition;
-    TransferNFTCondition internal transferCondition;
+    ITransferNFT internal transferCondition;
     EscrowPaymentCondition internal rewardCondition;
 
    /**

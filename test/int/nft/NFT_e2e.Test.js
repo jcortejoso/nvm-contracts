@@ -295,7 +295,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             const nftBalanceArtistBefore = await didRegistry.balanceOf(artist, did)
             const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
 
-            await transferCondition.fulfill(
+            await transferCondition.methods['fulfill(bytes32,bytes32,address,address,uint256,bytes32)'](
                 agreementId,
                 did,
                 artist,
@@ -405,7 +405,7 @@ contract('End to End NFT Scenarios', (accounts) => {
 
             await didRegistry.setApprovalForAll(transferCondition.address, true, { from: collector1 })
             // Collector1: Transfer the NFT
-            await transferCondition.fulfill(
+            await transferCondition.methods['fulfill(bytes32,bytes32,address,address,uint256,bytes32)'](
                 agreementId2,
                 did,
                 collector1,
@@ -529,7 +529,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             const nftBalanceArtistBefore = await didRegistry.balanceOf(artist, did)
             const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
 
-            await transferCondition.fulfill(
+            await transferCondition.methods['fulfill(bytes32,bytes32,address,address,uint256,bytes32)'](
                 agreementId,
                 did,
                 artist,

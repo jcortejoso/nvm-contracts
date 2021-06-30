@@ -6,7 +6,7 @@ pragma solidity 0.6.12;
 
 import '../Condition.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
-import "./INFTHolder.sol";
+import './INFTHolder.sol';
 
 /**
  * @title Nft Holder Condition

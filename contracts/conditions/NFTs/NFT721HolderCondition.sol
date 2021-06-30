@@ -5,8 +5,8 @@ pragma solidity 0.6.12;
 
 
 import '../Condition.sol';
-import "./INFTHolder.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+import './INFTHolder.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
 
 /**
  * @title NFT ERC721 Holder Condition

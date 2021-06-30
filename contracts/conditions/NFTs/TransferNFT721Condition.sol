@@ -7,6 +7,7 @@ pragma solidity 0.6.12;
 import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
 import './ITransferNFT.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
 
 /**
  * @title Transfer NFT Condition
@@ -16,7 +17,7 @@ import './ITransferNFT.sol';
  *      between the original owner and a receiver
  *
  */
-contract TransferNFTCondition is Condition, ITransferNFT {
+contract TransferNFT721Condition is Condition, ITransferNFT {
 
     bytes32 constant public CONDITION_TYPE = keccak256('TransferNFTCondition');
 
@@ -67,20 +68,6 @@ contract TransferNFTCondition is Condition, ITransferNFT {
         );        
     }
 
-    function hashValues(
-        bytes32 _did,
-        address _nftHolder,
-        address _nftReceiver,
-        uint256 _nftAmount,
-        bytes32 _lockCondition
-    )
-        public
-        view
-        returns (bytes32)
-    {
-        return hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, address(registry));
-    }
-
    /**
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters
@@ -125,33 +112,6 @@ contract TransferNFTCondition is Condition, ITransferNFT {
         address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
-        bytes32 _lockPaymentCondition
-    )
-    public
-    returns (ConditionStoreLibrary.ConditionState)
-    {
-        return fulfill(_agreementId, _did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, address(registry));
-    }
-
-    /**
-     * @notice fulfill the transfer NFT condition
-     * @dev Fulfill method transfer a certain amount of NFTs 
-     *       to the _nftReceiver address. 
-     *       When true then fulfill the condition
-     * @param _agreementId agreement identifier
-     * @param _did refers to the DID in which secret store will issue the decryption keys
-     * @param _nftHolder is the address of the account to receive the NFT
-     * @param _nftReceiver is the address of the account to receive the NFT
-     * @param _nftAmount amount of NFTs to transfer  
-     * @param _lockPaymentCondition lock payment condition identifier
-     * @return condition state (Fulfilled/Aborted)
-     */
-    function fulfill(
-        bytes32 _agreementId,
-        bytes32 _did,
-        address _nftHolder,
-        address _nftReceiver,
-        uint256 _nftAmount,
         bytes32 _lockPaymentCondition,
         address _contract
     )
@@ -170,7 +130,7 @@ contract TransferNFTCondition is Condition, ITransferNFT {
         (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
         .getCondition(_lockPaymentCondition);
 
-        IERC1155Upgradeable token = IERC1155Upgradeable(_contract);
+        IERC721Upgradeable token = IERC721Upgradeable(_contract);
 
         require(
             lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
@@ -178,11 +138,13 @@ contract TransferNFTCondition is Condition, ITransferNFT {
         );
         
         require(
-            token.balanceOf(_nftHolder, uint256(_did)) >= _nftAmount,
+            _nftAmount == 0 || (_nftAmount == 1 && token.ownerOf(uint256(_did)) == _nftHolder),
             'Not enough balance'
         );
 
-        token.safeTransferFrom(_nftHolder, _nftReceiver, uint256(_did), _nftAmount, '');
+        if (_nftAmount == 1) {
+            token.safeTransferFrom(_nftHolder, _nftReceiver, uint256(_did));
+        }
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
@@ -202,87 +164,5 @@ contract TransferNFTCondition is Condition, ITransferNFT {
         return state;
     }    
     
-    
-   /*
-    * @notice fulfill the transfer NFT condition
-    * @dev only DID owner or DID provider can call this
-    *       method. Fulfill method transfer a certain amount of NFTs 
-    *       to the _receiver address. 
-    *       When true then fulfill the condition
-    * @param _agreementId agreement identifier
-    * @param _did refers to the DID in which secret store will issue the decryption keys
-    * @param _nftReceiver is the address of the account to receive the NFT
-    * @param _nftAmount amount of NFTs to transfer  
-    * @param _nftLockCondition lock payment condition identifier
-    * @return condition state (Fulfilled/Aborted)
-    */
-    /*
-    function fulfillWithNFTLock(
-        bytes32 _agreementId,
-        bytes32 _did,
-        address _nftReceiver,
-        uint256 _nftAmount,
-        bytes32 _nftLockCondition
-    )
-        public
-        returns (ConditionStoreLibrary.ConditionState)
-    {
-        
-        bytes32 _id = generateId(
-            _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _nftLockCondition)
-        );
-
-        address lockConditionTypeRef;
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
-            .getCondition(_nftLockCondition);
-
-        require(
-            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
-            'LockCondition needs to be Fulfilled'
-        );
-        bytes32 generatedLockConditionId = keccak256(
-            abi.encode(
-                _agreementId,
-                lockConditionTypeRef,
-                keccak256(
-                    abi.encode(
-                        _did,
-                        _nftReceiver,
-                        _nftAmount
-                    )
-                )
-            )
-        );
-        
-        require(
-            generatedLockConditionId == _nftLockCondition,
-            'LockCondition ID does not match'
-        );
-
-        require(
-            registry.balanceOf(lockConditionTypeRef, uint256(_did)) >= _nftAmount,
-            'Not enough balance'
-        );        
-        
-        registry.safeTransferFrom(lockConditionTypeRef, _nftReceiver, uint256(_did), _nftAmount, '');
-
-        ConditionStoreLibrary.ConditionState state = super.fulfill(
-            _id,
-            ConditionStoreLibrary.ConditionState.Fulfilled
-        );
-        
-        emit Fulfilled(
-            _agreementId,
-            _did,
-            _nftReceiver, 
-            _nftAmount,
-            _id
-        );
-
-        return state;
-    }
-*/    
 }
 
