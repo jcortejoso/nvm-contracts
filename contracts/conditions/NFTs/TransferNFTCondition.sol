@@ -74,6 +74,7 @@ contract TransferNFTCondition is Condition {
     */
     function hashValues(
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition
@@ -82,17 +83,17 @@ contract TransferNFTCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _nftReceiver, _nftAmount, _lockCondition));
+        return keccak256(abi.encode(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition));
     }
 
     /**
      * @notice fulfill the transfer NFT condition
-     * @dev only DID owner or DID provider can call this
-     *       method. Fulfill method transfer a certain amount of NFTs 
-     *       to the _receiver address. 
+     * @dev Fulfill method transfer a certain amount of NFTs 
+     *       to the _nftReceiver address. 
      *       When true then fulfill the condition
      * @param _agreementId agreement identifier
      * @param _did refers to the DID in which secret store will issue the decryption keys
+     * @param _nftHolder is the address of the account to receive the NFT
      * @param _nftReceiver is the address of the account to receive the NFT
      * @param _nftAmount amount of NFTs to transfer  
      * @param _lockPaymentCondition lock payment condition identifier
@@ -101,6 +102,7 @@ contract TransferNFTCondition is Condition {
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition
@@ -111,7 +113,7 @@ contract TransferNFTCondition is Condition {
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition)
+            hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition)
         );
 
         address lockConditionTypeRef;
@@ -125,11 +127,11 @@ contract TransferNFTCondition is Condition {
         );
         
         require(
-            registry.balanceOf(registry.getDIDOwner(_did), uint256(_did)) >= _nftAmount,
+            registry.balanceOf(_nftHolder, uint256(_did)) >= _nftAmount,
             'Not enough balance'
         );
 
-        registry.safeTransferFrom(registry.getDIDOwner(_did), _nftReceiver, uint256(_did), _nftAmount, '');
+        registry.safeTransferFrom(_nftHolder, _nftReceiver, uint256(_did), _nftAmount, '');
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
