@@ -411,8 +411,11 @@ contract('End to End NFT Scenarios', (accounts) => {
                 nftSalesAgreement.conditionIds[1])
             assert.strictEqual(condition[1].toNumber(), constants.condition.state.fulfilled)
 
-            const nftBalance = await didRegistry.balanceOf(collector2, did)
-            assert.strictEqual(nftBalance.toNumber(), numberNFTs2)
+            const nftBalance1 = await didRegistry.balanceOf(collector1, did)
+            assert.strictEqual(nftBalance1.toNumber(), numberNFTs - numberNFTs2)
+
+            const nftBalance2 = await didRegistry.balanceOf(collector2, did)
+            assert.strictEqual(nftBalance2.toNumber(), numberNFTs2)
 
             // Collector1 & Artist: Get the payment
             await escrowCondition.fulfill(
