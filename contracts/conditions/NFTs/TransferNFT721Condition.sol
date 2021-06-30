@@ -23,15 +23,6 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
 
     DIDRegistry private registry;
     
-    event Fulfilled(
-        bytes32 indexed _agreementId,
-        bytes32 indexed _did,
-        address _holder,
-        address indexed _receiver,
-        uint256 _amount,
-        bytes32 _conditionId,
-        address _contract
-    );
     
    /**
     * @notice initialize init the contract with the following parameters
@@ -75,6 +66,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
     * @param _nftReceiver is the address of the granted user or the DID provider
     * @param _nftAmount amount of NFTs to transfer   
     * @param _lockCondition lock condition identifier    
+    * @param _contract NFT contract to use
     * @return bytes32 hash of all these values 
     */
     function hashValues(
@@ -104,6 +96,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
      * @param _nftReceiver is the address of the account to receive the NFT
      * @param _nftAmount amount of NFTs to transfer  
      * @param _lockPaymentCondition lock payment condition identifier
+     * @param _contract NFT contract to use
      * @return condition state (Fulfilled/Aborted)
      */
     function fulfill(
@@ -130,13 +123,13 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
         (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
         .getCondition(_lockPaymentCondition);
 
-        IERC721Upgradeable token = IERC721Upgradeable(_contract);
-
         require(
             lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
             'LockCondition needs to be Fulfilled'
         );
         
+        IERC721Upgradeable token = IERC721Upgradeable(_contract);
+
         require(
             _nftAmount == 0 || (_nftAmount == 1 && token.ownerOf(uint256(_did)) == _nftHolder),
             'Not enough balance'
