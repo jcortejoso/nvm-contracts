@@ -119,7 +119,7 @@ contract NFTHolderCondition is Condition, INFTHolder {
         returns (ConditionStoreLibrary.ConditionState)
     {
         require(
-            nftRegistry.balanceOf(_holderAddress, uint256(_did)) >= _amount,
+            IERC1155Upgradeable(_contractAddress).balanceOf(_holderAddress, uint256(_did)) >= _amount,
             'The holder doesnt have enough NFT balance for the did given'
         );
 
