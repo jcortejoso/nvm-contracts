@@ -19,7 +19,6 @@ const testUtils = require('../../helpers/utils.js')
 contract('NFT721HolderCondition', (accounts) => {
     const owner = accounts[1]
     const createRole = accounts[0]
-    const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
     const amount = 1
     let didRegistry
     let conditionStoreManager
@@ -36,10 +35,9 @@ contract('NFT721HolderCondition', (accounts) => {
             await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner)
-
+            token = await ERC721.new()
+            await token.initialize()
         }
-        token = await ERC721.new()
-        await token.initialize()
         if (!conditionStoreManager) {
             const epochLibrary = await EpochLibrary.new()
             await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
@@ -61,7 +59,6 @@ contract('NFT721HolderCondition', (accounts) => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, owner)
 
-            const checksum = testUtils.generateId()
             const agreementId = testUtils.generateId()
             const holderAddress = accounts[2]
 
@@ -93,7 +90,6 @@ contract('NFT721HolderCondition', (accounts) => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, owner)
 
-            const checksum = testUtils.generateId()
             const agreementId = testUtils.generateId()
             const holderAddress = accounts[2]
 
@@ -111,7 +107,6 @@ contract('NFT721HolderCondition', (accounts) => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, owner)
 
-            const checksum = testUtils.generateId()
             const agreementId = testUtils.generateId()
             const holderAddress = accounts[2]
 
