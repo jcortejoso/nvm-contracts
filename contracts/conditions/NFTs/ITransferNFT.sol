@@ -12,7 +12,6 @@ interface ITransferNFT {
     event Fulfilled(
         bytes32 indexed _agreementId,
         bytes32 indexed _did,
-        address _holder,
         address indexed _receiver,
         uint256 _amount,
         bytes32 _conditionId,
@@ -30,7 +29,8 @@ interface ITransferNFT {
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress
+        address _didRegistryAddress,
+        address _market
     )
         external;
 
@@ -45,7 +45,6 @@ interface ITransferNFT {
     */
     function hashValues(
         bytes32 _did,
-        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition,
@@ -62,7 +61,6 @@ interface ITransferNFT {
      *       When true then fulfill the condition
      * @param _agreementId agreement identifier
      * @param _did refers to the DID in which secret store will issue the decryption keys
-     * @param _nftHolder is the address of the account to receive the NFT
      * @param _nftReceiver is the address of the account to receive the NFT
      * @param _nftAmount amount of NFTs to transfer  
      * @param _lockPaymentCondition lock payment condition identifier
@@ -71,7 +69,6 @@ interface ITransferNFT {
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
-        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition,

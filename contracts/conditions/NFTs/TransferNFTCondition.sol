@@ -21,17 +21,8 @@ contract TransferNFTCondition is Condition, ITransferNFT {
     bytes32 constant public CONDITION_TYPE = keccak256('TransferNFTCondition');
 
     DIDRegistry private registry;
-    
-    event Fulfilled(
-        bytes32 indexed _agreementId,
-        bytes32 indexed _did,
-        address _holder,
-        address indexed _receiver,
-        uint256 _amount,
-        bytes32 _conditionId,
-        address _contract
-    );
-    
+    address public market;
+
    /**
     * @notice initialize init the contract with the following parameters
     * @dev this function is called only once during the contract
@@ -39,11 +30,13 @@ contract TransferNFTCondition is Condition, ITransferNFT {
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address    
     * @param _didRegistryAddress DID Registry address
+    * @param _market Market address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress
+        address _didRegistryAddress,
+        address _market
     )
         external
         override
@@ -64,7 +57,9 @@ contract TransferNFTCondition is Condition, ITransferNFT {
 
         registry = DIDRegistry(
             _didRegistryAddress
-        );        
+        );
+
+        market = _market;
     }
 
    /**
@@ -78,7 +73,6 @@ contract TransferNFTCondition is Condition, ITransferNFT {
     */
     function hashValues(
         bytes32 _did,
-        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition
@@ -87,7 +81,7 @@ contract TransferNFTCondition is Condition, ITransferNFT {
         view
         returns (bytes32)
     {
-        return hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, address(registry));
+        return hashValues(_did, _nftReceiver, _nftAmount, _lockCondition, address(registry));
     }
 
    /**
@@ -102,7 +96,6 @@ contract TransferNFTCondition is Condition, ITransferNFT {
     */
     function hashValues(
         bytes32 _did,
-        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition,
@@ -113,26 +106,12 @@ contract TransferNFTCondition is Condition, ITransferNFT {
         override
         returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, _contract));
+        return keccak256(abi.encode(_did, _nftReceiver, _nftAmount, _lockCondition, _contract));
     }
 
-    /**
-     * @notice fulfill the transfer NFT condition
-     * @dev Fulfill method transfer a certain amount of NFTs 
-     *       to the _nftReceiver address in the DIDRegistry contract. 
-     *       When true then fulfill the condition
-     * @param _agreementId agreement identifier
-     * @param _did refers to the DID in which secret store will issue the decryption keys
-     * @param _nftHolder is the address of the account to receive the NFT
-     * @param _nftReceiver is the address of the account to receive the NFT
-     * @param _nftAmount amount of NFTs to transfer  
-     * @param _lockPaymentCondition lock payment condition identifier
-     * @return condition state (Fulfilled/Aborted)
-     */
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
-        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition
@@ -140,7 +119,7 @@ contract TransferNFTCondition is Condition, ITransferNFT {
     public
     returns (ConditionStoreLibrary.ConditionState)
     {
-        return fulfill(_agreementId, _did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, address(registry));
+        return fulfill(_agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, address(registry));
     }
 
     /**
@@ -150,7 +129,6 @@ contract TransferNFTCondition is Condition, ITransferNFT {
      *       When true then fulfill the condition
      * @param _agreementId agreement identifier
      * @param _did refers to the DID in which secret store will issue the decryption keys
-     * @param _nftHolder is the address of the account to receive the NFT
      * @param _nftReceiver is the address of the account to receive the NFT
      * @param _nftAmount amount of NFTs to transfer  
      * @param _lockPaymentCondition lock payment condition identifier
@@ -160,7 +138,6 @@ contract TransferNFTCondition is Condition, ITransferNFT {
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
-        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition,
@@ -173,7 +150,7 @@ contract TransferNFTCondition is Condition, ITransferNFT {
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _contract)
+            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition, _contract)
         );
 
         address lockConditionTypeRef;
@@ -188,7 +165,7 @@ contract TransferNFTCondition is Condition, ITransferNFT {
         
         IERC1155Upgradeable token = IERC1155Upgradeable(_contract);
 
-        token.safeTransferFrom(_nftHolder, _nftReceiver, uint256(_did), _nftAmount, '');
+        token.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did), _nftAmount, '');
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
@@ -198,7 +175,6 @@ contract TransferNFTCondition is Condition, ITransferNFT {
         emit Fulfilled(
             _agreementId,
             _did,
-            _nftHolder,
             _nftReceiver,
             _nftAmount,
             _id,
@@ -208,6 +184,72 @@ contract TransferNFTCondition is Condition, ITransferNFT {
         return state;
     }    
     
+    /**
+     * @notice fulfill the transfer NFT condition
+     * @dev Fulfill method transfer a certain amount of NFTs 
+     *       to the _nftReceiver address in the DIDRegistry contract. 
+     *       When true then fulfill the condition
+     * @param _agreementId agreement identifier
+     * @param _did refers to the DID in which secret store will issue the decryption keys
+     * @param _nftReceiver is the address of the account to receive the NFT
+     * @param _nftAmount amount of NFTs to transfer  
+     * @param _lockPaymentCondition lock payment condition identifier
+     * @param _nftHolder is the address of the account to receive the NFT
+     * @return condition state (Fulfilled/Aborted)
+     */
+    function fulfillForMarket(
+        bytes32 _agreementId,
+        bytes32 _did,
+        address _nftHolder,
+        address _nftReceiver,
+        uint256 _nftAmount,
+        bytes32 _lockPaymentCondition
+    )
+    public
+    returns (ConditionStoreLibrary.ConditionState)
+    {
+
+        require(msg.sender == market, 'only market can call');
+
+        bytes32 _id = generateId(
+            _agreementId,
+            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition)
+        );
+
+        address lockConditionTypeRef;
+        ConditionStoreLibrary.ConditionState lockConditionState;
+        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
+        .getCondition(_lockPaymentCondition);
+
+        require(
+            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
+            'LockCondition needs to be Fulfilled'
+        );
+        
+        require(
+            registry.balanceOf(_nftHolder, uint256(_did)) >= _nftAmount,
+            'Not enough balance'
+        );
+
+        registry.safeTransferFrom(_nftHolder, _nftReceiver, uint256(_did), _nftAmount, '');
+
+        ConditionStoreLibrary.ConditionState state = super.fulfill(
+            _id,
+            ConditionStoreLibrary.ConditionState.Fulfilled
+        );
+
+        emit Fulfilled(
+            _agreementId,
+            _did,
+            _nftReceiver,
+            _nftAmount,
+            _id,
+            address(registry)
+        );
+
+        return state;
+    }    
+
     
    /*
     * @notice fulfill the transfer NFT condition

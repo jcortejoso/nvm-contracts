@@ -119,10 +119,11 @@ contract('End to End NFT Scenarios', (accounts) => {
         )
 
         transferCondition = await TransferNFTCondition.new()
-        await transferCondition.methods['initialize(address,address,address)'](
+        await transferCondition.methods['initialize(address,address,address,address)'](
             owner,
             conditionStoreManager.address,
             didRegistry.address,
+            market,
             { from: deployer }
         )
 
@@ -170,7 +171,7 @@ contract('End to End NFT Scenarios', (accounts) => {
         )
 
         // IMPORTANT: Here we give ERC1155 transfer grants to the TransferNFTCondition condition
-        await didRegistry.setProxyApproval(transferCondition.address, true, { from: owner })
+        // await didRegistry.setProxyApproval(transferCondition.address, true, { from: owner })
 
         await templateStoreManager.proposeTemplate(nftSalesTemplate.address)
         await templateStoreManager.approveTemplate(nftSalesTemplate.address, { from: owner })
@@ -224,7 +225,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await lockPaymentCondition.hashValues(did, escrowCondition.address, token.address, _amounts, _receivers))
 
         const conditionIdTransferNFT = await transferCondition.generateId(agreementId,
-            await transferCondition.hashValues(did, _seller, _buyer, _numberNFTs, conditionIdLockPayment))
+            await transferCondition.hashValues(did, _buyer, _numberNFTs, conditionIdLockPayment))
 
         const conditionIdEscrow = await escrowCondition.generateId(agreementId,
             await escrowCondition.hashValues(did, _amounts, _receivers, escrowCondition.address, token.address, conditionIdLockPayment, conditionIdTransferNFT))
@@ -295,14 +296,15 @@ contract('End to End NFT Scenarios', (accounts) => {
             const nftBalanceArtistBefore = await didRegistry.balanceOf(artist, did)
             const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
 
-            await transferCondition.methods['fulfill(bytes32,bytes32,address,address,uint256,bytes32)'](
+            await didRegistry.setApprovalForAll(transferCondition.address, true, { from: artist })
+            await transferCondition.methods['fulfill(bytes32,bytes32,address,uint256,bytes32)'](
                 agreementId,
                 did,
-                artist,
                 collector1,
                 numberNFTs,
                 nftSalesAgreement.conditionIds[0],
                 { from: artist })
+            await didRegistry.setApprovalForAll(transferCondition.address, false, { from: artist })
 
             const { state } = await conditionStoreManager.getCondition(
                 nftSalesAgreement.conditionIds[1])
@@ -405,14 +407,15 @@ contract('End to End NFT Scenarios', (accounts) => {
 
             await didRegistry.setApprovalForAll(transferCondition.address, true, { from: collector1 })
             // Collector1: Transfer the NFT
-            await transferCondition.methods['fulfill(bytes32,bytes32,address,address,uint256,bytes32)'](
+            await didRegistry.setApprovalForAll(transferCondition.address, true, { from: collector1 })
+            await transferCondition.methods['fulfill(bytes32,bytes32,address,uint256,bytes32)'](
                 agreementId2,
                 did,
-                collector1,
                 collector2,
                 numberNFTs2,
                 nftSalesAgreement.conditionIds[0],
                 { from: collector1 })
+            await didRegistry.setApprovalForAll(transferCondition.address, true, { from: collector1 })
 
             let condition = await conditionStoreManager.getCondition(
                 nftSalesAgreement.conditionIds[1])
@@ -529,7 +532,8 @@ contract('End to End NFT Scenarios', (accounts) => {
             const nftBalanceArtistBefore = await didRegistry.balanceOf(artist, did)
             const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
 
-            await transferCondition.methods['fulfill(bytes32,bytes32,address,address,uint256,bytes32)'](
+            await didRegistry.setProxyApproval(transferCondition.address, true, { from: owner })
+            await transferCondition.fulfillForMarket(
                 agreementId,
                 did,
                 artist,
