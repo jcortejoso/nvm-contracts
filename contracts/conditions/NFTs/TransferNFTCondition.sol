@@ -20,11 +20,11 @@ contract TransferNFTCondition is Condition {
     bytes32 constant public CONDITION_TYPE = keccak256('TransferNFTCondition');
 
     DIDRegistry private registry;
-    
+    address market;
+
     event Fulfilled(
         bytes32 indexed _agreementId,
         bytes32 indexed _did,
-        address _holder,
         address indexed _receiver,
         uint256 _amount,
         bytes32 _conditionId
@@ -37,11 +37,13 @@ contract TransferNFTCondition is Condition {
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address    
     * @param _didRegistryAddress DID Registry address
+    * @param _market Market address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress
+        address _didRegistryAddress,
+        address _market
     )
         external
         initializer()
@@ -61,7 +63,9 @@ contract TransferNFTCondition is Condition {
 
         registry = DIDRegistry(
             _didRegistryAddress
-        );        
+        );
+
+        market = _market;
     }
 
    /**
@@ -75,7 +79,6 @@ contract TransferNFTCondition is Condition {
     */
     function hashValues(
         bytes32 _did,
-        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition
@@ -84,7 +87,7 @@ contract TransferNFTCondition is Condition {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition));
+        return keccak256(abi.encode(_did, _nftReceiver, _nftAmount, _lockCondition));
     }
 
     /**
@@ -94,7 +97,6 @@ contract TransferNFTCondition is Condition {
      *       When true then fulfill the condition
      * @param _agreementId agreement identifier
      * @param _did refers to the DID in which secret store will issue the decryption keys
-     * @param _nftHolder is the address of the account to receive the NFT
      * @param _nftReceiver is the address of the account to receive the NFT
      * @param _nftAmount amount of NFTs to transfer  
      * @param _lockPaymentCondition lock payment condition identifier
@@ -103,7 +105,6 @@ contract TransferNFTCondition is Condition {
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
-        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition
@@ -114,7 +115,58 @@ contract TransferNFTCondition is Condition {
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition)
+            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition)
+        );
+
+        address lockConditionTypeRef;
+        ConditionStoreLibrary.ConditionState lockConditionState;
+        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
+        .getCondition(_lockPaymentCondition);
+
+        require(
+            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
+            'LockCondition needs to be Fulfilled'
+        );
+        
+        require(
+            registry.balanceOf(msg.sender, uint256(_did)) >= _nftAmount,
+            'Not enough balance'
+        );
+
+        registry.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did), _nftAmount, '');
+
+        ConditionStoreLibrary.ConditionState state = super.fulfill(
+            _id,
+            ConditionStoreLibrary.ConditionState.Fulfilled
+        );
+
+        emit Fulfilled(
+            _agreementId,
+            _did,
+            _nftReceiver,
+            _nftAmount,
+            _id
+        );
+
+        return state;
+    }    
+
+    function fulfillForMarket(
+        bytes32 _agreementId,
+        bytes32 _did,
+        address _nftHolder,
+        address _nftReceiver,
+        uint256 _nftAmount,
+        bytes32 _lockPaymentCondition
+    )
+    public
+    returns (ConditionStoreLibrary.ConditionState)
+    {
+        require(msg.sender == market, 'only market can call');
+
+        bytes32 _id = generateId(
+            _agreementId,
+            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition)
         );
 
         address lockConditionTypeRef;
@@ -142,7 +194,6 @@ contract TransferNFTCondition is Condition {
         emit Fulfilled(
             _agreementId,
             _did,
-            _nftHolder,
             _nftReceiver,
             _nftAmount,
             _id
