@@ -214,8 +214,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('DIDRegistry'),
-                    '0x0000000000000000000000000000000000000000'
+                    getAddress('DIDRegistry')
                 ],
                 verbose
             })

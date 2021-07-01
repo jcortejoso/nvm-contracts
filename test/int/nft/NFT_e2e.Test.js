@@ -119,11 +119,10 @@ contract('End to End NFT Scenarios', (accounts) => {
         )
 
         transferCondition = await TransferNFTCondition.new()
-        await transferCondition.methods['initialize(address,address,address,address)'](
+        await transferCondition.initialize(
             owner,
             conditionStoreManager.address,
             didRegistry.address,
-            market,
             { from: deployer }
         )
 
@@ -171,7 +170,7 @@ contract('End to End NFT Scenarios', (accounts) => {
         )
 
         // IMPORTANT: Here we give ERC1155 transfer grants to the TransferNFTCondition condition
-        // await didRegistry.setProxyApproval(transferCondition.address, true, { from: owner })
+        await didRegistry.setProxyApproval(transferCondition.address, true, { from: owner })
 
         await templateStoreManager.proposeTemplate(nftSalesTemplate.address)
         await templateStoreManager.approveTemplate(nftSalesTemplate.address, { from: owner })
@@ -525,7 +524,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             const nftBalanceArtistBefore = await didRegistry.balanceOf(artist, did)
             const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
 
-            await didRegistry.setProxyApproval(transferCondition.address, true, { from: owner })
+            await didRegistry.setApprovalForAll(market, true, { from: artist })
             await transferCondition.fulfillForMarket(
                 agreementId,
                 did,

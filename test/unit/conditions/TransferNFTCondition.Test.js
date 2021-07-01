@@ -92,11 +92,10 @@ contract('TransferNFT Condition constructor', (accounts) => {
 
             transferCondition = await TransferNFTCondition.new()
 
-            await transferCondition.methods['initialize(address,address,address,address)'](
+            await transferCondition.initialize(
                 owner,
                 conditionStoreManager.address,
-                didRegistry.address,
-                owner
+                didRegistry.address
             )
 
             lockPaymentCondition = await LockPaymentCondition.new()
@@ -116,7 +115,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
             )
 
             // IMPORTANT: Here we give ERC1155 transfer grants to the TransferNFTCondition condition
-            // await didRegistry.setProxyApproval(transferCondition.address, true, { from: owner })
+            await didRegistry.setProxyApproval(transferCondition.address, true, { from: owner })
         }
 
         const did = await didRegistry.hashDID(didSeed, accounts[0])
@@ -188,11 +187,10 @@ contract('TransferNFT Condition constructor', (accounts) => {
 
             const transferCondition = await TransferNFTCondition.new()
 
-            await assert.isRejected(transferCondition.methods['initialize(address,address,address,address)'](
+            await assert.isRejected(transferCondition.initialize(
                 owner,
                 constants.address.zero,
-                agreementStoreManager.address,
-                owner
+                agreementStoreManager.address
             ), undefined)
         })
     })
@@ -251,7 +249,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
             expect(eventArgs._amount.toNumber()).to.equal(numberNFTs)
         })
 
-        it('anyone should be able to fulfill if condition exist', async () => {
+        it('approved operators should be able to fulfill if condition exist', async () => {
             const {
                 rewardAddress,
                 agreementId,
@@ -286,15 +284,58 @@ contract('TransferNFT Condition constructor', (accounts) => {
                 conditionId,
                 transferCondition.address)
 
-            await didRegistry.setApprovalForAll(transferCondition.address, true, { from: other })
-            const result = await transferCondition.fulfill(
-                agreementId, did, rewardAddress, numberNFTs,
+            await didRegistry.setApprovalForAll(other, true, { from: createRole })
+            const result = await transferCondition.fulfillForMarket(
+                agreementId, did, createRole, rewardAddress, numberNFTs,
                 conditionIdPayment, { from: other })
+            await didRegistry.setApprovalForAll(other, false, { from: createRole })
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
                 constants.condition.state.fulfilled)
             testUtils.assertEmitted(result, 1, 'Fulfilled')
+        })
+
+        it('unapproved operators should not be able to fulfill', async () => {
+            const {
+                rewardAddress,
+                agreementId,
+                did,
+                transferCondition,
+                conditionStoreManager
+            } = await setupTest({ accounts: accounts, registerDID: true })
+
+            const hashValuesPayment = await lockPaymentCondition.hashValues(
+                did, escrowCondition.address, token.address, paymentAmounts, paymentReceivers)
+            const conditionIdPayment = await lockPaymentCondition.generateId(agreementId, hashValuesPayment)
+
+            await conditionStoreManager.createCondition(
+                conditionIdPayment,
+                lockPaymentCondition.address)
+
+            await token.mint(accounts[0], 10, { from: owner })
+            await token.approve(lockPaymentCondition.address, 10)
+
+            await lockPaymentCondition.fulfill(agreementId, did, escrowCondition.address, token.address, paymentAmounts, paymentReceivers)
+
+            assert.strictEqual(
+                (await conditionStoreManager.getConditionState(conditionIdPayment)).toNumber(),
+                constants.condition.state.fulfilled)
+
+            const hashValues = await transferCondition.hashValues(
+                did, rewardAddress, numberNFTs, conditionIdPayment)
+
+            const conditionId = await transferCondition.generateId(agreementId, hashValues)
+
+            await conditionStoreManager.createCondition(
+                conditionId,
+                transferCondition.address)
+
+            await assert.isRejected(transferCondition.fulfillForMarket(
+                agreementId, did, createRole, rewardAddress, numberNFTs,
+                conditionIdPayment, { from: other }),
+                'only approved operator can call'
+            )
         })
     })
 

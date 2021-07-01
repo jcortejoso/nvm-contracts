@@ -29,7 +29,7 @@ contract TransferNFTCondition is Condition {
         uint256 _amount,
         bytes32 _conditionId
     );
-    
+
    /**
     * @notice initialize init the contract with the following parameters
     * @dev this function is called only once during the contract
@@ -37,13 +37,11 @@ contract TransferNFTCondition is Condition {
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address    
     * @param _didRegistryAddress DID Registry address
-    * @param _market Market address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress,
-        address _market
+        address _didRegistryAddress
     )
         external
         initializer()
@@ -64,8 +62,6 @@ contract TransferNFTCondition is Condition {
         registry = DIDRegistry(
             _didRegistryAddress
         );
-
-        market = _market;
     }
 
    /**
@@ -162,7 +158,7 @@ contract TransferNFTCondition is Condition {
     public
     returns (ConditionStoreLibrary.ConditionState)
     {
-        require(msg.sender == market, 'only market can call');
+        require(registry.isApprovedForAll(_nftHolder, msg.sender), 'only approved operator can call');
 
         bytes32 _id = generateId(
             _agreementId,
