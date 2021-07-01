@@ -20,7 +20,7 @@ contract TransferNFTCondition is Condition {
     bytes32 constant public CONDITION_TYPE = keccak256('TransferNFTCondition');
 
     DIDRegistry private registry;
-    address market;
+    address public market;
 
     event Fulfilled(
         bytes32 indexed _agreementId,
