@@ -334,7 +334,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
             await assert.isRejected(transferCondition.fulfillForMarket(
                 agreementId, did, createRole, rewardAddress, numberNFTs,
                 conditionIdPayment, { from: other }),
-                'only approved operator can call'
+            'only approved operator can call'
             )
         })
     })
