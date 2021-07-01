@@ -92,10 +92,11 @@ contract('TransferNFT Condition constructor', (accounts) => {
 
             transferCondition = await TransferNFTCondition.new()
 
-            await transferCondition.methods['initialize(address,address,address)'](
+            await transferCondition.methods['initialize(address,address,address,address)'](
                 owner,
                 conditionStoreManager.address,
-                didRegistry.address
+                didRegistry.address,
+                owner
             )
 
             lockPaymentCondition = await LockPaymentCondition.new()
@@ -187,10 +188,11 @@ contract('TransferNFT Condition constructor', (accounts) => {
 
             const transferCondition = await TransferNFTCondition.new()
 
-            await assert.isRejected(transferCondition.methods['initialize(address,address,address)'](
+            await assert.isRejected(transferCondition.methods['initialize(address,address,address,address)'](
                 owner,
                 constants.address.zero,
-                agreementStoreManager.address
+                agreementStoreManager.address,
+                owner
             ), undefined)
         })
     })
