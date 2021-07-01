@@ -263,7 +263,6 @@ contract('End to End NFT Scenarios', (accounts) => {
 
             await nft.mint(did, { from: artist })
             await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
-
         })
     })
 
@@ -297,7 +296,6 @@ contract('End to End NFT Scenarios', (accounts) => {
         })
 
         it('The artist can check the payment and transfer the NFT to the collector', async () => {
-
             await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
             await transferCondition.fulfill(
                 agreementId,

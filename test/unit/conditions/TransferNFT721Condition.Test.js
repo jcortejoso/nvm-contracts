@@ -26,7 +26,6 @@ contract('TransferNFT721 Condition constructor', (accounts) => {
     const createRole = accounts[0]
     const owner = accounts[1]
     const numberNFTs = 1 // NFTs
-    const mintCap = 100
     const paymentAmounts = [10]
     const paymentReceivers = [accounts[3]]
     const other = accounts[4]
