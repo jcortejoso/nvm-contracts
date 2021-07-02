@@ -172,11 +172,11 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
         emit ApprovalForAll(_msgSender(), operator, approved);
     }
     
-    function setProxyApproval(address operator, bool approved) onlyOwner public virtual {
+    function setProxyApproval(address operator, bool approved) public onlyOwner virtual {
         _proxyApprovals[operator] = approved;
         emit ProxyApproval(_msgSender(), operator, approved);
-    }    
-    
+    }
+
     /**
      * @dev See {IERC1155-isApprovedForAll}.
      */

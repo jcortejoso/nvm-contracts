@@ -74,7 +74,7 @@ contract NFT721HolderCondition is Condition, INFTHolder {
         
         require(
             _amount == 0 || (_amount == 1 && erc721.ownerOf(uint256(_did)) == _holderAddress),
-            'The holder doesnt have enough balance for the NFT given'
+            'The holder doesnt have enough NFT balance for the did given'
         );
 
         bytes32 _id = generateId(
