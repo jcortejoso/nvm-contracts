@@ -49,7 +49,7 @@ contract('NFTSalesTemplate', (accounts) => {
 
         transferCondition = await TransferNFTCondition.new({ from: deployer })
 
-        await transferCondition.methods['initialize(address,address,address)'](
+        await transferCondition.initialize(
             owner,
             conditionStoreManager.address,
             agreementStoreManager.address,

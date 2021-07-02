@@ -119,7 +119,7 @@ contract('End to End NFT Scenarios', (accounts) => {
         )
 
         transferCondition = await TransferNFTCondition.new()
-        await transferCondition.methods['initialize(address,address,address)'](
+        await transferCondition.initialize(
             owner,
             conditionStoreManager.address,
             didRegistry.address,
@@ -295,6 +295,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             const nftBalanceArtistBefore = await didRegistry.balanceOf(artist, did)
             const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
 
+            await didRegistry.setApprovalForAll(transferCondition.address, true, { from: artist })
             await transferCondition.fulfill(
                 agreementId,
                 did,
@@ -302,6 +303,7 @@ contract('End to End NFT Scenarios', (accounts) => {
                 numberNFTs,
                 nftSalesAgreement.conditionIds[0],
                 { from: artist })
+            await didRegistry.setApprovalForAll(transferCondition.address, false, { from: artist })
 
             const { state } = await conditionStoreManager.getCondition(
                 nftSalesAgreement.conditionIds[1])
@@ -395,8 +397,9 @@ contract('End to End NFT Scenarios', (accounts) => {
             const collector1Balance = await getBalance(token, collector2)
             assert.strictEqual(collector1Balance, 0)
 
-            await didRegistry.setApprovalForAll(transferCondition.address, true, { from: artist })
+            await didRegistry.setApprovalForAll(transferCondition.address, true, { from: collector1 })
             // Collector1: Transfer the NFT
+            await didRegistry.setApprovalForAll(transferCondition.address, true, { from: collector1 })
             await transferCondition.fulfill(
                 agreementId2,
                 did,
@@ -404,13 +407,17 @@ contract('End to End NFT Scenarios', (accounts) => {
                 numberNFTs2,
                 nftSalesAgreement.conditionIds[0],
                 { from: collector1 })
+            await didRegistry.setApprovalForAll(transferCondition.address, true, { from: collector1 })
 
             let condition = await conditionStoreManager.getCondition(
                 nftSalesAgreement.conditionIds[1])
             assert.strictEqual(condition[1].toNumber(), constants.condition.state.fulfilled)
 
-            const nftBalance = await didRegistry.balanceOf(collector2, did)
-            assert.strictEqual(nftBalance.toNumber(), numberNFTs2)
+            const nftBalance1 = await didRegistry.balanceOf(collector1, did)
+            assert.strictEqual(nftBalance1.toNumber(), numberNFTs - numberNFTs2)
+
+            const nftBalance2 = await didRegistry.balanceOf(collector2, did)
+            assert.strictEqual(nftBalance2.toNumber(), numberNFTs2)
 
             // Collector1 & Artist: Get the payment
             await escrowCondition.fulfill(
@@ -517,9 +524,11 @@ contract('End to End NFT Scenarios', (accounts) => {
             const nftBalanceArtistBefore = await didRegistry.balanceOf(artist, did)
             const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
 
-            await transferCondition.fulfill(
+            await didRegistry.setApprovalForAll(market, true, { from: artist })
+            await transferCondition.fulfillForMarket(
                 agreementId,
                 did,
+                artist,
                 collector1,
                 numberNFTs,
                 nftSalesAgreement.conditionIds[0],

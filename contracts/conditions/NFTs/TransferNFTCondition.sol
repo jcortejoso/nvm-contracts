@@ -20,7 +20,8 @@ contract TransferNFTCondition is Condition {
     bytes32 constant public CONDITION_TYPE = keccak256('TransferNFTCondition');
 
     DIDRegistry private registry;
-    
+    address public market;
+
     event Fulfilled(
         bytes32 indexed _agreementId,
         bytes32 indexed _did,
@@ -28,7 +29,7 @@ contract TransferNFTCondition is Condition {
         uint256 _amount,
         bytes32 _conditionId
     );
-    
+
    /**
     * @notice initialize init the contract with the following parameters
     * @dev this function is called only once during the contract
@@ -60,7 +61,7 @@ contract TransferNFTCondition is Condition {
 
         registry = DIDRegistry(
             _didRegistryAddress
-        );        
+        );
     }
 
    /**
@@ -87,9 +88,8 @@ contract TransferNFTCondition is Condition {
 
     /**
      * @notice fulfill the transfer NFT condition
-     * @dev only DID owner or DID provider can call this
-     *       method. Fulfill method transfer a certain amount of NFTs 
-     *       to the _receiver address. 
+     * @dev Fulfill method transfer a certain amount of NFTs 
+     *       to the _nftReceiver address. 
      *       When true then fulfill the condition
      * @param _agreementId agreement identifier
      * @param _did refers to the DID in which secret store will issue the decryption keys
@@ -125,11 +125,62 @@ contract TransferNFTCondition is Condition {
         );
         
         require(
-            registry.balanceOf(registry.getDIDOwner(_did), uint256(_did)) >= _nftAmount,
+            registry.balanceOf(msg.sender, uint256(_did)) >= _nftAmount,
             'Not enough balance'
         );
 
-        registry.safeTransferFrom(registry.getDIDOwner(_did), _nftReceiver, uint256(_did), _nftAmount, '');
+        registry.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did), _nftAmount, '');
+
+        ConditionStoreLibrary.ConditionState state = super.fulfill(
+            _id,
+            ConditionStoreLibrary.ConditionState.Fulfilled
+        );
+
+        emit Fulfilled(
+            _agreementId,
+            _did,
+            _nftReceiver,
+            _nftAmount,
+            _id
+        );
+
+        return state;
+    }    
+
+    function fulfillForMarket(
+        bytes32 _agreementId,
+        bytes32 _did,
+        address _nftHolder,
+        address _nftReceiver,
+        uint256 _nftAmount,
+        bytes32 _lockPaymentCondition
+    )
+    public
+    returns (ConditionStoreLibrary.ConditionState)
+    {
+        require(registry.isApprovedForAll(_nftHolder, msg.sender), 'only approved operator can call');
+
+        bytes32 _id = generateId(
+            _agreementId,
+            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition)
+        );
+
+        address lockConditionTypeRef;
+        ConditionStoreLibrary.ConditionState lockConditionState;
+        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
+        .getCondition(_lockPaymentCondition);
+
+        require(
+            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
+            'LockCondition needs to be Fulfilled'
+        );
+        
+        require(
+            registry.balanceOf(_nftHolder, uint256(_did)) >= _nftAmount,
+            'Not enough balance'
+        );
+
+        registry.safeTransferFrom(_nftHolder, _nftReceiver, uint256(_did), _nftAmount, '');
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
