@@ -101,55 +101,6 @@ contract TransferNFTCondition is Condition {
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
-        address _nftReceiver,
-        uint256 _nftAmount,
-        bytes32 _lockPaymentCondition
-    )
-    public
-    returns (ConditionStoreLibrary.ConditionState)
-    {
-
-        bytes32 _id = generateId(
-            _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition)
-        );
-
-        address lockConditionTypeRef;
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
-        .getCondition(_lockPaymentCondition);
-
-        require(
-            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
-            'LockCondition needs to be Fulfilled'
-        );
-        
-        require(
-            registry.balanceOf(msg.sender, uint256(_did)) >= _nftAmount,
-            'Not enough balance'
-        );
-
-        registry.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did), _nftAmount, '');
-
-        ConditionStoreLibrary.ConditionState state = super.fulfill(
-            _id,
-            ConditionStoreLibrary.ConditionState.Fulfilled
-        );
-
-        emit Fulfilled(
-            _agreementId,
-            _did,
-            _nftReceiver,
-            _nftAmount,
-            _id
-        );
-
-        return state;
-    }    
-
-    function fulfillForMarket(
-        bytes32 _agreementId,
-        bytes32 _did,
         address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
@@ -158,7 +109,7 @@ contract TransferNFTCondition is Condition {
     public
     returns (ConditionStoreLibrary.ConditionState)
     {
-        require(registry.isApprovedForAll(_nftHolder, msg.sender), 'only approved operator can call');
+        require(msg.sender == _nftHolder || registry.isApprovedForAll(_nftHolder, msg.sender), 'only approved operator can call');
 
         bytes32 _id = generateId(
             _agreementId,
