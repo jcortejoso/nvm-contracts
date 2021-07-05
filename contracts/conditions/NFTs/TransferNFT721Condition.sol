@@ -5,7 +5,6 @@ pragma solidity 0.6.12;
 
 
 import '../Condition.sol';
-import '../../registry/DIDRegistry.sol';
 import './ITransferNFT.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
 
@@ -20,9 +19,6 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol'
 contract TransferNFT721Condition is Condition, ITransferNFT {
 
     bytes32 constant public CONDITION_TYPE = keccak256('TransferNFTCondition');
-
-    DIDRegistry private registry;
-    
     
    /**
     * @notice initialize init the contract with the following parameters
@@ -30,21 +26,16 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
     *       initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address    
-    * @param _didRegistryAddress DID Registry address
     */
     function initialize(
         address _owner,
-        address _conditionStoreManagerAddress,
-        address _didRegistryAddress,
-        address
+        address _conditionStoreManagerAddress
     )
         external
-        override
         initializer()
     {
         require(
-            _conditionStoreManagerAddress != address(0) &&
-            _didRegistryAddress != address(0),
+            _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
         
@@ -54,57 +45,33 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-
-        registry = DIDRegistry(
-            _didRegistryAddress
-        );        
+        
     }
 
-   /**
-    * @notice hashValues generates the hash of condition inputs 
-    *        with the following parameters
-    * @param _did refers to the DID in which secret store will issue the decryption keys
-    * @param _nftReceiver is the address of the granted user or the DID provider
-    * @param _nftAmount amount of NFTs to transfer   
-    * @param _lockCondition lock condition identifier    
-    * @param _contract NFT contract to use
-    * @return bytes32 hash of all these values 
-    */
     function hashValues(
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition,
-        address _contract
+        address _nftContractAddress
     )
-        public
-        pure
-        override
-        returns (bytes32)
+    public
+    pure
+    override
+    returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _nftReceiver, _nftAmount, _lockCondition, _contract));
+        return keccak256(abi.encode(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, _nftContractAddress));
     }
-
-    /**
-     * @notice fulfill the transfer NFT condition
-     * @dev Fulfill method transfer a certain amount of NFTs 
-     *       to the _nftReceiver address. 
-     *       When true then fulfill the condition
-     * @param _agreementId agreement identifier
-     * @param _did refers to the DID in which secret store will issue the decryption keys
-     * @param _nftReceiver is the address of the account to receive the NFT
-     * @param _nftAmount amount of NFTs to transfer  
-     * @param _lockPaymentCondition lock payment condition identifier
-     * @param _contract NFT contract to use
-     * @return condition state (Fulfilled/Aborted)
-     */
+    
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition,
-        address _contract
+        address _nftContractAddress
     )
     public
     override
@@ -113,7 +80,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition, _contract)
+            hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress)
         );
 
         address lockConditionTypeRef;
@@ -126,15 +93,15 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
             'LockCondition needs to be Fulfilled'
         );
         
-        IERC721Upgradeable token = IERC721Upgradeable(_contract);
+        IERC721Upgradeable token = IERC721Upgradeable(_nftContractAddress);
 
         require(
-            _nftAmount == 0 || (_nftAmount == 1 && token.ownerOf(uint256(_did)) == msg.sender),
+            _nftAmount == 0 || (_nftAmount == 1 && token.ownerOf(uint256(_did)) == _nftHolder),
             'Not enough balance'
         );
 
         if (_nftAmount == 1) {
-            token.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did));
+            token.safeTransferFrom(_nftHolder, _nftReceiver, uint256(_did));
         }
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
@@ -146,9 +113,10 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
             _agreementId,
             _did,
             _nftReceiver,
+            _nftHolder,
             _nftAmount,
             _id,
-            _contract
+            _nftContractAddress
         );
 
         return state;

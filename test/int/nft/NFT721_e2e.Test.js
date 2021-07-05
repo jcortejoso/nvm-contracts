@@ -45,7 +45,6 @@ contract('End to End NFT Scenarios', (accounts) => {
     const collector1 = accounts[1]
     const collector2 = accounts[2]
     const gallery = accounts[3]
-    const market = accounts[4]
 
     const owner = accounts[9]
     const deployer = accounts[8]
@@ -125,11 +124,9 @@ contract('End to End NFT Scenarios', (accounts) => {
         )
 
         transferCondition = await TransferNFTCondition.new()
-        await transferCondition.methods['initialize(address,address,address,address)'](
+        await transferCondition.methods['initialize(address,address)'](
             owner,
             conditionStoreManager.address,
-            didRegistry.address,
-            market,
             { from: deployer }
         )
 
@@ -174,9 +171,6 @@ contract('End to End NFT Scenarios', (accounts) => {
             accessCondition.address,
             { from: deployer }
         )
-
-        // IMPORTANT: Here we give ERC1155 transfer grants to the TransferNFTCondition condition
-        // await didRegistry.setProxyApproval(transferCondition.address, true, { from: owner })
 
         await templateStoreManager.proposeTemplate(nftSalesTemplate.address)
         await templateStoreManager.approveTemplate(nftSalesTemplate.address, { from: owner })
@@ -230,7 +224,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await lockPaymentCondition.hashValues(did, escrowCondition.address, token.address, _amounts, _receivers))
 
         const conditionIdTransferNFT = await transferCondition.generateId(agreementId,
-            await transferCondition.hashValues(did, _buyer, _numberNFTs, conditionIdLockPayment, nft.address))
+            await transferCondition.hashValues(did, _seller, _buyer, _numberNFTs, conditionIdLockPayment, nft.address))
 
         const conditionIdEscrow = await escrowCondition.generateId(agreementId,
             await escrowCondition.hashValues(did, _amounts, _receivers, escrowCondition.address, token.address, conditionIdLockPayment, conditionIdTransferNFT))
@@ -300,6 +294,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await transferCondition.fulfill(
                 agreementId,
                 did,
+                artist,
                 collector1,
                 numberNFTs,
                 nftSalesAgreement.conditionIds[0],
@@ -408,6 +403,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await transferCondition.fulfill(
                 agreementId2,
                 did,
+                collector1,
                 collector2,
                 numberNFTs2,
                 nftSalesAgreement.conditionIds[0],

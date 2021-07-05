@@ -13,42 +13,31 @@ interface ITransferNFT {
         bytes32 indexed _agreementId,
         bytes32 indexed _did,
         address indexed _receiver,
+        address _holder,
         uint256 _amount,
         bytes32 _conditionId,
-        address _contract
+        address _nftContractAddress
     );
     
-   /**
-    * @notice initialize init the contract with the following parameters
-    * @dev this function is called only once during the contract
-    *       initialization.
-    * @param _owner contract's owner account address
-    * @param _conditionStoreManagerAddress condition store manager address    
-    * @param _didRegistryAddress DID Registry address
-    */
-    function initialize(
-        address _owner,
-        address _conditionStoreManagerAddress,
-        address _didRegistryAddress,
-        address _market
-    )
-        external;
 
    /**
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters
     * @param _did refers to the DID in which secret store will issue the decryption keys
-    * @param _nftReceiver is the address of the granted user or the DID provider
+    * @param _nftHolder is the address of the account Holding the NFTs    
+    * @param _nftReceiver is the address of the NFT receiver
     * @param _nftAmount amount of NFTs to transfer   
-    * @param _lockCondition lock condition identifier    
+    * @param _lockCondition lock condition identifier   
+    * @param _nftContractAddress address of the ERC1155 or ERC721 contract address keeping the NFT 
     * @return bytes32 hash of all these values 
     */
     function hashValues(
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition,
-        address _contract
+        address _nftContractAddress
     )
         external
         pure
@@ -61,18 +50,21 @@ interface ITransferNFT {
      *       When true then fulfill the condition
      * @param _agreementId agreement identifier
      * @param _did refers to the DID in which secret store will issue the decryption keys
-     * @param _nftReceiver is the address of the account to receive the NFT
+     * @param _nftHolder is the address of the account Holding the NFTs    
+     * @param _nftReceiver is the address of the NFT receiver     
      * @param _nftAmount amount of NFTs to transfer  
      * @param _lockPaymentCondition lock payment condition identifier
+     * @param _nftContractAddress address of the ERC1155 or ERC721 contract address keeping the NFT 
      * @return condition state (Fulfilled/Aborted)
      */
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition,
-        address _contract
+        address _nftContractAddress
     )
     external
     returns (ConditionStoreLibrary.ConditionState);

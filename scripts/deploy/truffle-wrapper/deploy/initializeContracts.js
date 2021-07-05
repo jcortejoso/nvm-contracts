@@ -214,8 +214,18 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('DIDRegistry'),
-                    '0x0000000000000000000000000000000000000000'
+                    getAddress('DIDRegistry')
+                ],
+                verbose
+            })
+        }
+        if (contracts.indexOf('TransferNFT721Condition') > -1) {
+            addressBook.TransferNFT721Condition = zosCreate({
+                contract: 'TransferNFT721Condition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager')
                 ],
                 verbose
             })
