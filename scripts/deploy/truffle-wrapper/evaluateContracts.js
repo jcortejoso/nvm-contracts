@@ -8,7 +8,8 @@ const fs = require('fs')
 function evaluateContracts({
     contracts,
     testnet,
-    verbose
+    verbose,
+    handleAliases = true
 } = {}) {
     if (!contracts || contracts.length === 0) {
         // contracts not supplied, loading from disc
@@ -30,25 +31,27 @@ function evaluateContracts({
         }
     }
 
-    // do alias detection
-    for (const contract of contracts) {
-        const c = contract.split(':')
-        if (c.length < 2) continue
-        const [original, alias] = c
-        const basePath = './build/contracts'
-        const src = `${basePath}/${original}.json`
-        const dest = `${basePath}/${alias}.json`
+    if (handleAliases) {
+        // do alias detection
+        for (const contract of contracts) {
+            const c = contract.split(':')
+            if (c.length < 2) continue
+            const [original, alias] = c
+            const basePath = './build/contracts'
+            const src = `${basePath}/${original}.json`
+            const dest = `${basePath}/${alias}.json`
 
-        // replace with the alias
-        contracts.splice(contracts.indexOf(contract), 1, alias)
+            // replace with the alias
+            contracts.splice(contracts.indexOf(contract), 1, alias)
 
-        // avoid overriding
-        if (!fs.existsSync(dest)) {
-            fs.copyFileSync(src, dest)
-            if (verbose) {
-                console.log(
-                    `Copied contract artifact: '${original}' to '${alias}'`
-                )
+            // avoid overriding
+            if (!fs.existsSync(dest)) {
+                fs.copyFileSync(src, dest)
+                if (verbose) {
+                    console.log(
+                        `Copied contract artifact: '${original}' to '${alias}'`
+                    )
+                }
             }
         }
     }
