@@ -36,11 +36,20 @@ function evaluateContracts({
         if (c.length < 2) continue
         const [original, alias] = c
         const basePath = './build/contracts'
-        fs.copyFileSync(`${basePath}/${original}.json`, `${basePath}/${alias}.json`)
-        if (verbose) {
-            console.log(
-                `Copied contract artifact: '${original}' to '${alias}'`
-            )
+        const src = `${basePath}/${original}.json`
+        const dest = `${basePath}/${alias}.json`
+
+        // replace with the alias
+        contracts.splice(contracts.indexOf(contract), 1, alias)
+
+        // avoid overriding
+        if (!fs.existsSync(dest)) {
+            fs.copyFileSync(src, dest)
+            if (verbose) {
+                console.log(
+                    `Copied contract artifact: '${original}' to '${alias}'`
+                )
+            }
         }
     }
 
