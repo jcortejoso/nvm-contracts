@@ -384,7 +384,7 @@ async function initializeContracts({
         getAddress('LockPaymentCondition') &&
         getAddress('TransferNFT721Condition') &&
         getAddress('EscrowPaymentCondition')) {
-        if (contracts.indexOf('NFTSalesTemplate') > -1) {
+        if (contracts.indexOf('NFT721SalesTemplate') > -1) {
             addressBook.NFT721SalesTemplate = zosCreate({
                 contract: 'NFT721SalesTemplate',
                 network,
