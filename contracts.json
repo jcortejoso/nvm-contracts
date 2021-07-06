@@ -7,7 +7,6 @@
   "HashLockCondition",
   "LockPaymentCondition",
   "NFTHolderCondition",
-  "NFTHolder721Condition",
   "NFTLockCondition",
   "TransferNFTCondition",
   "TransferNFT721Condition",
@@ -22,5 +21,6 @@
   "NFTAccessTemplate",
   "DIDSalesTemplate",
   "NFTSalesTemplate",
+  "NFTSalesTemplate:NFT721SalesTemplate",
   "EscrowComputeExecutionTemplate"
 ]

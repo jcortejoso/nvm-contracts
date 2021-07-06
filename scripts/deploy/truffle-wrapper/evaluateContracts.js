@@ -3,6 +3,7 @@
 // eslint-disable-next-line security/detect-non-literal-require
 const contractNames = require(`${process.env.PWD}/contracts.json`)
 const { argv } = require('yargs')
+const fs = require('fs')
 
 function evaluateContracts({
     contracts,
@@ -26,6 +27,20 @@ function evaluateContracts({
         if (testnet && contracts.indexOf('Dispenser') < 0) {
             // deploy the Dispenser if we are in a testnet
             contracts.push('Dispenser')
+        }
+    }
+
+    // do alias detection
+    for (const contract of contracts) {
+        const c = contract.split(':')
+        if (c.length < 2) continue
+        const [original, alias] = c
+        const basePath = './build/contracts'
+        fs.copyFileSync(`${basePath}/${original}.json`, `${basePath}/${alias}.json`)
+        if (verbose) {
+            console.log(
+                `Copied contract artifact: '${original}' to '${alias}'`
+            )
         }
     }
 
