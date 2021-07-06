@@ -202,6 +202,31 @@ async function setupContracts({
             })
         }
 
+        if (addressBook.NFT721SalesTemplate) {
+            if (verbose) {
+                console.log(
+                    `Proposing template ${addressBook.NFT721SalesTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await TemplateStoreManagerInstance.proposeTemplate(
+                addressBook.NFT721SalesTemplate,
+                { from: roles.deployer }
+            )
+
+            if (verbose) {
+                console.log(
+                    `Approving template ${addressBook.NFT721SalesTemplate} from ${roles.deployer}`
+                )
+            }
+
+            await approveTemplate({
+                TemplateStoreManagerInstance,
+                roles,
+                templateAddress: addressBook.NFT721SalesTemplate
+            })
+        }
+
         await transferOwnership({
             ContractInstance: TemplateStoreManagerInstance,
             name: TemplateStoreManager.contractName,

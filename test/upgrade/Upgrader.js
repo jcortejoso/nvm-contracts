@@ -17,7 +17,16 @@ const deploy = async function({
         web3,
         artifacts,
         contracts,
-        evaluateContracts,
+        evaluateContracts: ({
+            contracts,
+            testnet,
+            verbose
+        }) => evaluateContracts({
+            contracts,
+            testnet,
+            verbose,
+            handleAliases: false
+        }),
         initializeContracts,
         setupContracts,
         forceWalletCreation: true,
@@ -34,7 +43,16 @@ const upgrade = async function({
     const taskBook = await upgradeContracts({
         web3,
         contracts,
-        evaluateContracts,
+        evaluateContracts: ({
+            contracts,
+            testnet,
+            verbose
+        }) => evaluateContracts({
+            contracts,
+            testnet,
+            verbose,
+            handleAliases: false
+        }),
         strict: true,
         verbose
     })
