@@ -55,7 +55,7 @@
     "lint": "yarn lint:eslint&&yarn lint:ethlint",
     "lint:eslint": "eslint --ignore-path .gitignore --ext .js .",
     "lint:ethlint": "solhint --max-warnings 0 contracts/**/*.sol ",
-    "lint:fix": "yarn lint:eslint -- --fix&&yarn lint:ethlint -- --fix",
+    "lint:fix": "yarn lint:eslint --fix && yarn lint:ethlint --fix",
     "security:mythril": "truffle compile&&myth -x --truffle --max-depth 12 --outform markdown 2>&1 | tee mythrilReport.md",
     "security:securify": "docker run -v $(pwd):/project chainsecurity/securify -t 2>&1 | tee securifyReport.txt",
     "security:slither": "slither . 2>&1 | tee slitherReport.txt",
