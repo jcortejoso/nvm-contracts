@@ -89,7 +89,7 @@ module.exports = {
             ),
             network_id: 0x4, // 4
             gas: 11 * 1000000,
-            gasPrice: utils.toWei("5", "gwei"),
+            gasPrice: utils.toWei('5', 'gwei'),
             timeoutBlocks: 200,
             skipDryRun: true,
             from: '0x73943d14131268F23b721E668911bCDDEcA9da62'
