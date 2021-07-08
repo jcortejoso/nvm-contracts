@@ -62,22 +62,22 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         );
         
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        grantRole(MARKET_ROLE, _market);
+        grantRole(MARKET_ROLE, _nftContractAddress);
     }
 
-    function grantMarketRole(address _market)
+    function grantMarketRole(address _nftContractAddress)
     public 
     onlyOwner 
     {
-        return grantRole(MARKET_ROLE, _market);
+        return grantRole(MARKET_ROLE, _nftContractAddress);
     }
 
 
-    function revokeMarketRole(address _market)
+    function revokeMarketRole(address _nftContractAddress)
     public
     onlyOwner 
     {
-        return revokeRole(MARKET_ROLE, _market);
+        return revokeRole(MARKET_ROLE, _nftContractAddress);
     }
     
    /**
