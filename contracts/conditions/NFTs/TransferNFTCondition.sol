@@ -32,13 +32,13 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address    
     * @param _didRegistryAddress DID Registry address
-    * @param _market Market address
+    * @param _nftContractAddress Market address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
         address _didRegistryAddress,
-        address _market
+        address _nftContractAddress
     )
         external
         override
