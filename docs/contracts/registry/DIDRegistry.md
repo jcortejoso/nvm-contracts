@@ -20,7 +20,7 @@ DIDRegistry Initializer
 ### registerMintableDID
 ```solidity
   function registerMintableDID(
-    bytes32 _did,
+    bytes32 _didSeed,
     bytes32 _checksum,
     address[] _providers,
     string _url,
@@ -40,7 +40,7 @@ The first attribute of a DID registered sets the DID owner.
 #### Parameters:
 | Name | Type | Description                                                          |
 | :--- | :--- | :------------------------------------------------------------------- |
-|`_did` | bytes32 | refers to decentralized identifier (a bytes32 length ID).
+|`_didSeed` | bytes32 | refers to decentralized identifier seed (a bytes32 length ID).
 |`_checksum` | bytes32 | includes a one-way HASH calculated using the DDO content.
 |`_providers` | address[] | list of addresses that can act as an asset provider     
 |`_url` | string | refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.

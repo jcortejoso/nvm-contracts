@@ -9,7 +9,6 @@ into account the royalties to be paid to the original creators in a secondary ma
   function initialize(
     address _owner,
     address _conditionStoreManagerAddress,
-    address _tokenAddress,
     address _didRegistryAddress
   ) external
 ```
@@ -22,7 +21,6 @@ this function is called only once during the contract initialization.
 | :--- | :--- | :------------------------------------------------------------------- |
 |`_owner` | address | contract's owner account address
 |`_conditionStoreManagerAddress` | address | condition store manager address
-|`_tokenAddress` | address | Default Token contract address
 |`_didRegistryAddress` | address | DID Registry address
 
 ### hashValues
@@ -88,11 +86,11 @@ fulfill requires valid token transfer in order
     address _rewardAddress,
     address _tokenAddress,
     uint256 _amount
-  ) internal returns (bool)
+  ) internal
 ```
 _transferERC20 transfer ERC20 tokens 
 
-
+Will throw if transfer fails
 #### Parameters:
 | Name | Type | Description                                                          |
 | :--- | :--- | :------------------------------------------------------------------- |
@@ -100,10 +98,7 @@ _transferERC20 transfer ERC20 tokens
 |`_tokenAddress` | address | the ERC20 contract address to use during the payment
 |`_amount` | uint256 | token amount to be locked/released
 
-#### Return Values:
-| Name                           | Type          | Description                                                                  |
-| :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
-|`true`| address | if everything worked
+
 ### _transferETH
 ```solidity
   function _transferETH(

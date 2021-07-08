@@ -4,7 +4,7 @@ Implementation of the Condition Store Manager.
      Condition store manager is responsible for enforcing the 
      the business logic behind creating/updating the condition state
      based on the assigned role to each party. Only specific type of
-     contracts are allowed to call this contract, therefor there are 
+     contracts are allowed to call this contract, therefore there are 
      two types of roles, create role that in which is able to create conditions.
      The second role is the update role, which is can update the condition state.
      Also, it support delegating the roles to other contract(s)/account(s).
@@ -99,8 +99,35 @@ createCondition only called by create role address
   function createCondition(
     bytes32 _id,
     address _typeRef,
+    address _creator
+  ) external returns (uint256 size)
+```
+
+createCondition only called by create role address 
+     the condition should use a valid condition contract 
+     address, valid time lock and timeout. Moreover, it 
+     enforce the condition state transition from 
+     Uninitialized to Unfulfilled.
+
+#### Parameters:
+| Name | Type | Description                                                          |
+| :--- | :--- | :------------------------------------------------------------------- |
+|`_id` | bytes32 | unique condition identifier
+|`_typeRef` | address | condition contract address
+|`_creator` | address | address of the condition creator    
+
+#### Return Values:
+| Name                           | Type          | Description                                                                  |
+| :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
+|`size`| bytes32 | the index of the created condition
+### createCondition
+```solidity
+  function createCondition(
+    bytes32 _id,
+    address _typeRef,
     uint256 _timeLock,
-    uint256 _timeOut
+    uint256 _timeOut,
+    address _creator
   ) public returns (uint256 size)
 ```
 
@@ -117,6 +144,7 @@ createCondition only called by create role address
 |`_typeRef` | address | condition contract address
 |`_timeLock` | uint256 | start of the time window
 |`_timeOut` | uint256 | end of the time window
+|`_creator` | address | address of the condition creator     
 
 #### Return Values:
 | Name                           | Type          | Description                                                                  |

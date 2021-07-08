@@ -9,7 +9,7 @@ Implementation of condition allowing to transfer the ownership
   function initialize(
     address _owner,
     address _conditionStoreManagerAddress,
-    address _agreementStoreManagerAddress
+    address _didRegistryAddress
   ) external
 ```
 initialize init the contract with the following parameters
@@ -22,7 +22,7 @@ this function is called only once during the contract
 | :--- | :--- | :------------------------------------------------------------------- |
 |`_owner` | address | contract's owner account address
 |`_conditionStoreManagerAddress` | address | condition store manager address    
-|`_agreementStoreManagerAddress` | address | agreement store manager address
+|`_didRegistryAddress` | address | DID Registry address
 
 ### hashValues
 ```solidity

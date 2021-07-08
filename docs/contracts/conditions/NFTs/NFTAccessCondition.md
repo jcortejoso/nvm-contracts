@@ -10,7 +10,7 @@ Implementation of the Access Condition specific for NFTs
   function initialize(
     address _owner,
     address _conditionStoreManagerAddress,
-    address _agreementStoreManagerAddress
+    address _didRegistryAddress
   ) external
 ```
 initialize init the 
@@ -24,7 +24,7 @@ this function is called only once during the contract
 | :--- | :--- | :------------------------------------------------------------------- |
 |`_owner` | address | contract's owner account address
 |`_conditionStoreManagerAddress` | address | condition store manager address
-|`_agreementStoreManagerAddress` | address | agreement store manager address
+|`_didRegistryAddress` | address | DID registry address
 
 ### hashValues
 ```solidity
@@ -47,6 +47,15 @@ hashValues generates the hash of condition inputs
 | Name                           | Type          | Description                                                                  |
 | :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
 |`bytes32`| bytes32 | hash of all these values
+### hashValues
+```solidity
+  function hashValues(
+  ) public returns (bytes32)
+```
+
+
+
+
 ### fulfill
 ```solidity
   function fulfill(
@@ -55,7 +64,33 @@ hashValues generates the hash of condition inputs
     address _grantee
   ) public returns (enum ConditionStoreLibrary.ConditionState)
 ```
-fulfill access secret store condition
+fulfill NFT Access condition
+
+only DID owner or DID provider can call this
+      method. Fulfill method sets the permissions 
+      for the granted consumer's address to true then
+      fulfill the condition
+
+#### Parameters:
+| Name | Type | Description                                                          |
+| :--- | :--- | :------------------------------------------------------------------- |
+|`_agreementId` | bytes32 | agreement identifier
+|`_documentId` | bytes32 | refers to the DID in which secret store will issue the decryption keys
+|`_grantee` | address | is the address of the granted user or the DID provider
+
+#### Return Values:
+| Name                           | Type          | Description                                                                  |
+| :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
+|`condition`| bytes32 | state (Fulfilled/Aborted)
+### fulfill
+```solidity
+  function fulfill(
+    bytes32 _agreementId,
+    bytes32 _documentId,
+    address _grantee
+  ) public returns (enum ConditionStoreLibrary.ConditionState)
+```
+fulfill NFT Access condition
 
 only DID owner or DID provider can call this
       method. Fulfill method sets the permissions 
@@ -109,12 +144,3 @@ checkPermissions is called to validate the permissions of user related to the NF
 | Name                           | Type          | Description                                                                  |
 | :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
 |`permissionGranted`| address | true if the access was granted
-## Events
-### Fulfilled
-```solidity
-  event Fulfilled(
-  )
-```
-
-
-

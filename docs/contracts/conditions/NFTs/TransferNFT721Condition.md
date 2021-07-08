@@ -1,5 +1,7 @@
 
-Implementation of the Nft Holder Condition
+Implementation of condition allowing to transfer an NFT
+     between the original owner and a receiver
+
 
 ## Functions
 ### initialize
@@ -10,8 +12,7 @@ Implementation of the Nft Holder Condition
     address _didRegistryAddress
   ) external
 ```
-initialize init the 
-      contract with the following parameters
+initialize init the contract with the following parameters
 
 this function is called only once during the contract
       initialization.
@@ -20,15 +21,17 @@ this function is called only once during the contract
 | Name | Type | Description                                                          |
 | :--- | :--- | :------------------------------------------------------------------- |
 |`_owner` | address | contract's owner account address
-|`_conditionStoreManagerAddress` | address | condition store manager address
-|`_didRegistryAddress` | address | DIDRegistry address
+|`_conditionStoreManagerAddress` | address | condition store manager address    
+|`_didRegistryAddress` | address | DID Registry address
 
 ### hashValues
 ```solidity
   function hashValues(
     bytes32 _did,
-    address _holderAddress,
-    uint256 _amount
+    address _nftReceiver,
+    uint256 _nftAmount,
+    bytes32 _lockCondition,
+    address _contract
   ) public returns (bytes32)
 ```
 hashValues generates the hash of condition inputs 
@@ -38,54 +41,44 @@ hashValues generates the hash of condition inputs
 #### Parameters:
 | Name | Type | Description                                                          |
 | :--- | :--- | :------------------------------------------------------------------- |
-|`_did` | bytes32 | the Decentralized Identifier of the asset
-|`_holderAddress` | address | the address of the NFT holder
-|`_amount` | uint256 | is the amount NFTs that need to be hold by the holder
+|`_did` | bytes32 | refers to the DID in which secret store will issue the decryption keys
+|`_nftReceiver` | address | is the address of the granted user or the DID provider
+|`_nftAmount` | uint256 | amount of NFTs to transfer   
+|`_lockCondition` | bytes32 | lock condition identifier    
+|`_contract` | address | NFT contract to use
 
 #### Return Values:
 | Name                           | Type          | Description                                                                  |
 | :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
 |`bytes32`| bytes32 | hash of all these values
-### hashValues
-```solidity
-  function hashValues(
-  ) public returns (bytes32)
-```
-
-
-
-
 ### fulfill
 ```solidity
   function fulfill(
     bytes32 _agreementId,
     bytes32 _did,
-    address _holderAddress,
-    uint256 _amount
-  ) external returns (enum ConditionStoreLibrary.ConditionState)
+    address _nftReceiver,
+    uint256 _nftAmount,
+    bytes32 _lockPaymentCondition,
+    address _contract
+  ) public returns (enum ConditionStoreLibrary.ConditionState)
 ```
-fulfill requires a validation that holder has enough
-      NFTs for a specific DID
+fulfill the transfer NFT condition
 
+Fulfill method transfer a certain amount of NFTs 
+      to the _nftReceiver address. 
+      When true then fulfill the condition
 
 #### Parameters:
 | Name | Type | Description                                                          |
 | :--- | :--- | :------------------------------------------------------------------- |
-|`_agreementId` | bytes32 | SEA agreement identifier
-|`_did` | bytes32 | the Decentralized Identifier of the asset    
-|`_holderAddress` | address | the contract address where the reward is locked
-|`_amount` | uint256 | is the amount of NFT to be hold
+|`_agreementId` | bytes32 | agreement identifier
+|`_did` | bytes32 | refers to the DID in which secret store will issue the decryption keys
+|`_nftReceiver` | address | is the address of the account to receive the NFT
+|`_nftAmount` | uint256 | amount of NFTs to transfer  
+|`_lockPaymentCondition` | bytes32 | lock payment condition identifier
+|`_contract` | address | NFT contract to use
 
 #### Return Values:
 | Name                           | Type          | Description                                                                  |
 | :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
-|`condition`| bytes32 | state
-### fulfill
-```solidity
-  function fulfill(
-  ) external returns (enum ConditionStoreLibrary.ConditionState)
-```
-
-
-
-
+|`condition`| bytes32 | state (Fulfilled/Aborted)

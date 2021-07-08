@@ -5,7 +5,7 @@
 ### registerAttribute
 ```solidity
   function registerAttribute(
-    bytes32 _did,
+    bytes32 _didSeed,
     bytes32 _checksum,
     address[] _url
   ) public returns (uint256 size)
@@ -17,7 +17,7 @@ this function registers DID attributes
 #### Parameters:
 | Name | Type | Description                                                          |
 | :--- | :--- | :------------------------------------------------------------------- |
-|`_did` | bytes32 | refers to decentralized identifier (a byte32 length ID)
+|`_didSeed` | bytes32 | refers to decentralized identifier (a byte32 length ID)
 |`_checksum` | bytes32 | includes a one-way HASH calculated using the DDO content    
 |`_url` | address[] | refers to the attribute value
 
