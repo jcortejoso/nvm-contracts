@@ -20,6 +20,34 @@ async function approveTemplate({
     }
 }
 
+async function setupTemplate({ verbose, TemplateStoreManagerInstance, templateName, addressBook, roles } = {}) {
+    const templateAddress = addressBook[templateName]
+    if (templateAddress) {
+        if (verbose) {
+            console.log(
+                `Proposing template ${templateName}: ${templateAddress} from ${roles.deployer}`
+            )
+        }
+
+        await TemplateStoreManagerInstance.proposeTemplate(
+            templateAddress,
+            { from: roles.deployer }
+        )
+
+        if (verbose) {
+            console.log(
+                `Approving template ${templateName}: ${templateAddress} from ${roles.deployer}`
+            )
+        }
+
+        await approveTemplate({
+            TemplateStoreManagerInstance,
+            roles,
+            templateAddress
+        })
+    }
+}
+
 async function transferOwnership({
     ContractInstance,
     name,
@@ -77,155 +105,61 @@ async function setupContracts({
         const TemplateStoreManagerInstance =
             await TemplateStoreManager.at(addressBook.TemplateStoreManager)
 
-        if (addressBook.AccessTemplate) {
-            if (verbose) {
-                console.log(
-                    `Proposing template ${addressBook.AccessTemplate} from ${roles.deployer}`
-                )
-            }
+        await setupTemplate({
+            verbose,
+            TemplateStoreManagerInstance,
+            templateName: 'AccessTemplate',
+            addressBook,
+            roles
+        })
 
-            await TemplateStoreManagerInstance.proposeTemplate(
-                addressBook.AccessTemplate,
-                { from: roles.deployer }
-            )
+        await setupTemplate({
+            verbose,
+            TemplateStoreManagerInstance,
+            templateName: 'EscrowComputeExecutionTemplate',
+            addressBook,
+            roles
+        })
 
-            if (verbose) {
-                console.log(
-                    `Approving template ${addressBook.AccessTemplate} from ${roles.deployer}`
-                )
-            }
+        await setupTemplate({
+            verbose,
+            TemplateStoreManagerInstance,
+            templateName: 'NFTAccessTemplate',
+            addressBook,
+            roles
+        })
 
-            await approveTemplate({
-                TemplateStoreManagerInstance,
-                roles,
-                templateAddress: addressBook.AccessTemplate
-            })
-        }
+        await setupTemplate({
+            verbose,
+            TemplateStoreManagerInstance,
+            templateName: 'NFT721AccessTemplate',
+            addressBook,
+            roles
+        })
 
-        if (addressBook.EscrowComputeExecutionTemplate) {
-            if (verbose) {
-                console.log(
-                    `Proposing template ${addressBook.EscrowComputeExecutionTemplate} from ${roles.deployer}`
-                )
-            }
+        await setupTemplate({
+            verbose,
+            TemplateStoreManagerInstance,
+            templateName: 'NFTSalesTemplate',
+            addressBook,
+            roles
+        })
 
-            await TemplateStoreManagerInstance.proposeTemplate(
-                addressBook.EscrowComputeExecutionTemplate,
-                { from: roles.deployer }
-            )
+        await setupTemplate({
+            verbose,
+            TemplateStoreManagerInstance,
+            templateName: 'NFT721SalesTemplate',
+            addressBook,
+            roles
+        })
 
-            if (verbose) {
-                console.log(
-                    `Approving template ${addressBook.EscrowComputeExecutionTemplate} from ${roles.deployer}`
-                )
-            }
-
-            await approveTemplate({
-                TemplateStoreManagerInstance,
-                roles,
-                templateAddress: addressBook.EscrowComputeExecutionTemplate
-            })
-        }
-
-        if (addressBook.NFTAccessTemplate) {
-            if (verbose) {
-                console.log(
-                    `Proposing template ${addressBook.NFTAccessTemplate} from ${roles.deployer}`
-                )
-            }
-
-            await TemplateStoreManagerInstance.proposeTemplate(
-                addressBook.NFTAccessTemplate,
-                { from: roles.deployer }
-            )
-
-            if (verbose) {
-                console.log(
-                    `Approving template ${addressBook.NFTAccessTemplate} from ${roles.deployer}`
-                )
-            }
-
-            await approveTemplate({
-                TemplateStoreManagerInstance,
-                roles,
-                templateAddress: addressBook.NFTAccessTemplate
-            })
-        }
-
-        if (addressBook.DIDSalesTemplate) {
-            if (verbose) {
-                console.log(
-                    `Proposing template ${addressBook.DIDSalesTemplate} from ${roles.deployer}`
-                )
-            }
-
-            await TemplateStoreManagerInstance.proposeTemplate(
-                addressBook.DIDSalesTemplate,
-                { from: roles.deployer }
-            )
-
-            if (verbose) {
-                console.log(
-                    `Approving template ${addressBook.DIDSalesTemplate} from ${roles.deployer}`
-                )
-            }
-
-            await approveTemplate({
-                TemplateStoreManagerInstance,
-                roles,
-                templateAddress: addressBook.DIDSalesTemplate
-            })
-        }
-
-        if (addressBook.NFTSalesTemplate) {
-            if (verbose) {
-                console.log(
-                    `Proposing template ${addressBook.NFTSalesTemplate} from ${roles.deployer}`
-                )
-            }
-
-            await TemplateStoreManagerInstance.proposeTemplate(
-                addressBook.NFTSalesTemplate,
-                { from: roles.deployer }
-            )
-
-            if (verbose) {
-                console.log(
-                    `Approving template ${addressBook.NFTSalesTemplate} from ${roles.deployer}`
-                )
-            }
-
-            await approveTemplate({
-                TemplateStoreManagerInstance,
-                roles,
-                templateAddress: addressBook.NFTSalesTemplate
-            })
-        }
-
-        if (addressBook.NFT721SalesTemplate) {
-            if (verbose) {
-                console.log(
-                    `Proposing template ${addressBook.NFT721SalesTemplate} from ${roles.deployer}`
-                )
-            }
-
-            await TemplateStoreManagerInstance.proposeTemplate(
-                addressBook.NFT721SalesTemplate,
-                { from: roles.deployer }
-            )
-
-            if (verbose) {
-                console.log(
-                    `Approving template ${addressBook.NFT721SalesTemplate} from ${roles.deployer}`
-                )
-            }
-
-            await approveTemplate({
-                TemplateStoreManagerInstance,
-                roles,
-                templateAddress: addressBook.NFT721SalesTemplate
-            })
-        }
+        await setupTemplate({
+            verbose,
+            TemplateStoreManagerInstance,
+            templateName: 'DIDSalesTemplate',
+            addressBook,
+            roles
+        })
 
         await transferOwnership({
             ContractInstance: TemplateStoreManagerInstance,

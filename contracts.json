@@ -20,6 +20,7 @@
   "ComputeExecutionCondition",
   "AccessTemplate",
   "NFTAccessTemplate",
+  "NFTAccessTemplate:NFT721AccessTemplate",
   "DIDSalesTemplate",
   "NFTSalesTemplate",
   "NFTSalesTemplate:NFT721SalesTemplate",

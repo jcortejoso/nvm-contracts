@@ -361,6 +361,24 @@ async function initializeContracts({
     }
 
     if (getAddress('AgreementStoreManager') &&
+        getAddress('NFTAccessCondition') &&
+        getAddress('NFT721HolderCondition')) {
+        if (contracts.indexOf('NFT721AccessTemplate') > -1) {
+            addressBook.NFT721AccessTemplate = zosCreate({
+                contract: 'NFT721AccessTemplate',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('NFT721HolderCondition'),
+                    getAddress('NFTAccessCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
         getAddress('LockPaymentCondition') &&
         getAddress('TransferNFTCondition') &&
         getAddress('EscrowPaymentCondition')) {
