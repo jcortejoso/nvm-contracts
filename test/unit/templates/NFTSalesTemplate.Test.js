@@ -53,6 +53,7 @@ contract('NFTSalesTemplate', (accounts) => {
             owner,
             conditionStoreManager.address,
             agreementStoreManager.address,
+            constants.address.zero,
             { from: deployer }
         )
 
