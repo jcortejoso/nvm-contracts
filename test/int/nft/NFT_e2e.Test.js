@@ -492,7 +492,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             did = await didRegistry.hashDID(didSeed, artist)
 
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, cappedAmount, royalties, constants.activities.GENERATED, '', artist)
+                didSeed, checksum, [], url, cappedAmount, royalties, constants.activities.GENERATED, '', { from: artist })
             await didRegistry.mint(did, 5, { from: artist })
             await didRegistry.setApprovalForAll(transferCondition.address, true, { from: artist })
 
