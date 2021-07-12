@@ -123,7 +123,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             owner,
             conditionStoreManager.address,
             didRegistry.address,
-            constants.address.zero,
+            market,
             { from: deployer }
         )
 
@@ -540,7 +540,8 @@ contract('End to End NFT Scenarios', (accounts) => {
                 collector1,
                 numberNFTs,
                 nftSalesAgreement.conditionIds[0],
-                { from: market })
+                { from: market }
+            )
 
             const { state } = await conditionStoreManager.getCondition(
                 nftSalesAgreement.conditionIds[1])
