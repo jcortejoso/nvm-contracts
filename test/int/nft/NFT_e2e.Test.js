@@ -123,6 +123,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             owner,
             conditionStoreManager.address,
             didRegistry.address,
+            constants.address.zero,
             { from: deployer }
         )
 
