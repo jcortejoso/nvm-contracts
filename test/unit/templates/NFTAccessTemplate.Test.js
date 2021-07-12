@@ -104,7 +104,7 @@ contract('NFTAccessTemplate', (accounts) => {
             // propose and approve template
             const templateId = nftAccessTemplate.address
             await templateStoreManager.proposeTemplate(templateId)
-            await templateStoreManager.approveTemplate(templateId, { from: owner })
+            await templateStoreManager.approveTemplate(templateId, owner)
 
             await assert.isRejected(
                 nftAccessTemplate.createAgreement(agreementId, ...Object.values(agreement)),
@@ -157,7 +157,7 @@ contract('NFTAccessTemplate', (accounts) => {
             // propose and approve template
             const templateId = nftAccessTemplate.address
             await templateStoreManager.proposeTemplate(templateId)
-            await templateStoreManager.approveTemplate(templateId, { from: owner })
+            await templateStoreManager.approveTemplate(templateId, owner)
 
             const result = await nftAccessTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
@@ -193,7 +193,7 @@ contract('NFTAccessTemplate', (accounts) => {
             // propose and approve template
             const templateId = nftAccessTemplate.address
             await templateStoreManager.proposeTemplate(templateId)
-            await templateStoreManager.approveTemplate(templateId, { from: owner })
+            await templateStoreManager.approveTemplate(templateId, owner)
 
             const result = await nftAccessTemplate
                 .createAgreement(agreementId, ...Object.values(agreement))
