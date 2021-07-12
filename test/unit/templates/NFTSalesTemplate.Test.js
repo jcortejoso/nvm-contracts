@@ -139,7 +139,7 @@ contract('NFTSalesTemplate', (accounts) => {
             // propose and approve template
             const templateId = nftSalesTemplate.address
             await templateStoreManager.proposeTemplate(templateId)
-            await templateStoreManager.approveTemplate(templateId, { from: owner })
+            await templateStoreManager.approveTemplate(templateId, owner)
 
             await assert.isRejected(
                 nftSalesTemplate.createAgreement(agreementId, ...Object.values(agreement)),
@@ -192,7 +192,7 @@ contract('NFTSalesTemplate', (accounts) => {
             // propose and approve template
             const templateId = nftSalesTemplate.address
             await templateStoreManager.proposeTemplate(templateId)
-            await templateStoreManager.approveTemplate(templateId, { from: owner })
+            await templateStoreManager.approveTemplate(templateId, owner)
 
             const result = await nftSalesTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
