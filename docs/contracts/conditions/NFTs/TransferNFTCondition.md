@@ -10,7 +10,7 @@ Implementation of condition allowing to transfer an NFT
     address _owner,
     address _conditionStoreManagerAddress,
     address _didRegistryAddress,
-    address _market
+    address _nftContractAddress
   ) external
 ```
 initialize init the contract with the following parameters
@@ -24,7 +24,7 @@ this function is called only once during the contract
 |`_owner` | address | contract's owner account address
 |`_conditionStoreManagerAddress` | address | condition store manager address    
 |`_didRegistryAddress` | address | DID Registry address
-|`_market` | address | Market address
+|`_nftContractAddress` | address | Market address
 
 ### grantMarketRole
 ```solidity
