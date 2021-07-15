@@ -251,7 +251,6 @@ contract('End to End NFT Scenarios', (accounts) => {
     }
 
     function runTests() {
-
         describe('As collector I want to buy some art', () => {
             it('I am setting an agreement for buying a NFT', async () => {
                 await prepareNFTSaleAgreement({
@@ -466,12 +465,12 @@ contract('End to End NFT Scenarios', (accounts) => {
             })
         })
     }
-    describe("Test NFT", () => {
+    describe('Test NFT', () => {
         describe('As an artist I want to register a new artwork', () => {
             it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
                 nft = await TestERC721.new()
                 await nft.initialize()
-        
+
                 const { didRegistry } = await setupTest()
 
                 did = await didRegistry.hashDID(didSeed, artist)
@@ -484,9 +483,9 @@ contract('End to End NFT Scenarios', (accounts) => {
             })
         })
 
-        runTests();
+        runTests()
     })
-    describe("VitaDAO NFT", () => {
+    describe('VitaDAO NFT', () => {
         describe('As an artist I want to register a new artwork', () => {
             it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
                 nft = await VitaDAOERC721.new()
@@ -503,6 +502,6 @@ contract('End to End NFT Scenarios', (accounts) => {
             })
         })
 
-        runTests();
+        runTests()
     })
 })
