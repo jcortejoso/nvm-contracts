@@ -5,7 +5,7 @@ pragma solidity 0.6.12;
 
 
 import '../../registry/DIDRegistry.sol';
-import "./INFTAccess.sol";
+import './INFTAccess.sol';
 
 /**
  * @title NFT Access Condition
