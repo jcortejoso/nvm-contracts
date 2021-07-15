@@ -23,10 +23,13 @@ const setupWallet = (
             providerOrUrl: url,
             addressIndex: hdWalletStartIndex,
             numberOfAddresses: hdWalletAccounts,
-            shareNonce: false
+            shareNonce: false,
+            pollingInterval: 8000
         })
 
-        hdWalletProvider.engine.addProvider(new NonceTrackerSubprovider())
+        const nonceTracker = new NonceTrackerSubprovider()
+        hdWalletProvider.engine._providers.unshift(nonceTracker)
+        nonceTracker.setEngine(hdWalletProvider.engine)
     }
     return hdWalletProvider
 }
@@ -85,6 +88,10 @@ module.exports = {
                 url || `https://rinkeby.infura.io/v3/${process.env.INFURA_TOKEN}`
             ),
             network_id: 0x4, // 4
+            gas: 15 * 1000000,
+            gasPrice: utils.toWei('5', 'gwei'),
+            timeoutBlocks: 200,
+            skipDryRun: true,
             from: '0x73943d14131268F23b721E668911bCDDEcA9da62'
         },
         // alfajores the celo testnet
@@ -155,7 +162,7 @@ module.exports = {
             settings: {
                 optimizer: {
                     enabled: true,
-                    runs: 200
+                    runs: 400
                 }
             }
         }

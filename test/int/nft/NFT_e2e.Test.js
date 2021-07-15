@@ -123,6 +123,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             owner,
             conditionStoreManager.address,
             didRegistry.address,
+            market,
             { from: deployer }
         )
 
@@ -296,7 +297,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
 
             await didRegistry.setApprovalForAll(transferCondition.address, true, { from: artist })
-            await transferCondition.fulfill(
+            await transferCondition.methods['fulfill(bytes32,bytes32,address,uint256,bytes32)'](
                 agreementId,
                 did,
                 collector1,
@@ -359,7 +360,14 @@ contract('End to End NFT Scenarios', (accounts) => {
                 constants.condition.state.fulfilled)
 
             // Artist: I give access to the collector1 to the content
-            await accessCondition.fulfill(agreementAccessId, nftAccessAgreement.did, collector1, { from: artist })
+            //            await accessCondition.fulfill(agreementAccessId, nftAccessAgreement.did, collector1, { from: artist })
+            await accessCondition.methods['fulfill(bytes32,bytes32,address)'](
+                agreementAccessId,
+                nftAccessAgreement.did,
+                collector1,
+                { from: artist }
+            )
+
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(nftAccessAgreement.conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
@@ -400,7 +408,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await didRegistry.setApprovalForAll(transferCondition.address, true, { from: collector1 })
             // Collector1: Transfer the NFT
             await didRegistry.setApprovalForAll(transferCondition.address, true, { from: collector1 })
-            await transferCondition.fulfill(
+            await transferCondition.methods['fulfill(bytes32,bytes32,address,uint256,bytes32)'](
                 agreementId2,
                 did,
                 collector2,
@@ -532,7 +540,8 @@ contract('End to End NFT Scenarios', (accounts) => {
                 collector1,
                 numberNFTs,
                 nftSalesAgreement.conditionIds[0],
-                { from: market })
+                { from: market }
+            )
 
             const { state } = await conditionStoreManager.getCondition(
                 nftSalesAgreement.conditionIds[1])

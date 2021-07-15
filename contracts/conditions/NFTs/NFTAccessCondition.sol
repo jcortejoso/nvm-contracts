@@ -4,8 +4,8 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
-import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
+import './INFTAccess.sol';
 
 /**
  * @title NFT Access Condition
@@ -16,7 +16,7 @@ import '../../registry/DIDRegistry.sol';
  *      NFT Access Condition is special condition used to give access 
  *      to a specific NFT related to a DID.
  */
-contract NFTAccessCondition is Condition {
+contract NFTAccessCondition is Condition, INFTAccess {
 
     bytes32 constant public CONDITION_TYPE = keccak256('NFTAccessCondition');
 
@@ -28,13 +28,6 @@ contract NFTAccessCondition is Condition {
     mapping(bytes32 => DocumentPermission) private nftPermissions;
     DIDRegistry private didRegistry;
     
-    
-    event Fulfilled(
-        bytes32 indexed _agreementId,
-        bytes32 indexed _documentId,
-        address indexed _grantee,
-        bytes32 _conditionId
-    );
     
     modifier onlyDIDOwnerOrProvider(
         bytes32 _documentId
@@ -89,14 +82,49 @@ contract NFTAccessCondition is Condition {
         address _grantee
     )
         public
+        view
+        returns (bytes32)
+    {
+        return hashValues(_documentId, _grantee, address(didRegistry));
+    }
+
+    function hashValues(
+        bytes32 _documentId,
+        address _grantee,
+        address _contractAddress
+    )
+        public
+        override
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encode(_documentId, _grantee));
+        return keccak256(abi.encode(_documentId, _grantee, _contractAddress));
     }
 
+    /**
+     * @notice fulfill NFT Access condition
+     * @dev only DID owner or DID provider can call this
+     *       method. Fulfill method sets the permissions 
+     *       for the granted consumer's address to true then
+     *       fulfill the condition
+     * @param _agreementId agreement identifier
+     * @param _documentId refers to the DID in which secret store will issue the decryption keys
+     * @param _grantee is the address of the granted user or the DID provider
+     * @return condition state (Fulfilled/Aborted)
+     */
+    function fulfill(
+        bytes32 _agreementId,
+        bytes32 _documentId,
+        address _grantee
+    )
+        public
+        returns (ConditionStoreLibrary.ConditionState)
+    {
+        return fulfill(_agreementId, _documentId, _grantee, address(didRegistry));
+    }
+    
    /**
-    * @notice fulfill access secret store condition
+    * @notice fulfill NFT Access condition
     * @dev only DID owner or DID provider can call this
     *       method. Fulfill method sets the permissions 
     *       for the granted consumer's address to true then
@@ -109,9 +137,11 @@ contract NFTAccessCondition is Condition {
     function fulfill(
         bytes32 _agreementId,
         bytes32 _documentId,
-        address _grantee
+        address _grantee,
+        address _contractAddress
     )
         public
+        override
         returns (ConditionStoreLibrary.ConditionState)
     {
         grantPermission(
@@ -121,7 +151,7 @@ contract NFTAccessCondition is Condition {
         
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_documentId, _grantee)
+            hashValues(_documentId, _grantee, _contractAddress)
         );
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(

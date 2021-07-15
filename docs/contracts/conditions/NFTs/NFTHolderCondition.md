@@ -46,6 +46,15 @@ hashValues generates the hash of condition inputs
 | Name                           | Type          | Description                                                                  |
 | :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
 |`bytes32`| bytes32 | hash of all these values
+### hashValues
+```solidity
+  function hashValues(
+  ) public returns (bytes32)
+```
+
+
+
+
 ### fulfill
 ```solidity
   function fulfill(
@@ -71,12 +80,12 @@ fulfill requires a validation that holder has enough
 | Name                           | Type          | Description                                                                  |
 | :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
 |`condition`| bytes32 | state
-## Events
-### Fulfilled
+### fulfill
 ```solidity
-  event Fulfilled(
-  )
+  function fulfill(
+  ) external returns (enum ConditionStoreLibrary.ConditionState)
 ```
+
 
 
 

@@ -237,3 +237,12 @@ will be burned.
 To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
 
 
+## Events
+### ProxyApproval
+```solidity
+  event ProxyApproval(
+  )
+```
+Event for recording proxy approvals.
+
+

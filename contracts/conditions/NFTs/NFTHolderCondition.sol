@@ -6,6 +6,7 @@ pragma solidity 0.6.12;
 
 import '../Condition.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgradeable.sol';
+import './INFTHolder.sol';
 
 /**
  * @title Nft Holder Condition
@@ -14,19 +15,11 @@ import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155BurnableUpgrade
  *
  * @dev Implementation of the Nft Holder Condition
  */
-contract NFTHolderCondition is Condition {
+contract NFTHolderCondition is Condition, INFTHolder {
 
     ERC1155BurnableUpgradeable private nftRegistry;
     
     bytes32 constant public CONDITION_TYPE = keccak256('NFTHolderCondition');
-
-    event Fulfilled(
-        bytes32 indexed _agreementId,
-        bytes32 indexed _did,
-        address indexed _address,
-        bytes32 _conditionId,
-        uint256 _amount
-    );
 
    /**
     * @notice initialize init the 
@@ -72,21 +65,36 @@ contract NFTHolderCondition is Condition {
         uint256 _amount
     )
         public
+        view
+        returns (bytes32)
+    {
+        return this.hashValues(_did, _holderAddress, _amount, address(nftRegistry));
+    }
+
+    function hashValues(
+        bytes32 _did,
+        address _holderAddress,
+        uint256 _amount,
+        address _contractAddress
+    )
+        public
+        override
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _holderAddress, _amount));
-    }
+        return keccak256(abi.encode(_did, _holderAddress, _amount, _contractAddress));
+    }    
+    
 
-   /**
-    * @notice fulfill requires a validation that holder has enough
-    *       NFTs for a specific DID
-    * @param _agreementId SEA agreement identifier
-    * @param _did the Decentralized Identifier of the asset    
-    * @param _holderAddress the contract address where the reward is locked
-    * @param _amount is the amount of NFT to be hold
-    * @return condition state
-    */
+    /**
+     * @notice fulfill requires a validation that holder has enough
+     *       NFTs for a specific DID
+     * @param _agreementId SEA agreement identifier
+     * @param _did the Decentralized Identifier of the asset    
+     * @param _holderAddress the contract address where the reward is locked
+     * @param _amount is the amount of NFT to be hold
+     * @return condition state
+     */
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
@@ -96,14 +104,28 @@ contract NFTHolderCondition is Condition {
         external
         returns (ConditionStoreLibrary.ConditionState)
     {
+        return this.fulfill(_agreementId, _did, _holderAddress, _amount, address(nftRegistry));
+    }
+    
+    function fulfill(
+        bytes32 _agreementId,
+        bytes32 _did,
+        address _holderAddress,
+        uint256 _amount,
+        address _contractAddress
+    )
+        external
+        override
+        returns (ConditionStoreLibrary.ConditionState)
+    {
         require(
-            nftRegistry.balanceOf(_holderAddress, uint256(_did)) >= _amount,
+            IERC1155Upgradeable(_contractAddress).balanceOf(_holderAddress, uint256(_did)) >= _amount,
             'The holder doesnt have enough NFT balance for the did given'
         );
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _holderAddress, _amount)
+            hashValues(_did, _holderAddress, _amount, _contractAddress)
         );
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,

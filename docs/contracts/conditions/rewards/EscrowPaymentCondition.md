@@ -19,8 +19,7 @@ Implementation of the Escrow Payment Condition
 ```solidity
   function initialize(
     address _owner,
-    address _conditionStoreManagerAddress,
-    address _tokenAddress
+    address _conditionStoreManagerAddress
   ) external
 ```
 initialize init the 
@@ -32,7 +31,6 @@ initialize init the
 | :--- | :--- | :------------------------------------------------------------------- |
 |`_owner` | address | contract's owner account address
 |`_conditionStoreManagerAddress` | address | condition store manager address
-|`_tokenAddress` | address | Default token contract address
 
 ### hashValues
 ```solidity
@@ -60,6 +58,34 @@ hashValues generates the hash of condition inputs
 |`_tokenAddress` | address | the ERC20 contract address to use during the payment 
 |`_lockCondition` | bytes32 | lock condition identifier
 |`_releaseCondition` | bytes32 | release condition identifier
+
+#### Return Values:
+| Name                           | Type          | Description                                                                  |
+| :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
+|`bytes32`| bytes32 | hash of all these values
+### hashValuesLockPayment
+```solidity
+  function hashValuesLockPayment(
+    bytes32 _did,
+    address _rewardAddress,
+    address _tokenAddress,
+    uint256[] _amounts,
+    address[] _receivers
+  ) public returns (bytes32)
+```
+hashValuesLockPayment generates the hash of condition inputs 
+       with the following parameters
+
+
+#### Parameters:
+| Name | Type | Description                                                          |
+| :--- | :--- | :------------------------------------------------------------------- |
+|`_did` | bytes32 | the asset decentralized identifier 
+|`_rewardAddress` | address | the contract address where the reward is locked       
+|`_tokenAddress` | address | the ERC20 contract address to use during the lock payment. 
+       If the address is 0x0 means we won't use a ERC20 but ETH for payment     
+|`_amounts` | uint256[] | token amounts to be locked/released
+|`_receivers` | address[] | receiver's addresses
 
 #### Return Values:
 | Name                           | Type          | Description                                                                  |

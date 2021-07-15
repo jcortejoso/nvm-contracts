@@ -39,6 +39,37 @@ initialize AgreementStoreManager Initializer
   ) public returns (uint256 size)
 ```
 
+Create a new agreement and associate the agreement created to the address originating the transaction.
+     The agreement will create conditions of conditionType with conditionId.
+     Only "approved" templates can access this function.
+
+#### Parameters:
+| Name | Type | Description                                                          |
+| :--- | :--- | :------------------------------------------------------------------- |
+|`_id` | bytes32 | is the ID of the new agreement. Must be unique.
+|`_did` | bytes32 | is the bytes32 DID of the asset. The DID must be registered beforehand.
+|`_conditionTypes` | address[] | is a list of addresses that point to Condition contracts.
+|`_conditionIds` | bytes32[] | is a list of bytes32 content-addressed Condition IDs
+|`_timeLocks` | uint256[] | is a list of uint time lock values associated to each Condition
+|`_timeOuts` | uint256[] | is a list of uint time out values associated to each Condition
+
+#### Return Values:
+| Name                           | Type          | Description                                                                  |
+| :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
+|`size`| bytes32 | the size of the agreement list after the create action.
+### createAgreement
+```solidity
+  function createAgreement(
+    bytes32 _id,
+    bytes32 _did,
+    address[] _conditionTypes,
+    bytes32[] _conditionIds,
+    uint256[] _timeLocks,
+    uint256[] _timeOuts,
+    address _creator
+  ) public returns (uint256 size)
+```
+
 Create a new agreement.
      The agreement will create conditions of conditionType with conditionId.
      Only "approved" templates can access this function.
@@ -52,6 +83,7 @@ Create a new agreement.
 |`_conditionIds` | bytes32[] | is a list of bytes32 content-addressed Condition IDs
 |`_timeLocks` | uint256[] | is a list of uint time lock values associated to each Condition
 |`_timeOuts` | uint256[] | is a list of uint time out values associated to each Condition
+|`_creator` | address | address of the account associated as agreement and conditions creator
 
 #### Return Values:
 | Name                           | Type          | Description                                                                  |

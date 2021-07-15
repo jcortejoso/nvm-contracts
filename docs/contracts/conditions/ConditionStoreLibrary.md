@@ -13,7 +13,8 @@ Implementation of the Condition Store Library.
   function create(
     struct ConditionStoreLibrary.ConditionList _self,
     bytes32 _id,
-    address _typeRef
+    address _typeRef,
+    address _creator
   ) internal returns (uint256 size)
 ```
 create new condition
@@ -28,6 +29,7 @@ check whether the condition exists, assigns
 |`_self` | struct ConditionStoreLibrary.ConditionList | is the ConditionList storage pointer
 |`_id` | bytes32 | valid condition identifier
 |`_typeRef` | address | condition contract address
+|`_creator` | address | address of the condition creator
 
 #### Return Values:
 | Name                           | Type          | Description                                                                  |

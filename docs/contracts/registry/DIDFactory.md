@@ -17,10 +17,19 @@ DIDRegistry Initializer
 | :--- | :--- | :------------------------------------------------------------------- |
 |`_owner` | address | refers to the owner of the contract.
 
+### setManager
+```solidity
+  function setManager(
+  ) external
+```
+Sets the manager role. Should be the TransferCondition contract address
+
+
+
 ### registerAttribute
 ```solidity
   function registerAttribute(
-    bytes32 _did,
+    bytes32 _didSeed,
     bytes32 _checksum,
     address[] _url
   ) public returns (uint256 size)
@@ -35,7 +44,7 @@ The first attribute of a DID registered sets the DID owner.
 #### Parameters:
 | Name | Type | Description                                                          |
 | :--- | :--- | :------------------------------------------------------------------- |
-|`_did` | bytes32 | refers to decentralized identifier (a bytes32 length ID).
+|`_didSeed` | bytes32 | refers to decentralized identifier seed (a bytes32 length ID). 
 |`_checksum` | bytes32 | includes a one-way HASH calculated using the DDO content.
 |`_url` | address[] | refers to the attribute value, limited to 2048 bytes.
 
@@ -46,12 +55,13 @@ The first attribute of a DID registered sets the DID owner.
 ### registerDID
 ```solidity
   function registerDID(
-    bytes32 _did,
+    bytes32 _didSeed,
     bytes32 _checksum,
     address[] _providers,
     string _url,
-    bytes32 _activityId,
-    string _attributes
+    bytes32 _providers,
+    string _activityId,
+     _attributes
   ) public returns (uint256 size)
 ```
 Register DID attributes.
@@ -64,17 +74,39 @@ The first attribute of a DID registered sets the DID owner.
 #### Parameters:
 | Name | Type | Description                                                          |
 | :--- | :--- | :------------------------------------------------------------------- |
-|`_did` | bytes32 | refers to decentralized identifier (a bytes32 length ID).
+|`_didSeed` | bytes32 | refers to decentralized identifier seed (a bytes32 length ID). 
+         The final DID will be calculated with the creator address using the `hashDID` function
 |`_checksum` | bytes32 | includes a one-way HASH calculated using the DDO content.
 |`_providers` | address[] | list of addresses that can act as an asset provider     
 |`_url` | string | refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
-|`_activityId` | bytes32 | refers to activity
-|`_attributes` | string | refers to the provenance attributes     
+|`_providers` | bytes32 | list of DID providers addresses
+|`_activityId` | string | refers to activity
+|`_attributes` |  | refers to the provenance attributes     
 
 #### Return Values:
 | Name                           | Type          | Description                                                                  |
 | :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
 |`size`| bytes32 | refers to the size of the registry after the register action.
+### hashDID
+```solidity
+  function hashDID(
+    bytes32 _didSeed,
+    address _creator
+  ) public returns (bytes32)
+```
+It generates a DID using as seed a bytes32 and the address of the DID creator
+
+
+#### Parameters:
+| Name | Type | Description                                                          |
+| :--- | :--- | :------------------------------------------------------------------- |
+|`_didSeed` | bytes32 | refers to DID Seed used as base to generate the final DID
+|`_creator` | address | address of the creator of the DID     
+
+#### Return Values:
+| Name                           | Type          | Description                                                                  |
+| :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
+|`the`| bytes32 | new DID created
 ### areRoyaltiesValid
 ```solidity
   function areRoyaltiesValid(
@@ -253,6 +285,31 @@ transferDIDOwnership transfer DID ownership
 |`_did` | bytes32 | refers to decentralized identifier (a bytes32 length ID)
 |`_newOwner` | address | new owner address
 
+### transferDIDOwnershipManaged
+```solidity
+  function transferDIDOwnershipManaged(
+    address _did,
+    bytes32 _newOwner
+  ) external
+```
+transferDIDOwnershipManaged transfer DID ownership
+
+
+#### Parameters:
+| Name | Type | Description                                                          |
+| :--- | :--- | :------------------------------------------------------------------- |
+|`_did` | address | refers to decentralized identifier (a bytes32 length ID)
+|`_newOwner` | bytes32 | new owner address
+
+### _transferDIDOwnership
+```solidity
+  function _transferDIDOwnership(
+  ) internal
+```
+
+
+
+
 ### grantPermission
 ```solidity
   function grantPermission(
@@ -400,7 +457,7 @@ isDIDProvider check whether a given DID provider exists
 #### Return Values:
 | Name                           | Type          | Description                                                                  |
 | :----------------------------- | :------------ | :--------------------------------------------------------------------------- |
-|`the`|  | length of the DID registry.
+|`the`|  | list of items in the DID registry.
 ### _grantPermission
 ```solidity
   function _grantPermission(

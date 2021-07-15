@@ -164,7 +164,12 @@ contract('NFT Access integration test', (accounts) => {
             )
 
             // fulfill access
-            await accessCondition.fulfill(agreementId, agreement.did, receiver, { from: sender })
+            await accessCondition.methods['fulfill(bytes32,bytes32,address)'](
+                agreementId,
+                agreement.did,
+                receiver,
+                { from: sender }
+            )
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
