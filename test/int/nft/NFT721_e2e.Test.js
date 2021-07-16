@@ -42,14 +42,15 @@ contract('End to End NFT Scenarios', (accounts) => {
     const checksum = testUtils.generateId()
     const url = 'https://raw.githubusercontent.com/nevermined-io/assets/main/images/logo/banner_logo.png'
 
-    const artist = accounts[0]
-    const collector1 = accounts[1]
-    const collector2 = accounts[2]
-    const gallery = accounts[3]
-    const market = accounts[4]
-
-    const owner = accounts[9]
-    const deployer = accounts[8]
+    const [
+        owner,
+        deployer,
+        artist,
+        collector1,
+        collector2,
+        gallery,
+        market
+    ] = accounts
 
     // Configuration of First Sale:
     // Artist -> Collector1, the gallery get a cut (25%)
@@ -465,11 +466,12 @@ contract('End to End NFT Scenarios', (accounts) => {
             })
         })
     }
+
     describe('Test NFT', () => {
         describe('As an artist I want to register a new artwork', () => {
             it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
-                nft = await TestERC721.new()
-                await nft.initialize()
+                nft = await TestERC721.new({ from: deployer })
+                await nft.initialize({ from: owner })
 
                 const { didRegistry } = await setupTest()
 
@@ -485,11 +487,12 @@ contract('End to End NFT Scenarios', (accounts) => {
 
         runTests()
     })
+
     describe('VitaDAO NFT', () => {
         describe('As an artist I want to register a new artwork', () => {
             it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
-                nft = await VitaDAOERC721.new()
-                await nft.initialize('VitaNFT', 'VitaNFT')
+                nft = await VitaDAOERC721.new({ from: deployer })
+                await nft.initialize('VitaNFT', 'VitaNFT', { from: owner })
                 const { didRegistry } = await setupTest()
 
                 did = await didRegistry.hashDID(didSeed, artist)
@@ -497,7 +500,7 @@ contract('End to End NFT Scenarios', (accounts) => {
                 await didRegistry.registerMintableDID(
                     didSeed, checksum, [], url, cappedAmount, royalties, constants.activities.GENERATED, '', { from: artist })
 
-                await nft.mint(artist, did, url, { from: artist })
+                await nft.mint(artist, did, url, { from: owner })
                 await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
             })
         })
