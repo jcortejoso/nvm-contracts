@@ -192,7 +192,7 @@ contract('End to End NFT Scenarios', (accounts) => {
     async function prepareNFTAccessAgreement({
         did,
         agreementId = testUtils.generateId(),
-        receiver = collector1
+        receiver
     } = {}) {
         // construct agreement
         const conditionIdNFTHolder = await nftHolderCondition.generateId(agreementId,
@@ -329,20 +329,26 @@ contract('End to End NFT Scenarios', (accounts) => {
                 const nftAmount = 1
 
                 // Collector1: Create NFT access agreement
-                const { agreementId, nftAccessAgreement } = await prepareNFTAccessAgreement({ did: did, agreementAccessId: agreementAccessId })
+                const { agreementId, nftAccessAgreement } = await prepareNFTAccessAgreement({
+                    did: did,
+                    receiver: collector1
+                })
 
                 // The Collector creates an agreement on-chain for purchasing a specific NFT attached to a DID
                 const result = await nftAccessTemplate.createAgreement(
-                    agreementId, ...Object.values(nftAccessAgreement))
+                    agreementId, ...Object.values(nftAccessAgreement)
+                )
 
                 testUtils.assertEmitted(result, 1, 'AgreementCreated')
 
                 // Collector1: I demonstrate I have the NFT
                 await nftHolderCondition.fulfill(
-                    agreementId, nftAccessAgreement.did, collector1, nftAmount, nft.address, { from: someone })
+                    agreementId, nftAccessAgreement.did, collector1, nftAmount, nft.address, { from: someone }
+                )
                 assert.strictEqual(
                     (await conditionStoreManager.getConditionState(nftAccessAgreement.conditionIds[0])).toNumber(),
-                    constants.condition.state.fulfilled)
+                    constants.condition.state.fulfilled
+                )
 
                 // Artist: I give access to the collector1 to the content
                 await accessCondition.methods['fulfill(bytes32,bytes32,address)'](
@@ -354,7 +360,8 @@ contract('End to End NFT Scenarios', (accounts) => {
 
                 assert.strictEqual(
                     (await conditionStoreManager.getConditionState(nftAccessAgreement.conditionIds[1])).toNumber(),
-                    constants.condition.state.fulfilled)
+                    constants.condition.state.fulfilled
+                )
             })
         })
 
