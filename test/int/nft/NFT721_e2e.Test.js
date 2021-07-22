@@ -37,7 +37,6 @@ contract('End to End NFT Scenarios', (accounts) => {
     const didSeed = testUtils.generateId()
     let did
     const agreementId = testUtils.generateId()
-    const agreementAccessId = testUtils.generateId()
     const agreementId2 = testUtils.generateId()
     const checksum = testUtils.generateId()
     const url = 'https://raw.githubusercontent.com/nevermined-io/assets/main/images/logo/banner_logo.png'
