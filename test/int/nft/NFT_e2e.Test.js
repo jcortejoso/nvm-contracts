@@ -39,14 +39,16 @@ contract('End to End NFT Scenarios', (accounts) => {
     const checksum = testUtils.generateId()
     const url = 'https://raw.githubusercontent.com/nevermined-io/assets/main/images/logo/banner_logo.png'
 
-    const artist = accounts[0]
-    const collector1 = accounts[1]
-    const collector2 = accounts[2]
-    const gallery = accounts[3]
-    const market = accounts[4]
-
-    const owner = accounts[9]
-    const deployer = accounts[8]
+    const [
+        owner,
+        deployer,
+        artist,
+        collector1,
+        collector2,
+        gallery,
+        market,
+        someone
+    ] = accounts
 
     // Configuration of First Sale:
     // Artist -> Collector1, the gallery get a cut (25%)
@@ -187,14 +189,13 @@ contract('End to End NFT Scenarios', (accounts) => {
     async function prepareNFTAccessAgreement({
         did,
         agreementAccessId = testUtils.generateId(),
-        sender = artist,
         receiver = collector1
     } = {}) {
         // construct agreement
         const conditionIdNFTHolder = await nftHolderCondition.generateId(agreementAccessId,
-            await nftHolderCondition.hashValues(did, collector1, 1))
+            await nftHolderCondition.hashValues(did, receiver, 1))
         const conditionIdNFTAccess = await accessCondition.generateId(agreementAccessId,
-            await accessCondition.hashValues(did, collector1))
+            await accessCondition.hashValues(did, receiver))
 
         nftAccessAgreement = {
             did: did,
@@ -204,7 +205,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             ],
             timeLocks: [0, 0],
             timeOuts: [0, 0],
-            accessConsumer: collector1
+            accessConsumer: receiver
         }
         return {
             agreementId,
@@ -354,13 +355,12 @@ contract('End to End NFT Scenarios', (accounts) => {
 
             // Collector1: I demonstrate I have the NFT
             await nftHolderCondition.fulfill(
-                agreementAccessId, nftAccessAgreement.did, collector1, nftAmount, { from: gallery })
+                agreementAccessId, nftAccessAgreement.did, collector1, nftAmount, { from: someone })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(nftAccessAgreement.conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
 
             // Artist: I give access to the collector1 to the content
-            //            await accessCondition.fulfill(agreementAccessId, nftAccessAgreement.did, collector1, { from: artist })
             await accessCondition.methods['fulfill(bytes32,bytes32,address)'](
                 agreementAccessId,
                 nftAccessAgreement.did,
