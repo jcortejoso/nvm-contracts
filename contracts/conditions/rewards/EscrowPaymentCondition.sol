@@ -282,14 +282,13 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
     private
     returns (ConditionStoreLibrary.ConditionState)
     {
-
         for(uint i = 0; i < _receivers.length; i++)    {
             require(
                 _receivers[i] != address(this),
                 'Escrow contract can not be a receiver'
             );
-            (bool sent,) = _receivers[i].call{value: _amounts[i]}('');
-            require(sent, 'Failed to send Ether');
+            require(address(this).balance >= _amounts[i], "Failed to send Ether");
+            payable(_receivers[i]).transfer(_amounts[i]);
         }
 
         return super.fulfill(
