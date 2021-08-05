@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 const { zosCreate } = require('@nevermined-io/contract-tools')
+const ZeroAddress = '0x0000000000000000000000000000000000000000'
 
 async function initializeContracts({
     contracts,
@@ -226,7 +227,7 @@ async function initializeContracts({
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
                     getAddress('DIDRegistry'),
-                    '0x0000000000000000000000000000000000000000'
+                    ZeroAddress
                 ],
                 verbose
             })
@@ -239,7 +240,7 @@ async function initializeContracts({
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
                     getAddress('DIDRegistry'),
-                    '0x0000000000000000000000000000000000000000'
+                    ZeroAddress
                 ],
                 verbose
             })

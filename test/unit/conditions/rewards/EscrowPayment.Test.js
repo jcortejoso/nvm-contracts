@@ -127,7 +127,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             const escrowPayment = await EscrowPaymentCondition.new()
             await assert.isRejected(escrowPayment.initialize(
                 owner,
-                '0x0000000000000000000000000000000000000000',
+                constants.address.zero,
                 { from: deployer }
             ), undefined)
         })
