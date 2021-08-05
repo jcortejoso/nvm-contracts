@@ -100,7 +100,7 @@ contract('Access Template integration test', (accounts) => {
     } = {}) {
         const origHash = randomBytes32()
         const cryptedHash = randomBytes32()
-    
+
         const did = await didRegistry.hashDID(didSeed, receivers[0])
         // generate IDs from attributes
         const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
@@ -126,7 +126,7 @@ contract('Access Template integration test', (accounts) => {
             origHash,
             cryptedHash,
             receiver: receivers[0],
-            sender,
+            sender
         }
         return {
             agreementId,

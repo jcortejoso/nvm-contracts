@@ -62,7 +62,7 @@ const deployConditions = async function(
         escrowPaymentCondition,
         lockPaymentCondition,
         computeExecutionCondition,
-        disputeManager,
+        disputeManager
     }
 }
 
