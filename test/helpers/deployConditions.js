@@ -1,8 +1,10 @@
 /* global artifacts */
 const AccessCondition = artifacts.require('AccessCondition')
+const AccessProofCondition = artifacts.require('AccessProofCondition')
 const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const ComputeExecutionCondition = artifacts.require('ComputeExecutionCondition')
+const DisputeManager = artifacts.require('TestDisputeManager')
 
 const deployConditions = async function(
     deployer,
@@ -28,6 +30,17 @@ const deployConditions = async function(
         { from: deployer }
     )
 
+    const disputeManager = await DisputeManager.new({ from: deployer })
+
+    const accessProofCondition = await AccessProofCondition.new({ from: deployer })
+    await accessProofCondition.initialize(
+        owner,
+        conditionStoreManager.address,
+        agreementStoreManager.address,
+        disputeManager.address,
+        { from: deployer }
+    )
+
     const escrowPaymentCondition = await EscrowPaymentCondition.new({ from: deployer })
     await escrowPaymentCondition.initialize(
         owner,
@@ -45,9 +58,11 @@ const deployConditions = async function(
 
     return {
         accessCondition,
+        accessProofCondition,
         escrowPaymentCondition,
         lockPaymentCondition,
-        computeExecutionCondition
+        computeExecutionCondition,
+        disputeManager,
     }
 }
 
