@@ -127,7 +127,7 @@ contract AccessProofCondition is Condition {
             _id,
             ConditionStoreLibrary.ConditionState.Fulfilled
         );
-        
+
         emit Fulfilled(
             _agreementId,
             _origHash,
@@ -139,6 +139,6 @@ contract AccessProofCondition is Condition {
 
         return state;
     }
-    
+
 }
 
