@@ -298,7 +298,7 @@ contract('End to End NFT Scenarios', (accounts) => {
                     agreementId, did, escrowCondition.address, constants.address.zero, amounts.map(a => String(a)), receivers,
                     { from: collector1 }
                 ),
-                'Transaction value does not match amount!'
+                'Transaction value does not match amount'
             )
         })
 
@@ -570,7 +570,7 @@ contract('End to End NFT Scenarios', (accounts) => {
                     agreementId, did, escrowCondition.address, constants.address.zero, amounts.map(a => String(a)), receivers,
                     { from: collector1 }
                 ),
-                'Transaction value does not match amount!'
+                'Transaction value does not match amount'
             )
         })
 
