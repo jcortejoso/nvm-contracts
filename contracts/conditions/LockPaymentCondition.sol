@@ -190,8 +190,13 @@ contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
     )
     internal
     {
-        require(msg.value == _amount, "Transaction value does not match amount!");
-        _rewardAddress.transfer(_amount);
+        require(
+            msg.value == _amount, 
+            'Transaction value does not match amount'
+        );
+        // solhint-disable-next-line
+        (bool sent,) = _rewardAddress.call{value: _amount}('');
+        require(sent, 'Failed to send Ether');
     }
 
 }
