@@ -39,6 +39,7 @@ contract NFTHolderCondition is Condition, INFTHolder {
         initializer()
     {
         require(
+            _owner != address(0) &&
             _didRegistryAddress != address(0) &&
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
