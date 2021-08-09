@@ -156,6 +156,9 @@ module.exports = {
         }
     },
     plugins: ['solidity-coverage', 'truffle-contract-size'],
+    mocha: {
+        reporter: 'eth-gas-reporter'
+    },
     compilers: {
         solc: {
             version: '0.6.12',
