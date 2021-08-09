@@ -160,8 +160,8 @@ contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
         );
         return state;
     }
-
-    /**
+ 
+   /**
     * @notice _transferERC20 transfer ERC20 tokens 
     * @param _rewardAddress the address to receive the tokens
     * @param _tokenAddress the ERC20 contract address to use during the payment
@@ -179,7 +179,7 @@ contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
         token.safeTransferFrom(msg.sender, _rewardAddress, _amount);
     }
 
-    /**
+   /**
     * @notice _transferETH transfer ETH 
     * @param _rewardAddress the address to receive the ETH
     * @param _amount ETH amount to be locked/released
@@ -190,10 +190,13 @@ contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
     )
     internal
     {
+        require(
+            msg.value == _amount, 
+            'Transaction value does not match amount'
+        );
         // solhint-disable-next-line
         (bool sent,) = _rewardAddress.call{value: _amount}('');
         require(sent, 'Failed to send Ether');
     }
-
 
 }
