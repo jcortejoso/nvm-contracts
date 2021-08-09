@@ -61,6 +61,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
     /**
      * @dev See {_setURI}.
      */
+    // solhint-disable-next-line
     function __NFTUpgradeable_init(string memory uri_) internal initializer {
         __Context_init_unchained();
         __ERC165_init_unchained();
@@ -68,6 +69,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
 //        setProxyApproval(msg.sender, true);
     }
 
+    // solhint-disable-next-line
     function __ERC1155_init_unchained(string memory uri_) internal initializer {
         _uri = uri_;
 

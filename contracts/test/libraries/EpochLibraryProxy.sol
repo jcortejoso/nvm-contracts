@@ -12,8 +12,8 @@ contract EpochLibraryProxy {
     using EpochLibrary for EpochLibrary.EpochList;
     using EpochLibrary for EpochLibrary.Epoch;
 
-    EpochLibrary.Epoch epoch;
-    EpochLibrary.EpochList epochList;
+    EpochLibrary.Epoch private epoch;
+    EpochLibrary.EpochList private epochList;
 
     function create(
         bytes32 _id,
