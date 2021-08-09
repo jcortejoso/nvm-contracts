@@ -69,7 +69,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
     public 
     onlyOwner 
     {
-        return grantRole(MARKET_ROLE, _nftContractAddress);
+        grantRole(MARKET_ROLE, _nftContractAddress);
     }
 
 
@@ -77,7 +77,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
     public
     onlyOwner 
     {
-        return revokeRole(MARKET_ROLE, _nftContractAddress);
+        revokeRole(MARKET_ROLE, _nftContractAddress);
     }
     
    /**
