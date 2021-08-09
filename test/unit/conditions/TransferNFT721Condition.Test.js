@@ -98,11 +98,10 @@ contract('TransferNFT721 Condition constructor', (accounts) => {
 
             transferCondition = await TransferNFTCondition.new()
 
-            await transferCondition.methods['initialize(address,address,address,address)'](
+            await transferCondition.methods['initialize(address,address,address)'](
                 owner,
                 conditionStoreManager.address,
-                didRegistry.address,
-                owner
+                didRegistry.address
             )
 
             lockPaymentCondition = await LockPaymentCondition.new()
@@ -192,11 +191,10 @@ contract('TransferNFT721 Condition constructor', (accounts) => {
 
             const transferCondition = await TransferNFTCondition.new()
 
-            await assert.isRejected(transferCondition.methods['initialize(address,address,address,address)'](
+            await assert.isRejected(transferCondition.methods['initialize(address,address,address)'](
                 owner,
                 constants.address.zero,
-                agreementStoreManager.address,
-                owner
+                agreementStoreManager.address
             ), undefined)
         })
     })
@@ -229,7 +227,7 @@ contract('TransferNFT721 Condition constructor', (accounts) => {
                 constants.condition.state.fulfilled)
 
             const hashValues = await transferCondition.hashValues(
-                did, rewardAddress, numberNFTs, conditionIdPayment, nft.address)
+                did, accounts[0], rewardAddress, numberNFTs, conditionIdPayment, nft.address)
 
             const conditionId = await transferCondition.generateId(agreementId, hashValues)
 
@@ -282,7 +280,7 @@ contract('TransferNFT721 Condition constructor', (accounts) => {
                 constants.condition.state.fulfilled)
 
             const hashValues = await transferCondition.hashValues(
-                did, rewardAddress, numberNFTs, conditionIdPayment, nft.address)
+                did, other, rewardAddress, numberNFTs, conditionIdPayment, nft.address)
 
             const conditionId = await transferCondition.generateId(agreementId, hashValues)
 
@@ -331,7 +329,7 @@ contract('TransferNFT721 Condition constructor', (accounts) => {
                 constants.condition.state.fulfilled)
 
             const hashValues = await transferCondition.hashValues(
-                did, rewardAddress, numberNFTs, conditionIdPayment, nft.address)
+                did, accounts[0], rewardAddress, numberNFTs, conditionIdPayment, nft.address)
 
             const conditionId = await transferCondition.generateId(agreementId, hashValues)
 
@@ -382,7 +380,7 @@ contract('TransferNFT721 Condition constructor', (accounts) => {
                 constants.condition.state.fulfilled)
 
             const hashValues = await transferCondition.hashValues(
-                did, rewardAddress, numberNFTs, conditionIdPayment, nft.address)
+                did, accounts[0], rewardAddress, numberNFTs, conditionIdPayment, nft.address)
 
             const conditionId = await transferCondition.generateId(agreementId, hashValues)
 
