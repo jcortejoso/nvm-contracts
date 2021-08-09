@@ -35,11 +35,9 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress,
-        address
+        address _didRegistryAddress
     )
         external
-        override
         initializer()
     {
         require(

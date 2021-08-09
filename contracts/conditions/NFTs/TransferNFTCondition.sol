@@ -41,7 +41,6 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         address _nftContractAddress
     )
         external
-        override
         initializer()
     {
         require(
