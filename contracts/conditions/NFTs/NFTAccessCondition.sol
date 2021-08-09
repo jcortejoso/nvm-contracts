@@ -139,6 +139,7 @@ contract NFTAccessCondition is Condition, INFTAccess {
     * @param _agreementId agreement identifier
     * @param _documentId refers to the DID in which secret store will issue the decryption keys
     * @param _grantee is the address of the granted user or the DID provider
+    * @param _contractAddress is the contract address of the NFT implementation (ERC-1155 or ERC-721)
     * @return condition state (Fulfilled/Aborted)
     */
     function fulfill(
@@ -151,6 +152,8 @@ contract NFTAccessCondition is Condition, INFTAccess {
         override
         returns (ConditionStoreLibrary.ConditionState)
     {
+        require(_contractAddress != address(0), 'Invalid address');
+        
         grantPermission(
             _grantee,
             _documentId
