@@ -43,6 +43,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
         initializer()
     {
         require(
+            _owner != address(0) &&
             _conditionStoreManagerAddress != address(0) &&
             _didRegistryAddress != address(0),
             'Invalid address'
