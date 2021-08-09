@@ -54,7 +54,7 @@
     "clean:zos": "rm -rf ./zos.json ./zos.dev-8996.json ./.zos.session ./wallets.json zos/",
     "lint": "yarn lint:eslint&&yarn lint:ethlint",
     "lint:eslint": "eslint --ignore-path .gitignore --ext .js .",
-    "lint:ethlint": "solhint --max-warnings 15 'contracts/**/*.sol'",
+    "lint:ethlint": "solhint --max-warnings 0 'contracts/**/*.sol'",
     "lint:fix": "yarn lint:eslint --fix && yarn lint:ethlint --fix",
     "security:mythril": "truffle compile&&myth -x --truffle --max-depth 12 --outform markdown 2>&1 | tee mythrilReport.md",
     "security:securify": "docker run -v $(pwd):/project chainsecurity/securify -t 2>&1 | tee securifyReport.txt",
