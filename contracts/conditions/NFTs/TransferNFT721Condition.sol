@@ -8,6 +8,7 @@ import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
 import './ITransferNFT.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
 
 /**
  * @title Transfer NFT Condition
@@ -109,6 +110,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
     )
     public
     override
+    nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
 

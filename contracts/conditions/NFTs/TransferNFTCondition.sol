@@ -8,6 +8,7 @@ import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
 import './ITransferNFT.sol';
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
 
 /**
  * @title Transfer NFT Condition
@@ -165,6 +166,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
     )
     public
     override
+    nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
 
