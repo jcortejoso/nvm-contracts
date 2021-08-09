@@ -8,7 +8,6 @@ import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
 import './ITransferNFT.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
 
 /**
  * @title Transfer NFT Condition
@@ -20,7 +19,7 @@ import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
  */
 contract TransferNFT721Condition is Condition, ITransferNFT {
 
-    bytes32 constant public CONDITION_TYPE = keccak256('TransferNFTCondition');
+    bytes32 private constant CONDITION_TYPE = keccak256('TransferNFTCondition');
 
     DIDRegistry private registry;
     
@@ -110,7 +109,6 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
     )
     public
     override
-    nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
 

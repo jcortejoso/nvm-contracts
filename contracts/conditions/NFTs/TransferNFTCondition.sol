@@ -8,7 +8,6 @@ import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
 import './ITransferNFT.sol';
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
 
 /**
  * @title Transfer NFT Condition
@@ -166,7 +165,6 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
     )
     public
     override
-    nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
 
@@ -187,7 +185,8 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         
         IERC1155Upgradeable token = IERC1155Upgradeable(_nftContractAddress);
 
-        token.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did), _nftAmount, '');
+        if (_nftAmount > 0)
+            token.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did), _nftAmount, '');
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
