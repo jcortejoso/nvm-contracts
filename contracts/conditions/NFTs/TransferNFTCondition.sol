@@ -45,8 +45,10 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         initializer()
     {
         require(
+            _owner != address(0) &&
             _conditionStoreManagerAddress != address(0) &&
-            _didRegistryAddress != address(0),
+            _didRegistryAddress != address(0) &&
+            _nftContractAddress != address(0),
             'Invalid address'
         );
         
