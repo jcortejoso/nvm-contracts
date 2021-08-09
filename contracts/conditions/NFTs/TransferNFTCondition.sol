@@ -7,7 +7,7 @@ pragma solidity 0.6.12;
 import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
 import './ITransferNFT.sol';
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 /**
  * @title Transfer NFT Condition
@@ -21,7 +21,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
 
     bytes32 private constant CONDITION_TYPE = keccak256('TransferNFTCondition');
 
-    bytes32 private constant MARKET_ROLE = keccak256("MARKETPLACE_ROLE");
+    bytes32 private constant MARKET_ROLE = keccak256('MARKETPLACE_ROLE');
     
     DIDRegistry private registry;
 
