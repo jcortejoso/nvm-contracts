@@ -19,9 +19,9 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
  */
 contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeable {
 
-    bytes32 public constant CONDITION_TYPE = keccak256('TransferNFTCondition');
+    bytes32 private constant CONDITION_TYPE = keccak256('TransferNFTCondition');
 
-    bytes32 public constant MARKET_ROLE = keccak256("MARKETPLACE_ROLE");
+    bytes32 private constant MARKET_ROLE = keccak256("MARKETPLACE_ROLE");
     
     DIDRegistry private registry;
 
