@@ -48,7 +48,6 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         collector1,
         collector2,
         gallery,
-        market,
         someone
     ] = accounts
 
