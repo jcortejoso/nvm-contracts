@@ -18,8 +18,8 @@ import './INFTHolder.sol';
 contract NFTHolderCondition is Condition, INFTHolder {
 
     ERC1155BurnableUpgradeable private nftRegistry;
-    
-    bytes32 constant public CONDITION_TYPE = keccak256('NFTHolderCondition');
+
+    bytes32 private constant CONDITION_TYPE = keccak256('NFTHolderCondition');
 
    /**
     * @notice initialize init the 

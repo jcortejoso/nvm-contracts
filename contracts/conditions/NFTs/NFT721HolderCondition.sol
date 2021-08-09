@@ -16,8 +16,8 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol'
  * @dev Implementation of the Nft Holder Condition
  */
 contract NFT721HolderCondition is Condition, INFTHolder {
-    
-    bytes32 constant public CONDITION_TYPE = keccak256('NFT721HolderCondition');
+
+    bytes32 private constant CONDITION_TYPE = keccak256('NFT721HolderCondition');
 
    /**
     * @notice initialize init the 

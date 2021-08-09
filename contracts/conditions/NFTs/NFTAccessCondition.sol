@@ -18,7 +18,7 @@ import './INFTAccess.sol';
  */
 contract NFTAccessCondition is Condition, INFTAccess {
 
-    bytes32 constant public CONDITION_TYPE = keccak256('NFTAccessCondition');
+    bytes32 private constant CONDITION_TYPE = keccak256('NFTAccessCondition');
 
     struct DocumentPermission {
         bytes32 agreementIdDeprecated;
