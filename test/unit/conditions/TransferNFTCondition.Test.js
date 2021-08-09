@@ -225,7 +225,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
                 constants.condition.state.fulfilled)
 
             const hashValues = await transferCondition.hashValues(
-                did, rewardAddress, numberNFTs, conditionIdPayment)
+                did, accounts[0], rewardAddress, numberNFTs, conditionIdPayment)
 
             const conditionId = await transferCondition.generateId(agreementId, hashValues)
 
@@ -278,7 +278,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
                 constants.condition.state.fulfilled)
 
             const hashValues = await transferCondition.hashValues(
-                did, rewardAddress, numberNFTs, conditionIdPayment)
+                did, other, rewardAddress, numberNFTs, conditionIdPayment)
 
             const conditionId = await transferCondition.generateId(agreementId, hashValues)
 
@@ -326,7 +326,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
                 constants.condition.state.fulfilled)
 
             const hashValues = await transferCondition.hashValues(
-                did, rewardAddress, numberNFTs, conditionIdPayment)
+                did, accounts[0], rewardAddress, numberNFTs, conditionIdPayment)
 
             const conditionId = await transferCondition.generateId(agreementId, hashValues)
 
@@ -377,7 +377,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
                 constants.condition.state.fulfilled)
 
             const hashValues = await transferCondition.hashValues(
-                did, rewardAddress, numberNFTs, conditionIdPayment)
+                did, accounts[0], rewardAddress, numberNFTs, conditionIdPayment)
 
             const conditionId = await transferCondition.generateId(agreementId, hashValues)
 
