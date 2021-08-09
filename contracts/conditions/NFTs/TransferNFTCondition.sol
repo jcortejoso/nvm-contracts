@@ -63,7 +63,8 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         );
         
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        grantRole(MARKET_ROLE, _nftContractAddress);
+        if (_nftContractAddress != address(0))
+            grantRole(MARKET_ROLE, _nftContractAddress);
     }
 
     function grantMarketRole(address _nftContractAddress)
