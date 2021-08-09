@@ -17,7 +17,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
  *      between the original owner and a receiver
  *
  */
-contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeable {
+contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgradeable, AccessControlUpgradeable {
 
     bytes32 private constant CONDITION_TYPE = keccak256('TransferNFTCondition');
 
@@ -165,6 +165,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
     )
     public
     override
+    nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
 

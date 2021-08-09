@@ -17,7 +17,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol'
  *      between the original owner and a receiver
  *
  */
-contract TransferNFT721Condition is Condition, ITransferNFT {
+contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgradeable {
 
     bytes32 private constant CONDITION_TYPE = keccak256('TransferNFTCondition');
 
@@ -109,6 +109,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
     )
     public
     override
+    nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
 
