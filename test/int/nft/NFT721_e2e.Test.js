@@ -473,7 +473,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         })
     }
 
-    describe('Test NFT', () => {
+    describe('Test NFT721', () => {
         describe('As an artist I want to register a new artwork', () => {
             it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
                 nft = await TestERC721.new({ from: deployer })
@@ -494,7 +494,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         runTests()
     })
 
-    describe('VitaDAO NFT', () => {
+    describe('VitaDAO NFT721', () => {
         describe('As an artist I want to register a new artwork', () => {
             it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
                 nft = await VitaDAOERC721.new({ from: deployer })
