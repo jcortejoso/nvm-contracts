@@ -230,7 +230,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await lockPaymentCondition.hashValues(did, escrowCondition.address, constants.address.zero, _amounts.map(a => String(a)), _receivers))
 
         const conditionIdTransferNFT = await transferCondition.generateId(agreementId,
-            await transferCondition.hashValues(did, _buyer, _numberNFTs, conditionIdLockPayment))
+            await transferCondition.hashValues(did, _seller, _buyer, _numberNFTs, conditionIdLockPayment))
 
         const conditionIdEscrow = await escrowCondition.generateId(agreementId,
             await escrowCondition.hashValues(did, _amounts.map(a => String(a)), _receivers, escrowCondition.address, constants.address.zero, conditionIdLockPayment, conditionIdTransferNFT))

@@ -7,7 +7,7 @@ pragma solidity 0.6.12;
 import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
 import './ITransferNFT.sol';
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 /**
  * @title Transfer NFT Condition
@@ -17,11 +17,11 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
  *      between the original owner and a receiver
  *
  */
-contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeable {
+contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgradeable, AccessControlUpgradeable {
 
-    bytes32 public constant CONDITION_TYPE = keccak256('TransferNFTCondition');
+    bytes32 private constant CONDITION_TYPE = keccak256('TransferNFTCondition');
 
-    bytes32 public constant MARKET_ROLE = keccak256("MARKETPLACE_ROLE");
+    bytes32 private constant MARKET_ROLE = keccak256('MARKETPLACE_ROLE');
     
     DIDRegistry private registry;
 
@@ -41,10 +41,10 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         address _nftContractAddress
     )
         external
-        override
         initializer()
     {
         require(
+            _owner != address(0) &&
             _conditionStoreManagerAddress != address(0) &&
             _didRegistryAddress != address(0),
             'Invalid address'
@@ -62,14 +62,15 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         );
         
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        grantRole(MARKET_ROLE, _nftContractAddress);
+        if (_nftContractAddress != address(0))
+            grantRole(MARKET_ROLE, _nftContractAddress);
     }
 
     function grantMarketRole(address _nftContractAddress)
     public 
     onlyOwner 
     {
-        return grantRole(MARKET_ROLE, _nftContractAddress);
+        grantRole(MARKET_ROLE, _nftContractAddress);
     }
 
 
@@ -77,7 +78,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
     public
     onlyOwner 
     {
-        return revokeRole(MARKET_ROLE, _nftContractAddress);
+        revokeRole(MARKET_ROLE, _nftContractAddress);
     }
     
    /**
@@ -91,6 +92,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
     */
     function hashValues(
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition
@@ -99,7 +101,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         view
         returns (bytes32)
     {
-        return hashValues(_did, _nftReceiver, _nftAmount, _lockCondition, address(registry));
+        return hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, address(registry));
     }
 
    /**
@@ -114,6 +116,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
     */
     function hashValues(
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition,
@@ -124,7 +127,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         override
         returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _nftReceiver, _nftAmount, _lockCondition, _nftContractAddress));
+        return keccak256(abi.encode(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, _nftContractAddress));
     }
 
     function fulfill(
@@ -134,8 +137,8 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition
     )
-    public
-    returns (ConditionStoreLibrary.ConditionState)
+        public
+        returns (ConditionStoreLibrary.ConditionState)
     {
         return fulfill(_agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, address(registry));
     }
@@ -161,14 +164,14 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         bytes32 _lockPaymentCondition,
         address _nftContractAddress
     )
-    public
-    override
-    returns (ConditionStoreLibrary.ConditionState)
+        public
+        override
+        nonReentrant
+        returns (ConditionStoreLibrary.ConditionState)
     {
-
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress)
+            hashValues(_did, msg.sender, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress)
         );
 
         address lockConditionTypeRef;
@@ -183,7 +186,8 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         
         IERC1155Upgradeable token = IERC1155Upgradeable(_nftContractAddress);
 
-        token.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did), _nftAmount, '');
+        if (_nftAmount > 0)
+            token.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did), _nftAmount, '');
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
@@ -223,7 +227,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition
     )
-    public
+        public
     
     returns (ConditionStoreLibrary.ConditionState)
     {
@@ -231,7 +235,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, AccessControlUpgradeab
         
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition)
+            hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition)
         );
 
         address lockConditionTypeRef;

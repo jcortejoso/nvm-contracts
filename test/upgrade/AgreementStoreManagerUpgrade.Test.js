@@ -160,7 +160,7 @@ contract('AgreementStoreManager', (accounts) => {
 
             // act & assert
             assert.strictEqual(
-                (await AgreementStoreManagerChangeInStorageInstance.AgreementCount()).toNumber(),
+                (await AgreementStoreManagerChangeInStorageInstance.agreementCount()).toNumber(),
                 0,
                 'Invalid change in storage'
             )
@@ -209,7 +209,7 @@ contract('AgreementStoreManager', (accounts) => {
             )
 
             assert.strictEqual(
-                (await AgreementStoreManagerChangeInStorageAndLogicInstance.AgreementCount()).toNumber(),
+                (await AgreementStoreManagerChangeInStorageAndLogicInstance.agreementCount()).toNumber(),
                 0,
                 'Invalid change in storage'
             )
