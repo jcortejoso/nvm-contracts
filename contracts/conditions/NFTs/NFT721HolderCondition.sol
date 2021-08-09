@@ -35,7 +35,7 @@ contract NFT721HolderCondition is Condition, INFTHolder {
         initializer()
     {
         require(
-            _conditionStoreManagerAddress != address(0),
+            _conditionStoreManagerAddress != address(0) && _owner != address(0),
             'Invalid address'
         );
         OwnableUpgradeable.__Ownable_init();
