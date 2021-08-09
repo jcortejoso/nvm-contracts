@@ -93,6 +93,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
     */
     function hashValues(
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition
@@ -101,7 +102,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         view
         returns (bytes32)
     {
-        return hashValues(_did, _nftReceiver, _nftAmount, _lockCondition, address(registry));
+        return hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, address(registry));
     }
 
    /**
@@ -116,6 +117,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
     */
     function hashValues(
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition,
@@ -126,7 +128,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         override
         returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _nftReceiver, _nftAmount, _lockCondition, _nftContractAddress));
+        return keccak256(abi.encode(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, _nftContractAddress));
     }
 
     function fulfill(
@@ -168,10 +170,9 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
     nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
-
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress)
+            hashValues(_did, msg.sender, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress)
         );
 
         address lockConditionTypeRef;
@@ -235,7 +236,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition)
+            hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition)
         );
 
         address lockConditionTypeRef;
