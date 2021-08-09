@@ -108,10 +108,10 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         bytes32 _lockPaymentCondition,
         address _contract
     )
-    public
-    override
-    nonReentrant
-    returns (ConditionStoreLibrary.ConditionState)
+        public
+        override
+        nonReentrant
+        returns (ConditionStoreLibrary.ConditionState)
     {
 
         bytes32 _id = generateId(

@@ -55,5 +55,4 @@ interface INFTHolder {
     external
     returns (ConditionStoreLibrary.ConditionState);
 
-        
 }

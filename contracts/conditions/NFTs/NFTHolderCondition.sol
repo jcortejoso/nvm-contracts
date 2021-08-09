@@ -69,7 +69,7 @@ contract NFTHolderCondition is Condition, INFTHolder {
         view
         returns (bytes32)
     {
-        return this.hashValues(_did, _holderAddress, _amount, address(nftRegistry));
+        return hashValues(_did, _holderAddress, _amount, address(nftRegistry));
     }
 
     function hashValues(
@@ -102,10 +102,10 @@ contract NFTHolderCondition is Condition, INFTHolder {
         address _holderAddress,
         uint256 _amount
     )
-        external
+        public
         returns (ConditionStoreLibrary.ConditionState)
     {
-        return this.fulfill(_agreementId, _did, _holderAddress, _amount, address(nftRegistry));
+        return fulfill(_agreementId, _did, _holderAddress, _amount, address(nftRegistry));
     }
     
     function fulfill(
@@ -115,7 +115,7 @@ contract NFTHolderCondition is Condition, INFTHolder {
         uint256 _amount,
         address _contractAddress
     )
-        external
+        public
         override
         returns (ConditionStoreLibrary.ConditionState)
     {

@@ -138,8 +138,8 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition
     )
-    public
-    returns (ConditionStoreLibrary.ConditionState)
+        public
+        returns (ConditionStoreLibrary.ConditionState)
     {
         return fulfill(_agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, address(registry));
     }
@@ -165,10 +165,10 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         bytes32 _lockPaymentCondition,
         address _nftContractAddress
     )
-    public
-    override
-    nonReentrant
-    returns (ConditionStoreLibrary.ConditionState)
+        public
+        override
+        nonReentrant
+        returns (ConditionStoreLibrary.ConditionState)
     {
         bytes32 _id = generateId(
             _agreementId,
@@ -228,7 +228,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition
     )
-    public
+        public
     
     returns (ConditionStoreLibrary.ConditionState)
     {
