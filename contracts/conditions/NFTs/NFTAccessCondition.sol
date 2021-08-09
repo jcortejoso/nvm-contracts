@@ -58,6 +58,13 @@ contract NFTAccessCondition is Condition, INFTAccess {
         external
         initializer()
     {
+        require(
+            _conditionStoreManagerAddress != address(0) 
+            && _owner != address(0) 
+            && _didRegistryAddress != address(0),
+            'Invalid address'
+        );
+        
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
 
