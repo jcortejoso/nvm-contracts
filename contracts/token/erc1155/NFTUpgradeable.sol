@@ -2,14 +2,14 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/introspection/ERC165Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/introspection/ERC165Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/proxy/Initializable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  *
@@ -61,6 +61,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
     /**
      * @dev See {_setURI}.
      */
+    // solhint-disable-next-line
     function __NFTUpgradeable_init(string memory uri_) internal initializer {
         __Context_init_unchained();
         __ERC165_init_unchained();
@@ -68,6 +69,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
 //        setProxyApproval(msg.sender, true);
     }
 
+    // solhint-disable-next-line
     function __ERC1155_init_unchained(string memory uri_) internal initializer {
         _uri = uri_;
 
@@ -95,7 +97,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
     function burn(address account, uint256 id, uint256 value) public virtual {
         require(
             account == _msgSender() || isApprovedForAll(account, _msgSender()),
-            "ERC1155 caller is not owner nor approved"
+            'ERC1155 caller is not owner nor approved'
         );
 
         _burn(account, id, value);
@@ -104,7 +106,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
     function burnBatch(address account, uint256[] memory ids, uint256[] memory values) public virtual {
         require(
             account == _msgSender() || isApprovedForAll(account, _msgSender()),
-            "ERC1155 caller is not owner nor approved"
+            'ERC1155 caller is not owner nor approved'
         );
 
         _burnBatch(account, ids, values);
@@ -118,7 +120,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
      * - `account` cannot be the zero address.
      */
     function balanceOf(address account, uint256 id) public view override returns (uint256) {
-        require(account != address(0), "ERC1155 zero address");
+        require(account != address(0), 'ERC1155 zero address');
         return _balances[id][account];
     }
 
@@ -130,7 +132,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
      * - `account` cannot be the zero address.
      */
     function balanceOf(address account, bytes32 _did) external view returns (uint256)   {
-        require(account != address(0), "ERC1155 zero address");
+        require(account != address(0), 'ERC1155 zero address');
         return balanceOf(account, uint256(_did));
     }    
     
@@ -150,12 +152,12 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
         override
         returns (uint256[] memory)
     {
-        require(accounts.length == ids.length, "ERC1155 arrays mismatch");
+        require(accounts.length == ids.length, 'ERC1155 arrays mismatch');
 
         uint256[] memory batchBalances = new uint256[](accounts.length);
 
         for (uint256 i = 0; i < accounts.length; ++i) {
-            require(accounts[i] != address(0), "ERC1155 zero address");
+            require(accounts[i] != address(0), 'ERC1155 zero address');
             batchBalances[i] = _balances[ids[i]][accounts[i]];
         }
 
@@ -166,7 +168,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
      * @dev See {IERC1155-setApprovalForAll}.
      */
     function setApprovalForAll(address operator, bool approved) public virtual override {
-        require(_msgSender() != operator, "ERC1155 self approval");
+        require(_msgSender() != operator, 'ERC1155 self approval');
 
         _operatorApprovals[_msgSender()][operator] = approved;
         emit ApprovalForAll(_msgSender(), operator, approved);
@@ -202,17 +204,17 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
         virtual
         override
     {
-        require(to != address(0), "ERC1155 zero address");
+        require(to != address(0), 'ERC1155 zero address');
         require(
             from == _msgSender() || isApprovedForAll(from, _msgSender()),
-            "ERC1155 caller is not owner nor approved"
+            'ERC1155 caller is not owner nor approved'
         );
 
         address operator = _msgSender();
 
         _beforeTokenTransfer(operator, from, to, _asSingletonArray(id), _asSingletonArray(amount), data);
 
-        _balances[id][from] = _balances[id][from].sub(amount, "ERC1155 insufficient funds");
+        _balances[id][from] = _balances[id][from].sub(amount, 'ERC1155 insufficient funds');
         _balances[id][to] = _balances[id][to].add(amount);
 
         emit TransferSingle(operator, from, to, id, amount);
@@ -234,11 +236,11 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
         virtual
         override
     {
-        require(ids.length == amounts.length, "ERC1155 arrays mismatch");
-        require(to != address(0), "ERC1155 transfer to the zero address");
+        require(ids.length == amounts.length, 'ERC1155 arrays mismatch');
+        require(to != address(0), 'ERC1155 transfer to the zero address');
         require(
             from == _msgSender() || isApprovedForAll(from, _msgSender()),
-            "ERC1155 transfer caller is not owner nor approved"
+            'ERC1155 transfer caller is not owner nor approved'
         );
 
         address operator = _msgSender();
@@ -251,7 +253,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
 
             _balances[id][from] = _balances[id][from].sub(
                 amount,
-                "ERC1155 insufficient balance"
+                'ERC1155 insufficient balance'
             );
             _balances[id][to] = _balances[id][to].add(amount);
         }
@@ -273,7 +275,7 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
      * acceptance magic value.
      */
     function _mint(address account, uint256 id, uint256 amount, bytes memory data) internal virtual {
-        require(account != address(0), "ERC1155 zero address");
+        require(account != address(0), 'ERC1155 zero address');
 
         address operator = _msgSender();
 
@@ -295,8 +297,8 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
      * acceptance magic value.
      */
     function _mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) internal virtual {
-        require(to != address(0), "ERC1155 zero address");
-        require(ids.length == amounts.length, "ERC1155 arrays mismatch");
+        require(to != address(0), 'ERC1155 zero address');
+        require(ids.length == amounts.length, 'ERC1155 arrays mismatch');
 
         address operator = _msgSender();
 
@@ -320,15 +322,15 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
      * - `account` must have at least `amount` tokens of token type `id`.
      */
     function _burn(address account, uint256 id, uint256 amount) internal virtual {
-        require(account != address(0), "ERC1155 zero address");
+        require(account != address(0), 'ERC1155 zero address');
 
         address operator = _msgSender();
 
-        _beforeTokenTransfer(operator, account, address(0), _asSingletonArray(id), _asSingletonArray(amount), "");
+        _beforeTokenTransfer(operator, account, address(0), _asSingletonArray(id), _asSingletonArray(amount), '');
 
         _balances[id][account] = _balances[id][account].sub(
             amount,
-            "ERC1155 amount exceeds balance"
+            'ERC1155 amount exceeds balance'
         );
 
         emit TransferSingle(operator, account, address(0), id, amount);
@@ -342,17 +344,17 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
      * - `ids` and `amounts` must have the same length.
      */
     function _burnBatch(address account, uint256[] memory ids, uint256[] memory amounts) internal virtual {
-        require(account != address(0), "ERC1155 zero address");
-        require(ids.length == amounts.length, "ERC1155 arrays mismatch");
+        require(account != address(0), 'ERC1155 zero address');
+        require(ids.length == amounts.length, 'ERC1155 arrays mismatch');
 
         address operator = _msgSender();
 
-        _beforeTokenTransfer(operator, account, address(0), ids, amounts, "");
+        _beforeTokenTransfer(operator, account, address(0), ids, amounts, '');
 
         for (uint i = 0; i < ids.length; i++) {
             _balances[ids[i]][account] = _balances[ids[i]][account].sub(
                 amounts[i],
-                "ERC1155 amount exceeds balance"
+                'ERC1155 amount exceeds balance'
             );
         }
 
@@ -403,12 +405,12 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
         if (to.isContract()) {
             try IERC1155ReceiverUpgradeable(to).onERC1155Received(operator, from, id, amount, data) returns (bytes4 response) {
                 if (response != IERC1155ReceiverUpgradeable(to).onERC1155Received.selector) {
-                    revert("ERC1155 ERC1155Receiver rejected tokens");
+                    revert('ERC1155 ERC1155Receiver rejected tokens');
                 }
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
-                revert("ERC1155 transfer to non ERC1155Receiver implementer");
+                revert('ERC1155 transfer to non ERC1155Receiver implementer');
             }
         }
     }
@@ -426,12 +428,12 @@ contract NFTUpgradeable is OwnableUpgradeable, ERC165Upgradeable, IERC1155Upgrad
         if (to.isContract()) {
             try IERC1155ReceiverUpgradeable(to).onERC1155BatchReceived(operator, from, ids, amounts, data) returns (bytes4 response) {
                 if (response != IERC1155ReceiverUpgradeable(to).onERC1155BatchReceived.selector) {
-                    revert("ERC1155 ERC1155Receiver rejected tokens");
+                    revert('ERC1155 ERC1155Receiver rejected tokens');
                 }
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
-                revert("ERC1155 transfer to non ERC1155Receiver implementer");
+                revert('ERC1155 transfer to non ERC1155Receiver implementer');
             }
         }
     }

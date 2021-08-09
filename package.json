@@ -1,6 +1,6 @@
 {
   "name": "@nevermined-io/contracts",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Nevermined implementation of Nevermined in Solidity",
   "bugs": {
     "url": "https://github.com/nevermined-io/contracts/issues"
@@ -54,7 +54,7 @@
     "clean:zos": "rm -rf ./zos.json ./zos.dev-8996.json ./.zos.session ./wallets.json zos/",
     "lint": "yarn lint:eslint&&yarn lint:ethlint",
     "lint:eslint": "eslint --ignore-path .gitignore --ext .js .",
-    "lint:ethlint": "solhint --max-warnings 0 contracts/**/*.sol ",
+    "lint:ethlint": "solhint --max-warnings 0 'contracts/**/*.sol'",
     "lint:fix": "yarn lint:eslint --fix && yarn lint:ethlint --fix",
     "security:mythril": "truffle compile&&myth -x --truffle --max-depth 12 --outform markdown 2>&1 | tee mythrilReport.md",
     "security:securify": "docker run -v $(pwd):/project chainsecurity/securify -t 2>&1 | tee securifyReport.txt",
@@ -91,6 +91,7 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-standard": "^4.0.1",
+    "eth-gas-reporter": "^0.2.22",
     "glob": "^7.1.4",
     "mathjs": "~7.0.0",
     "prettier": "^2.1.2",

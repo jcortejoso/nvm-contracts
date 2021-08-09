@@ -11,7 +11,7 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 contract HashListLibraryProxy is OwnableUpgradeable {
 
     using HashListLibrary for HashListLibrary.List;        
-    HashListLibrary.List testData;
+    HashListLibrary.List private testData;
 
     function initialize(
         address _owner

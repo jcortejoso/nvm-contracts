@@ -11,8 +11,8 @@ contract DIDRegistryLibraryProxy {
     using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegister;
     using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
 
-    DIDRegistryLibrary.DIDRegister didRegister;
-    DIDRegistryLibrary.DIDRegisterList didRegisterList;
+    DIDRegistryLibrary.DIDRegister private didRegister;
+    DIDRegistryLibrary.DIDRegisterList private didRegisterList;
 
     function areRoyaltiesValid(
         bytes32 _did,

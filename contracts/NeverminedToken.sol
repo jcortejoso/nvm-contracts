@@ -36,11 +36,11 @@ ERC20CappedUpgradeable {
     public
     initializer
     {
-        uint256 CAP = 1500000000;
-        uint256 TOTALSUPPLY = CAP.mul(10 ** 18);
+        uint256 cap = 1500000000;
+        uint256 totalSupply = cap.mul(10 ** 18);
 
         ERC20Upgradeable.__ERC20_init('NeverminedToken', 'NVM');
-        ERC20CappedUpgradeable.__ERC20Capped_init(TOTALSUPPLY);
+        ERC20CappedUpgradeable.__ERC20Capped_init(totalSupply);
         
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);

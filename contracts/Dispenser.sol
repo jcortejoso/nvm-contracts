@@ -104,7 +104,7 @@ contract Dispenser is OwnableUpgradeable {
             'Exceeded maxMintAmount'
         );
 
-        /* solium-disable-next-line security/no-block-members */
+        // solhint-disable-next-line
         if (block.timestamp < tokenRequests[msg.sender] + minPeriod) {
             // Failed, requested to frequently
             emit RequestFrequencyExceeded(
@@ -124,7 +124,7 @@ contract Dispenser is OwnableUpgradeable {
             );
             return false;
         } else {
-            /* solium-disable-next-line security/no-block-members */
+            // solhint-disable-next-line
             tokenRequests[msg.sender] = block.timestamp;
 
             totalMintAmount = totalMintAmount.add(amountWithDigits);

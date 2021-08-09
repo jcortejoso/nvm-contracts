@@ -6,6 +6,7 @@ pragma solidity 0.6.12;
 
 import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
+import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
 
 interface ITransferNFT {
 
@@ -18,21 +19,6 @@ interface ITransferNFT {
         address _contract
     );
     
-   /**
-    * @notice initialize init the contract with the following parameters
-    * @dev this function is called only once during the contract
-    *       initialization.
-    * @param _owner contract's owner account address
-    * @param _conditionStoreManagerAddress condition store manager address    
-    * @param _didRegistryAddress DID Registry address
-    */
-    function initialize(
-        address _owner,
-        address _conditionStoreManagerAddress,
-        address _didRegistryAddress,
-        address _market
-    )
-        external;
 
    /**
     * @notice hashValues generates the hash of condition inputs 
@@ -45,6 +31,7 @@ interface ITransferNFT {
     */
     function hashValues(
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition,
