@@ -4700,7 +4700,7 @@
     "@nevermined-io/contracts/DIDRegistry": [
       {
         "address": "0xC0a99b11eC971fc6041a685fb04DC5A35F65C2FF",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x4142D3DE9E3264D988074Aec0b537BC174Adf1d1",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4708,7 +4708,7 @@
     "@nevermined-io/contracts/NeverminedToken": [
       {
         "address": "0x937Cc2ec24871eA547F79BE8b47cd88C0958Cc4D",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x51303E861DfF022D2236b01da6A99856dcD08e2f",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4716,7 +4716,7 @@
     "@nevermined-io/contracts/Dispenser": [
       {
         "address": "0xfaAF4c7E8a6A7a5598F22559b5c2cdeBEB9e6B0e",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x64eb2B12023A7dABebd577D01B27d64D27051107",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4724,7 +4724,7 @@
     "@nevermined-io/contracts/ConditionStoreManager": [
       {
         "address": "0xFc0cA52987D5494eD42B9f317803b54C0161b98D",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x24bBc123c77FDf3Be4fe7560cA84316AEDf3E398",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4732,7 +4732,7 @@
     "@nevermined-io/contracts/TemplateStoreManager": [
       {
         "address": "0x45eBFAdAdc64D86F2bC7ed756EA2D5AfC0c64e51",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0xb4A9371B52D0C75FA79741Fbc4C24B77E0CE8Cd2",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4740,7 +4740,7 @@
     "@nevermined-io/contracts/EscrowPaymentCondition": [
       {
         "address": "0xb7aD2564D07870126fF96A14E2959b16141529C6",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x4791C1ba9D93351be9eaE7592856ED5dc58dE5E7",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4748,7 +4748,7 @@
     "@nevermined-io/contracts/SignCondition": [
       {
         "address": "0x287C2FdD23d3E2C18217e7329B62dBa3F8be777c",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0xA2DCa0d0641548AbdE5D94CCcAD19dC5a44337b7",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4756,7 +4756,7 @@
     "@nevermined-io/contracts/HashLockCondition": [
       {
         "address": "0x31E11A66E07a17C620A14D554C216c2622be377e",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0xA5B3213c027223715bd7ABb152a728EA7D8223Ce",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4764,7 +4764,7 @@
     "@nevermined-io/contracts/ThresholdCondition": [
       {
         "address": "0x683132AD20b4048073256484772a9fa6eeccf4e0",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x05a1E2103D9E974b33A6AbBf3F78c92Ff9148892",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4772,7 +4772,7 @@
     "@nevermined-io/contracts/WhitelistingCondition": [
       {
         "address": "0x1f361FfdA721eFc38Ca389603E39F31fdEddAbaf",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0xB5D7c3907bB15efE59C5C05f16eF0803bda04587",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4780,7 +4780,7 @@
     "@nevermined-io/contracts/AgreementStoreManager": [
       {
         "address": "0xC2ED028fAf0b638A194C40d7E223088FA4cF85DC",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0xf0eb7E33D4160BDb79BAB280D2CACe669a76b4E4",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4788,7 +4788,7 @@
     "@nevermined-io/contracts/LockPaymentCondition": [
       {
         "address": "0x8D2049565125700276f4407dbE269c4b275eE21e",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x6b0b34F8B9a84993e7C60e61e646743D9e0f8B15",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4796,7 +4796,7 @@
     "@nevermined-io/contracts/NFTHolderCondition": [
       {
         "address": "0x83342074cAb5b624Ea2361782AcC32da76641F33",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0xA643DAfcA0a5F2DCC0A0caac8217bF7302F00dF7",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4804,7 +4804,7 @@
     "@nevermined-io/contracts/NFT721HolderCondition": [
       {
         "address": "0xAAc307dEC41cFD667f70365A7C51E632eDAAE6F9",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x3cD5F57964AD9231aD1e63cf0D0bbd80FcdA0cFc",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4812,7 +4812,7 @@
     "@nevermined-io/contracts/NFTAccessCondition": [
       {
         "address": "0x6aA035fc4683D413fAa8bAe3f00CaAc712C2A502",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x200f082AC1bf6FE90Dc724153D21C51C72a76787",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4820,7 +4820,7 @@
     "@nevermined-io/contracts/TransferNFTCondition": [
       {
         "address": "0x6e81A4571C35F5786043fC9f6545F95c7B4E90A7",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x31c7D34fD137342670eC1010359074209d0FfcD8",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4828,7 +4828,7 @@
     "@nevermined-io/contracts/TransferNFT721Condition": [
       {
         "address": "0x5975fE95EABBDe0AAFD879AEEeC2172391d560a5",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0xaB0F4E945Db4Cebb863a7aD528c2DecfA0828986",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4836,7 +4836,7 @@
     "@nevermined-io/contracts/TransferDIDOwnershipCondition": [
       {
         "address": "0x269Dec0aBCb0232422F5B13cd343e63CdB922818",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x1eF8e2EB36f67b7bC13dAB76841f0459054F41a3",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4844,7 +4844,7 @@
     "@nevermined-io/contracts/NFTLockCondition": [
       {
         "address": "0xF951001D5516C682c5aF6DF2cB0250E4addd1252",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0xa17c083275e73cc96dEbd93047c2789f48e66555",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4852,7 +4852,7 @@
     "@nevermined-io/contracts/AccessCondition": [
       {
         "address": "0x6fD85bdc2181955d1e13e69cF6b7D823065C3Ca7",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x0Cc947A260CA4e4b74e5DfC55C23e9f47e75625D",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4860,7 +4860,7 @@
     "@nevermined-io/contracts/ComputeExecutionCondition": [
       {
         "address": "0xA142534b8c7130CFE1bf73128E86ec9c9369Faa4",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x00f0F58bb62090f4049046E5C0200D6D0C04b22D",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4868,7 +4868,7 @@
     "@nevermined-io/contracts/AccessTemplate": [
       {
         "address": "0xb0c62D9396C2FEcBb51eD6EB26c0Ed4f5eA4a346",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x55C305c9c252C2dd84b9b6c952286F5917ED21D0",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4876,7 +4876,7 @@
     "@nevermined-io/contracts/EscrowComputeExecutionTemplate": [
       {
         "address": "0xEA051aA47feC676F0962fE4EF44D3728f7EB4a0F",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0xc8Eb480C1d71FE18667E121C9BC946CDb8D2b272",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4884,7 +4884,7 @@
     "@nevermined-io/contracts/NFTAccessTemplate": [
       {
         "address": "0x0aDeA2BE5f5E38DC60700e8a3a5203feE02985DB",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x0000000000000000000000000000000000000000",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4892,7 +4892,7 @@
     "@nevermined-io/contracts/NFT721AccessTemplate": [
       {
         "address": "0x8A9f71c256FD31E8b73396316fFB57F70CEE19e1",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x20B6cC1bF2CE861653e3c82DB4A1359997F09990",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4900,7 +4900,7 @@
     "@nevermined-io/contracts/NFTSalesTemplate": [
       {
         "address": "0x24edffc52926739E8403E451b791378349f38818",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x8ae3c5EF019FE61c9a35C3864E6Bc32e08dE9592",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4908,7 +4908,7 @@
     "@nevermined-io/contracts/NFT721SalesTemplate": [
       {
         "address": "0x49AfF1F940C5d8C10FC8b81eD4155BF05dfcb9Ef",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0x93e411d18bF52f12CA8659ca4f91fCF4094cecF7",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
@@ -4916,14 +4916,14 @@
     "@nevermined-io/contracts/DIDSalesTemplate": [
       {
         "address": "0x903071Ed3061Ebb36FFc865910D4CfdEfaCfC615",
-        "version": "v1.1.3",
+        "version": "v1.1.2",
         "implementation": "0xA9E32cF682cE155Fa739512053cC9A7d13e630bb",
         "admin": "0xc4904EC20cC479929314f5E5bf1A7e0774175F79"
       }
     ]
   },
   "zosversion": "2.2",
-  "version": "v1.1.3",
+  "version": "v1.1.2",
   "proxyAdmin": {
     "address": "0x8CeBF3D421BB83AE3DDfA3377B75E48a18368922"
   }
