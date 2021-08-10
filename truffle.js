@@ -88,7 +88,7 @@ module.exports = {
                 url || `https://rinkeby.infura.io/v3/${process.env.INFURA_TOKEN}`
             ),
             network_id: 0x4, // 4
-            gas: 15 * 1000000,
+            gas: 20 * 1000000,
             gasPrice: utils.toWei('5', 'gwei'),
             timeoutBlocks: 200,
             skipDryRun: true,

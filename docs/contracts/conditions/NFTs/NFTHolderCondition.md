@@ -62,7 +62,7 @@ hashValues generates the hash of condition inputs
     bytes32 _did,
     address _holderAddress,
     uint256 _amount
-  ) external returns (enum ConditionStoreLibrary.ConditionState)
+  ) public returns (enum ConditionStoreLibrary.ConditionState)
 ```
 fulfill requires a validation that holder has enough
       NFTs for a specific DID
@@ -83,7 +83,7 @@ fulfill requires a validation that holder has enough
 ### fulfill
 ```solidity
   function fulfill(
-  ) external returns (enum ConditionStoreLibrary.ConditionState)
+  ) public returns (enum ConditionStoreLibrary.ConditionState)
 ```
 
 
