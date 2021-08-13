@@ -141,8 +141,10 @@ module.exports = {
             ),
             network_id: 0x1, // 1
             from: '0x721ba7Dc4357D846778Bad4227D46f2cefBa7De7',
+            timeoutBlocks: 200,
             gas: 10 * 1000000,
-            gasPrice: utils.toWei('64', 'gwei')
+            skipDryRun: true,
+            gasPrice: utils.toWei('45', 'gwei')
         },
         // production mainnet
         production: {
