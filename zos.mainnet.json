@@ -2065,6 +2065,2203 @@
         "hasInitialValuesInDeclarations": false,
         "uninitializedBaseContracts": []
       }
+    },
+    "HashLockCondition": {
+      "address": "0x284379A83A5B5cC2c8B41d01928AB4267Afc1a13",
+      "constructorCode": "608060405234801561001057600080fd5b50610c76806100206000396000f3fe",
+      "bodyBytecodeHash": "2c742f065c6b14cf7498c59742b37ae2f8bd5c14684f91a90e17a4487f4bb087",
+      "localBytecodeHash": "1af0e6df157ce2dcb18329ed09633f6eb2157027fe5464bbd0e0bd7efc50e88c",
+      "deployedBytecodeHash": "1af0e6df157ce2dcb18329ed09633f6eb2157027fe5464bbd0e0bd7efc50e88c",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "Condition",
+          "path": "contracts/conditions/Condition.sol",
+          "label": "conditionStoreManager",
+          "astId": 1846,
+          "type": "t_address",
+          "src": "979:52:8"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "TransferDIDOwnershipCondition": {
+      "address": "0xE4990e5E1B015Fc026AA73BDb11e0D357fC6e14E",
+      "constructorCode": "608060405234801561001057600080fd5b50610b4a806100206000396000f3fe",
+      "bodyBytecodeHash": "b632e2e35fc617956b8235865f7f42dd7885d79d5a246c75852a88914864b346",
+      "localBytecodeHash": "227d51476cde6b80ced6c53c08fc2c50e778d51c349d21619977e434b5dab2fd",
+      "deployedBytecodeHash": "227d51476cde6b80ced6c53c08fc2c50e778d51c349d21619977e434b5dab2fd",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "Condition",
+          "path": "contracts/conditions/Condition.sol",
+          "label": "conditionStoreManager",
+          "astId": 1846,
+          "type": "t_address",
+          "src": "979:52:8"
+        },
+        {
+          "contract": "TransferDIDOwnershipCondition",
+          "path": "contracts/conditions/TransferDIDOwnershipCondition.sol",
+          "label": "didRegistry",
+          "astId": 5171,
+          "type": "t_address",
+          "src": "565:32:24"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "TransferNFT721Condition": {
+      "address": "0xBC60BdfcCC3e7b41f80601bE8e476172211241Ee",
+      "constructorCode": "608060405234801561001057600080fd5b50610de2806100206000396000f3fe",
+      "bodyBytecodeHash": "1c67526e12a4a7af8422591c5b81f3b2e89fff89b9a59f53544afb21701af24c",
+      "localBytecodeHash": "1007fac5c9a511e336c411d5507de5715f773d9a712657af70155bb377fb99db",
+      "deployedBytecodeHash": "1007fac5c9a511e336c411d5507de5715f773d9a712657af70155bb377fb99db",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "Condition",
+          "path": "contracts/conditions/Condition.sol",
+          "label": "conditionStoreManager",
+          "astId": 1846,
+          "type": "t_address",
+          "src": "979:52:8"
+        },
+        {
+          "contract": "ReentrancyGuardUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol",
+          "label": "_status",
+          "astId": 18763,
+          "type": "t_uint256",
+          "src": "1761:23:98"
+        },
+        {
+          "contract": "ReentrancyGuardUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol",
+          "label": "__gap",
+          "astId": 18806,
+          "type": "t_array:49<t_uint256>",
+          "src": "2832:25:98"
+        },
+        {
+          "contract": "TransferNFT721Condition",
+          "path": "contracts/conditions/NFTs/TransferNFT721Condition.sol",
+          "label": "registry",
+          "astId": 4181,
+          "type": "t_address",
+          "src": "691:28:20"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "NFTAccessCondition": {
+      "address": "0x101bdc1b5593BF8908C5B1E8bA82AAE34911BB34",
+      "constructorCode": "608060405234801561001057600080fd5b50610f52806100206000396000f3fe",
+      "bodyBytecodeHash": "c55a9d5fad08ad9182948a4f82495b98dea45219a0ab2e1cca891567eacd7dbe",
+      "localBytecodeHash": "28ac51070eb82ec20e09206b0fa13096bc851c1b16d24d9acdc810c484693c0a",
+      "deployedBytecodeHash": "28ac51070eb82ec20e09206b0fa13096bc851c1b16d24d9acdc810c484693c0a",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        },
+        "t_struct<NFTAccessCondition.DocumentPermission>": {
+          "id": "t_struct<NFTAccessCondition.DocumentPermission>",
+          "kind": "struct",
+          "label": "NFTAccessCondition.DocumentPermission",
+          "members": [
+            {
+              "label": "agreementIdDeprecated",
+              "astId": 3385,
+              "type": "t_bytes32",
+              "src": "643:29:17"
+            },
+            {
+              "label": "permission",
+              "astId": 3389,
+              "type": "t_mapping<t_bool>",
+              "src": "682:35:17"
+            }
+          ]
+        },
+        "t_bytes32": {
+          "id": "t_bytes32",
+          "kind": "elementary",
+          "label": "bytes32"
+        },
+        "t_mapping<t_bool>": {
+          "id": "t_mapping<t_bool>",
+          "valueType": "t_bool",
+          "label": "mapping(key => bool)",
+          "kind": "mapping"
+        },
+        "t_mapping<t_struct<NFTAccessCondition.DocumentPermission>>": {
+          "id": "t_mapping<t_struct<NFTAccessCondition.DocumentPermission>>",
+          "valueType": "t_struct<NFTAccessCondition.DocumentPermission>",
+          "label": "mapping(key => NFTAccessCondition.DocumentPermission)",
+          "kind": "mapping"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "Condition",
+          "path": "contracts/conditions/Condition.sol",
+          "label": "conditionStoreManager",
+          "astId": 1846,
+          "type": "t_address",
+          "src": "979:52:8"
+        },
+        {
+          "contract": "NFTAccessCondition",
+          "path": "contracts/conditions/NFTs/NFTAccessCondition.sol",
+          "label": "nftPermissions",
+          "astId": 3394,
+          "type": "t_mapping<t_struct<NFTAccessCondition.DocumentPermission>>",
+          "src": "730:61:17"
+        },
+        {
+          "contract": "NFTAccessCondition",
+          "path": "contracts/conditions/NFTs/NFTAccessCondition.sol",
+          "label": "didRegistry",
+          "astId": 3396,
+          "type": "t_address",
+          "src": "797:31:17"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "ThresholdCondition": {
+      "address": "0xDb6fA99aA449F07C0276E2adeE64A73FCEA51CF8",
+      "constructorCode": "608060405234801561001057600080fd5b50610d63806100206000396000f3fe",
+      "bodyBytecodeHash": "4b1f1e4fbd2ae220ebb26cd5d46e1372cf3575c96fc9dc454354bd3644f0a06e",
+      "localBytecodeHash": "c7797bfbf24e52377a6da66894d3459d11d84b6c396e08970e6fef14be44336f",
+      "deployedBytecodeHash": "c7797bfbf24e52377a6da66894d3459d11d84b6c396e08970e6fef14be44336f",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "Condition",
+          "path": "contracts/conditions/Condition.sol",
+          "label": "conditionStoreManager",
+          "astId": 1846,
+          "type": "t_address",
+          "src": "979:52:8"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "WhitelistingCondition": {
+      "address": "0x35A69B6F82Ca3048281ddc054e321e402AC72b17",
+      "constructorCode": "608060405234801561001057600080fd5b5061109e806100206000396000f3fe",
+      "bodyBytecodeHash": "5b19be7e63c68bea8786c0b751ea5316f63742da54565adc9153def299ffdb1d",
+      "localBytecodeHash": "d88aa4fd220c01b4d58b4fa3b8dfbd1581bbe228c698b90fd49250c4b09040ef",
+      "deployedBytecodeHash": "d88aa4fd220c01b4d58b4fa3b8dfbd1581bbe228c698b90fd49250c4b09040ef",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "Condition",
+          "path": "contracts/conditions/Condition.sol",
+          "label": "conditionStoreManager",
+          "astId": 1846,
+          "type": "t_address",
+          "src": "979:52:8"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "ComputeExecutionCondition": {
+      "address": "0x7D3bF824B33C1856dFC6398bD92d91732BEb9DFf",
+      "constructorCode": "608060405234801561001057600080fd5b50610cdc806100206000396000f3fe",
+      "bodyBytecodeHash": "803ff74d2b638901bbb8c0f7c2e7116529fdf6bf5d94dd8a8238c58905b3f7fd",
+      "localBytecodeHash": "1fbf008eb7c9f36edc05a6439714286b1359af23b8b020f5d4208d316ec8ff2f",
+      "deployedBytecodeHash": "1fbf008eb7c9f36edc05a6439714286b1359af23b8b020f5d4208d316ec8ff2f",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        },
+        "t_mapping<t_bool>": {
+          "id": "t_mapping<t_bool>",
+          "valueType": "t_bool",
+          "label": "mapping(key => bool)",
+          "kind": "mapping"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "Condition",
+          "path": "contracts/conditions/Condition.sol",
+          "label": "conditionStoreManager",
+          "astId": 1846,
+          "type": "t_address",
+          "src": "979:52:8"
+        },
+        {
+          "contract": "ComputeExecutionCondition",
+          "path": "contracts/conditions/ComputeExecutionCondition.sol",
+          "label": "computeExecutionStatus",
+          "astId": 1667,
+          "type": "t_mapping<t_bool>",
+          "src": "956:75:7"
+        },
+        {
+          "contract": "ComputeExecutionCondition",
+          "path": "contracts/conditions/ComputeExecutionCondition.sol",
+          "label": "agreementStoreManager",
+          "astId": 1669,
+          "type": "t_address",
+          "src": "1042:51:7"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "NFTAccessTemplate": {
+      "address": "0x3E3878D5b06108FD6f9080CeD5056682f7A382Ef",
+      "constructorCode": "608060405234801561001057600080fd5b50611359806100206000396000f3fe",
+      "bodyBytecodeHash": "91ab9add891857aa7fdc7d845a5e8fbc567e3333ad9e17446d8e16c5851f6ef1",
+      "localBytecodeHash": "960cab53a2b553da2fde8af7ef79d2409bf5b8d0239b763173b5a38713459000",
+      "deployedBytecodeHash": "960cab53a2b553da2fde8af7ef79d2409bf5b8d0239b763173b5a38713459000",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        },
+        "t_array:dyn<t_address>": {
+          "id": "t_array:dyn<t_address>",
+          "valueType": "t_address",
+          "length": "dyn",
+          "kind": "array",
+          "label": "address[]"
+        },
+        "t_struct<BaseEscrowTemplate.AgreementData>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementData",
+          "members": [
+            {
+              "label": "agreementDataItems",
+              "astId": 9727,
+              "type": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+              "src": "776:57:39"
+            },
+            {
+              "label": "agreementIds",
+              "astId": 9730,
+              "type": "t_array:dyn<t_bytes32>",
+              "src": "843:22:39"
+            }
+          ]
+        },
+        "t_struct<BaseEscrowTemplate.AgreementDataModel>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementDataModel",
+          "members": [
+            {
+              "label": "accessConsumer",
+              "astId": 9720,
+              "type": "t_address",
+              "src": "678:22:39"
+            },
+            {
+              "label": "accessProvider",
+              "astId": 9722,
+              "type": "t_address",
+              "src": "710:22:39"
+            }
+          ]
+        },
+        "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>": {
+          "id": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+          "valueType": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "label": "mapping(key => BaseEscrowTemplate.AgreementDataModel)",
+          "kind": "mapping"
+        },
+        "t_bytes32": {
+          "id": "t_bytes32",
+          "kind": "elementary",
+          "label": "bytes32"
+        },
+        "t_array:dyn<t_bytes32>": {
+          "id": "t_array:dyn<t_bytes32>",
+          "valueType": "t_bytes32",
+          "length": "dyn",
+          "kind": "array",
+          "label": "bytes32[]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "conditionTypes",
+          "astId": 9650,
+          "type": "t_array:dyn<t_address>",
+          "src": "720:33:38"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "agreementStoreManager",
+          "astId": 9652,
+          "type": "t_address",
+          "src": "760:52:38"
+        },
+        {
+          "contract": "BaseEscrowTemplate",
+          "path": "contracts/templates/BaseEscrowTemplate.sol",
+          "label": "agreementData",
+          "astId": 9702,
+          "type": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "src": "367:36:39"
+        },
+        {
+          "contract": "NFTAccessTemplate",
+          "path": "contracts/templates/NFTAccessTemplate.sol",
+          "label": "didRegistry",
+          "astId": 10321,
+          "type": "t_address",
+          "src": "1350:32:43"
+        },
+        {
+          "contract": "NFTAccessTemplate",
+          "path": "contracts/templates/NFTAccessTemplate.sol",
+          "label": "nftHolderCondition",
+          "astId": 10323,
+          "type": "t_address",
+          "src": "1388:38:43"
+        },
+        {
+          "contract": "NFTAccessTemplate",
+          "path": "contracts/templates/NFTAccessTemplate.sol",
+          "label": "accessCondition",
+          "astId": 10325,
+          "type": "t_address",
+          "src": "1432:35:43"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "NFT721AccessTemplate": {
+      "address": "0x39200EdB5F489f6f2536Cfe4d03CE2687456e875",
+      "constructorCode": "608060405234801561001057600080fd5b50611359806100206000396000f3fe",
+      "bodyBytecodeHash": "91ab9add891857aa7fdc7d845a5e8fbc567e3333ad9e17446d8e16c5851f6ef1",
+      "localBytecodeHash": "960cab53a2b553da2fde8af7ef79d2409bf5b8d0239b763173b5a38713459000",
+      "deployedBytecodeHash": "960cab53a2b553da2fde8af7ef79d2409bf5b8d0239b763173b5a38713459000",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        },
+        "t_array:dyn<t_address>": {
+          "id": "t_array:dyn<t_address>",
+          "valueType": "t_address",
+          "length": "dyn",
+          "kind": "array",
+          "label": "address[]"
+        },
+        "t_struct<BaseEscrowTemplate.AgreementData>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementData",
+          "members": [
+            {
+              "label": "agreementDataItems",
+              "astId": 9727,
+              "type": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+              "src": "776:57:39"
+            },
+            {
+              "label": "agreementIds",
+              "astId": 9730,
+              "type": "t_array:dyn<t_bytes32>",
+              "src": "843:22:39"
+            }
+          ]
+        },
+        "t_struct<BaseEscrowTemplate.AgreementDataModel>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementDataModel",
+          "members": [
+            {
+              "label": "accessConsumer",
+              "astId": 9720,
+              "type": "t_address",
+              "src": "678:22:39"
+            },
+            {
+              "label": "accessProvider",
+              "astId": 9722,
+              "type": "t_address",
+              "src": "710:22:39"
+            }
+          ]
+        },
+        "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>": {
+          "id": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+          "valueType": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "label": "mapping(key => BaseEscrowTemplate.AgreementDataModel)",
+          "kind": "mapping"
+        },
+        "t_bytes32": {
+          "id": "t_bytes32",
+          "kind": "elementary",
+          "label": "bytes32"
+        },
+        "t_array:dyn<t_bytes32>": {
+          "id": "t_array:dyn<t_bytes32>",
+          "valueType": "t_bytes32",
+          "length": "dyn",
+          "kind": "array",
+          "label": "bytes32[]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "conditionTypes",
+          "astId": 9650,
+          "type": "t_array:dyn<t_address>",
+          "src": "720:33:38"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "agreementStoreManager",
+          "astId": 9652,
+          "type": "t_address",
+          "src": "760:52:38"
+        },
+        {
+          "contract": "BaseEscrowTemplate",
+          "path": "contracts/templates/BaseEscrowTemplate.sol",
+          "label": "agreementData",
+          "astId": 9702,
+          "type": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "src": "367:36:39"
+        },
+        {
+          "contract": "NFTAccessTemplate",
+          "path": "contracts/templates/NFTAccessTemplate.sol",
+          "label": "didRegistry",
+          "astId": 10321,
+          "type": "t_address",
+          "src": "1350:32:43"
+        },
+        {
+          "contract": "NFTAccessTemplate",
+          "path": "contracts/templates/NFTAccessTemplate.sol",
+          "label": "nftHolderCondition",
+          "astId": 10323,
+          "type": "t_address",
+          "src": "1388:38:43"
+        },
+        {
+          "contract": "NFTAccessTemplate",
+          "path": "contracts/templates/NFTAccessTemplate.sol",
+          "label": "accessCondition",
+          "astId": 10325,
+          "type": "t_address",
+          "src": "1432:35:43"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "DIDSalesTemplate": {
+      "address": "0xD3d89Da4303b60Bf46828bE6ad81b578EeB5209D",
+      "constructorCode": "608060405234801561001057600080fd5b5061139d806100206000396000f3fe",
+      "bodyBytecodeHash": "4d177d3dbf72d4b56889aea1d6aca30d6ba08d6c1455890ba27606eceb3f439b",
+      "localBytecodeHash": "fef2541dbca1bd9c3eab622209b58ae9da7d5e037d9989b3ff0c4454531458ec",
+      "deployedBytecodeHash": "fef2541dbca1bd9c3eab622209b58ae9da7d5e037d9989b3ff0c4454531458ec",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        },
+        "t_array:dyn<t_address>": {
+          "id": "t_array:dyn<t_address>",
+          "valueType": "t_address",
+          "length": "dyn",
+          "kind": "array",
+          "label": "address[]"
+        },
+        "t_struct<BaseEscrowTemplate.AgreementData>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementData",
+          "members": [
+            {
+              "label": "agreementDataItems",
+              "astId": 9727,
+              "type": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+              "src": "776:57:39"
+            },
+            {
+              "label": "agreementIds",
+              "astId": 9730,
+              "type": "t_array:dyn<t_bytes32>",
+              "src": "843:22:39"
+            }
+          ]
+        },
+        "t_struct<BaseEscrowTemplate.AgreementDataModel>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementDataModel",
+          "members": [
+            {
+              "label": "accessConsumer",
+              "astId": 9720,
+              "type": "t_address",
+              "src": "678:22:39"
+            },
+            {
+              "label": "accessProvider",
+              "astId": 9722,
+              "type": "t_address",
+              "src": "710:22:39"
+            }
+          ]
+        },
+        "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>": {
+          "id": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+          "valueType": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "label": "mapping(key => BaseEscrowTemplate.AgreementDataModel)",
+          "kind": "mapping"
+        },
+        "t_bytes32": {
+          "id": "t_bytes32",
+          "kind": "elementary",
+          "label": "bytes32"
+        },
+        "t_array:dyn<t_bytes32>": {
+          "id": "t_array:dyn<t_bytes32>",
+          "valueType": "t_bytes32",
+          "length": "dyn",
+          "kind": "array",
+          "label": "bytes32[]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "conditionTypes",
+          "astId": 9650,
+          "type": "t_array:dyn<t_address>",
+          "src": "720:33:38"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "agreementStoreManager",
+          "astId": 9652,
+          "type": "t_address",
+          "src": "760:52:38"
+        },
+        {
+          "contract": "BaseEscrowTemplate",
+          "path": "contracts/templates/BaseEscrowTemplate.sol",
+          "label": "agreementData",
+          "astId": 9702,
+          "type": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "src": "367:36:39"
+        },
+        {
+          "contract": "DIDSalesTemplate",
+          "path": "contracts/templates/DIDSalesTemplate.sol",
+          "label": "didRegistry",
+          "astId": 9898,
+          "type": "t_address",
+          "src": "1295:32:40"
+        },
+        {
+          "contract": "DIDSalesTemplate",
+          "path": "contracts/templates/DIDSalesTemplate.sol",
+          "label": "lockCondition",
+          "astId": 9900,
+          "type": "t_address",
+          "src": "1333:43:40"
+        },
+        {
+          "contract": "DIDSalesTemplate",
+          "path": "contracts/templates/DIDSalesTemplate.sol",
+          "label": "transferCondition",
+          "astId": 9902,
+          "type": "t_address",
+          "src": "1382:56:40"
+        },
+        {
+          "contract": "DIDSalesTemplate",
+          "path": "contracts/templates/DIDSalesTemplate.sol",
+          "label": "rewardCondition",
+          "astId": 9904,
+          "type": "t_address",
+          "src": "1444:47:40"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "NFT721SalesTemplate": {
+      "address": "0x6BD7Aa88167cbc19404fB231c6CEF6E0CCE4AF2D",
+      "constructorCode": "608060405234801561001057600080fd5b5061139d806100206000396000f3fe",
+      "bodyBytecodeHash": "a25e20394de9b19d65a017019faa8fbdf1281f3ddeb5e89069a3c5e4edfe5c6c",
+      "localBytecodeHash": "bd716b782f17326142acde0e99bca67f949a8498c4a2e7f52e73a50ce40f7bca",
+      "deployedBytecodeHash": "bd716b782f17326142acde0e99bca67f949a8498c4a2e7f52e73a50ce40f7bca",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        },
+        "t_array:dyn<t_address>": {
+          "id": "t_array:dyn<t_address>",
+          "valueType": "t_address",
+          "length": "dyn",
+          "kind": "array",
+          "label": "address[]"
+        },
+        "t_struct<BaseEscrowTemplate.AgreementData>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementData",
+          "members": [
+            {
+              "label": "agreementDataItems",
+              "astId": 9727,
+              "type": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+              "src": "776:57:39"
+            },
+            {
+              "label": "agreementIds",
+              "astId": 9730,
+              "type": "t_array:dyn<t_bytes32>",
+              "src": "843:22:39"
+            }
+          ]
+        },
+        "t_struct<BaseEscrowTemplate.AgreementDataModel>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementDataModel",
+          "members": [
+            {
+              "label": "accessConsumer",
+              "astId": 9720,
+              "type": "t_address",
+              "src": "678:22:39"
+            },
+            {
+              "label": "accessProvider",
+              "astId": 9722,
+              "type": "t_address",
+              "src": "710:22:39"
+            }
+          ]
+        },
+        "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>": {
+          "id": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+          "valueType": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "label": "mapping(key => BaseEscrowTemplate.AgreementDataModel)",
+          "kind": "mapping"
+        },
+        "t_bytes32": {
+          "id": "t_bytes32",
+          "kind": "elementary",
+          "label": "bytes32"
+        },
+        "t_array:dyn<t_bytes32>": {
+          "id": "t_array:dyn<t_bytes32>",
+          "valueType": "t_bytes32",
+          "length": "dyn",
+          "kind": "array",
+          "label": "bytes32[]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "conditionTypes",
+          "astId": 9650,
+          "type": "t_array:dyn<t_address>",
+          "src": "720:33:38"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "agreementStoreManager",
+          "astId": 9652,
+          "type": "t_address",
+          "src": "760:52:38"
+        },
+        {
+          "contract": "BaseEscrowTemplate",
+          "path": "contracts/templates/BaseEscrowTemplate.sol",
+          "label": "agreementData",
+          "astId": 9702,
+          "type": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "src": "367:36:39"
+        },
+        {
+          "contract": "NFTSalesTemplate",
+          "path": "contracts/templates/NFTSalesTemplate.sol",
+          "label": "didRegistry",
+          "astId": 10437,
+          "type": "t_address",
+          "src": "1270:32:44"
+        },
+        {
+          "contract": "NFTSalesTemplate",
+          "path": "contracts/templates/NFTSalesTemplate.sol",
+          "label": "lockPaymentCondition",
+          "astId": 10439,
+          "type": "t_address",
+          "src": "1308:50:44"
+        },
+        {
+          "contract": "NFTSalesTemplate",
+          "path": "contracts/templates/NFTSalesTemplate.sol",
+          "label": "transferCondition",
+          "astId": 10441,
+          "type": "t_address",
+          "src": "1364:39:44"
+        },
+        {
+          "contract": "NFTSalesTemplate",
+          "path": "contracts/templates/NFTSalesTemplate.sol",
+          "label": "rewardCondition",
+          "astId": 10443,
+          "type": "t_address",
+          "src": "1409:47:44"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "EscrowComputeExecutionTemplate": {
+      "address": "0x6541189184B774809236371C2d1E8A929CfeCb20",
+      "constructorCode": "608060405234801561001057600080fd5b5061133f806100206000396000f3fe",
+      "bodyBytecodeHash": "9e8ac15f12f1d94c98c29f8f1122e40ed33c65604b82e763dbf6e61d23dd88ca",
+      "localBytecodeHash": "2b95217eec2f9af8723eb80d2055978e7e5ae3e19411fd8159e95a25a6bcfb85",
+      "deployedBytecodeHash": "2b95217eec2f9af8723eb80d2055978e7e5ae3e19411fd8159e95a25a6bcfb85",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        },
+        "t_array:dyn<t_address>": {
+          "id": "t_array:dyn<t_address>",
+          "valueType": "t_address",
+          "length": "dyn",
+          "kind": "array",
+          "label": "address[]"
+        },
+        "t_struct<BaseEscrowTemplate.AgreementData>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementData",
+          "members": [
+            {
+              "label": "agreementDataItems",
+              "astId": 9727,
+              "type": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+              "src": "776:57:39"
+            },
+            {
+              "label": "agreementIds",
+              "astId": 9730,
+              "type": "t_array:dyn<t_bytes32>",
+              "src": "843:22:39"
+            }
+          ]
+        },
+        "t_struct<BaseEscrowTemplate.AgreementDataModel>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementDataModel",
+          "members": [
+            {
+              "label": "accessConsumer",
+              "astId": 9720,
+              "type": "t_address",
+              "src": "678:22:39"
+            },
+            {
+              "label": "accessProvider",
+              "astId": 9722,
+              "type": "t_address",
+              "src": "710:22:39"
+            }
+          ]
+        },
+        "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>": {
+          "id": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+          "valueType": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "label": "mapping(key => BaseEscrowTemplate.AgreementDataModel)",
+          "kind": "mapping"
+        },
+        "t_bytes32": {
+          "id": "t_bytes32",
+          "kind": "elementary",
+          "label": "bytes32"
+        },
+        "t_array:dyn<t_bytes32>": {
+          "id": "t_array:dyn<t_bytes32>",
+          "valueType": "t_bytes32",
+          "length": "dyn",
+          "kind": "array",
+          "label": "bytes32[]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "conditionTypes",
+          "astId": 9650,
+          "type": "t_array:dyn<t_address>",
+          "src": "720:33:38"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "agreementStoreManager",
+          "astId": 9652,
+          "type": "t_address",
+          "src": "760:52:38"
+        },
+        {
+          "contract": "BaseEscrowTemplate",
+          "path": "contracts/templates/BaseEscrowTemplate.sol",
+          "label": "agreementData",
+          "astId": 9702,
+          "type": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "src": "367:36:39"
+        },
+        {
+          "contract": "EscrowComputeExecutionTemplate",
+          "path": "contracts/templates/EscrowComputeExecutionTemplate.sol",
+          "label": "didRegistry",
+          "astId": 10173,
+          "type": "t_address",
+          "src": "1768:32:42"
+        },
+        {
+          "contract": "EscrowComputeExecutionTemplate",
+          "path": "contracts/templates/EscrowComputeExecutionTemplate.sol",
+          "label": "computeExecutionCondition",
+          "astId": 10175,
+          "type": "t_address",
+          "src": "1806:60:42"
+        },
+        {
+          "contract": "EscrowComputeExecutionTemplate",
+          "path": "contracts/templates/EscrowComputeExecutionTemplate.sol",
+          "label": "lockPaymentCondition",
+          "astId": 10177,
+          "type": "t_address",
+          "src": "1872:50:42"
+        },
+        {
+          "contract": "EscrowComputeExecutionTemplate",
+          "path": "contracts/templates/EscrowComputeExecutionTemplate.sol",
+          "label": "escrowPayment",
+          "astId": 10179,
+          "type": "t_address",
+          "src": "1928:45:42"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "NFTSalesTemplate": {
+      "address": "0xAa3978dd510Fe75AD9e7f62F6Fbd2DcaC54f1A93",
+      "constructorCode": "608060405234801561001057600080fd5b5061139d806100206000396000f3fe",
+      "bodyBytecodeHash": "a25e20394de9b19d65a017019faa8fbdf1281f3ddeb5e89069a3c5e4edfe5c6c",
+      "localBytecodeHash": "bd716b782f17326142acde0e99bca67f949a8498c4a2e7f52e73a50ce40f7bca",
+      "deployedBytecodeHash": "bd716b782f17326142acde0e99bca67f949a8498c4a2e7f52e73a50ce40f7bca",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        },
+        "t_array:dyn<t_address>": {
+          "id": "t_array:dyn<t_address>",
+          "valueType": "t_address",
+          "length": "dyn",
+          "kind": "array",
+          "label": "address[]"
+        },
+        "t_struct<BaseEscrowTemplate.AgreementData>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementData",
+          "members": [
+            {
+              "label": "agreementDataItems",
+              "astId": 9727,
+              "type": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+              "src": "776:57:39"
+            },
+            {
+              "label": "agreementIds",
+              "astId": 9730,
+              "type": "t_array:dyn<t_bytes32>",
+              "src": "843:22:39"
+            }
+          ]
+        },
+        "t_struct<BaseEscrowTemplate.AgreementDataModel>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementDataModel",
+          "members": [
+            {
+              "label": "accessConsumer",
+              "astId": 9720,
+              "type": "t_address",
+              "src": "678:22:39"
+            },
+            {
+              "label": "accessProvider",
+              "astId": 9722,
+              "type": "t_address",
+              "src": "710:22:39"
+            }
+          ]
+        },
+        "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>": {
+          "id": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+          "valueType": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "label": "mapping(key => BaseEscrowTemplate.AgreementDataModel)",
+          "kind": "mapping"
+        },
+        "t_bytes32": {
+          "id": "t_bytes32",
+          "kind": "elementary",
+          "label": "bytes32"
+        },
+        "t_array:dyn<t_bytes32>": {
+          "id": "t_array:dyn<t_bytes32>",
+          "valueType": "t_bytes32",
+          "length": "dyn",
+          "kind": "array",
+          "label": "bytes32[]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "conditionTypes",
+          "astId": 9650,
+          "type": "t_array:dyn<t_address>",
+          "src": "720:33:38"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "agreementStoreManager",
+          "astId": 9652,
+          "type": "t_address",
+          "src": "760:52:38"
+        },
+        {
+          "contract": "BaseEscrowTemplate",
+          "path": "contracts/templates/BaseEscrowTemplate.sol",
+          "label": "agreementData",
+          "astId": 9702,
+          "type": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "src": "367:36:39"
+        },
+        {
+          "contract": "NFTSalesTemplate",
+          "path": "contracts/templates/NFTSalesTemplate.sol",
+          "label": "didRegistry",
+          "astId": 10437,
+          "type": "t_address",
+          "src": "1270:32:44"
+        },
+        {
+          "contract": "NFTSalesTemplate",
+          "path": "contracts/templates/NFTSalesTemplate.sol",
+          "label": "lockPaymentCondition",
+          "astId": 10439,
+          "type": "t_address",
+          "src": "1308:50:44"
+        },
+        {
+          "contract": "NFTSalesTemplate",
+          "path": "contracts/templates/NFTSalesTemplate.sol",
+          "label": "transferCondition",
+          "astId": 10441,
+          "type": "t_address",
+          "src": "1364:39:44"
+        },
+        {
+          "contract": "NFTSalesTemplate",
+          "path": "contracts/templates/NFTSalesTemplate.sol",
+          "label": "rewardCondition",
+          "astId": 10443,
+          "type": "t_address",
+          "src": "1409:47:44"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
+    },
+    "AccessTemplate": {
+      "address": "0x122BE3e401270e325DD3af5F3572f735fe39BE93",
+      "constructorCode": "608060405234801561001057600080fd5b5061133f806100206000396000f3fe",
+      "bodyBytecodeHash": "c0e9e67b8cdbe74aa76ab5fc5016aa77c057553440e02d6e7883b5c40df92d32",
+      "localBytecodeHash": "9942f20489ad5b04f255b6e7bc9164fde78dd4be038b7983fe6273d141badac5",
+      "deployedBytecodeHash": "9942f20489ad5b04f255b6e7bc9164fde78dd4be038b7983fe6273d141badac5",
+      "types": {
+        "t_bool": {
+          "id": "t_bool",
+          "kind": "elementary",
+          "label": "bool"
+        },
+        "t_uint256": {
+          "id": "t_uint256",
+          "kind": "elementary",
+          "label": "uint256"
+        },
+        "t_array:50<t_uint256>": {
+          "id": "t_array:50<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "50",
+          "kind": "array",
+          "label": "uint256[50]"
+        },
+        "t_address": {
+          "id": "t_address",
+          "kind": "elementary",
+          "label": "address"
+        },
+        "t_array:49<t_uint256>": {
+          "id": "t_array:49<t_uint256>",
+          "valueType": "t_uint256",
+          "length": "49",
+          "kind": "array",
+          "label": "uint256[49]"
+        },
+        "t_array:dyn<t_address>": {
+          "id": "t_array:dyn<t_address>",
+          "valueType": "t_address",
+          "length": "dyn",
+          "kind": "array",
+          "label": "address[]"
+        },
+        "t_struct<BaseEscrowTemplate.AgreementData>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementData",
+          "members": [
+            {
+              "label": "agreementDataItems",
+              "astId": 9727,
+              "type": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+              "src": "776:57:39"
+            },
+            {
+              "label": "agreementIds",
+              "astId": 9730,
+              "type": "t_array:dyn<t_bytes32>",
+              "src": "843:22:39"
+            }
+          ]
+        },
+        "t_struct<BaseEscrowTemplate.AgreementDataModel>": {
+          "id": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "kind": "struct",
+          "label": "BaseEscrowTemplate.AgreementDataModel",
+          "members": [
+            {
+              "label": "accessConsumer",
+              "astId": 9720,
+              "type": "t_address",
+              "src": "678:22:39"
+            },
+            {
+              "label": "accessProvider",
+              "astId": 9722,
+              "type": "t_address",
+              "src": "710:22:39"
+            }
+          ]
+        },
+        "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>": {
+          "id": "t_mapping<t_struct<BaseEscrowTemplate.AgreementDataModel>>",
+          "valueType": "t_struct<BaseEscrowTemplate.AgreementDataModel>",
+          "label": "mapping(key => BaseEscrowTemplate.AgreementDataModel)",
+          "kind": "mapping"
+        },
+        "t_bytes32": {
+          "id": "t_bytes32",
+          "kind": "elementary",
+          "label": "bytes32"
+        },
+        "t_array:dyn<t_bytes32>": {
+          "id": "t_array:dyn<t_bytes32>",
+          "valueType": "t_bytes32",
+          "length": "dyn",
+          "kind": "array",
+          "label": "bytes32[]"
+        }
+      },
+      "storage": [
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initialized",
+          "astId": 14106,
+          "type": "t_bool",
+          "src": "1172:25:80"
+        },
+        {
+          "contract": "Initializable",
+          "path": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol",
+          "label": "_initializing",
+          "astId": 14109,
+          "type": "t_bool",
+          "src": "1300:26:80"
+        },
+        {
+          "contract": "ContextUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13284,
+          "type": "t_array:50<t_uint256>",
+          "src": "1173:25:73"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "_owner",
+          "astId": 13604,
+          "type": "t_address",
+          "src": "718:22:75"
+        },
+        {
+          "contract": "OwnableUpgradeable",
+          "path": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+          "label": "__gap",
+          "astId": 13722,
+          "type": "t_array:49<t_uint256>",
+          "src": "2495:25:75"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "conditionTypes",
+          "astId": 9650,
+          "type": "t_array:dyn<t_address>",
+          "src": "720:33:38"
+        },
+        {
+          "contract": "AgreementTemplate",
+          "path": "contracts/templates/AgreementTemplate.sol",
+          "label": "agreementStoreManager",
+          "astId": 9652,
+          "type": "t_address",
+          "src": "760:52:38"
+        },
+        {
+          "contract": "BaseEscrowTemplate",
+          "path": "contracts/templates/BaseEscrowTemplate.sol",
+          "label": "agreementData",
+          "astId": 9702,
+          "type": "t_struct<BaseEscrowTemplate.AgreementData>",
+          "src": "367:36:39"
+        },
+        {
+          "contract": "AccessTemplate",
+          "path": "contracts/templates/AccessTemplate.sol",
+          "label": "didRegistry",
+          "astId": 9502,
+          "type": "t_address",
+          "src": "1827:32:37"
+        },
+        {
+          "contract": "AccessTemplate",
+          "path": "contracts/templates/AccessTemplate.sol",
+          "label": "accessCondition",
+          "astId": 9504,
+          "type": "t_address",
+          "src": "1865:40:37"
+        },
+        {
+          "contract": "AccessTemplate",
+          "path": "contracts/templates/AccessTemplate.sol",
+          "label": "lockCondition",
+          "astId": 9506,
+          "type": "t_address",
+          "src": "1911:43:37"
+        },
+        {
+          "contract": "AccessTemplate",
+          "path": "contracts/templates/AccessTemplate.sol",
+          "label": "escrowReward",
+          "astId": 9508,
+          "type": "t_address",
+          "src": "1960:44:37"
+        }
+      ],
+      "warnings": {
+        "hasConstructor": false,
+        "hasSelfDestruct": false,
+        "hasDelegateCall": false,
+        "hasInitialValuesInDeclarations": false,
+        "uninitializedBaseContracts": []
+      }
     }
   },
   "solidityLibs": {
@@ -2083,7 +4280,193 @@
       "deployedBytecodeHash": "17963ae80db1e096ce1159baf45ceb23e85f484345d5903bf8dd3c5ac34ef8e5"
     }
   },
-  "proxies": {},
+  "proxies": {
+    "@nevermined-io/contracts/DIDRegistry": [
+      {
+        "address": "0xA77b7C01D136694d77494F2de1272a526018B04D",
+        "version": "v1.1.2",
+        "implementation": "0xAcdb371CFb4F157A516b144fe0F16E4C0Ff961A1"
+      }
+    ],
+    "@nevermined-io/contracts/ConditionStoreManager": [
+      {
+        "address": "0x2Da0b5a6B0015B698025Ad164f82BF01E8B43214",
+        "version": "v1.1.2",
+        "implementation": "0x0000000000000000000000000000000000000000"
+      }
+    ],
+    "@nevermined-io/contracts/TemplateStoreManager": [
+      {
+        "address": "0xfD0cf3a91EC3BE427785783EE34a9116AED085b6",
+        "version": "v1.1.2",
+        "implementation": "0xA03c4eA2D03663Dd8AF44254B94DDE14e41B4bC2"
+      }
+    ],
+    "@nevermined-io/contracts/EscrowPaymentCondition": [
+      {
+        "address": "0xc33269A0E2Edca46c3d0b2B2B25aFeEE6F828405",
+        "version": "v1.1.2",
+        "implementation": "0x71833426Ec2758869C16492e1c213963c8D8A209"
+      }
+    ],
+    "@nevermined-io/contracts/SignCondition": [
+      {
+        "address": "0x10da0625d8300BF40dE3721a0150F0E724611d44",
+        "version": "v1.1.2",
+        "implementation": "0x368897E4466B310453534CB1e76c167299772A46"
+      }
+    ],
+    "@nevermined-io/contracts/HashLockCondition": [
+      {
+        "address": "0x6B309450FaE559913132585b06CCD5Fe9999037f",
+        "version": "v1.1.2",
+        "implementation": "0x284379A83A5B5cC2c8B41d01928AB4267Afc1a13"
+      }
+    ],
+    "@nevermined-io/contracts/ThresholdCondition": [
+      {
+        "address": "0xea8F5b9Ddd826eC48B1e8991A947D6EaAE495213",
+        "version": "v1.1.2",
+        "implementation": "0xDb6fA99aA449F07C0276E2adeE64A73FCEA51CF8"
+      }
+    ],
+    "@nevermined-io/contracts/WhitelistingCondition": [
+      {
+        "address": "0x489f500aA3ED426eA0d45FB7769cfba85f1AA737",
+        "version": "v1.1.2",
+        "implementation": "0x35A69B6F82Ca3048281ddc054e321e402AC72b17"
+      }
+    ],
+    "@nevermined-io/contracts/AgreementStoreManager": [
+      {
+        "address": "0xD0cFcf159dC1c6573ba203c7f37EF7fAAa9c0E88",
+        "version": "v1.1.2",
+        "implementation": "0x760400FA672a1494c787583a4a63e5B8FcD06531"
+      }
+    ],
+    "@nevermined-io/contracts/LockPaymentCondition": [
+      {
+        "address": "0x611923E1d809a53aB2731Dd872778B3cEdD5C1D4",
+        "version": "v1.1.2",
+        "implementation": "0x6f90B8EEced86a5521ec1fb5D36aD09E6e31531A"
+      }
+    ],
+    "@nevermined-io/contracts/NFTHolderCondition": [
+      {
+        "address": "0x9144f4831aa963963bf8737b45C5eea810efB7e7",
+        "version": "v1.1.2",
+        "implementation": "0x4907886Fdb78299e6d0b54bada144c4D583a9bcb"
+      }
+    ],
+    "@nevermined-io/contracts/NFT721HolderCondition": [
+      {
+        "address": "0x0a83EDEeB843E9e96f57bf33f53969BF052c2cE4",
+        "version": "v1.1.2",
+        "implementation": "0xCFa27Ecd261B358E2F8229ca9C37893bC50f14F2"
+      }
+    ],
+    "@nevermined-io/contracts/NFTAccessCondition": [
+      {
+        "address": "0xa2D1D6DA85df69812FF741d77Efb77CAfF1d9dc9",
+        "version": "v1.1.2",
+        "implementation": "0x101bdc1b5593BF8908C5B1E8bA82AAE34911BB34"
+      }
+    ],
+    "@nevermined-io/contracts/TransferNFTCondition": [
+      {
+        "address": "0x3c8D330419f59C1586C1D4F8e4f3f70F09606455",
+        "version": "v1.1.2",
+        "implementation": "0xac4b4930b6f87Dfe9D86D1C47e2c43235fA304f7"
+      }
+    ],
+    "@nevermined-io/contracts/TransferNFT721Condition": [
+      {
+        "address": "0x89B39c7b8602778316fA51E00235CE418aC06c2F",
+        "version": "v1.1.2",
+        "implementation": "0xBC60BdfcCC3e7b41f80601bE8e476172211241Ee"
+      }
+    ],
+    "@nevermined-io/contracts/TransferDIDOwnershipCondition": [
+      {
+        "address": "0xE2AC5Bca96a7f9ECa2037F001AD51C7f37820bAF",
+        "version": "v1.1.2",
+        "implementation": "0xE4990e5E1B015Fc026AA73BDb11e0D357fC6e14E"
+      }
+    ],
+    "@nevermined-io/contracts/NFTLockCondition": [
+      {
+        "address": "0x877E2Fd93Eb74095591b90ADc721A128b637b21C",
+        "version": "v1.1.2",
+        "implementation": "0xDD760E167fDa3361e00E0f82C379b28D83491020"
+      }
+    ],
+    "@nevermined-io/contracts/AccessCondition": [
+      {
+        "address": "0xBa635a16ad65fc44776F4577E006e54B739170e1",
+        "version": "v1.1.2",
+        "implementation": "0x150477e4F3C2b22c0943e1D2f5bF8be52467c7d5"
+      }
+    ],
+    "@nevermined-io/contracts/ComputeExecutionCondition": [
+      {
+        "address": "0xDc8c172404e3cF4D16Bc0De877656c4ba58f3384",
+        "version": "v1.1.2",
+        "implementation": "0x7D3bF824B33C1856dFC6398bD92d91732BEb9DFf"
+      }
+    ],
+    "@nevermined-io/contracts/AccessTemplate": [
+      {
+        "address": "0x5cc43778946671Ab88Be0d98B2Bc25C0c67095bb",
+        "version": "v1.1.2",
+        "implementation": "0x122BE3e401270e325DD3af5F3572f735fe39BE93"
+      }
+    ],
+    "@nevermined-io/contracts/EscrowComputeExecutionTemplate": [
+      {
+        "address": "0x7c912E94aF9e8Bbf1e4Dcf2Cdf5506ea71E084D9",
+        "version": "v1.1.2",
+        "implementation": "0x6541189184B774809236371C2d1E8A929CfeCb20"
+      }
+    ],
+    "@nevermined-io/contracts/NFTAccessTemplate": [
+      {
+        "address": "0x335E1A2ec8854074BC1b64eFf0FF642a443243a5",
+        "version": "v1.1.2",
+        "implementation": "0x3E3878D5b06108FD6f9080CeD5056682f7A382Ef"
+      }
+    ],
+    "@nevermined-io/contracts/NFT721AccessTemplate": [
+      {
+        "address": "0x0d9c4CB03fB90ABC58F23C52bD9E3eD27fE55f39",
+        "version": "v1.1.2",
+        "implementation": "0x39200EdB5F489f6f2536Cfe4d03CE2687456e875"
+      }
+    ],
+    "@nevermined-io/contracts/NFTSalesTemplate": [
+      {
+        "address": "0x2b87C77F7023cb3956aeE3490CfC1Da90571E7DB",
+        "version": "v1.1.2",
+        "implementation": "0xAa3978dd510Fe75AD9e7f62F6Fbd2DcaC54f1A93"
+      }
+    ],
+    "@nevermined-io/contracts/NFT721SalesTemplate": [
+      {
+        "address": "0xA5BA02CbdC3c005aFC616A53d97488327ef494BE",
+        "version": "v1.1.2",
+        "implementation": "0x0000000000000000000000000000000000000000"
+      }
+    ],
+    "@nevermined-io/contracts/DIDSalesTemplate": [
+      {
+        "address": "0x81a2A6b639E6c3a158368B2fAF72a3F51Fa45B00",
+        "version": "v1.1.2",
+        "implementation": "0x0000000000000000000000000000000000000000"
+      }
+    ]
+  },
   "zosversion": "2.2",
-  "version": "v1.1.2"
+  "version": "v1.1.2",
+  "proxyAdmin": {
+    "address": "0x2dC90b161b4e0953Af426555EE580fc9922D7cBD"
+  }
 }
