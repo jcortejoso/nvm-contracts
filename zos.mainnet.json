@@ -4292,7 +4292,7 @@
       {
         "address": "0x2Da0b5a6B0015B698025Ad164f82BF01E8B43214",
         "version": "v1.1.2",
-        "implementation": "0x0000000000000000000000000000000000000000"
+        "implementation": "0xf5C39b8cE388918Cf8d3E9822B7d424578e23C61"
       }
     ],
     "@nevermined-io/contracts/TemplateStoreManager": [
@@ -4453,14 +4453,14 @@
       {
         "address": "0xA5BA02CbdC3c005aFC616A53d97488327ef494BE",
         "version": "v1.1.2",
-        "implementation": "0x0000000000000000000000000000000000000000"
+        "implementation": "0x6BD7Aa88167cbc19404fB231c6CEF6E0CCE4AF2D"
       }
     ],
     "@nevermined-io/contracts/DIDSalesTemplate": [
       {
         "address": "0x81a2A6b639E6c3a158368B2fAF72a3F51Fa45B00",
         "version": "v1.1.2",
-        "implementation": "0x0000000000000000000000000000000000000000"
+        "implementation": "0xD3d89Da4303b60Bf46828bE6ad81b578EeB5209D"
       }
     ]
   },
