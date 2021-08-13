@@ -29,9 +29,9 @@ this function is called only once during the contract
   function hashValues(
     bytes32 _did,
     address _nftReceiver,
-    uint256 _nftAmount,
-    bytes32 _lockCondition,
-    address _contract
+    address _nftAmount,
+    uint256 _lockCondition,
+    bytes32 _contract
   ) public returns (bytes32)
 ```
 hashValues generates the hash of condition inputs 
@@ -43,9 +43,9 @@ hashValues generates the hash of condition inputs
 | :--- | :--- | :------------------------------------------------------------------- |
 |`_did` | bytes32 | refers to the DID in which secret store will issue the decryption keys
 |`_nftReceiver` | address | is the address of the granted user or the DID provider
-|`_nftAmount` | uint256 | amount of NFTs to transfer   
-|`_lockCondition` | bytes32 | lock condition identifier    
-|`_contract` | address | NFT contract to use
+|`_nftAmount` | address | amount of NFTs to transfer   
+|`_lockCondition` | uint256 | lock condition identifier    
+|`_contract` | bytes32 | NFT contract to use
 
 #### Return Values:
 | Name                           | Type          | Description                                                                  |

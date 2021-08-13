@@ -87,7 +87,8 @@ only DID owner or DID provider can call this
   function fulfill(
     bytes32 _agreementId,
     bytes32 _documentId,
-    address _grantee
+    address _grantee,
+    address _contractAddress
   ) public returns (enum ConditionStoreLibrary.ConditionState)
 ```
 fulfill NFT Access condition
@@ -103,6 +104,7 @@ only DID owner or DID provider can call this
 |`_agreementId` | bytes32 | agreement identifier
 |`_documentId` | bytes32 | refers to the DID in which secret store will issue the decryption keys
 |`_grantee` | address | is the address of the granted user or the DID provider
+|`_contractAddress` | address | is the contract address of the NFT implementation (ERC-1155 or ERC-721)
 
 #### Return Values:
 | Name                           | Type          | Description                                                                  |
