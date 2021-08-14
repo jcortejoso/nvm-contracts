@@ -68,9 +68,6 @@
     "doc": "docs",
     "test": "test"
   },
-  "engines": {
-    "node": "10"
-  },
   "files": [
     "artifacts/**/*",
     "docs/**/*",
