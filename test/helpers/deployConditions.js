@@ -4,7 +4,7 @@ const AccessProofCondition = artifacts.require('AccessProofCondition')
 const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const ComputeExecutionCondition = artifacts.require('ComputeExecutionCondition')
-const DisputeManager = artifacts.require('TestDisputeManager')
+const DisputeManager = artifacts.require('PlonkVerifier')
 
 const deployConditions = async function(
     deployer,

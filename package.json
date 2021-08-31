@@ -111,6 +111,8 @@
   },
   "dependencies": {
     "circom": "^0.5.45",
+    "circomlib": "^0.5.3",
+    "ffjavascript": "^0.2.38",
     "snarkjs": "^0.4.6"
   }
 }

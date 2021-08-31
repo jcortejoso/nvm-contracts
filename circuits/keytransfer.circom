@@ -9,6 +9,7 @@ include "circomlib/circuits/comparators.circom"
 
 template Main() {
 	signal input buyer_x;
+	// buyer_x === 0;
 	signal input buyer_y;
 	signal input provider_x;
 	signal input provider_y;
@@ -19,7 +20,6 @@ template Main() {
 	signal input cipher_xL_in; // cipher text part 1
 	signal input cipher_xR_in; // cipher text part 2
 	signal input hash_plain; // hash of plain text
-
 	var i;
 
 	component snum2bits = Num2Bits(253);
@@ -62,7 +62,6 @@ template Main() {
 	encrypt.xL_out - cipher_xL_in === 0;
 	encrypt.xR_out - cipher_xR_in === 0;
 	hashplain.out === hash_plain;
-
 }
 
 component main = Main();

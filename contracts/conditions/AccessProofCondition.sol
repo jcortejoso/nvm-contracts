@@ -30,10 +30,10 @@ contract AccessProofCondition is Condition {
     
     event Fulfilled(
         bytes32 indexed _agreementId,
-        bytes32 _origHash,
-        bytes32[2] _buyer,
-        bytes32[2] _provider,
-        bytes32[2] _cipher,
+        uint _origHash,
+        uint[2] _buyer,
+        uint[2] _provider,
+        uint[2] _cipher,
         bytes _proof,
         bytes32 _conditionId
     );
@@ -82,9 +82,9 @@ contract AccessProofCondition is Condition {
     * @return bytes32 hash of all these values 
     */
     function hashValues(
-        bytes32 _origHash,
-        bytes32[2] memory _buyer,
-        bytes32[2] memory _provider
+        uint _origHash,
+        uint[2] memory _buyer,
+        uint[2] memory _provider
     )
         public
         pure
@@ -106,10 +106,10 @@ contract AccessProofCondition is Condition {
     */
     function fulfill(
         bytes32 _agreementId,
-        bytes32 _origHash,
-        bytes32[2] memory _buyer,
-        bytes32[2] memory _provider,
-        bytes32[2] memory _cipher,
+        uint _origHash,
+        uint[2] memory _buyer,
+        uint[2] memory _provider,
+        uint[2] memory _cipher,
         bytes memory _proof
     )
         public
@@ -123,7 +123,10 @@ contract AccessProofCondition is Condition {
         params[4] = uint(_cipher[0]);
         params[5] = uint(_cipher[1]);
         params[6] = uint(_origHash);
-        require(disputeManager.verifyProof(_proof, params), 'Transfer proof not finished');
+        /*
+        params[0] = 8911751603281566160452710943246074761822317551823405301307348714667359009192;
+        */
+        require(disputeManager.verifyProof(_proof, params), 'Cannot verify snark');
 
         bytes32 _id = generateId(
             _agreementId,

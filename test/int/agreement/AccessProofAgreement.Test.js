@@ -16,6 +16,14 @@ const { getBalance } = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.ts')
 const testUtils = require('../../helpers/utils')
 
+const poseidon = require("circomlib").poseidon
+const babyJub = require("circomlib").babyJub
+const mimcjs = require("circomlib").mimcsponge
+const ZqField = require("ffjavascript").ZqField;
+const Scalar = require("ffjavascript").Scalar;
+const F = new ZqField(Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617"));
+const snarkjs = require("snarkjs");
+
 function randomBytes32() {
     let rnd = ''
     for (let i = 0; i < 64; i++) {
@@ -98,15 +106,85 @@ contract('Access Template integration test', (accounts) => {
         url = constants.registry.url,
         checksum = constants.bytes32.one
     } = {}) {
-        const origHash = randomBytes32()
-        const cryptedHash = randomBytes32()
+        const orig1 = 222n
+        const orig2 = 333n
+        const origHash = poseidon([orig1, orig2])
 
         const did = await didRegistry.hashDID(didSeed, receivers[0])
+
+        const buyer_k = 123
+        const provider_k = 234
+        const buyer_pub = babyJub.mulPointEscalar(babyJub.Base8, F.e(buyer_k));
+        const provider_pub = babyJub.mulPointEscalar(babyJub.Base8, F.e(provider_k));
+
+        console.log("public keys", buyer_pub, provider_pub)
+
+        const k = babyJub.mulPointEscalar(buyer_pub, F.e(provider_k));
+        const k2 = babyJub.mulPointEscalar(provider_pub, F.e(buyer_k));
+
+        console.log("encryption key", k)
+        console.log("encryption key check", k2)
+
+        const cipher = mimcjs.hash(orig1,orig2,k[0]);
+
+        const snark_params = {
+            buyer_x: "0x" + buyer_pub[0].toString(16),
+            buyer_y: "0x" + buyer_pub[1].toString(16),
+            provider_x: "0x" + provider_pub[0].toString(16),
+            provider_y: "0x" + provider_pub[1].toString(16),
+            provider_k: "0x" + provider_k.toString(16),
+            xL_in: "0x" + orig1.toString(16),
+            xR_in: "0x" + orig2.toString(16),
+            cipher_xL_in: "0x" + cipher.xL.toString(16),
+            cipher_xR_in: "0x" + cipher.xR.toString(16),
+            hash_plain: "0x" + origHash.toString(16),
+        }
+/*
+        const snark_params = {
+            buyer_x: buyer_pub[0].toString(),
+            buyer_y: buyer_pub[1].toString(),
+            provider_x: provider_pub[0].toString(),
+            provider_y: provider_pub[1].toString(),
+            provider_k: provider_k.toString(),
+            xL_in: orig1.toString(),
+            xR_in: orig2.toString(),
+            cipher_xL_in: cipher.xL.toString(),
+            cipher_xR_in: cipher.xR.toString(),
+            hash_plain: origHash.toString(),
+        }
+        const snark_params = {
+            buyer_x: buyer_pub[0],
+            buyer_y: buyer_pub[1],
+            provider_x: provider_pub[0],
+            provider_y: provider_pub[1],
+            xL_in: orig1,
+            xR_in: orig2,
+            cipher_xL_in: cipher.xL,
+            cipher_xR_in: cipher.xR,
+            provider_k: provider_k,
+            hash_plain: origHash,
+        }
+*/
+        console.log(snark_params)
+
+        const { proof, publicSignals } = await snarkjs.plonk.fullProve(
+            snark_params,
+            "circuits/keytransfer.wasm",
+            "circuits/keytransfer.zkey"
+        );
+
+        const proof_solidity = (await snarkjs.plonk.exportSolidityCallData(proof, publicSignals))
+
+        const proof_data = proof_solidity.split(",")[0]
+        console.log("Proof: ");
+        console.log(proof_solidity, proof_data);
+        console.log(proof)
+
         // generate IDs from attributes
         const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
             await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers))
         const conditionIdAccess = await accessProofCondition.generateId(agreementId,
-            await accessProofCondition.hashValues(origHash, cryptedHash, receivers[0], sender))
+            await accessProofCondition.hashValues(origHash, buyer_pub, provider_pub))
         const conditionIdEscrow = await escrowPaymentCondition.generateId(agreementId,
             await escrowPaymentCondition.hashValues(did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, conditionIdLock, conditionIdAccess))
 
@@ -124,9 +202,10 @@ contract('Access Template integration test', (accounts) => {
         }
         const data = {
             origHash,
-            cryptedHash,
-            receiver: receivers[0],
-            sender
+            buyer_pub,
+            provider_pub,
+            cipher: [cipher.xL, cipher.xR],
+            proof: proof_data,
         }
         return {
             agreementId,
@@ -145,7 +224,7 @@ contract('Access Template integration test', (accounts) => {
     }
 
     describe('create and fulfill escrow agreement', () => {
-        it('should create escrow agreement and fulfill with multiple reward addresses', async () => {
+        it.only('should create escrow agreement and fulfill with multiple reward addresses', async () => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
@@ -192,7 +271,7 @@ contract('Access Template integration test', (accounts) => {
                 constants.condition.state.fulfilled)
 
             // fulfill access
-            await disputeManager.setAccepted(...Object.values(data))
+            // await disputeManager.setAccepted(...Object.values(data))
             await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })
 
             assert.strictEqual(
@@ -251,7 +330,6 @@ contract('Access Template integration test', (accounts) => {
             await increaseTime.mineBlocks(timeOutAccess)
 
             // abort: fulfill access after timeout
-            await disputeManager.setAccepted(...Object.values(data))
             await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
@@ -296,7 +374,6 @@ contract('Access Template integration test', (accounts) => {
             // receiver is a DID owner
 
             // fail: fulfill access before time lock
-            await disputeManager.setAccepted(...Object.values(data))
 
             await assert.isRejected(
                 accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver }),
@@ -378,8 +455,6 @@ contract('Access Template integration test', (accounts) => {
                 await token.approve(lockPaymentCondition.address, totalAmount * 2, { from: sender })
                 await lockPaymentCondition.fulfill(agreementId2, did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers, { from: sender })
                 // fulfill access
-                await disputeManager.setAccepted(...Object.values(data))
-                await disputeManager.setAccepted(...Object.values(data2))
                 await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })
                 await accessProofCondition.fulfill(agreementId2, ...Object.values(data2), { from: receiver })
 
