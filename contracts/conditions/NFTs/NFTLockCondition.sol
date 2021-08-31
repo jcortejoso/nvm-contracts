@@ -61,25 +61,47 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
         registry = IERC1155Upgradeable(_didRegistryAddress);
     }
 
+    /**
+     * @notice hashValues generates the hash of condition inputs 
+     *        with the following parameters
+     * @param _did the DID of the asset with NFTs attached to lock    
+     * @param _lockAddress the contract address where the NFT will be locked
+     * @param _amount is the amount of the locked tokens
+     * @return bytes32 hash of all these values 
+     */
+    function hashValues(
+        bytes32 _did,
+        address _lockAddress,
+        uint256 _amount
+    )
+    public
+    view
+    returns (bytes32)
+    {
+        return hashValues(_did, _lockAddress, _amount, address(registry));
+    }    
+    
    /**
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters
     * @param _did the DID of the asset with NFTs attached to lock    
     * @param _lockAddress the contract address where the NFT will be locked
     * @param _amount is the amount of the locked tokens
+    * @param _nftContractAddress Is the address of the NFT (ERC-1155) contract to use    
     * @return bytes32 hash of all these values 
     */
     function hashValues(
         bytes32 _did,
         address _lockAddress,
-        uint256 _amount
+        uint256 _amount,
+        address _nftContractAddress
     )
         public
         pure
         override
         returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _lockAddress, _amount));
+        return keccak256(abi.encode(_did, _lockAddress, _amount, _nftContractAddress));
     }
 
     /**
@@ -90,7 +112,7 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
      * @param _agreementId agreement identifier
      * @param _did refers to the DID in which secret store will issue the decryption keys
      * @param _lockAddress the contract address where the NFT will be locked
-     * @param _amount is the amount of the locked tokens
+     * @param _amount is the amount of the locked tokens                        
      * @return condition state (Fulfilled/Aborted)
      */
     function fulfill(
@@ -99,7 +121,32 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
         address _lockAddress,
         uint256 _amount
     )
-        external
+    public
+    returns (ConditionStoreLibrary.ConditionState)
+    {
+        return fulfill(_agreementId, _did, _lockAddress, _amount, address(registry));
+    }
+    
+    /**
+     * @notice fulfill the transfer NFT condition
+     * @dev Fulfill method transfer a certain amount of NFTs 
+     *       to the _nftReceiver address. 
+     *       When true then fulfill the condition
+     * @param _agreementId agreement identifier
+     * @param _did refers to the DID in which secret store will issue the decryption keys
+     * @param _lockAddress the contract address where the NFT will be locked
+     * @param _amount is the amount of the locked tokens
+     * @param _nftContractAddress Is the address of the NFT (ERC-1155) contract to use                   
+     * @return condition state (Fulfilled/Aborted)
+     */
+    function fulfill(
+        bytes32 _agreementId,
+        bytes32 _did,
+        address _lockAddress,
+        uint256 _amount,
+        address _nftContractAddress
+    )
+        public
         override
         nonReentrant
         returns (ConditionStoreLibrary.ConditionState)
@@ -108,7 +155,7 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
         
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _lockAddress, _amount)
+            hashValues(_did, _lockAddress, _amount, _nftContractAddress)
         );
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
@@ -120,7 +167,8 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
             _did,
             _lockAddress,
             _id,
-            _amount
+            _amount,
+            _nftContractAddress
         );
         return state;
     }

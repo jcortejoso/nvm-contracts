@@ -13,7 +13,8 @@ interface INFTLock {
         bytes32 indexed _did,
         address indexed _lockAddress,
         bytes32 _conditionId,
-        uint256 _amount
+        uint256 _amount,
+        address _nftContractAddress
     );
 
     /**
@@ -22,12 +23,14 @@ interface INFTLock {
      * @param _did the DID of the asset with NFTs attached to lock    
      * @param _lockAddress the contract address where the NFT will be locked
      * @param _amount is the amount of the locked tokens
+     * @param _nftContractAddress Is the address of the NFT (ERC-721) contract to use              
      * @return bytes32 hash of all these values 
      */
     function hashValues(
         bytes32 _did,
         address _lockAddress,
-        uint256 _amount
+        uint256 _amount,
+        address _nftContractAddress
     )
     external
     pure
@@ -42,13 +45,15 @@ interface INFTLock {
      * @param _did refers to the DID in which secret store will issue the decryption keys
      * @param _lockAddress the contract address where the NFT will be locked
      * @param _amount is the amount of the locked tokens
+     * @param _nftContractAddress Is the address of the NFT (ERC-721) contract to use              
      * @return condition state (Fulfilled/Aborted)
      */
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
         address _lockAddress,
-        uint256 _amount
+        uint256 _amount,
+        address _nftContractAddress
     )
     external
     returns (ConditionStoreLibrary.ConditionState);
