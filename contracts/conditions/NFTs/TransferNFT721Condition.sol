@@ -17,9 +17,9 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol'
  *      between the original owner and a receiver
  *
  */
-contract TransferNFT721Condition is Condition, ITransferNFT {
+contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgradeable {
 
-    bytes32 constant public CONDITION_TYPE = keccak256('TransferNFTCondition');
+    bytes32 private constant CONDITION_TYPE = keccak256('TransferNFTCondition');
 
     DIDRegistry private registry;
     
@@ -35,14 +35,13 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress,
-        address
+        address _didRegistryAddress
     )
         external
-        override
         initializer()
     {
         require(
+            _owner != address(0) &&
             _conditionStoreManagerAddress != address(0) &&
             _didRegistryAddress != address(0),
             'Invalid address'
@@ -72,6 +71,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
     */
     function hashValues(
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition,
@@ -82,7 +82,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
         override
         returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _nftReceiver, _nftAmount, _lockCondition, _contract));
+        return keccak256(abi.encode(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, _contract));
     }
 
     /**
@@ -106,14 +106,15 @@ contract TransferNFT721Condition is Condition, ITransferNFT {
         bytes32 _lockPaymentCondition,
         address _contract
     )
-    public
-    override
-    returns (ConditionStoreLibrary.ConditionState)
+        public
+        override
+        nonReentrant
+        returns (ConditionStoreLibrary.ConditionState)
     {
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _lockPaymentCondition, _contract)
+            hashValues(_did, msg.sender, _nftReceiver, _nftAmount, _lockPaymentCondition, _contract)
         );
 
         address lockConditionTypeRef;

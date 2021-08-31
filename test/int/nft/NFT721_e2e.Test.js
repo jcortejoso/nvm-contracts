@@ -31,7 +31,7 @@ const constants = require('../../helpers/constants.js')
 const { getBalance } = require('../../helpers/getBalance.js')
 const testUtils = require('../../helpers/utils.js')
 
-contract('End to End NFT Scenarios', (accounts) => {
+contract('End to End NFT721 Scenarios', (accounts) => {
     const royalties = 10 // 10% of royalties in the secondary market
     const cappedAmount = 5
     const didSeed = testUtils.generateId()
@@ -48,7 +48,6 @@ contract('End to End NFT Scenarios', (accounts) => {
         collector1,
         collector2,
         gallery,
-        market,
         someone
     ] = accounts
 
@@ -124,11 +123,10 @@ contract('End to End NFT Scenarios', (accounts) => {
         )
 
         transferCondition = await TransferNFTCondition.new()
-        await transferCondition.methods['initialize(address,address,address,address)'](
+        await transferCondition.methods['initialize(address,address,address)'](
             owner,
             conditionStoreManager.address,
             didRegistry.address,
-            market,
             { from: deployer }
         )
 
@@ -228,7 +226,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await lockPaymentCondition.hashValues(did, escrowCondition.address, token.address, _amounts, _receivers))
 
         const conditionIdTransferNFT = await transferCondition.generateId(agreementId,
-            await transferCondition.hashValues(did, _buyer, _numberNFTs, conditionIdLockPayment, nft.address))
+            await transferCondition.hashValues(did, _seller, _buyer, _numberNFTs, conditionIdLockPayment, nft.address))
 
         const conditionIdEscrow = await escrowCondition.generateId(agreementId,
             await escrowCondition.hashValues(did, _amounts, _receivers, escrowCondition.address, token.address, conditionIdLockPayment, conditionIdTransferNFT))
@@ -473,7 +471,7 @@ contract('End to End NFT Scenarios', (accounts) => {
         })
     }
 
-    describe('Test NFT', () => {
+    describe('Test NFT721', () => {
         describe('As an artist I want to register a new artwork', () => {
             it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
                 nft = await TestERC721.new({ from: deployer })
@@ -494,7 +492,7 @@ contract('End to End NFT Scenarios', (accounts) => {
         runTests()
     })
 
-    describe('VitaDAO NFT', () => {
+    describe('VitaDAO NFT721', () => {
         describe('As an artist I want to register a new artwork', () => {
             it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
                 nft = await VitaDAOERC721.new({ from: deployer })

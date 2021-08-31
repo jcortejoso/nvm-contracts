@@ -18,8 +18,8 @@ import './INFTHolder.sol';
 contract NFTHolderCondition is Condition, INFTHolder {
 
     ERC1155BurnableUpgradeable private nftRegistry;
-    
-    bytes32 constant public CONDITION_TYPE = keccak256('NFTHolderCondition');
+
+    bytes32 private constant CONDITION_TYPE = keccak256('NFTHolderCondition');
 
    /**
     * @notice initialize init the 
@@ -39,6 +39,7 @@ contract NFTHolderCondition is Condition, INFTHolder {
         initializer()
     {
         require(
+            _owner != address(0) &&
             _didRegistryAddress != address(0) &&
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
@@ -68,7 +69,7 @@ contract NFTHolderCondition is Condition, INFTHolder {
         view
         returns (bytes32)
     {
-        return this.hashValues(_did, _holderAddress, _amount, address(nftRegistry));
+        return hashValues(_did, _holderAddress, _amount, address(nftRegistry));
     }
 
     function hashValues(
@@ -101,10 +102,10 @@ contract NFTHolderCondition is Condition, INFTHolder {
         address _holderAddress,
         uint256 _amount
     )
-        external
+        public
         returns (ConditionStoreLibrary.ConditionState)
     {
-        return this.fulfill(_agreementId, _did, _holderAddress, _amount, address(nftRegistry));
+        return fulfill(_agreementId, _did, _holderAddress, _amount, address(nftRegistry));
     }
     
     function fulfill(
@@ -114,7 +115,7 @@ contract NFTHolderCondition is Condition, INFTHolder {
         uint256 _amount,
         address _contractAddress
     )
-        external
+        public
         override
         returns (ConditionStoreLibrary.ConditionState)
     {

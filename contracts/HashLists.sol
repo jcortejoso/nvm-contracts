@@ -23,7 +23,7 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 contract HashLists is OwnableUpgradeable, IList {
     
     using HashListLibrary for HashListLibrary.List;        
-    mapping(bytes32 => HashListLibrary.List) lists;
+    mapping(bytes32 => HashListLibrary.List) private lists;
     
     /**
      * @dev HashLists Initializer
