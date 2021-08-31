@@ -6,7 +6,9 @@ pragma solidity 0.6.12;
 
 import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
+import './INFTLock.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
 
 /**
  * @title NFT Lock Condition
@@ -14,7 +16,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgrad
  *
  * @dev Implementation of the NFT Lock Condition
  */
-contract NFTLockCondition is Condition, IERC1155ReceiverUpgradeable {
+contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IERC1155ReceiverUpgradeable {
 
     IERC1155Upgradeable private registry;
     
@@ -29,14 +31,6 @@ contract NFTLockCondition is Condition, IERC1155ReceiverUpgradeable {
     uint256 public lastId;
     uint256 public lastValue;
     
-    event Fulfilled(
-        bytes32 indexed _agreementId,
-        bytes32 indexed _did,
-        address indexed _rewardAddress,
-        bytes32 _conditionId,
-        uint256 _amount
-    );
-
    /**
     * @notice initialize init the  contract with the following parameters
     * @dev this function is called only once during the contract
@@ -71,45 +65,50 @@ contract NFTLockCondition is Condition, IERC1155ReceiverUpgradeable {
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters
     * @param _did the DID of the asset with NFTs attached to lock    
-    * @param _rewardAddress the final address to receive the NFTs
+    * @param _lockAddress the contract address where the NFT will be locked
     * @param _amount is the amount of the locked tokens
     * @return bytes32 hash of all these values 
     */
     function hashValues(
         bytes32 _did,
-        address _rewardAddress,
+        address _lockAddress,
         uint256 _amount
     )
         public
         pure
+        override
         returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _rewardAddress, _amount));
+        return keccak256(abi.encode(_did, _lockAddress, _amount));
     }
 
-   /**
-    * @notice fulfill requires valid NFT transfer in order 
-    *           to lock the amount of DID NFTs based on the SEA
-    * @param _agreementId SEA agreement identifier
-    * @param _did Asset Decentralized Identifier    
-    * @param _rewardAddress the contract address where the reward is locked
-    * @param _amount is the amount of tokens to be transferred 
-    * @return condition state
-    */
+    /**
+     * @notice fulfill the transfer NFT condition
+     * @dev Fulfill method transfer a certain amount of NFTs 
+     *       to the _nftReceiver address. 
+     *       When true then fulfill the condition
+     * @param _agreementId agreement identifier
+     * @param _did refers to the DID in which secret store will issue the decryption keys
+     * @param _lockAddress the contract address where the NFT will be locked
+     * @param _amount is the amount of the locked tokens
+     * @return condition state (Fulfilled/Aborted)
+     */
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
-        address _rewardAddress,
+        address _lockAddress,
         uint256 _amount
     )
         external
+        override
+        nonReentrant
         returns (ConditionStoreLibrary.ConditionState)
     {
-        registry.safeTransferFrom(msg.sender, address(this), uint256(_did), _amount, '');
+        registry.safeTransferFrom(msg.sender, _lockAddress, uint256(_did), _amount, '');
         
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _rewardAddress, _amount)
+            hashValues(_did, _lockAddress, _amount)
         );
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
@@ -119,7 +118,7 @@ contract NFTLockCondition is Condition, IERC1155ReceiverUpgradeable {
         emit Fulfilled(
             _agreementId,
             _did,
-            _rewardAddress,
+            _lockAddress,
             _id,
             _amount
         );

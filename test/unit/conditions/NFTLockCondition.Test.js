@@ -71,7 +71,7 @@ contract('NFTLockCondition', (accounts) => {
             const did = await didRegistry.hashDID(didSeed, accounts[0])
 
             const agreementId = testUtils.generateId()
-            const rewardAddress = testUtils.generateAccount().address
+            const lockAddress = lockCondition.address
 
             // register DID
             await didRegistry.registerMintableDID(
@@ -79,14 +79,14 @@ contract('NFTLockCondition', (accounts) => {
             await didRegistry.mint(did, amount)
             await didRegistry.setApprovalForAll(lockCondition.address, true)
 
-            const hashValues = await lockCondition.hashValues(did, rewardAddress, amount)
+            const hashValues = await lockCondition.hashValues(did, lockAddress, amount)
             const conditionId = await lockCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
                 conditionId,
                 lockCondition.address)
 
-            const result = await lockCondition.fulfill(agreementId, did, rewardAddress, amount)
+            const result = await lockCondition.fulfill(agreementId, did, lockAddress, amount)
             const { state } = await conditionStoreManager.getCondition(conditionId)
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
             const nftBalance = await didRegistry.balanceOf(lockCondition.address, did)
@@ -97,7 +97,7 @@ contract('NFTLockCondition', (accounts) => {
             expect(eventArgs._agreementId).to.equal(agreementId)
             expect(eventArgs._did).to.equal(did)
             expect(eventArgs._conditionId).to.equal(conditionId)
-            expect(eventArgs._rewardAddress).to.equal(rewardAddress)
+            expect(eventArgs._lockAddress).to.equal(lockAddress)
             expect(eventArgs._amount.toNumber()).to.equal(amount)
         })
     })
@@ -108,7 +108,7 @@ contract('NFTLockCondition', (accounts) => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, accounts[0])
 
-            const rewardAddress = accounts[2]
+            const lockAddress = accounts[2]
 
             // register DID
             await didRegistry.registerMintableDID(
@@ -117,7 +117,7 @@ contract('NFTLockCondition', (accounts) => {
             await didRegistry.setApprovalForAll(lockCondition.address, true)
 
             await assert.isRejected(
-                lockCondition.fulfill(agreementId, did, rewardAddress, amount),
+                lockCondition.fulfill(agreementId, did, lockAddress, amount),
                 constants.acl.error.invalidUpdateRole
             )
         })
@@ -127,7 +127,7 @@ contract('NFTLockCondition', (accounts) => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, accounts[0])
 
-            const rewardAddress = accounts[2]
+            const lockAddress = accounts[2]
 
             // register DID
             await didRegistry.registerMintableDID(
@@ -135,7 +135,7 @@ contract('NFTLockCondition', (accounts) => {
             await didRegistry.mint(did, amount)
             await didRegistry.setApprovalForAll(lockCondition.address, true)
 
-            const hashValues = await lockCondition.hashValues(did, rewardAddress, amount)
+            const hashValues = await lockCondition.hashValues(did, lockAddress, amount)
             const conditionId = await lockCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
@@ -143,7 +143,7 @@ contract('NFTLockCondition', (accounts) => {
                 lockCondition.address)
 
             await assert.isRejected(
-                lockCondition.fulfill(agreementId, did, rewardAddress, amount + 1),
+                lockCondition.fulfill(agreementId, did, lockAddress, amount + 1),
                 undefined
             )
         })
@@ -153,7 +153,7 @@ contract('NFTLockCondition', (accounts) => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, accounts[0])
 
-            const rewardAddress = accounts[2]
+            const lockAddress = accounts[2]
 
             // register DID
             await didRegistry.registerMintableDID(
@@ -161,7 +161,7 @@ contract('NFTLockCondition', (accounts) => {
             await didRegistry.mint(did, amount)
             await didRegistry.setApprovalForAll(lockCondition.address, true)
 
-            const hashValues = await lockCondition.hashValues(did, rewardAddress, amount)
+            const hashValues = await lockCondition.hashValues(did, lockAddress, amount)
             const conditionId = await lockCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
@@ -169,14 +169,14 @@ contract('NFTLockCondition', (accounts) => {
                 lockCondition.address
             )
 
-            await lockCondition.fulfill(agreementId, did, rewardAddress, amount)
+            await lockCondition.fulfill(agreementId, did, lockAddress, amount)
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
                 constants.condition.state.fulfilled
             )
 
             await assert.isRejected(
-                lockCondition.fulfill(agreementId, did, rewardAddress, amount),
+                lockCondition.fulfill(agreementId, did, lockAddress, amount),
                 undefined
             )
 
@@ -191,7 +191,7 @@ contract('NFTLockCondition', (accounts) => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, accounts[0])
 
-            const rewardAddress = accounts[2]
+            const lockAddress = accounts[2]
 
             // register DID
             await didRegistry.registerMintableDID(
@@ -199,7 +199,7 @@ contract('NFTLockCondition', (accounts) => {
             await didRegistry.mint(did, amount)
             await didRegistry.setApprovalForAll(lockCondition.address, true)
 
-            const hashValues = await lockCondition.hashValues(did, rewardAddress, amount)
+            const hashValues = await lockCondition.hashValues(did, lockAddress, amount)
             const conditionId = await lockCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
@@ -214,7 +214,7 @@ contract('NFTLockCondition', (accounts) => {
             )
 
             await assert.isRejected(
-                lockCondition.fulfill(agreementId, did, rewardAddress, amount),
+                lockCondition.fulfill(agreementId, did, lockAddress, amount),
                 constants.acl.error.invalidUpdateRole
             )
         })
