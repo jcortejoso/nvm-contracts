@@ -3,11 +3,11 @@ pragma solidity 0.6.12;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
-import "../../../Common.sol";
-import "../../Condition.sol";
-import "../../../registry/DIDRegistry.sol";
-import "./AaveCreditVault.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import '../../../Common.sol';
+import '../../Condition.sol';
+import '../../../registry/DIDRegistry.sol';
+import './AaveCreditVault.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
  * @title Lock Payment Condition
@@ -22,7 +22,7 @@ contract AaveRepayCondition is Condition, Common {
     DIDRegistry internal didRegistry;
     AaveCreditVault internal aaveCreditVault;
 
-    bytes32 public constant CONDITION_TYPE = keccak256("AaveRepayCondition");
+    bytes32 public constant CONDITION_TYPE = keccak256('AaveRepayCondition');
 
     event Fulfilled(
         bytes32 indexed _agreementId,
@@ -48,7 +48,7 @@ contract AaveRepayCondition is Condition, Common {
         require(
             _didRegistryAddress != address(0) &&
             _conditionStoreManagerAddress != address(0),
-            "Invalid address"
+            'Invalid address'
         );
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);

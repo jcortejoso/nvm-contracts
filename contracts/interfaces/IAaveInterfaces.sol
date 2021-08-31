@@ -3,7 +3,7 @@ pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
 
-import {DataTypes} from "../libraries/AaveLibrary.sol";
+import {DataTypes} from '../libraries/AaveLibrary.sol';
 
 interface IERC20 {
     /**
@@ -89,6 +89,7 @@ interface IProtocolDataProvider {
         address tokenAddress;
     }
 
+    // solhint-disable-next-line
     function ADDRESSES_PROVIDER()
     external
     view

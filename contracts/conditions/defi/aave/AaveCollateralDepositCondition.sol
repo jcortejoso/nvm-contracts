@@ -4,13 +4,13 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
-import "../../Condition.sol";
-import "../../../registry/DIDRegistry.sol";
-import "./AaveCreditVault.sol";
-import "../../../Common.sol";
-import "../../../templates/AaveCreditTemplate.sol";
+import '../../Condition.sol';
+import '../../../registry/DIDRegistry.sol';
+import './AaveCreditVault.sol';
+import '../../../Common.sol';
+import '../../../templates/AaveCreditTemplate.sol';
 import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
  * @title Aave Collateral Deposit Condition
@@ -25,7 +25,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
     DIDRegistry internal didRegistry;
     AaveCreditVault internal aaveCreditVault;
 
-    bytes32 public constant CONDITION_TYPE = keccak256("AaveCollateralDepositCondition");
+    bytes32 public constant CONDITION_TYPE = keccak256('AaveCollateralDepositCondition');
 
     event Fulfilled(
         bytes32 indexed _agreementId,
@@ -49,7 +49,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         require(
             _didRegistryAddress != address(0) &&
             _conditionStoreManagerAddress != address(0),
-            "Invalid address"
+            'Invalid address'
         );
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
