@@ -15,6 +15,7 @@ const deployManagers = require('../../helpers/deployManagers.js')
 const { getBalance } = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.ts')
 const testUtils = require('../../helpers/utils')
+const mimcdecrypt = require('../../helpers/mimcdecrypt').decrypt
 
 const poseidon = require("circomlib").poseidon
 const babyJub = require("circomlib").babyJub
@@ -118,15 +119,17 @@ contract('Access Template integration test', (accounts) => {
         const buyer_pub = babyJub.mulPointEscalar(babyJub.Base8, F.e(buyer_k));
         const provider_pub = babyJub.mulPointEscalar(babyJub.Base8, F.e(provider_k));
 
-        console.log("public keys", buyer_pub, provider_pub)
+        // console.log("public keys", buyer_pub, provider_pub)
 
         const k = babyJub.mulPointEscalar(buyer_pub, F.e(provider_k));
         const k2 = babyJub.mulPointEscalar(provider_pub, F.e(buyer_k));
 
-        console.log("encryption key", k)
-        console.log("encryption key check", k2)
+        // console.log("encryption key", k)
+        // console.log("encryption key check", k2)
 
         const cipher = mimcjs.hash(orig1,orig2,k[0]);
+        const plain = mimcdecrypt(cipher.xL,cipher.xR,k[0]);
+        // console.log('cipher', cipher, 'plain', plain)
 
         const snark_params = {
             buyer_x: buyer_pub[0],
@@ -141,15 +144,13 @@ contract('Access Template integration test', (accounts) => {
             hash_plain: origHash,
         }
 
-        console.log(snark_params)
+        // console.log(snark_params)
 
         const { proof, publicSignals } = await snarkjs.plonk.fullProve(
             snark_params,
             "circuits/keytransfer.wasm",
             "circuits/keytransfer.zkey"
         );
-
-        unstringifyBigInts
 
         const signals = [
             buyer_pub[0],
@@ -164,9 +165,9 @@ contract('Access Template integration test', (accounts) => {
         const proof_solidity = (await snarkjs.plonk.exportSolidityCallData(unstringifyBigInts(proof), signals))
 
         const proof_data = proof_solidity.split(",")[0]
-        console.log("Proof: ");
-        console.log(proof_solidity, proof_data);
-        console.log(proof)
+        // console.log("Proof: ");
+        // console.log(proof_solidity, proof_data);
+        // console.log(proof)
 
         // generate IDs from attributes
         const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
