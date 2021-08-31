@@ -11,7 +11,7 @@ import '../interfaces/ISecretStorePermission.sol';
 import '../agreements/AgreementStoreManager.sol';
 
 interface IDisputeManager {
-    function accepted(address provider, address buyer, bytes32 orig, bytes32 crypted) external returns (bool);
+    function verifyProof(bytes memory proof, uint[] memory pubSignals) external view returns (bool);
 }
 
 /**
@@ -31,9 +31,10 @@ contract AccessProofCondition is Condition {
     event Fulfilled(
         bytes32 indexed _agreementId,
         bytes32 _origHash,
-        bytes32 _cryptedHash,
-        address indexed _provider,
-        address indexed _grantee,
+        bytes32[2] _buyer,
+        bytes32[2] _provider,
+        bytes32[2] _cipher,
+        bytes _proof,
         bytes32 _conditionId
     );
     
@@ -75,23 +76,21 @@ contract AccessProofCondition is Condition {
    /**
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters
-    * @param _origHash is the hash of data to access
-    * @param _cryptedHash is the hash of data downloaded by buyer
-    * @param _provider is the address of the data provider
-    * @param _grantee is the address of the granted user
+    * @param _origHash is the hash of the key
+    * @param _buyer buyer public key
+    * @param _provider provider public key
     * @return bytes32 hash of all these values 
     */
     function hashValues(
         bytes32 _origHash,
-        bytes32 _cryptedHash,
-        address _provider,
-        address _grantee
+        bytes32[2] memory _buyer,
+        bytes32[2] memory _provider
     )
         public
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encode(_origHash, _cryptedHash, _provider, _grantee));
+        return keccak256(abi.encode(_origHash, _buyer[0], _buyer[1], _provider[0], _provider[1]));
     }
 
    /**
@@ -101,26 +100,34 @@ contract AccessProofCondition is Condition {
     *       for the granted consumer's address to true then
     *       fulfill the condition
     * @param _origHash is the hash of data to access
-    * @param _cryptedHash is the hash of data downloaded by buyer
-    * @param _provider is the address of the data provider
-    * @param _grantee is the address of the granted user
+    * @param _buyer buyer public key
+    * @param _provider provider public key
     * @return condition state (Fulfilled/Aborted)
     */
     function fulfill(
         bytes32 _agreementId,
         bytes32 _origHash,
-        bytes32 _cryptedHash,
-        address _provider,
-        address _grantee
+        bytes32[2] memory _buyer,
+        bytes32[2] memory _provider,
+        bytes32[2] memory _cipher,
+        bytes memory _proof
     )
         public
         returns (ConditionStoreLibrary.ConditionState)
     {
-        require(disputeManager.accepted(_provider, _grantee, _origHash, _cryptedHash), 'Transfer proof not finished');
+        uint[] memory params = new uint[](7);
+        params[0] = uint(_buyer[0]);
+        params[1] = uint(_buyer[1]);
+        params[2] = uint(_provider[0]);
+        params[3] = uint(_provider[1]);
+        params[4] = uint(_cipher[0]);
+        params[5] = uint(_cipher[1]);
+        params[6] = uint(_origHash);
+        require(disputeManager.verifyProof(_proof, params), 'Transfer proof not finished');
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_origHash, _cryptedHash, _provider, _grantee)
+            hashValues(_origHash, _buyer, _provider)
         );
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
@@ -131,9 +138,10 @@ contract AccessProofCondition is Condition {
         emit Fulfilled(
             _agreementId,
             _origHash,
-            _cryptedHash,
+            _buyer,
             _provider,
-            _grantee,
+            _cipher,
+            _proof,
             _id
         );
 

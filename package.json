@@ -107,5 +107,9 @@
   },
   "resolutions": {
     "@nevermined-io/contract-tools/zos/zos-lib": "2.2.3"
+  },
+  "dependencies": {
+    "circom": "^0.5.45",
+    "snarkjs": "^0.4.6"
   }
 }
