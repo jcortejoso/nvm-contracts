@@ -107,7 +107,8 @@
     "yargs": "~15.3.1"
   },
   "resolutions": {
-    "@nevermined-io/contract-tools/zos/zos-lib": "2.2.3"
+    "@nevermined-io/contract-tools/zos/zos-lib": "2.2.3",
+    "scrypt.js": "0.3.0"
   },
   "dependencies": {
     "circom": "^0.5.45",
