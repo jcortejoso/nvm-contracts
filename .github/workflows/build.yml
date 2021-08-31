@@ -22,10 +22,13 @@ jobs:
           yarn
           npm install ganache-cli@~6.12.2 -g
           ganache-cli -q -p 18545 &
+          git submodule init
+          git submodule update
       - name: Compile and Lint
         run: |
           yarn lint
           yarn clean
+          sh ./circuits/build.sh
           yarn compile
       - name: Run Unit Tests
         run: |

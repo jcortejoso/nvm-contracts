@@ -15,24 +15,16 @@ const deployManagers = require('../../helpers/deployManagers.js')
 const { getBalance } = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.ts')
 const testUtils = require('../../helpers/utils')
-const mimcdecrypt = require('../../helpers/mimcdecrypt').decrypt
+// const mimcdecrypt = require('../../helpers/mimcdecrypt').decrypt
 
-const poseidon = require("circomlib").poseidon
-const babyJub = require("circomlib").babyJub
-const mimcjs = require("circomlib").mimcsponge
-const ZqField = require("ffjavascript").ZqField;
-const Scalar = require("ffjavascript").Scalar;
-const F = new ZqField(Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617"));
-const snarkjs = require("snarkjs");
-const {stringifyBigInts, unstringifyBigInts} = require("ffjavascript").utils;
-
-function randomBytes32() {
-    let rnd = ''
-    for (let i = 0; i < 64; i++) {
-        rnd += (Math.floor(Math.random() * 1000) % 16).toString(16)
-    }
-    return '0x' + rnd
-}
+const poseidon = require('circomlib').poseidon
+const babyJub = require('circomlib').babyJub
+const mimcjs = require('circomlib').mimcsponge
+const ZqField = require('ffjavascript').ZqField
+const Scalar = require('ffjavascript').Scalar
+const F = new ZqField(Scalar.fromString('21888242871839275222246405745257275088548364400416034343698204186575808495617'))
+const snarkjs = require('snarkjs')
+const { unstringifyBigInts } = require('ffjavascript').utils
 
 contract('Access Template integration test', (accounts) => {
     let token,
@@ -43,8 +35,7 @@ contract('Access Template integration test', (accounts) => {
         accessTemplate,
         accessProofCondition,
         lockPaymentCondition,
-        escrowPaymentCondition,
-        disputeManager
+        escrowPaymentCondition
 
     async function setupTest({
         deployer = accounts[8],
@@ -64,8 +55,7 @@ contract('Access Template integration test', (accounts) => {
         ({
             accessProofCondition,
             lockPaymentCondition,
-            escrowPaymentCondition,
-            disputeManager
+            escrowPaymentCondition
         } = await deployConditions(
             deployer,
             owner,
@@ -114,57 +104,57 @@ contract('Access Template integration test', (accounts) => {
 
         const did = await didRegistry.hashDID(didSeed, receivers[0])
 
-        const buyer_k = 123
-        const provider_k = 234
-        const buyer_pub = babyJub.mulPointEscalar(babyJub.Base8, F.e(buyer_k));
-        const provider_pub = babyJub.mulPointEscalar(babyJub.Base8, F.e(provider_k));
+        const buyerK = 123
+        const providerK = 234
+        const buyerPub = babyJub.mulPointEscalar(babyJub.Base8, F.e(buyerK))
+        const providerPub = babyJub.mulPointEscalar(babyJub.Base8, F.e(providerK))
 
         // console.log("public keys", buyer_pub, provider_pub)
 
-        const k = babyJub.mulPointEscalar(buyer_pub, F.e(provider_k));
-        const k2 = babyJub.mulPointEscalar(provider_pub, F.e(buyer_k));
+        const k = babyJub.mulPointEscalar(buyerPub, F.e(providerK))
+        // const k2 = babyJub.mulPointEscalar(provider_pub, F.e(buyer_k))
 
         // console.log("encryption key", k)
         // console.log("encryption key check", k2)
 
-        const cipher = mimcjs.hash(orig1,orig2,k[0]);
-        const plain = mimcdecrypt(cipher.xL,cipher.xR,k[0]);
+        const cipher = mimcjs.hash(orig1, orig2, k[0])
+        // const plain = mimcdecrypt(cipher.xL, cipher.xR, k[0])
         // console.log('cipher', cipher, 'plain', plain)
 
-        const snark_params = {
-            buyer_x: buyer_pub[0],
-            buyer_y: buyer_pub[1],
-            provider_x: provider_pub[0],
-            provider_y: provider_pub[1],
+        const snarkParams = {
+            buyer_x: buyerPub[0],
+            buyer_y: buyerPub[1],
+            provider_x: providerPub[0],
+            provider_y: providerPub[1],
             xL_in: orig1,
             xR_in: orig2,
             cipher_xL_in: cipher.xL,
             cipher_xR_in: cipher.xR,
-            provider_k: provider_k,
-            hash_plain: origHash,
+            provider_k: providerK,
+            hash_plain: origHash
         }
 
         // console.log(snark_params)
 
-        const { proof, publicSignals } = await snarkjs.plonk.fullProve(
-            snark_params,
-            "circuits/keytransfer.wasm",
-            "circuits/keytransfer.zkey"
-        );
+        const { proof } = await snarkjs.plonk.fullProve(
+            snarkParams,
+            'circuits/keytransfer.wasm',
+            'circuits/keytransfer.zkey'
+        )
 
         const signals = [
-            buyer_pub[0],
-            buyer_pub[1],
-            provider_pub[0],
-            provider_pub[1],
+            buyerPub[0],
+            buyerPub[1],
+            providerPub[0],
+            providerPub[1],
             cipher.xL,
             cipher.xR,
             origHash
         ]
 
-        const proof_solidity = (await snarkjs.plonk.exportSolidityCallData(unstringifyBigInts(proof), signals))
+        const proofSolidity = (await snarkjs.plonk.exportSolidityCallData(unstringifyBigInts(proof), signals))
 
-        const proof_data = proof_solidity.split(",")[0]
+        const proofData = proofSolidity.split(',')[0]
         // console.log("Proof: ");
         // console.log(proof_solidity, proof_data);
         // console.log(proof)
@@ -173,7 +163,7 @@ contract('Access Template integration test', (accounts) => {
         const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
             await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers))
         const conditionIdAccess = await accessProofCondition.generateId(agreementId,
-            await accessProofCondition.hashValues(origHash, buyer_pub, provider_pub))
+            await accessProofCondition.hashValues(origHash, buyerPub, providerPub))
         const conditionIdEscrow = await escrowPaymentCondition.generateId(agreementId,
             await escrowPaymentCondition.hashValues(did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, conditionIdLock, conditionIdAccess))
 
@@ -191,10 +181,10 @@ contract('Access Template integration test', (accounts) => {
         }
         const data = {
             origHash,
-            buyer_pub,
-            provider_pub,
+            buyerPub,
+            providerPub,
             cipher: [cipher.xL, cipher.xR],
-            proof: proof_data,
+            proof: proofData
         }
         return {
             agreementId,
