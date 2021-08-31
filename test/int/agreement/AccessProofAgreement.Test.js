@@ -23,6 +23,7 @@ const ZqField = require("ffjavascript").ZqField;
 const Scalar = require("ffjavascript").Scalar;
 const F = new ZqField(Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617"));
 const snarkjs = require("snarkjs");
+const {stringifyBigInts, unstringifyBigInts} = require("ffjavascript").utils;
 
 function randomBytes32() {
     let rnd = ''
@@ -128,31 +129,6 @@ contract('Access Template integration test', (accounts) => {
         const cipher = mimcjs.hash(orig1,orig2,k[0]);
 
         const snark_params = {
-            buyer_x: "0x" + buyer_pub[0].toString(16),
-            buyer_y: "0x" + buyer_pub[1].toString(16),
-            provider_x: "0x" + provider_pub[0].toString(16),
-            provider_y: "0x" + provider_pub[1].toString(16),
-            provider_k: "0x" + provider_k.toString(16),
-            xL_in: "0x" + orig1.toString(16),
-            xR_in: "0x" + orig2.toString(16),
-            cipher_xL_in: "0x" + cipher.xL.toString(16),
-            cipher_xR_in: "0x" + cipher.xR.toString(16),
-            hash_plain: "0x" + origHash.toString(16),
-        }
-/*
-        const snark_params = {
-            buyer_x: buyer_pub[0].toString(),
-            buyer_y: buyer_pub[1].toString(),
-            provider_x: provider_pub[0].toString(),
-            provider_y: provider_pub[1].toString(),
-            provider_k: provider_k.toString(),
-            xL_in: orig1.toString(),
-            xR_in: orig2.toString(),
-            cipher_xL_in: cipher.xL.toString(),
-            cipher_xR_in: cipher.xR.toString(),
-            hash_plain: origHash.toString(),
-        }
-        const snark_params = {
             buyer_x: buyer_pub[0],
             buyer_y: buyer_pub[1],
             provider_x: provider_pub[0],
@@ -164,7 +140,7 @@ contract('Access Template integration test', (accounts) => {
             provider_k: provider_k,
             hash_plain: origHash,
         }
-*/
+
         console.log(snark_params)
 
         const { proof, publicSignals } = await snarkjs.plonk.fullProve(
@@ -173,7 +149,19 @@ contract('Access Template integration test', (accounts) => {
             "circuits/keytransfer.zkey"
         );
 
-        const proof_solidity = (await snarkjs.plonk.exportSolidityCallData(proof, publicSignals))
+        unstringifyBigInts
+
+        const signals = [
+            buyer_pub[0],
+            buyer_pub[1],
+            provider_pub[0],
+            provider_pub[1],
+            cipher.xL,
+            cipher.xR,
+            origHash
+        ]
+
+        const proof_solidity = (await snarkjs.plonk.exportSolidityCallData(unstringifyBigInts(proof), signals))
 
         const proof_data = proof_solidity.split(",")[0]
         console.log("Proof: ");
@@ -224,7 +212,7 @@ contract('Access Template integration test', (accounts) => {
     }
 
     describe('create and fulfill escrow agreement', () => {
-        it.only('should create escrow agreement and fulfill with multiple reward addresses', async () => {
+        it('should create escrow agreement and fulfill with multiple reward addresses', async () => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
