@@ -5,10 +5,13 @@ pragma solidity 0.6.12;
 
 
 import './BaseEscrowTemplate.sol';
-import '../conditions/AccessCondition.sol';
-import '../conditions/LockPaymentCondition.sol';
 import '../conditions/rewards/EscrowPaymentCondition.sol';
 import '../registry/DIDRegistry.sol';
+import '../conditions/NFTs/INFTLock.sol';
+import '../conditions/NFTs/ITransferNFT.sol';
+import '../conditions/defi/aave/AaveCollateralDepositCondition.sol';
+import '../conditions/defi/aave/AaveBorrowCondition.sol';
+import '../conditions/defi/aave/AaveRepayCondition.sol';
 
 /**
  * @title Aaven Credit Agreement Template 
@@ -20,31 +23,38 @@ import '../registry/DIDRegistry.sol';
 contract AaveCreditTemplate is BaseEscrowTemplate {
 
     DIDRegistry internal didRegistry;
-    AccessCondition internal accessCondition;
-    LockPaymentCondition internal lockCondition;
-    EscrowPaymentCondition internal escrowReward;
+    
+    INFTLock internal nftLockCondition;
+    AaveCollateralDepositCondition internal depositCondition;
+    AaveBorrowCondition internal borrowCondition;
+    AaveRepayCondition internal repayCondition;
+    ITransferNFT internal transferCondition;
+    
+//    EscrowPaymentCondition internal escrowReward;
 
     /**
-     * @notice initialize init the 
-     *       contract with the following parameters.
+     * @notice initialize init the  contract with the following parameters.
      * @dev this function is called only once during the contract
      *       initialization. It initializes the ownable feature, and 
      *       set push the required condition types including 
      *       access , lock payment and escrow payment conditions.
      * @param _owner contract's owner account address
      * @param _agreementStoreManagerAddress agreement store manager contract address
-     * @param _didRegistryAddress DID registry contract address
-     * @param _accessConditionAddress access condition address
-     * @param _lockConditionAddress lock reward condition contract address
-     * @param _escrowConditionAddress escrow reward contract address
+     * @param _nftLockConditionAddress NFT Lock Condition contract address
+     * @param _depositConditionAddress Aave collateral deposit Condition address
+     * @param _borrowConditionAddress Aave borrow deposit Condition address
+     * @param _repayConditionAddress Aave repay credit Condition address
+     * @param _transferConditionAddress NFT Transfer Condition address     
      */
     function initialize(
         address _owner,
         address _agreementStoreManagerAddress,
-        address _didRegistryAddress,
-        address _accessConditionAddress,
-        address _lockConditionAddress,
-        address payable _escrowConditionAddress
+        address _nftLockConditionAddress,
+        address _depositConditionAddress,
+        address _borrowConditionAddress,
+        address _repayConditionAddress,
+        address _transferConditionAddress
+        //address payable _escrowConditionAddress
     )
     external
     initializer()
@@ -52,10 +62,12 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         require(
             _owner != address(0) &&
             _agreementStoreManagerAddress != address(0) &&
-            _didRegistryAddress != address(0) &&
-            _accessConditionAddress != address(0) &&
-            _lockConditionAddress != address(0) &&
-            _escrowConditionAddress != address(0),
+            _nftLockConditionAddress != address(0) &&
+            _depositConditionAddress != address(0) &&
+            _borrowConditionAddress != address(0) &&
+            _repayConditionAddress != address(0) &&
+            _transferConditionAddress != address(0),
+//            _escrowConditionAddress != address(0),
             'Invalid address'
         );
 
@@ -67,23 +79,37 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         );
 
         didRegistry = DIDRegistry(
-            _didRegistryAddress
+            agreementStoreManager.getDIDRegistryAddress()
         );
 
-        accessCondition = AccessCondition(
-            _accessConditionAddress
+        nftLockCondition = INFTLock(
+            _nftLockConditionAddress
         );
 
-        lockCondition = LockPaymentCondition(
-            _lockConditionAddress
+        depositCondition = AaveCollateralDepositCondition(
+            _depositConditionAddress
         );
 
-        escrowReward = EscrowPaymentCondition(
-            _escrowConditionAddress
+        borrowCondition = AaveBorrowCondition(
+            _borrowConditionAddress
         );
 
-        conditionTypes.push(address(accessCondition));
-        conditionTypes.push(address(lockCondition));
-        conditionTypes.push(address(escrowReward));
+        repayCondition = AaveRepayCondition(
+            _repayConditionAddress
+        );
+
+        transferCondition = ITransferNFT(
+            _transferConditionAddress
+        );        
+//        escrowReward = EscrowPaymentCondition(
+//            _escrowConditionAddress
+//        );
+
+        conditionTypes.push(address(nftLockCondition));
+        conditionTypes.push(address(depositCondition));
+        conditionTypes.push(address(borrowCondition));
+        conditionTypes.push(address(repayCondition));
+        conditionTypes.push(address(transferCondition));
+//        conditionTypes.push(address(escrowReward));
     }
 }
