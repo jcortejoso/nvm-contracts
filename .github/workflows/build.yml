@@ -28,7 +28,7 @@ jobs:
         run: |
           yarn lint
           yarn clean
-          sh ./circuits/build.sh
+          sh ./scripts/build.sh
           yarn compile
       - name: Run Unit Tests
         run: |

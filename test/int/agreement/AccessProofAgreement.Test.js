@@ -15,7 +15,7 @@ const deployManagers = require('../../helpers/deployManagers.js')
 const { getBalance } = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.ts')
 const testUtils = require('../../helpers/utils')
-// const mimcdecrypt = require('../../helpers/mimcdecrypt').decrypt
+const mimcdecrypt = require('../../helpers/mimcdecrypt').decrypt
 
 const poseidon = require('circomlib').poseidon
 const babyJub = require('circomlib').babyJub
@@ -198,7 +198,10 @@ contract('Access Template integration test', (accounts) => {
             timeLockAccess,
             timeOutAccess,
             checksum,
-            url
+            url,
+            buyerK,
+            providerPub,
+            origHash
         }
     }
 
@@ -207,7 +210,7 @@ contract('Access Template integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url } = await prepareEscrowAgreementMultipleEscrow()
+            const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, buyerK, providerPub, origHash } = await prepareEscrowAgreementMultipleEscrow()
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
             // register DID
@@ -270,6 +273,14 @@ contract('Access Template integration test', (accounts) => {
             assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
             assert.strictEqual(await getBalance(token, receivers[0]), escrowAmounts[0])
             assert.strictEqual(await getBalance(token, receivers[1]), escrowAmounts[1])
+
+            // make sure decryption works
+            let ev = await accessProofCondition.getPastEvents('Fulfilled', { fromBlock: 0, toBlock: 'latest', filter: { _agreementId: agreementId } })
+            let [cipherL, cipherR] = ev[0].returnValues._cipher
+            const k2 = babyJub.mulPointEscalar(providerPub, F.e(buyerK))
+
+            const plain = mimcdecrypt(cipherL, cipherR, k2[0])
+            assert.strictEqual(origHash, poseidon([plain.xL, plain.xR]))
         })
 
         it('should create escrow agreement and abort after timeout', async () => {

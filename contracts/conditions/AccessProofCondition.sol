@@ -18,8 +18,14 @@ interface IDisputeManager {
  * @title Access Condition with transfer proof
  * @author Keyko
  *
- * @dev Implementation of the Access Condition
- *
+ * @dev Implementation of the Access Condition with transfer proof.
+ * The idea is that the hash of the decryption key is known before hand, and the key matching this hash
+ * is passed from data provider to the buyer using this smart contract. Using ZK proof the key is kept
+ * hidden from outsiders. For the protocol to work, both the provider and buyer need to have public keys
+ * in the babyjub curve. To initiate the deal, buyer will pass the key hash and the public keys of participants.
+ * The provider needs to pass the cipher text encrypted using MIMC (symmetric encryption). The secret key for MIMC
+ * is computed using ECDH (requires one public key and one secret key for the curve). The hash function that is
+ * used is Poseidon.
  */
 contract AccessProofCondition is Condition {
 
@@ -94,14 +100,14 @@ contract AccessProofCondition is Condition {
     }
 
    /**
-    * @notice fulfill access secret store condition
-    * @dev only DID owner or DID provider can call this
-    *       method. Fulfill method sets the permissions 
-    *       for the granted consumer's address to true then
-    *       fulfill the condition
+    * @notice fulfill key transfer
+    * @dev The key with hash _origHash is transferred to the _buyer from _provider.
+    * @param _agreementId associated agreement
     * @param _origHash is the hash of data to access
     * @param _buyer buyer public key
     * @param _provider provider public key
+    * @param _cipher encrypted version of the key
+    * @param _proof SNARK proof that the cipher text can be decrypted by buyer to give the key with hash _origHash 
     * @return condition state (Fulfilled/Aborted)
     */
     function fulfill(
@@ -116,16 +122,13 @@ contract AccessProofCondition is Condition {
         returns (ConditionStoreLibrary.ConditionState)
     {
         uint[] memory params = new uint[](7);
-        params[0] = uint(_buyer[0]);
-        params[1] = uint(_buyer[1]);
-        params[2] = uint(_provider[0]);
-        params[3] = uint(_provider[1]);
-        params[4] = uint(_cipher[0]);
-        params[5] = uint(_cipher[1]);
-        params[6] = uint(_origHash);
-        /*
-        params[0] = 8911751603281566160452710943246074761822317551823405301307348714667359009192;
-        */
+        params[0] = _buyer[0];
+        params[1] = _buyer[1];
+        params[2] = _provider[0];
+        params[3] = _provider[1];
+        params[4] = _cipher[0];
+        params[5] = _cipher[1];
+        params[6] = _origHash;
         require(disputeManager.verifyProof(_proof, params), 'Cannot verify snark');
 
         bytes32 _id = generateId(
