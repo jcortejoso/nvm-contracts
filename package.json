@@ -89,15 +89,19 @@
     "bignumber.js": "^9.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "circom": "^0.5.45",
+    "circomlib": "^0.5.3",
     "eslint": "^7.0.0",
     "eslint-config-oceanprotocol": "^1.5.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-standard": "^4.0.1",
     "eth-gas-reporter": "^0.2.22",
+    "ffjavascript": "^0.2.38",
     "glob": "^7.1.4",
     "mathjs": "~7.0.0",
     "prettier": "^2.1.2",
+    "snarkjs": "^0.4.6",
     "solhint": "^3.2.0",
     "solidity-coverage": "^0.7.16",
     "solidity-docgen": "^0.5.11",
@@ -114,9 +118,5 @@
     "scrypt.js": "0.3.0"
   },
   "dependencies": {
-    "circom": "^0.5.45",
-    "circomlib": "^0.5.3",
-    "ffjavascript": "^0.2.38",
-    "snarkjs": "^0.4.6"
   }
 }
