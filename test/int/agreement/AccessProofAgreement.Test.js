@@ -275,8 +275,8 @@ contract('Access Template integration test', (accounts) => {
             assert.strictEqual(await getBalance(token, receivers[1]), escrowAmounts[1])
 
             // make sure decryption works
-            let ev = await accessProofCondition.getPastEvents('Fulfilled', { fromBlock: 0, toBlock: 'latest', filter: { _agreementId: agreementId } })
-            let [cipherL, cipherR] = ev[0].returnValues._cipher
+            const ev = await accessProofCondition.getPastEvents('Fulfilled', { fromBlock: 0, toBlock: 'latest', filter: { _agreementId: agreementId } })
+            const [cipherL, cipherR] = ev[0].returnValues._cipher
             const k2 = babyJub.mulPointEscalar(providerPub, F.e(buyerK))
 
             const plain = mimcdecrypt(cipherL, cipherR, k2[0])
