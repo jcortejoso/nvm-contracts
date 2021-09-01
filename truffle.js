@@ -88,7 +88,7 @@ module.exports = {
                 url || `https://rinkeby.infura.io/v3/${process.env.INFURA_TOKEN}`
             ),
             network_id: 0x4, // 4
-            gas: 15 * 1000000,
+            gas: 20 * 1000000,
             gasPrice: utils.toWei('5', 'gwei'),
             timeoutBlocks: 200,
             skipDryRun: true,
@@ -140,9 +140,11 @@ module.exports = {
                 // url || `http://localhost:8545`
             ),
             network_id: 0x1, // 1
-            from: '0x3f3c526f3A8623b11aAD5c30d6De88E45e385FaD',
-            gas: 7 * 1000000,
-            gasPrice: utils.toWei('8', 'gwei')
+            from: '0x721ba7Dc4357D846778Bad4227D46f2cefBa7De7',
+            timeoutBlocks: 200,
+            gas: 10 * 1000000,
+            skipDryRun: true,
+            gasPrice: utils.toWei('45', 'gwei')
         },
         // production mainnet
         production: {
