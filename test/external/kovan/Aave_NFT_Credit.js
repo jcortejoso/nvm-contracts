@@ -159,7 +159,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
         // TODO: Use ERC-721 implementation
         // IMPORTANT: Here we give ERC1155 transfer grants to the TransferNFTCondition condition
-        await didRegistry.setProxyApproval(aaveCreditTemplate.address, true, { from: owner })
+        //        await didRegistry.setProxyApproval(aaveCreditTemplate.address, true, { from: owner })
 
         await templateStoreManager.proposeTemplate(aaveCreditTemplate.address)
         await templateStoreManager.approveTemplate(aaveCreditTemplate.address, { from: owner })
@@ -238,7 +238,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
     }
 
     describe('Create a credit NFT collateral agreement', () => {
-        it('Create and fullfill a credit agreement', async () => {
+        it('Create a credit agreement', async () => {
             const { didRegistry, aaveCreditTemplate } = await setupTest()
             did = await didRegistry.hashDID(didSeed, owner)
 
@@ -279,7 +279,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
         it('Lender deposits ETH as collateral in Aave and approves delegatee to borrow DAI', async () => {
             // Fullfill the deposit collateral condition
-            // Delegator deposits ETH as collateral in Aave and approves delegatee to borrow DAI
             await aaveCollateralDeposit.fulfill(
                 agreementId,
                 did,
@@ -335,14 +334,18 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             const after = await dai.balanceOf(delegatee)
             assert.strictEqual(String(after.toNumber() - before.toNumber()), delegatedAmount)
 
-            // Delegatee allows nevermined contracts spend DAI to repay the loan
+            // Delegatee allows Nevermined contracts spend DAI to repay the loan
             await dai.approve(aaveRepayCredit.address, delegatedAmount,
                 { from: delegatee })
         })
 
+        it('Borrower/Delegatee can not get back the NFT without repay the loan', async () => {
+            // TODO: Pending to implement
+            assert.equal(false, true)
+        })
+
         it('Borrower/Delegatee repays the loan with DAI', async () => {
             // Fullfill the aaveRepayCredit condition
-            // Delegatee repays the loan with DAI
             await aaveRepayCredit.fulfill(
                 agreementId,
                 did,
@@ -360,9 +363,16 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             const lendingPool = await ILendingPool.at(lendingPoolAddress)
 
             const vaultBalances = await lendingPool.getUserAccountData(vaultAddress)
+            const debtETH = vaultBalances.totalDebtETH.toNumber()
 
+            console.log('Vault Debt: ' + debtETH)
             // Compare the vault debt after repayment
-            assert.equal(vaultBalances.totalDebtETH.toNumber() < 100, true)
+            assert.equal(debtETH < 100, true)
+        })
+
+        it('Borrower/Delegatee get back the NFT', async () => {
+            // TODO: Pending to implement
+            assert.equal(false, true)
         })
     })
 })
