@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 const { zosCreate } = require('@nevermined-io/contract-tools')
 const ZeroAddress = '0x0000000000000000000000000000000000000000'
+/* eslint-disable-next-line security/detect-child-process */
+const { execSync } = require('child_process')
 
 async function initializeContracts({
     contracts,
@@ -79,6 +81,12 @@ async function initializeContracts({
             args: [roles.deployer],
             verbose
         })
+    }
+
+    if (contracts.indexOf('PlonkVerifier') > -1) {
+        const flags = verbose ? '-v' : '-s'
+        const TIMEOUT = 1 * 60 * 60 // 1 hour
+        proxies.PlonkVerifier = execSync(`npx zos create PlonkVerifier ${flags} --timeout ${TIMEOUT}`).toString().trim()
     }
 
     if (contracts.indexOf('TemplateStoreManager') > -1) {
@@ -219,6 +227,19 @@ async function initializeContracts({
                 verbose
             })
         }
+        if (getAddress('PlonkVerifier') && contracts.indexOf('AccessProofCondition') > -1) {
+            addressBook.AccessProofCondition = zosCreate({
+                contract: 'AccessProofCondition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('DIDRegistry'),
+                    getAddress('PlonkVerifier')
+                ],
+                verbose
+            })
+        }
         if (contracts.indexOf('TransferNFTCondition') > -1) {
             addressBook.TransferNFTCondition = zosCreate({
                 contract: 'TransferNFTCondition',
@@ -306,6 +327,28 @@ async function initializeContracts({
         if (contracts.indexOf('AccessTemplate') > -1) {
             addressBook.AccessTemplate = zosCreate({
                 contract: 'AccessTemplate',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('DIDRegistry'),
+                    getAddress('AccessCondition'),
+                    getAddress('LockPaymentCondition'),
+                    getAddress('EscrowPaymentCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('DIDRegistry') &&
+        getAddress('AccessProofCondition') &&
+        getAddress('LockPaymentCondition') &&
+        getAddress('EscrowPaymentCondition')) {
+        if (contracts.indexOf('AccessProofTemplate') > -1) {
+            addressBook.AccessProofTemplate = zosCreate({
+                contract: 'AccessProofTemplate',
                 network,
                 args: [
                     roles.ownerWallet,
