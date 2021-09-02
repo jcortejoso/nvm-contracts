@@ -116,6 +116,14 @@ async function setupContracts({
         await setupTemplate({
             verbose,
             TemplateStoreManagerInstance,
+            templateName: 'AccessProofTemplate',
+            addressBook,
+            roles
+        })
+
+        await setupTemplate({
+            verbose,
+            TemplateStoreManagerInstance,
             templateName: 'EscrowComputeExecutionTemplate',
             addressBook,
             roles
