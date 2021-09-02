@@ -58,7 +58,11 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         aaveBorrowCredit,
         aaveRepayCredit,
         erc721,
-        nftTokenAddress
+        nftTokenAddress,
+        vaultAddress,
+        did,
+        agreementId,
+        agreement
 
     async function setupTest() {
         token = await NeverminedToken.new()
@@ -237,12 +241,15 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         it('Create and fullfill a credit agreement', async () => {
             const { didRegistry, aaveCreditTemplate } = await setupTest()
             did = await didRegistry.hashDID(didSeed, owner)
+
             const {
-                agreementId,
-                agreement,
+                agreementId: _agreementId,
+                agreement: _agreement,
                 checksum,
                 url
             } = await prepareCreditTemplate({ did: did })
+            agreementId = _agreementId
+            agreement = _agreement
 
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: owner })
             await erc721.mint(did)
@@ -257,22 +264,25 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 ...Object.values(agreement))
 
             // Get the vault address for this specific agreement
-            const vaultAddress = await aaveCreditTemplate.getVaultForAgreement(agreementId)
+            vaultAddress = await aaveCreditTemplate.getVaultForAgreement(agreementId)
+        })
 
+        it('The borrower locks the NFT', async () => {
             // The borrower locks the NFT in the vault
             await nftLockCondition.fulfill(
-                agreementId, agreement.did, nftLockAddress, 1, nftTokenAddress
+                agreementId, did, nftLockAddress, 1, nftTokenAddress
             )
             const { state: stateNftLock } = await conditionStoreManager.getCondition(agreement.conditionIds[0])
             assert.strictEqual(stateNftLock.toNumber(), constants.condition.state.fulfilled)
             assert.strictEqual(nftLockAddress, await erc721.ownerOf(did))
+        })
 
-
+        it('Lender deposits ETH as collateral in Aave and approves delegatee to borrow DAI', async () => {
             // Fullfill the deposit collateral condition
             // Delegator deposits ETH as collateral in Aave and approves delegatee to borrow DAI
             await aaveCollateralDeposit.fulfill(
                 agreementId,
-                agreement.did,
+                did,
                 vaultAddress,
                 delegatee,
                 collateralAsset,
@@ -300,7 +310,9 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             // The delegated borrow amount in the vault should be the same that the
             // Delegegator allowed on deposit
             assert.strictEqual(actualAmount.toString(), delegatedAmount)
+        })
 
+        it('Borrower/Delegatee borrows DAI from Aave on behalf of Delegator', async () => {
             const dai = await ERC20Upgradeable.at(delegatedAsset)
             const before = await dai.balanceOf(delegatee)
 
@@ -326,7 +338,9 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             // Delegatee allows nevermined contracts spend DAI to repay the loan
             await dai.approve(aaveRepayCredit.address, delegatedAmount,
                 { from: delegatee })
+        })
 
+        it('Borrower/Delegatee repays the loan with DAI', async () => {
             // Fullfill the aaveRepayCredit condition
             // Delegatee repays the loan with DAI
             await aaveRepayCredit.fulfill(
