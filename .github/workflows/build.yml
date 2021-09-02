@@ -62,3 +62,29 @@ jobs:
           git status
         env:
           NODE_OPTIONS: "--max-old-space-size=7500"
+
+  kovan-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+      - name: Pre-install
+      env:
+        ALCHEMY_TOKEN: ${{ secrets.KOVAN_ALCHEMY_TOKEN }}
+        run: |
+          yarn
+          npm install ganache-cli@~6.12.2 -g
+          ganache-cli -q -p 18545 -f https://eth-kovan.alchemyapi.io/v2/-$ALCHEMY_TOKEN &
+      - name: Compile and Lint
+        run: |
+          yarn lint
+          yarn clean
+          yarn compile
+      - name: Run Upgrade Tests
+        run: |
+          yarn test:kovan-integration
+        env:
+          NODE_OPTIONS: "--max-old-space-size=7500"
+

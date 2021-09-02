@@ -18,7 +18,16 @@ import '../conditions/defi/aave/AaveRepayCondition.sol';
  * @author Keyko
  *
  * @dev Implementation of the Aaven Credit Agreement Template 
- *
+ *  0. Initialize the agreement
+ *  1. LockNFT - Delegatee locks the NFT
+ *  2. AaveCollateralDeposit - Delegator deposits the collateral into Aave. And approves the delegation flow
+ *  3. AaveBorrowCondition - The Delegatee claim the credit amount from Aave
+ *  4. AaveRepayCondition. Options:
+ *      4.a Fulfilled state - The Delegatee pay back the loan (including fee) into Aave and gets back the NFT 
+ *      4.b Aborted state - The Delegatee doesn't pay the loan in time so the Delegator gets the NFT. The Delegator pays the loan to Aave
+ *  5. TransferNFT. Options:
+ *      5.a if AaveRepayCondition was fulfilled, it will allow transfer back to the Delegatee or Borrower
+ *      5.b if AaveRepayCondition was aborted, it will allow transfer the NFT to the Delegator or Lender  
  */
 contract AaveCreditTemplate is BaseEscrowTemplate {
 
@@ -29,9 +38,12 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
     AaveBorrowCondition internal borrowCondition;
     AaveRepayCondition internal repayCondition;
     ITransferNFT internal transferCondition;
-    
 //    EscrowPaymentCondition internal escrowReward;
-
+    
+    mapping(bytes32 => address) internal vaultAddress;
+    
+    
+    
     /**
      * @notice initialize init the  contract with the following parameters.
      * @dev this function is called only once during the contract
@@ -112,4 +124,43 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         conditionTypes.push(address(transferCondition));
 //        conditionTypes.push(address(escrowReward));
     }
+
+    function createAgreement(
+        bytes32 _id,
+        address _lendingPool,
+        address _dataProvider,
+        address _weth,
+        bytes32 _did,
+        bytes32[] memory _conditionIds,
+        uint256[] memory _timeLocks,
+        uint256[] memory _timeOuts,
+        address _accessConsumer
+    ) 
+    public 
+    returns (uint256 size) 
+    {
+        AaveCreditVault vault = new AaveCreditVault(_lendingPool, _dataProvider, _weth);
+        vaultAddress[_id] = address(vault);
+
+        return
+        super.createAgreement(
+            _id,
+            _did,
+            _conditionIds,
+            _timeLocks,
+            _timeOuts,
+            _accessConsumer
+        );
+    }
+
+    function getVaultForAgreement(
+        bytes32 _agreementId
+    )
+    public
+    view
+    returns (address)
+    {
+        return vaultAddress[_agreementId];
+    }    
+    
 }
