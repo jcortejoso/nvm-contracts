@@ -77,8 +77,8 @@ jobs:
         with:
           node-version: '10.x'
       - name: Pre-install
-      env:
-        ALCHEMY_TOKEN: ${{ secrets.KOVAN_ALCHEMY_TOKEN }}
+        env:
+          ALCHEMY_TOKEN: ${{ secrets.KOVAN_ALCHEMY_TOKEN }}
         run: |
           yarn
           npm install ganache-cli@~6.12.2 -g
