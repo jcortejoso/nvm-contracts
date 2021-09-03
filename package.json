@@ -72,6 +72,8 @@
   "files": [
     "artifacts/**/*",
     "docs/**/*",
+    "circuits/*.zkey",
+    "circuits/*.wasm",
     "README.md"
   ],
   "repository": {
@@ -100,7 +102,7 @@
     "eth-gas-reporter": "^0.2.22",
     "ffjavascript": "^0.2.38",
     "glob": "^7.1.4",
-    "mathjs": "~7.0.0",
+    "mathjs": "~7.5.1",
     "prettier": "^2.1.2",
     "snarkjs": "^0.4.6",
     "solhint": "^3.2.0",
