@@ -53,6 +53,16 @@ securifyReport.txt
 KeeperContracts.png
 slitherReport.txt
 
+# SNARK generation
+
+circuits/input.json
+circuits/keytransfer.r1cs
+circuits/keytransfer.sym
+circuits/proof.json
+circuits/public.json
+circuits/verification_key.json
+powersOfTau28_hez_final_14.ptau
+
 *.iml
 .idea/
 src/main/java/*

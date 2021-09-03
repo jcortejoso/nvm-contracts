@@ -71,6 +71,8 @@
   "files": [
     "artifacts/**/*",
     "docs/**/*",
+    "circuits/*.zkey",
+    "circuits/*.wasm",
     "README.md"
   ],
   "repository": {
