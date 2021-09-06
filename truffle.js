@@ -157,7 +157,10 @@ module.exports = {
             gasPrice: utils.toWei('10', 'mwei')
         }
     },
-    plugins: ['solidity-coverage', 'truffle-contract-size'],
+    plugins: ['solidity-coverage', 'truffle-contract-size', 'truffle-plugin-verify'],
+    api_keys: {
+      etherscan: process.env.ETHERSCAN_API_KEY
+    },
     mocha: {
         reporter: 'eth-gas-reporter'
     },
