@@ -54,6 +54,24 @@ module.exports = {
             gasPrice: 10000,
             from: '0xe2DD09d719Da89e5a3D0F2549c7E24566e947260'
         },
+        'near-localnet': {
+            provider: () => setupWallet(
+                url || 'http://localhost:8545'
+            ),
+            network_id: 0x4E454154, // 1313161556
+            gas: 8000000,
+            gasPrice: 10000,
+            skipDryRun: true
+        },
+        'near-testnet': {
+            provider: () => setupWallet(
+                url || 'http://localhost:8545'
+            ),
+            network_id: 0x4E454153, // 1313161555
+            gas: 8000000,
+            gasPrice: 10000,
+            skipDryRun: true
+        },
         // integration the ocean testnet
         integration: {
             provider: () => setupWallet(
