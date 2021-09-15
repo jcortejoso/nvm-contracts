@@ -59,7 +59,7 @@ module.exports = {
                 url || 'http://localhost:8545'
             ),
             network_id: 0x4E454154, // 1313161556
-            gas: 1000000,
+            gas: 1000 * 1000000,
             gasPrice: 0,
             skipDryRun: true,
             from: '0x90bb8d2F28D67881eBD85Ef5a10FAADd55FB4b60'
@@ -69,7 +69,7 @@ module.exports = {
                 url || 'https://testnet.aurora.dev'
             ),
             network_id: 0x4E454153, // 1313161555
-            gas: 1000000,
+            gas: 1000 * 1000000,
             gasPrice: 0,
             from: '0x90bb8d2F28D67881eBD85Ef5a10FAADd55FB4b60'
         },
