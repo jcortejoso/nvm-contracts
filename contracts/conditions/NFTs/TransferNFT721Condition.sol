@@ -22,7 +22,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
     bytes32 private constant CONDITION_TYPE = keccak256('TransferNFTCondition');
 
     DIDRegistry private registry;
-    
+    address private _lockConditionAddress;
     
    /**
     * @notice initialize init the contract with the following parameters
@@ -35,7 +35,8 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress
+        address _didRegistryAddress,
+        address _lockNFTConditionAddress
     )
         external
         initializer()
@@ -43,7 +44,8 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         require(
             _owner != address(0) &&
             _conditionStoreManagerAddress != address(0) &&
-            _didRegistryAddress != address(0),
+            _didRegistryAddress != address(0) &&
+            _lockNFTConditionAddress != address(0),
             'Invalid address'
         );
         
@@ -56,7 +58,8 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
 
         registry = DIDRegistry(
             _didRegistryAddress
-        );        
+        );
+        _lockConditionAddress = _lockNFTConditionAddress;
     }
 
    /**
@@ -128,14 +131,15 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         );
         
         IERC721Upgradeable token = IERC721Upgradeable(_contract);
-
+        address nftOwner = token.ownerOf(uint256(_did));
         require(
-            _nftAmount == 0 || (_nftAmount == 1 && token.ownerOf(uint256(_did)) == msg.sender),
+            _nftAmount == 0 || 
+            (_nftAmount == 1 && (nftOwner == msg.sender || nftOwner == _lockConditionAddress)),
             'Not enough balance'
         );
 
         if (_nftAmount == 1) {
-            token.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did));
+            token.safeTransferFrom(nftOwner, _nftReceiver, uint256(_did));
         }
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(

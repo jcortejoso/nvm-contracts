@@ -24,6 +24,7 @@ const NeverminedToken = artifacts.require('NeverminedToken')
 const AaveCreditVault = artifacts.require('AaveCreditVault')
 const ERC20Upgradeable = artifacts.require('ERC20Upgradeable')
 const ILendingPool = artifacts.require('ILendingPool')
+const IProtocolDataProvider = artifacts.require('IProtocolDataProvider')
 const TestERC721 = artifacts.require('TestERC721')
 
 const constants = require('../../helpers/constants.js')
@@ -33,12 +34,15 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
     const delegator = accounts[1]
     const delegatee = accounts[2]
     const lendingPoolAddress = '0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe' // Kovan
-    const dataProviderAddres = '0x744C1aaA95232EeF8A9994C4E0b3a89659D9AB79' // Kovan
+    const dataProviderAddress = '0x744C1aaA95232EeF8A9994C4E0b3a89659D9AB79' // Kovan
     const wethAddress = '0xA61ca04DF33B72b235a8A28CfB535bb7A5271B70' // Kovan
     const collateralAsset = '0xd0A1E359811322d97991E03f863a0C30C2cF029C' // WETH
     const delegatedAsset = '0xff795577d9ac8bd7d90ee22b6c1703490b6512fd' // DAI
-    const delegatedAmount = '10000000000000'
-    const collateralAmount = '1000000000000000'
+//    const delegatedAmount = '10000000000000'
+//    const collateralAmount = '1000000000000000'
+    const delegatedAmount =  '32704'
+    const collateralAmount = '10000000'
+
 
     const owner = accounts[9]
     const deployer = accounts[8]
@@ -61,6 +65,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         nftTokenAddress,
         vaultAddress,
         did,
+        sender,
         agreementId,
         agreement
 
@@ -110,6 +115,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             owner,
             conditionStoreManager.address,
             didRegistry.address,
+            nftLockCondition.address,
             { from: owner }
         )
 
@@ -245,11 +251,13 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             const {
                 agreementId: _agreementId,
                 agreement: _agreement,
+                sender: _sender,
                 checksum,
                 url
             } = await prepareCreditTemplate({ did: did })
             agreementId = _agreementId
             agreement = _agreement
+            sender = _sender
 
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: owner })
             await erc721.mint(did)
@@ -259,7 +267,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             await aaveCreditTemplate.createAgreement(
                 agreementId,
                 lendingPoolAddress,
-                dataProviderAddres,
+                dataProviderAddress,
                 wethAddress,
                 ...Object.values(agreement))
 
@@ -340,11 +348,46 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         })
 
         it('Borrower/Delegatee can not get back the NFT without repay the loan', async () => {
-            // TODO: Pending to implement
-            assert.equal(false, true)
+            await assert.isRejected(
+                transferNftCondition.fulfill(
+                    agreementId,
+                    did,
+                    sender,
+                    1,
+                    agreement.conditionIds[3],
+                    nftTokenAddress,
+                    { from: delegatee }
+                )
+            )
+            const { state: stateTransfer } = await conditionStoreManager.getCondition(
+                agreement.conditionIds[4])
+            assert.strictEqual(stateTransfer.toNumber(), constants.condition.state.unfulfilled)
         })
 
         it('Borrower/Delegatee repays the loan with DAI', async () => {
+            const lendingPool = await ILendingPool.at(lendingPoolAddress)
+
+            const vault = await AaveCreditVault.at(vaultAddress)
+            const dataProvider = await IProtocolDataProvider.at(dataProviderAddress)
+            const debtETH = (await vault.getAssetDebt(delegatedAsset)).toNumber()
+            const debtDAI = (await vault.calculateAssetDebt(delegatedAsset, debtETH)).toNumber()
+            const { decimals } = await dataProvider.getReserveConfigurationData(delegatedAsset)
+
+            const delegatedAmountETH = (await vault.calculateAmountInETH(delegatedAsset, delegatedAmount)).toNumber()
+            const feeETH = debtETH - delegatedAmountETH
+            const feeDAI = (await vault.calculateAssetDebt(delegatedAsset, feeETH)).toNumber()
+            const assetPrice = await vault.getAssetPrice(delegatedAsset)
+
+            console.log('Asset Price: ' + assetPrice)
+            console.log('Asset Price (ETH): ' + await vault.calculateAmountInETH(delegatedAsset, assetPrice))
+            console.log('TOTAL Vault Debt ETH: ' + debtETH)
+            console.log('Delegated Amount (ETH): ' + delegatedAmountETH)
+            console.log('TOTAL Vault Debt DAI: ' + debtDAI)
+            console.log('Delegated Amount (DAI): ' + delegatedAmount)
+            console.log('Fee (ETH): ' + feeETH)
+            console.log('Fee (DAI): ' + feeDAI)
+            console.log('Decimals (delegatedAsset): ' + decimals)
+
             // Fullfill the aaveRepayCredit condition
             await aaveRepayCredit.fulfill(
                 agreementId,
@@ -352,27 +395,33 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 vaultAddress,
                 delegatedAsset,
                 delegatedAmount,
-                {
-                    from: delegatee
-                }
+                { from: delegatee }
             )
             const { state: stateRepay } = await conditionStoreManager.getCondition(
                 agreement.conditionIds[3])
             assert.strictEqual(stateRepay.toNumber(), constants.condition.state.fulfilled)
 
-            const lendingPool = await ILendingPool.at(lendingPoolAddress)
-
             const vaultBalances = await lendingPool.getUserAccountData(vaultAddress)
-            const debtETH = vaultBalances.totalDebtETH.toNumber()
 
-            console.log('Vault Debt: ' + debtETH)
             // Compare the vault debt after repayment
-            assert.equal(debtETH < 100, true)
+            //            assert.equal(debtETH < 100, true)
+            assert.strictEqual(vaultBalances, 0)
         })
 
         it('Borrower/Delegatee get back the NFT', async () => {
-            // TODO: Pending to implement
-            assert.equal(false, true)
+            transferNftCondition.fulfill(
+                agreementId,
+                did,
+                sender,
+                1,
+                agreement.conditionIds[3],
+                nftTokenAddress,
+                { from: delegatee }
+            )
+
+            const { state: stateTransfer } = await conditionStoreManager.getCondition(
+                agreement.conditionIds[4])
+            assert.strictEqual(stateTransfer.toNumber(), constants.condition.state.fulfilled)
         })
     })
 })

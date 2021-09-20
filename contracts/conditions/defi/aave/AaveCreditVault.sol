@@ -4,8 +4,8 @@ pragma solidity 0.6.12;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
-import {IERC20, ILendingPool, IProtocolDataProvider, IStableDebtToken} from '../../../interfaces/IAaveInterfaces.sol';
-import {SafeERC20} from '../../../libraries/AaveLibrary.sol';
+import {IERC20, ILendingPool, ILendingPoolAddressesProvider, IProtocolDataProvider, IStableDebtToken, IPriceOracleGetter} from '../../../interfaces/IAaveInterfaces.sol';
+import {SafeERC20, SafeMath} from '../../../libraries/AaveLibrary.sol';
 import '../../../interfaces/IWETHGateway.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol';
@@ -14,10 +14,13 @@ import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
 contract AaveCreditVault is ReentrancyGuardUpgradeable, IERC721ReceiverUpgradeable {
     
     using SafeERC20 for IERC20;
-
+    using SafeMath for uint256;
+    
     ILendingPool private lendingPool;
     IProtocolDataProvider private dataProvider;
     IWETHGateway private weth;
+    ILendingPoolAddressesProvider private addressProvider;
+    IPriceOracleGetter private priceOracle;
 
     constructor(
         address _lendingPool,
@@ -27,6 +30,8 @@ contract AaveCreditVault is ReentrancyGuardUpgradeable, IERC721ReceiverUpgradeab
         lendingPool = ILendingPool(_lendingPool);
         dataProvider = IProtocolDataProvider(_dataProvider);
         weth = IWETHGateway(_weth);
+        addressProvider = lendingPool.getAddressesProvider();
+        priceOracle = IPriceOracleGetter(addressProvider.getPriceOracle());        
     }
 
     function deposit(
@@ -98,6 +103,13 @@ contract AaveCreditVault is ReentrancyGuardUpgradeable, IERC721ReceiverUpgradeab
         IERC20(_assetToBorrow).transfer(_delgatee, _amount);
     }
 
+    function repay(     
+        address _asset
+    )
+    public
+    {
+        return repay(2**256 - 1, _asset);
+    }
     /**
      * Repay an uncollaterised loan
      * @param _amount The amount to repay
@@ -107,11 +119,67 @@ contract AaveCreditVault is ReentrancyGuardUpgradeable, IERC721ReceiverUpgradeab
         uint256 _amount, 
         address _asset
     ) 
-        public 
+    public 
     {
+//        require(_amount == getAssetDebt(_asset), 
+//        'The amount to repay is not equal to the asset debt');
+//        (uint256 _decimals,,,,,,,,,) = dataProvider.getReserveConfigurationData(_asset);
+//        uint256 amountInETH = priceOracle.getAssetPrice(_asset)
+//                .mul(_amount)
+//                .div( 10 ** _decimals);
+        //type(uint256).max   
         IERC20(_asset).approve(address(lendingPool), _amount);
         lendingPool.repay(_asset, _amount, 1, address(this));
     }
+
+    function getAssetDebt(address _asset)
+    public
+    view
+    returns (uint256)
+    {
+        (,uint256 assetDebt,,,,) = lendingPool.getUserAccountData(address(this));
+        return assetDebt;
+        //uint256 decimals = lendingPool.getReserveData(_asset).configuration.getDecimals();
+        //(uint256 decimals,,,,,,,,,)  getReserveConfigurationData();
+//        (uint256 _decimals,,,,,,,,,) = dataProvider.getReserveConfigurationData(_asset);
+//        return priceOracle.getAssetPrice(_asset)
+//            .mul(assetDebt)
+//            .div(10 ** _decimals);
+    
+    }
+
+    function calculateAmountInETH(address _asset, uint256 _amount)
+    public
+    view
+    returns (uint256)
+    {
+//        total deuda / total precio asset
+        //        return _amountETH.div(priceOracle.getAssetPrice(_asset));
+        (uint256 _decimals,,,,,,,,,) = dataProvider.getReserveConfigurationData(_asset);
+        return priceOracle.getAssetPrice(_asset)
+            .mul(_amount)
+            .div(10 ** _decimals);
+
+    }
+
+    function getAssetPrice(address _asset)
+    public
+    view
+    returns (uint256)
+    {
+        return priceOracle.getAssetPrice(_asset);
+    }
+    
+    function calculateAssetDebt(address _asset, uint256 _amountETH)
+    public
+    view
+    returns (uint256)
+    {
+//        (uint256 _decimals,,,,,,,,,) = dataProvider.getReserveConfigurationData(_asset);
+//        return priceOracle.getAssetPrice(_asset);
+        return _amountETH.div(priceOracle.getAssetPrice(_asset));
+    }    
+    
 
     /**
      * Withdraw all of a collateral as the underlying asset, if no outstanding loans delegated
