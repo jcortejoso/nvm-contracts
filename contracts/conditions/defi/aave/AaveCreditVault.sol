@@ -132,7 +132,7 @@ contract AaveCreditVault is ReentrancyGuardUpgradeable, IERC721ReceiverUpgradeab
         lendingPool.repay(_asset, _amount, 1, address(this));
     }
 
-    function getAssetDebt(address _asset)
+    function getAssetDebt()
     public
     view
     returns (uint256)

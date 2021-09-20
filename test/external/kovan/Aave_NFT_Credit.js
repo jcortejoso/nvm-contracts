@@ -38,11 +38,10 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
     const wethAddress = '0xA61ca04DF33B72b235a8A28CfB535bb7A5271B70' // Kovan
     const collateralAsset = '0xd0A1E359811322d97991E03f863a0C30C2cF029C' // WETH
     const delegatedAsset = '0xff795577d9ac8bd7d90ee22b6c1703490b6512fd' // DAI
-//    const delegatedAmount = '10000000000000'
-//    const collateralAmount = '1000000000000000'
-    const delegatedAmount =  '32704'
+    //    const delegatedAmount = '10000000000000'
+    //    const collateralAmount = '1000000000000000'
+    const delegatedAmount = '32704'
     const collateralAmount = '10000000'
-
 
     const owner = accounts[9]
     const deployer = accounts[8]
