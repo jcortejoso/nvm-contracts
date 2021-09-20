@@ -28,5 +28,6 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
+        cp -r artifacts python/nevermined_contracts/
         python setup.py sdist bdist_wheel
         twine upload dist/*
