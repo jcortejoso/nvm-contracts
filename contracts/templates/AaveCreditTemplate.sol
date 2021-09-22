@@ -3,15 +3,15 @@ pragma solidity 0.6.12;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
-import "./BaseEscrowTemplate.sol";
-import "../conditions/rewards/EscrowPaymentCondition.sol";
-import "../registry/DIDRegistry.sol";
-import "../conditions/NFTs/INFTLock.sol";
-import "../conditions/NFTs/ITransferNFT.sol";
-import "../conditions/defi/aave/AaveCollateralDepositCondition.sol";
-import "../conditions/defi/aave/AaveBorrowCondition.sol";
-import "../conditions/defi/aave/AaveRepayCondition.sol";
-import "../conditions/defi/aave/AaveCreditVault.sol";
+import './BaseEscrowTemplate.sol';
+import '../conditions/rewards/EscrowPaymentCondition.sol';
+import '../registry/DIDRegistry.sol';
+import '../conditions/NFTs/INFTLock.sol';
+import '../conditions/NFTs/ITransferNFT.sol';
+import '../conditions/defi/aave/AaveCollateralDepositCondition.sol';
+import '../conditions/defi/aave/AaveBorrowCondition.sol';
+import '../conditions/defi/aave/AaveRepayCondition.sol';
+import '../conditions/defi/aave/AaveCreditVault.sol';
 
 /**
  * @title Aaven Credit Agreement Template
@@ -40,7 +40,7 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
   //    EscrowPaymentCondition internal escrowReward;
 
   mapping(bytes32 => address) internal vaultAddress;
-  uint256 nvmFee = 1;
+  uint256 private nvmFee = 1;
 
   /**
    * @notice initialize init the  contract with the following parameters.
@@ -78,7 +78,7 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         _repayConditionAddress != address(0) &&
         _transferConditionAddress != address(0),
       //            _escrowConditionAddress != address(0),
-      "Invalid address"
+      'Invalid address'
     );
 
     OwnableUpgradeable.__Ownable_init();

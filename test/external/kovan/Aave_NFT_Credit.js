@@ -6,8 +6,7 @@ const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
-const BigNumber = require('bignumber.js');
-
+const BigNumber = require('bignumber.js')
 
 const AaveCreditTemplate = artifacts.require('AaveCreditTemplate')
 const NFTLockCondition = artifacts.require('NFT721LockCondition')
@@ -39,7 +38,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
     const collateralAsset = '0xd0A1E359811322d97991E03f863a0C30C2cF029C' // WETH
     const delegatedAsset = '0xff795577d9ac8bd7d90ee22b6c1703490b6512fd' // DAI
     const delegatedAmount = '500000000000000000000' // 500 DAI
-    const collateralAmount = '10000000000000000000' //10 ETH
+    const collateralAmount = '10000000000000000000' // 10 ETH
     const daiProvider = '0xAFD49D613467c0DaBf47B8f5C841089d96Cf7167'
     const agreementFee = '15'
 
@@ -370,7 +369,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             await dai.approve(aaveRepayCredit.address, allowanceAmount.toString(),
                 { from: delegatee })
 
-            //Send some DAI to delegatee to pay the debt + fees
+            // Send some DAI to delegatee to pay the debt + fees
             await dai.transfer(
                 delegatee,
                 (Number(totalDebt) - Number(delegatedAmount)).toString(),

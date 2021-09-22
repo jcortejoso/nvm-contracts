@@ -3,12 +3,12 @@ pragma solidity 0.6.12;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
-import {IERC20, ILendingPool, ILendingPoolAddressesProvider, IProtocolDataProvider, IStableDebtToken, IPriceOracleGetter} from "../../../interfaces/IAaveInterfaces.sol";
-import {SafeERC20, SafeMath} from "../../../libraries/AaveLibrary.sol";
-import "../../../interfaces/IWETHGateway.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {IERC20, ILendingPool, ILendingPoolAddressesProvider, IProtocolDataProvider, IStableDebtToken, IPriceOracleGetter} from '../../../interfaces/IAaveInterfaces.sol';
+import {SafeERC20, SafeMath} from '../../../libraries/AaveLibrary.sol';
+import '../../../interfaces/IWETHGateway.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
 
 contract AaveCreditVault is
   ReentrancyGuardUpgradeable,
@@ -22,11 +22,11 @@ contract AaveCreditVault is
   IWETHGateway private weth;
   ILendingPoolAddressesProvider private addressProvider;
   IPriceOracleGetter private priceOracle;
-  address borrowedAsset;
-  uint256 borrowedAmount;
-  uint256 nvmFee;
-  uint256 agreementFee;
-  uint256 constant FEE_BASE = 10000;
+  address private borrowedAsset;
+  uint256 private borrowedAmount;
+  uint256 private nvmFee;
+  uint256 private agreementFee;
+  uint256 private constant FEE_BASE = 10000;
 
   constructor(
     address _lendingPool,
@@ -113,7 +113,7 @@ contract AaveCreditVault is
     IERC20(_asset).approve(address(lendingPool), uint256(-1));
     lendingPool.repay(_asset, uint256(-1), 1, address(this));
 
-    require(getActualCreditDebt() == 0, "Not enough amount to repay");
+    require(getActualCreditDebt() == 0, 'Not enough amount to repay');
 
   }
 
