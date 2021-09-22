@@ -3,27 +3,16 @@
 
 """The setup script."""
 
-from setuptools import setup
-import os
-from glob import glob
+from setuptools import find_packages, setup
 
 
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
+
 requirements = []
-
 setup_requirements = []
-
-
 test_requirements = []
-artifact_folder = 'artifacts'
-print("Adding all files in /{}".format(artifact_folder))
-data_files = [(artifact_folder, [f for f in glob(os.path.join(artifact_folder, '*'))])]
-
-print("data_files=")
-for df in data_files:
-    print(df)
 
 setup(
     author="nevermined-io",
@@ -37,18 +26,19 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     description="Smart Contracts for Nevermined Data platform",
-    data_files=data_files,
     install_requires=requirements,
+    packages=find_packages("python"),
+    package_dir={"": "python"},
+    package_data={"": ["artifacts/*"]},
     license="Apache Software License 2.0",
     long_description=readme,
     long_description_content_type='text/markdown',
-    include_package_data=True,
     keywords='nevermined-contracts',
     name='nevermined-contracts',
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/nevermined-io/contracts',
-    version='1.1.4',
+    version='1.1.6',
     zip_safe=False,
 )
