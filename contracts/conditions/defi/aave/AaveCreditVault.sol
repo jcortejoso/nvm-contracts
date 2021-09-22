@@ -23,17 +23,25 @@ contract AaveCreditVault is
   ILendingPoolAddressesProvider private addressProvider;
   IPriceOracleGetter private priceOracle;
   address borrowedAsset;
+  uint256 borrowedAmount;
+  uint256 nvmFee;
+  uint256 agreementFee;
+  uint256 constant FEE_BASE = 10000;
 
   constructor(
     address _lendingPool,
     address _dataProvider,
-    address _weth
+    address _weth,
+    uint256 _nvmFee,
+    uint256 _agreementFee
   ) public {
     lendingPool = ILendingPool(_lendingPool);
     dataProvider = IProtocolDataProvider(_dataProvider);
     weth = IWETHGateway(_weth);
     addressProvider = lendingPool.getAddressesProvider();
     priceOracle = IPriceOracleGetter(addressProvider.getPriceOracle());
+    nvmFee = _nvmFee;
+    agreementFee = _agreementFee;
   }
 
   function deposit(address _collateralAsset, uint256 _amount)
@@ -92,29 +100,32 @@ contract AaveCreditVault is
     address _delgatee
   ) public {
     borrowedAsset = _assetToBorrow;
+    borrowedAmount = _amount;
     lendingPool.borrow(_assetToBorrow, _amount, 1, 0, address(this));
     IERC20(_assetToBorrow).transfer(_delgatee, _amount);
   }
 
   /**
    * Repay an uncollaterised loan
-   * @param _amount The amount to repay
    * @param _asset The asset to be repaid
    */
-  function repay(uint256 _amount, address _asset) public {
-    require(
-      _amount == getTotalAssetDebt(),
-      "The amount to repay is not equal to the asset debt"
-    );
-    IERC20(_asset).approve(address(lendingPool), _amount);
-    lendingPool.repay(_asset, _amount, 1, address(this));
+  function repay(address _asset) public returns (uint256) {
+    IERC20(_asset).approve(address(lendingPool), uint256(-1));
+    lendingPool.repay(_asset, uint256(-1), 1, address(this));
+
+    require(getActualCreditDebt() == 0, "Not enough amount to repay");
+
+  }
+
+  function getBorrowedAmount() public view returns (uint256) {
+    return borrowedAmount;
   }
 
   function getAssetPrice(address _asset) public view returns (uint256) {
     return priceOracle.getAssetPrice(_asset);
   }
 
-  function getTotalAssetDebt() public view returns (uint256) {
+  function getCreditAssetDebt() public view returns (uint256) {
     (, uint256 totalDebtETH, , , , ) = lendingPool.getUserAccountData(
       address(this)
     );
@@ -125,12 +136,20 @@ contract AaveCreditVault is
     return totalDebtETH.div(price).mul(10**_decimals);
   }
 
-  function getActualDebt() public view returns (uint256) {
+  function getActualCreditDebt() public view returns (uint256) {
     (, uint256 totalDebtETH, , , , ) = lendingPool.getUserAccountData(
       address(this)
     );
 
     return totalDebtETH;
+  }
+
+  function getTotalActualDebt() public view returns (uint256) {
+    uint256 creditDebt = getCreditAssetDebt();
+    uint256 delegatorFee = borrowedAmount.div(FEE_BASE).mul(agreementFee);
+    uint256 nvmFeeAmount = borrowedAmount.div(FEE_BASE).mul(nvmFee);
+
+    return creditDebt.add(delegatorFee).add(nvmFeeAmount);
   }
 
   /**

@@ -6,6 +6,8 @@ const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
+const BigNumber = require('bignumber.js');
+
 
 const AaveCreditTemplate = artifacts.require('AaveCreditTemplate')
 const NFTLockCondition = artifacts.require('NFT721LockCondition')
@@ -23,8 +25,6 @@ const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const NeverminedToken = artifacts.require('NeverminedToken')
 const AaveCreditVault = artifacts.require('AaveCreditVault')
 const ERC20Upgradeable = artifacts.require('ERC20Upgradeable')
-const ILendingPool = artifacts.require('ILendingPool')
-const IProtocolDataProvider = artifacts.require('IProtocolDataProvider')
 const TestERC721 = artifacts.require('TestERC721')
 
 const constants = require('../../helpers/constants.js')
@@ -40,6 +40,8 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
     const delegatedAsset = '0xff795577d9ac8bd7d90ee22b6c1703490b6512fd' // DAI
     const delegatedAmount = '500000000000000000000' // 500 DAI
     const collateralAmount = '10000000000000000000' //10 ETH
+    const daiProvider = '0xAFD49D613467c0DaBf47B8f5C841089d96Cf7167'
+    const agreementFee = '15'
 
     const owner = accounts[9]
     const deployer = accounts[8]
@@ -266,6 +268,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 lendingPoolAddress,
                 dataProviderAddress,
                 wethAddress,
+                agreementFee,
                 ...Object.values(agreement))
 
             // Get the vault address for this specific agreement
@@ -337,7 +340,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             assert.strictEqual(stateCredit.toNumber(), constants.condition.state.fulfilled)
 
             const after = await dai.balanceOf(delegatee)
-            assert.strictEqual(String(after.toNumber() - before.toNumber()), delegatedAmount)
+            assert.strictEqual(BigNumber(after).minus(BigNumber(before)).toNumber(), BigNumber(delegatedAmount).toNumber())
         })
 
         it('Borrower/Delegatee can not get back the NFT without repay the loan', async () => {
@@ -359,15 +362,19 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
         it('Borrower/Delegatee repays the loan with DAI', async () => {
             const vault = await AaveCreditVault.at(vaultAddress)
-            const totalDebt = await vault.getTotalAssetDebt()
+            const totalDebt = await vault.getTotalActualDebt()
             const dai = await ERC20Upgradeable.at(delegatedAsset)
+            const allowanceAmount = Number(totalDebt) + (Number(totalDebt) / 10000 * 1)
 
             // Delegatee allows Nevermined contracts spend DAI to repay the loan
-            await dai.approve(aaveRepayCredit.address, totalDebt,
+            await dai.approve(aaveRepayCredit.address, allowanceAmount.toString(),
                 { from: delegatee })
 
-            const vaultBalancesBefore = await vault.getActualDebt()
-            console.log(`Debt Before repayment ${vaultBalancesBefore}`)
+            //Send some DAI to delegatee to pay the debt + fees
+            await dai.transfer(
+                delegatee,
+                (Number(totalDebt) - Number(delegatedAmount)).toString(),
+                { from: daiProvider })
 
             // Fullfill the aaveRepayCredit condition
             await aaveRepayCredit.fulfill(
@@ -375,19 +382,15 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 did,
                 vaultAddress,
                 delegatedAsset,
-                totalDebt,
                 { from: delegatee }
             )
             const { state: stateRepay } = await conditionStoreManager.getCondition(
                 agreement.conditionIds[3])
             assert.strictEqual(stateRepay.toNumber(), constants.condition.state.fulfilled)
 
-            const vaultBalancesAfter = await vault.getActualDebt()
-
-            console.log(`Debt after repayment ${vaultBalancesAfter}`)
-
-            // // Compare the vault debt after repayment
-            // assert.strictEqual(vaultBalances, 0)
+            const vaultBalancesAfter = await vault.getActualCreditDebt()
+            // Compare the vault debt after repayment
+            assert.strictEqual(BigNumber(vaultBalancesAfter).toNumber(), 0)
         })
 
         // it('Borrower/Delegatee get back the NFT', async () => {

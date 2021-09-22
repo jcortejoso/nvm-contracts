@@ -71,18 +71,20 @@ contract AaveRepayCondition is Condition, Common {
     bytes32 _agreementId,
     bytes32 _did,
     address _vaultAddress,
-    address _assetToRepay,
-    uint256 _amount
+    address _assetToRepay
   ) external returns (ConditionStoreLibrary.ConditionState) {
     ERC20Upgradeable token = ERC20Upgradeable(_assetToRepay);
-    token.transferFrom(msg.sender, _vaultAddress, _amount);
-
     AaveCreditVault vault = AaveCreditVault(_vaultAddress);
-    vault.repay(_amount, _assetToRepay);
+    uint256 totalDebt = vault.getTotalActualDebt();
+
+    token.transferFrom(msg.sender, _vaultAddress, totalDebt);
+    uint256 initialBorrow = vault.getBorrowedAmount();
+    
+    vault.repay(_assetToRepay);
 
     bytes32 _id = generateId(
       _agreementId,
-      hashValues(_did, msg.sender, _assetToRepay, _amount)
+      hashValues(_did, msg.sender, _assetToRepay, initialBorrow)
     );
 
     ConditionStoreLibrary.ConditionState state = super.fulfill(
