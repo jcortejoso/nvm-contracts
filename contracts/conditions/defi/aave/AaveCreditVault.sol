@@ -3,12 +3,12 @@ pragma solidity 0.6.12;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
-import {IERC20, ILendingPool, ILendingPoolAddressesProvider, IProtocolDataProvider, IStableDebtToken, IPriceOracleGetter} from '../../../interfaces/IAaveInterfaces.sol';
-import {SafeERC20, SafeMath} from '../../../libraries/AaveLibrary.sol';
-import '../../../interfaces/IWETHGateway.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
+import {IERC20, ILendingPool, ILendingPoolAddressesProvider, IProtocolDataProvider, IStableDebtToken, IPriceOracleGetter} from "../../../interfaces/IAaveInterfaces.sol";
+import {SafeERC20, SafeMath} from "../../../libraries/AaveLibrary.sol";
+import "../../../interfaces/IWETHGateway.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 contract AaveCreditVault is
   ReentrancyGuardUpgradeable,
@@ -28,6 +28,14 @@ contract AaveCreditVault is
   uint256 private agreementFee;
   uint256 private constant FEE_BASE = 10000;
 
+  /**
+   * Vault constructor, creates a unique vault for each agreement
+   * @param _lendingPool Aave lending pool address
+   * @param _dataProvider Aave data provider address
+   * @param _weth WETH address
+   * @param _nvmFee Nevermined fee that will apply to this agreeement
+   * @param _agreementFee Agreement fee that lender will receive on agreement maturity
+   */
   constructor(
     address _lendingPool,
     address _dataProvider,
@@ -44,6 +52,12 @@ contract AaveCreditVault is
     agreementFee = _agreementFee;
   }
 
+  /**
+   * Deposit function. Receives the funds from the delegator and deposits the funds
+   * in the Aave contracts
+   * @param _collateralAsset collateral asset that will be deposit on Aave
+   * @param _amount Amount of collateral to deposit
+   */
   function deposit(address _collateralAsset, uint256 _amount)
     public
     payable
@@ -55,6 +69,12 @@ contract AaveCreditVault is
     }
   }
 
+  /**
+   * Appproves delegatee to borrow funds from Aave on behalf of delegator
+   * @param borrower delegatee that will borrow the funds
+   * @param amount Amount of funds to delegate
+   * @param asset Asset to delegate the borrow
+   */
   function approveBorrower(
     address borrower,
     uint256 amount,
@@ -113,18 +133,28 @@ contract AaveCreditVault is
     IERC20(_asset).approve(address(lendingPool), uint256(-1));
     lendingPool.repay(_asset, uint256(-1), 1, address(this));
 
-    require(getActualCreditDebt() == 0, 'Not enough amount to repay');
-
+    require(getActualCreditDebt() == 0, "Not enough amount to repay");
   }
 
+  /**
+   * Returns the borrowed amount from the delegatee on this agreement
+   */
   function getBorrowedAmount() public view returns (uint256) {
     return borrowedAmount;
   }
 
+  /**
+   * Returns the priceof the asset in the Aave oracles
+   * @param _asset The asset to get the actual price
+   */
   function getAssetPrice(address _asset) public view returns (uint256) {
     return priceOracle.getAssetPrice(_asset);
   }
 
+
+  /**
+   * Returns the total debt of the credit in the Aave protocol expressed in token units
+   */
   function getCreditAssetDebt() public view returns (uint256) {
     (, uint256 totalDebtETH, , , , ) = lendingPool.getUserAccountData(
       address(this)
@@ -136,6 +166,9 @@ contract AaveCreditVault is
     return totalDebtETH.div(price).mul(10**_decimals);
   }
 
+  /**
+   * Returns the total debt of the credit in the Aave protocol expressed in ETH units
+   */
   function getActualCreditDebt() public view returns (uint256) {
     (, uint256 totalDebtETH, , , , ) = lendingPool.getUserAccountData(
       address(this)
@@ -144,6 +177,10 @@ contract AaveCreditVault is
     return totalDebtETH;
   }
 
+
+  /**
+   * Returns the total actual debt of the agreement credit + fees in token units
+   */
   function getTotalActualDebt() public view returns (uint256) {
     uint256 creditDebt = getCreditAssetDebt();
     uint256 delegatorFee = borrowedAmount.div(FEE_BASE).mul(agreementFee);
@@ -165,6 +202,12 @@ contract AaveCreditVault is
     lendingPool.withdraw(_asset, assetBalance, _delegator);
   }
 
+
+  /**
+   * Transfers the ERC20 token deposited to the Aave contracts
+   * @param _collateralAsset collateral asset that will be deposit on Aave
+   * @param _amount Amount of collateral to deposit
+   */
   function _transferERC20(address _collateralAsset, uint256 _amount) internal {
     IERC20Upgradeable token = ERC20Upgradeable(_collateralAsset);
     token.approve(address(lendingPool), _amount);
