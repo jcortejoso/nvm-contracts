@@ -82,7 +82,7 @@ jobs:
         run: |
           yarn
           npm install ganache-cli@~6.12.2 -g
-          ganache-cli -q -p 18545 -f https://eth-kovan.alchemyapi.io/v2/-$ALCHEMY_TOKEN &
+          ganache-cli -q --unlock 0xAFD49D613467c0DaBf47B8f5C841089d96Cf7167 -p 18545 -f https://eth-kovan.alchemyapi.io/v2/-$ALCHEMY_TOKEN &
       - name: Compile and Lint
         run: |
           yarn lint
