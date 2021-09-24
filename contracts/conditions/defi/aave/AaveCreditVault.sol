@@ -27,6 +27,7 @@ contract AaveCreditVault is
   uint256 private nvmFee;
   uint256 private agreementFee;
   uint256 private constant FEE_BASE = 10000;
+  address private treasuryAddress;
 
   /**
    * Vault constructor, creates a unique vault for each agreement
@@ -41,7 +42,8 @@ contract AaveCreditVault is
     address _dataProvider,
     address _weth,
     uint256 _nvmFee,
-    uint256 _agreementFee
+    uint256 _agreementFee,
+    address _treasuryAddress
   ) public {
     lendingPool = ILendingPool(_lendingPool);
     dataProvider = IProtocolDataProvider(_dataProvider);
@@ -50,6 +52,7 @@ contract AaveCreditVault is
     priceOracle = IPriceOracleGetter(addressProvider.getPriceOracle());
     nvmFee = _nvmFee;
     agreementFee = _agreementFee;
+    treasuryAddress = _treasuryAddress;
   }
 
   /**
@@ -195,11 +198,11 @@ contract AaveCreditVault is
    * @param _delegator Delegator address that deposited the collateral
    */
   function withdrawCollateral(address _asset, address _delegator) public {
-    (address aTokenAddress, , ) = dataProvider.getReserveTokensAddresses(
-      _asset
-    );
-    uint256 assetBalance = IERC20(aTokenAddress).balanceOf(address(this));
-    lendingPool.withdraw(_asset, assetBalance, _delegator);
+    lendingPool.withdraw(_asset, uint256(-1), _delegator);
+    uint256 delegatorFee = borrowedAmount.div(FEE_BASE).mul(agreementFee);
+    IERC20(borrowedAsset).transfer(_delegator, delegatorFee);
+    uint256 finalBalance = IERC20(borrowedAsset).balanceOf(address(this));
+    IERC20(borrowedAsset).transfer(treasuryAddress, finalBalance);
   }
 
 
