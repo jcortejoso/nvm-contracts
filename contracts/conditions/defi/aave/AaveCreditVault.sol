@@ -3,12 +3,12 @@ pragma solidity 0.6.12;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
-import {IERC20, ILendingPool, ILendingPoolAddressesProvider, IProtocolDataProvider, IStableDebtToken, IPriceOracleGetter} from "../../../interfaces/IAaveInterfaces.sol";
-import {SafeERC20, SafeMath} from "../../../libraries/AaveLibrary.sol";
-import "../../../interfaces/IWETHGateway.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {IERC20, ILendingPool, ILendingPoolAddressesProvider, IProtocolDataProvider, IStableDebtToken, IPriceOracleGetter} from '../../../interfaces/IAaveInterfaces.sol';
+import {SafeERC20, SafeMath} from '../../../libraries/AaveLibrary.sol';
+import '../../../interfaces/IWETHGateway.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
 
 contract AaveCreditVault is
   ReentrancyGuardUpgradeable,
@@ -136,7 +136,7 @@ contract AaveCreditVault is
     IERC20(_asset).approve(address(lendingPool), uint256(-1));
     lendingPool.repay(_asset, uint256(-1), 1, address(this));
 
-    require(getActualCreditDebt() == 0, "Not enough amount to repay");
+    require(getActualCreditDebt() == 0, 'Not enough amount to repay');
   }
 
   /**

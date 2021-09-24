@@ -28,7 +28,6 @@ const ERC20Upgradeable = artifacts.require('ERC20Upgradeable')
 const TestERC721 = artifacts.require('TestERC721')
 const MarketPlaceTreasury = artifacts.require('MarketPlaceTreasury')
 
-
 const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
@@ -417,7 +416,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             // Compare the vault debt after repayment
             assert.strictEqual(BigNumber(vaultBalancesAfter).toNumber(), 0)
         })
-
 
         it('Delegator withdraw collateral and fees', async () => {
             const dai = await ERC20Upgradeable.at(delegatedAsset)
