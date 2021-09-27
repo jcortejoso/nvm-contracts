@@ -36,6 +36,7 @@ contract AaveCreditVault is
    * @param _weth WETH address
    * @param _nvmFee Nevermined fee that will apply to this agreeement
    * @param _agreementFee Agreement fee that lender will receive on agreement maturity
+   * @param _treasuryAddress Address of nevermined contract to store fees
    */
   constructor(
     address _lendingPool,

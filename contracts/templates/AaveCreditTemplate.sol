@@ -41,7 +41,7 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
   AaveCollateralWithdrawCondition internal withdrawCondition;
 
   mapping(bytes32 => address) internal vaultAddress;
-  uint256 private nvmFee = 1;
+  uint256 private nvmFee = 2;
 
   /**
    * @notice initialize init the  contract with the following parameters.

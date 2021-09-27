@@ -12,12 +12,12 @@ import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
- * @title Aave Collateral Deposit Condition
+ * @title Aave Collateral Withdraw Condition
  * @author Keyko
  *
- * @dev Implementation of the Lock Payment Condition
- * This condition allows to lock payment for multiple receivers taking
- * into account the royalties to be paid to the original creators in a secondary market.
+ * @dev Implementation of the Collateral Withdraw Condition
+ * This condition allows to credit delegator withdraw the collateral and fees
+ * after the agreement expiration
  */
 contract AaveCollateralWithdrawCondition is
   Condition,
