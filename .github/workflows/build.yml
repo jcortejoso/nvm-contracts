@@ -19,8 +19,8 @@ jobs:
           node-version: '12.x'
       - name: Pre-install
         run: |
-          yarn
-          npm install ganache-cli@~6.12.2 -g
+          yarn install --frozen-lockfile
+          yarn global add ganache-cli@~6.12.2
           ganache-cli -q -p 18545 &
           git submodule init
           git submodule update
@@ -50,8 +50,8 @@ jobs:
           node-version: '14.x'
       - name: Pre-install
         run: |
-          yarn
-          npm install ganache-cli@~6.12.2 -g
+          yarn install --frozen-lockfile
+          yarn global add ganache-cli@~6.12.2
           ganache-cli -q -p 18545 &
           git submodule init
           git submodule update
