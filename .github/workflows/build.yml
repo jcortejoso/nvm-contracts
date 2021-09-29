@@ -19,8 +19,9 @@ jobs:
           node-version: '14.x'
       - name: Pre-install
         run: |
-          yarn
-          npm install ganache-cli@~6.12.2 -g
+          rm -rf node_modules
+          yarn install --frozen-lockfile
+          yarn global add ganache-cli@~6.12.2
           ganache-cli -q -p 18545 &
           git submodule init
           git submodule update
@@ -32,7 +33,10 @@ jobs:
           yarn compile
       - name: Run Unit Tests
         run: |
-          yarn test:unit
+          yarn run truffle test $(find ./test/unit/{agreements,Dispenser,HashLists,libraries} -name '*.*s')
+          yarn run truffle test $(find ./test/unit/registry -name '*.*s')
+          yarn run truffle test $(find ./test/unit/templates -name '*.*s')
+          yarn run truffle test $(find ./test/unit/conditions -name '*.*s')
           pkill --signal 9 -f ganache-cli
           ganache-cli -q -p 18545 &
       - name: Run Integration Tests
@@ -50,8 +54,8 @@ jobs:
           node-version: '14.x'
       - name: Pre-install
         run: |
-          yarn
-          npm install ganache-cli@~6.12.2 -g
+          yarn install --frozen-lockfile
+          yarn global add ganache-cli@~6.12.2
           ganache-cli -q -p 18545 &
           git submodule init
           git submodule update
