@@ -33,7 +33,7 @@ jobs:
           yarn compile
       - name: Run Unit Tests
         run: |
-          yarn run truffle test $(find ./test/unit/(agreements|Dispenser|HashLists|libraries) -name '*.*s')
+          yarn run truffle test $(find ./test/unit/{agreements,Dispenser,HashLists,libraries} -name '*.*s')
           yarn run truffle test $(find ./test/unit/registry -name '*.*s')
           yarn run truffle test $(find ./test/unit/templates -name '*.*s')
           yarn run truffle test $(find ./test/unit/conditions -name '*.*s')
