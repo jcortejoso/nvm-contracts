@@ -54,6 +54,39 @@ module.exports = {
             gasPrice: 10000,
             from: '0xe2DD09d719Da89e5a3D0F2549c7E24566e947260'
         },
+        'aurora-localnet': {
+            provider: () => setupWallet(
+                url || 'http://localhost:8545'
+            ),
+            network_id: 0x4E454154, // 1313161556
+            gas: 1000 * 1000000,
+            gasPrice: 0,
+            skipDryRun: true,
+            from: '0x90bb8d2F28D67881eBD85Ef5a10FAADd55FB4b60'
+        },
+        'aurora-testnet': {
+            provider: () => setupWallet(
+                url || 'https://testnet.aurora.dev'
+            ),
+            network_id: 0x4E454153, // 1313161555
+            gas: 1000 * 1000000,
+            gasPrice: 0,
+            from: '0x90bb8d2F28D67881eBD85Ef5a10FAADd55FB4b60'
+        },
+        // aurora mainnet!
+        aurora: {
+            provider: () => setupWallet(
+                url || 'https://mainnet.aurora.dev'
+            ),
+            network_id: 0x4E454152, // 1313161554
+            gas: 6 * 1000000,
+            gasPrice: 0,
+            skipDryRun: true,
+            confirmations: 10,
+            timeoutBlocks: 200,
+            deploymentPollingInterval: 8000,
+            from: '0xB6d47415AfCDD06c5155d0E191530027FD51CCfD'
+        },
         // integration the ocean testnet
         integration: {
             provider: () => setupWallet(
