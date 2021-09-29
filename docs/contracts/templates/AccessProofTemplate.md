@@ -14,12 +14,12 @@ Implementation of Access Agreement Template
     address payable _escrowConditionAddress
   ) external
 ```
-initialize init the
+initialize init the 
       contract with the following parameters.
 
 this function is called only once during the contract
-      initialization. It initializes the ownable feature, and
-      set push the required condition types including
+      initialization. It initializes the ownable feature, and 
+      set push the required condition types including 
       access , lock payment and escrow payment conditions.
 
 #### Parameters:
