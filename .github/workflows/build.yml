@@ -33,7 +33,10 @@ jobs:
           yarn compile
       - name: Run Unit Tests
         run: |
-          yarn test:unit
+          yarn run truffle test $(find ./test/unit/(agreements|Dispenser|HashLists|libraries) -name '*.*s')
+          yarn run truffle test $(find ./test/unit/registry -name '*.*s')
+          yarn run truffle test $(find ./test/unit/templates -name '*.*s')
+          yarn run truffle test $(find ./test/unit/conditions -name '*.*s')
           pkill --signal 9 -f ganache-cli
           ganache-cli -q -p 18545 &
       - name: Run Integration Tests
