@@ -26,10 +26,12 @@
       * [Bakalva (Celo) Testnet](#bakalva-celo-testnet)
       * [Rinkeby (Ethereum) Testnet](#rinkeby-ethereum-testnet)
       * [Mumbai (Polygon) Testnet](#mumbai-polygon-testnet)
+      * [Aurora Testnet](#aurora-testnet)
       * [Integration Testnet](#integration-testnet)
       * [Staging Testnet](#staging-testnet)
     * [Mainnets](#mainnets)
-    * [Production Mainnet](#production-mainnet)
+      * [Ethereum Mainnet](#ethereum-mainnet)
+      * [Aurora Mainnet](#aurora-mainnet)
   * [Packages](#packages)
   * [Documentation](#documentation)
   * [Prior Art](#prior-art)
@@ -267,6 +269,46 @@ The contract addresses deployed on `Mymbai` Polygon Test Network:
 | TransferNFTCondition              | v1.1.2 | `0x4d3a045ECec1EA3D9Ee063af7127177958f5cfc6` |
 | WhitelistingCondition             | v1.1.2 | `0x2d8BCaDdf251384C28644155bB853fd200f2Ff2B` |
 
+#### Aurora Testnet
+
+The contract addresses deployed on `Aurora` Test Network:
+
+| Contract                          | Version | Address                                      |
+|-----------------------------------|---------|----------------------------------------------|
+| AccessCondition                   | v1.1.6 | `0xb9fD8208312ECB87875860c0F109118522885D9E` |
+| AccessProofCondition              | v1.1.6 | `0x64950B0DF2aBc338b3191cBa0a8a87beBda2A315` |
+| AccessProofTemplate               | v1.1.6 | `0x774B9A093eeC6e4196Eb82B914d675DCc9d08599` |
+| AccessTemplate                    | v1.1.6 | `0x8353452CEf320A7F280B52dB7B30aA17bF8Fe754` |
+| AgreementStoreManager             | v1.1.6 | `0x5368E27DBbA96070a3284FD7a79A34bb75b6B464` |
+| ComputeExecutionCondition         | v1.1.6 | `0xFbf27C54B16679DDbFd8678713C586aD40323461` |
+| ConditionStoreManager             | v1.1.6 | `0x5e119AddB2bce6cbe7044305915963CC4ab2bB6C` |
+| DIDRegistry                       | v1.1.6 | `0xa389Fbea7Fdd9A052394b36B88e943C2c4c82be0` |
+| DIDRegistryLibrary                | v1.1.6 | `0xA98A97E2986d81b93C712b836241EaFf6D689AB6` |
+| DIDSalesTemplate                  | v1.1.6 | `0xA3E7F6cb1990b9f1f6b097be6D0905e03f5E1b85` |
+| Dispenser                         | v1.1.6 | `0x7F5AD4E1a5d52A8f26C13d8B0C62BAa23E7bbD98` |
+| EpochLibrary                      | v1.1.6 | `0x8CC543360af2643491788723B48baeBE0a80C8E1` |
+| EscrowComputeExecutionTemplate    | v1.1.6 | `0xaa2627619d684921468edd8E2F62836749eFf1d4` |
+| EscrowPaymentCondition            | v1.1.6 | `0x1775c299e68d075B7B6FB96B350dCDC808D1489a` |
+| HashLockCondition                 | v1.1.6 | `0xd7ed0f2967F913c08b48c3494454471dED723297` |
+| LockPaymentCondition              | v1.1.6 | `0x9Aa8f07dD00E859278822baECcc23F02A031898E` |
+| NFT721AccessTemplate              | v1.1.6 | `0xca627BEb138F91470ff06AD7D24f3e51996b0653` |
+| NFT721HolderCondition             | v1.1.6 | `0x3a43FC31E66E3b3545C912DD824790612866Fcd0` |
+| NFT721SalesTemplate               | v1.1.6 | `0x05679Bea4229C18330fE0AC8679ab93E56F6b7Da` |
+| NFTAccessCondition                | v1.1.6 | `0x742661264Fc11B909b85B278186e62D2DfE2233f` |
+| NFTAccessTemplate                 | v1.1.6 | `0x80EEA56a10c1020508c13aB86C36c398B45FeF79` |
+| NFTHolderCondition                | v1.1.6 | `0x5E1AF7dC0B8D461Cd02c80763025C482B3E6B17d` |
+| NFTLockCondition                  | v1.1.6 | `0x34D2F25f967a6F6f87Df7F166BA8cBe3372aA827` |
+| NFTSalesTemplate                  | v1.1.6 | `0x7F4Aab50B4d07493F22668417ef1433469895F51` |
+| NeverminedToken                   | v1.1.6 | `0x43a0Fcde497c2051B8D207afA4145f27a9194d69` |
+| PlonkVerifier                     | v1.1.6 | `0x7B7686C399734Fe082D6f558853992b5368325b8` |
+| SignCondition                     | v1.1.6 | `0x7886DB81c0BD9Da700E8Fd21Ec3f12c5ce8D2a06` |
+| TemplateStoreManager              | v1.1.6 | `0x780d3Ab357f1C44014d27d60765b7d4F9a7b90Ed` |
+| ThresholdCondition                | v1.1.6 | `0xFEF1a4F4827F0B3a281700D796D2710Ac2C86105` |
+| TransferDIDOwnershipCondition     | v1.1.6 | `0xBc331069400E907F33c6280a433552f784567a0c` |
+| TransferNFT721Condition           | v1.1.6 | `0x144BD5752D3DbF42e9B7aF106FEe8E5160a9CE13` |
+| TransferNFTCondition              | v1.1.6 | `0x1F66d913AB40095700dbB1a5a1D369996E3Dcb9e` |
+| WhitelistingCondition             | v1.1.6 | `0x10C7501d55228EE102f403410a9b40f6330669CE` |
+
 #### Integration Testnet
 
 The contract addresses deployed on Nevermined `Integration` Test Network:
@@ -319,6 +361,44 @@ The contract addresses deployed on `Production` Mainnet:
 | TransferNFT721Condition           | v1.1.2 | `0x89B39c7b8602778316fA51E00235CE418aC06c2F` |
 | TransferNFTCondition              | v1.1.2 | `0x3c8D330419f59C1586C1D4F8e4f3f70F09606455` |
 | WhitelistingCondition             | v1.1.2 | `0x489f500aA3ED426eA0d45FB7769cfba85f1AA737` |
+
+### Aurora Mainnet
+
+The contract addresses deployed on `Aurora` Mainnet:
+
+| Contract                          | Version | Address                                      |
+|-----------------------------------|---------|----------------------------------------------|
+| AccessCondition                   | v1.1.7 | `0xEA2Ab20CC1c567D9cd56E4561Aa2aebDB60f9a1E` |
+| AccessProofCondition              | v1.1.7 | `0xa1B731118AcA483f64Ef1FB7008583eC0B35d50D` |
+| AccessProofTemplate               | v1.1.7 | `0x1a22eB22F726399812Ca3B998C2D09FDf0f3Ac0C` |
+| AccessTemplate                    | v1.1.7 | `0x672Cc04436ADeD82b448B2f6De58267e1809e366` |
+| AgreementStoreManager             | v1.1.7 | `0xc6Ab25648B0c5a473Bd37D95c60a918fE4aD8c86` |
+| ComputeExecutionCondition         | v1.1.7 | `0x23C91929eeD7fbe4deEdc0dBe2980A93a02844D2` |
+| ConditionStoreManager             | v1.1.7 | `0x5CC62ffDA628D60b49C81aeF2d3D87CBb4267174` |
+| DIDRegistry                       | v1.1.7 | `0xb03e4A759763a45e9823082D2c6D8C905A21a8A1` |
+| DIDRegistryLibrary                | v1.1.7 | `0x09050EA73A24bdD3B96Eb753D8aAcB07238f8E5D` |
+| DIDSalesTemplate                  | v1.1.7 | `0x46A23e3b87E31f74960007a698d5ec70fa0097A3` |
+| EpochLibrary                      | v1.1.7 | `0x2e0c35E54FeeaCb838cDF5c848f27d7163d87f85` |
+| EscrowComputeExecutionTemplate    | v1.1.7 | `0x5C0C69A8454b91874C029211cFA5DF6a3cFBe182` |
+| EscrowPaymentCondition            | v1.1.7 | `0xB9f14F8e6b801bAd954bD272cf136Fe04099d9a8` |
+| HashLockCondition                 | v1.1.7 | `0x159B2eF7254051e871b8E3009B8596BFA1F5cE36` |
+| LockPaymentCondition              | v1.1.7 | `0xcdf2C7178D9f48dcB4a41fd6A63D9C69E859a796` |
+| NFT721AccessTemplate              | v1.1.7 | `0x168E5D053393E95C8026d4BEEaaDE1CBaCEa4F37` |
+| NFT721HolderCondition             | v1.1.7 | `0x553B42E76feFF07b9AadaCC5bf1b324663BF8A5E` |
+| NFT721SalesTemplate               | v1.1.7 | `0x6d8a38D3c18C8658d3c6750aa85Ab20Aff8cFCae` |
+| NFTAccessCondition                | v1.1.7 | `0xFE6C051Fa306d2c05907D088b27a74E8F7aEF35F` |
+| NFTAccessTemplate                 | v1.1.7 | `0x0B81C7bbfb34BF3215Ac143F69E4C20B879021aE` |
+| NFTHolderCondition                | v1.1.7 | `0x08BF83818ed6B9432Af5A594C1D8b4E228a0473B` |
+| NFTLockCondition                  | v1.1.7 | `0x8eb87F2eADc51bE42742929D13fbD165C171D18D` |
+| NFTSalesTemplate                  | v1.1.7 | `0x09fB79E828d04F0ADDb0898a47C534935a24663F` |
+| PlonkVerifier                     | v1.1.7 | `0xb0Ee4c6F6E0f15EB20c0930c9C215E964FE83Dfe` |
+| SignCondition                     | v1.1.7 | `0x0D5DA0633b4d32b018F86D1fcF98661Ee60aBEfA` |
+| TemplateStoreManager              | v1.1.7 | `0x4b3dC484ED5997e930e88BA7A398B3A4C685941c` |
+| ThresholdCondition                | v1.1.7 | `0xB9319f213617713DbB04dB9696168196792509Bb` |
+| TransferDIDOwnershipCondition     | v1.1.7 | `0x2023dA12E6b6053B8C98f96828dd68DAAe65BF63` |
+| TransferNFT721Condition           | v1.1.7 | `0xd5dA61ce4baaB2EaAB0B6740140166b029829EB4` |
+| TransferNFTCondition              | v1.1.7 | `0x9238fC0F0dfA556e6dcDEaB073B551343b206E3f` |
+| WhitelistingCondition             | v1.1.7 | `0x8Cc86980a4e5ca39E01A7a927e15bf14aEb6D7e8` |
 
 ## Packages
 

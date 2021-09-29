@@ -18,7 +18,7 @@ used is Poseidon.
     address _disputeManagerAddress
   ) external
 ```
-initialize init the
+initialize init the 
       contract with the following parameters
 
 this function is called only once during the contract
@@ -40,7 +40,7 @@ this function is called only once during the contract
     uint256[2] _provider
   ) public returns (bytes32)
 ```
-hashValues generates the hash of condition inputs
+hashValues generates the hash of condition inputs 
        with the following parameters
 
 
@@ -78,7 +78,7 @@ The key with hash _origHash is transferred to the _buyer from _provider.
 |`_buyer` | uint256[2] | buyer public key
 |`_provider` | uint256[2] | provider public key
 |`_cipher` | uint256[2] | encrypted version of the key
-|`_proof` | bytes | SNARK proof that the cipher text can be decrypted by buyer to give the key with hash _origHash
+|`_proof` | bytes | SNARK proof that the cipher text can be decrypted by buyer to give the key with hash _origHash 
 
 #### Return Values:
 | Name                           | Type          | Description                                                                  |
