@@ -73,6 +73,20 @@ module.exports = {
             gasPrice: 0,
             from: '0x90bb8d2F28D67881eBD85Ef5a10FAADd55FB4b60'
         },
+        // aurora mainnet!
+        aurora: {
+            provider: () => setupWallet(
+                url || 'https://mainnet.aurora.dev'
+            ),
+            network_id: 0x4E454152, // 1313161554
+            gas: 6 * 1000000,
+            gasPrice: 0,
+            skipDryRun: true,
+            confirmations: 10,
+            timeoutBlocks: 200,
+            deploymentPollingInterval: 8000,
+            from: '0xB6d47415AfCDD06c5155d0E191530027FD51CCfD'
+        },
         // integration the ocean testnet
         integration: {
             provider: () => setupWallet(
