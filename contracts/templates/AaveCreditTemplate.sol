@@ -11,6 +11,7 @@ import '../conditions/NFTs/ITransferNFT.sol';
 import '../conditions/defi/aave/AaveCollateralDepositCondition.sol';
 import '../conditions/defi/aave/AaveBorrowCondition.sol';
 import '../conditions/defi/aave/AaveRepayCondition.sol';
+import '../conditions/defi/aave/AaveCollateralWithdrawCondition.sol';
 import '../conditions/defi/aave/AaveCreditVault.sol';
 
 /**
@@ -37,10 +38,10 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
   AaveBorrowCondition internal borrowCondition;
   AaveRepayCondition internal repayCondition;
   ITransferNFT internal transferCondition;
-  //    EscrowPaymentCondition internal escrowReward;
+  AaveCollateralWithdrawCondition internal withdrawCondition;
 
   mapping(bytes32 => address) internal vaultAddress;
-  uint256 private nvmFee = 1;
+  uint256 private nvmFee = 2;
 
   /**
    * @notice initialize init the  contract with the following parameters.
@@ -63,6 +64,7 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
     address _depositConditionAddress,
     address _borrowConditionAddress,
     address _repayConditionAddress,
+    address _withdrawCollateralAddress,
     address _transferConditionAddress
   )
     external
@@ -76,8 +78,8 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         _depositConditionAddress != address(0) &&
         _borrowConditionAddress != address(0) &&
         _repayConditionAddress != address(0) &&
-        _transferConditionAddress != address(0),
-      //            _escrowConditionAddress != address(0),
+        _transferConditionAddress != address(0) &&
+        _withdrawCollateralAddress != address(0),
       'Invalid address'
     );
 
@@ -99,16 +101,15 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
     repayCondition = AaveRepayCondition(_repayConditionAddress);
 
     transferCondition = ITransferNFT(_transferConditionAddress);
-    //        escrowReward = EscrowPaymentCondition(
-    //            _escrowConditionAddress
-    //        );
+
+    withdrawCondition = AaveCollateralWithdrawCondition(_withdrawCollateralAddress);
 
     conditionTypes.push(address(nftLockCondition));
     conditionTypes.push(address(depositCondition));
     conditionTypes.push(address(borrowCondition));
     conditionTypes.push(address(repayCondition));
+    conditionTypes.push(address(withdrawCondition));
     conditionTypes.push(address(transferCondition));
-    //        conditionTypes.push(address(escrowReward));
   }
 
   function createAgreement(
@@ -117,6 +118,7 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
     address _dataProvider,
     address _weth,
     uint256 _agreementFee,
+    address _treasuryAddress,
     bytes32 _did,
     bytes32[] memory _conditionIds,
     uint256[] memory _timeLocks,
@@ -129,7 +131,8 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
       _dataProvider,
       _weth,
       nvmFee,
-      _agreementFee
+      _agreementFee,
+      _treasuryAddress
     );
 
     vaultAddress[_id] = address(vault);
@@ -143,6 +146,7 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         _timeOuts,
         _accessConsumer
       );
+
   }
 
   function getVaultForAgreement(bytes32 _agreementId)

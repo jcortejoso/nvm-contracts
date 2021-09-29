@@ -27,13 +27,24 @@ contract AaveCreditVault is
   uint256 private nvmFee;
   uint256 private agreementFee;
   uint256 private constant FEE_BASE = 10000;
+  address private treasuryAddress;
 
+  /**
+   * Vault constructor, creates a unique vault for each agreement
+   * @param _lendingPool Aave lending pool address
+   * @param _dataProvider Aave data provider address
+   * @param _weth WETH address
+   * @param _nvmFee Nevermined fee that will apply to this agreeement
+   * @param _agreementFee Agreement fee that lender will receive on agreement maturity
+   * @param _treasuryAddress Address of nevermined contract to store fees
+   */
   constructor(
     address _lendingPool,
     address _dataProvider,
     address _weth,
     uint256 _nvmFee,
-    uint256 _agreementFee
+    uint256 _agreementFee,
+    address _treasuryAddress
   ) public {
     lendingPool = ILendingPool(_lendingPool);
     dataProvider = IProtocolDataProvider(_dataProvider);
@@ -42,8 +53,15 @@ contract AaveCreditVault is
     priceOracle = IPriceOracleGetter(addressProvider.getPriceOracle());
     nvmFee = _nvmFee;
     agreementFee = _agreementFee;
+    treasuryAddress = _treasuryAddress;
   }
 
+  /**
+   * Deposit function. Receives the funds from the delegator and deposits the funds
+   * in the Aave contracts
+   * @param _collateralAsset collateral asset that will be deposit on Aave
+   * @param _amount Amount of collateral to deposit
+   */
   function deposit(address _collateralAsset, uint256 _amount)
     public
     payable
@@ -55,6 +73,12 @@ contract AaveCreditVault is
     }
   }
 
+  /**
+   * Appproves delegatee to borrow funds from Aave on behalf of delegator
+   * @param borrower delegatee that will borrow the funds
+   * @param amount Amount of funds to delegate
+   * @param asset Asset to delegate the borrow
+   */
   function approveBorrower(
     address borrower,
     uint256 amount,
@@ -114,17 +138,27 @@ contract AaveCreditVault is
     lendingPool.repay(_asset, uint256(-1), 1, address(this));
 
     require(getActualCreditDebt() == 0, 'Not enough amount to repay');
-
   }
 
+  /**
+   * Returns the borrowed amount from the delegatee on this agreement
+   */
   function getBorrowedAmount() public view returns (uint256) {
     return borrowedAmount;
   }
 
+  /**
+   * Returns the priceof the asset in the Aave oracles
+   * @param _asset The asset to get the actual price
+   */
   function getAssetPrice(address _asset) public view returns (uint256) {
     return priceOracle.getAssetPrice(_asset);
   }
 
+
+  /**
+   * Returns the total debt of the credit in the Aave protocol expressed in token units
+   */
   function getCreditAssetDebt() public view returns (uint256) {
     (, uint256 totalDebtETH, , , , ) = lendingPool.getUserAccountData(
       address(this)
@@ -136,6 +170,9 @@ contract AaveCreditVault is
     return totalDebtETH.div(price).mul(10**_decimals);
   }
 
+  /**
+   * Returns the total debt of the credit in the Aave protocol expressed in ETH units
+   */
   function getActualCreditDebt() public view returns (uint256) {
     (, uint256 totalDebtETH, , , , ) = lendingPool.getUserAccountData(
       address(this)
@@ -144,6 +181,10 @@ contract AaveCreditVault is
     return totalDebtETH;
   }
 
+
+  /**
+   * Returns the total actual debt of the agreement credit + fees in token units
+   */
   function getTotalActualDebt() public view returns (uint256) {
     uint256 creditDebt = getCreditAssetDebt();
     uint256 delegatorFee = borrowedAmount.div(FEE_BASE).mul(agreementFee);
@@ -158,13 +199,19 @@ contract AaveCreditVault is
    * @param _delegator Delegator address that deposited the collateral
    */
   function withdrawCollateral(address _asset, address _delegator) public {
-    (address aTokenAddress, , ) = dataProvider.getReserveTokensAddresses(
-      _asset
-    );
-    uint256 assetBalance = IERC20(aTokenAddress).balanceOf(address(this));
-    lendingPool.withdraw(_asset, assetBalance, _delegator);
+    lendingPool.withdraw(_asset, uint256(-1), _delegator);
+    uint256 delegatorFee = borrowedAmount.div(FEE_BASE).mul(agreementFee);
+    IERC20(borrowedAsset).transfer(_delegator, delegatorFee);
+    uint256 finalBalance = IERC20(borrowedAsset).balanceOf(address(this));
+    IERC20(borrowedAsset).transfer(treasuryAddress, finalBalance);
   }
 
+
+  /**
+   * Transfers the ERC20 token deposited to the Aave contracts
+   * @param _collateralAsset collateral asset that will be deposit on Aave
+   * @param _amount Amount of collateral to deposit
+   */
   function _transferERC20(address _collateralAsset, uint256 _amount) internal {
     IERC20Upgradeable token = ERC20Upgradeable(_collateralAsset);
     token.approve(address(lendingPool), _amount);
