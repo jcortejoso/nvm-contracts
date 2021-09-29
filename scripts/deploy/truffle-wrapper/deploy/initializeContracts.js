@@ -253,18 +253,7 @@ async function initializeContracts({
                 verbose
             })
         }
-        if (contracts.indexOf('TransferNFT721Condition') > -1) {
-            addressBook.TransferNFT721Condition = zosCreate({
-                contract: 'TransferNFT721Condition',
-                network,
-                args: [
-                    roles.ownerWallet,
-                    getAddress('ConditionStoreManager'),
-                    getAddress('DIDRegistry')
-                ],
-                verbose
-            })
-        }
+
         if (contracts.indexOf('TransferDIDOwnershipCondition') > -1) {
             addressBook.TransferDIDOwnershipCondition = zosCreate({
                 contract: 'TransferDIDOwnershipCondition',
@@ -313,6 +302,24 @@ async function initializeContracts({
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
                     getAddress('AgreementStoreManager')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('ConditionStoreManager') &&
+        getAddress('DIDRegistry') &&
+        getAddress('LockPaymentCondition')) {
+        if (contracts.indexOf('TransferNFT721Condition') > -1) {
+            addressBook.TransferNFT721Condition = zosCreate({
+                contract: 'TransferNFT721Condition',
+                network,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('DIDRegistry'),
+                    getAddress('LockPaymentCondition')
                 ],
                 verbose
             })
