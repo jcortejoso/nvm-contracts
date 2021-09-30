@@ -16,8 +16,8 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
  * @title Aave Collateral Deposit Condition
  * @author Keyko
  *
- * @dev Implementation of the Lock Payment Condition
- * This condition allows to lock payment for multiple receivers taking
+ * @dev Implementation of the Aave Collateral Deposit Condition
+ * This condition allows a Lender to deposit the collateral that 
  * into account the royalties to be paid to the original creators in a secondary market.
  */
 contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpgradeable {
@@ -44,7 +44,10 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         address _owner,
         address _conditionStoreManagerAddress,
         address _didRegistryAddress
-    ) external initializer() {
+    ) 
+    external 
+    initializer() 
+    {
         
         require(
             _didRegistryAddress != address(0) &&
@@ -60,6 +63,17 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         didRegistry = DIDRegistry(_didRegistryAddress);
     }
 
+    /**
+     * @notice hashValues generates the hash of condition inputs 
+     *        with the following parameters
+     * @param _did the DID of the asset
+     * @param _borrower the address of the borrower/delegatee
+     * @param _collateralAsset the address of the ERC-20 that will be used as collateral (i.e WETH)     
+     * @param _collateralAmount the amount of the ERC-20 that will be used as collateral (i.e 10 WETH)   
+     * @param _delegatedAsset the address of the ERC-20 that will be delegated to the borrower (i.e DAI)
+     * @param _delegatedAmount the amount of the ERC-20 that will be delegated to the borrower (i.e 500 DAI)
+     * @return bytes32 hash of all these values 
+     */    
     function hashValues(
         bytes32 _did,
         address _borrower,
@@ -84,6 +98,18 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         );
     }
 
+
+    /**
+     * @notice It fulfills the condition if the collateral can be deposited into the vault
+     * @param _agreementId the identifier of the agreement     
+     * @param _did the DID of the asset
+     * @param _borrower the address of the borrower/delegatee
+     * @param _collateralAsset the address of the ERC-20 that will be used as collateral (i.e WETH)     
+     * @param _collateralAmount the amount of the ERC-20 that will be used as collateral (i.e 10 WETH)   
+     * @param _delegatedAsset the address of the ERC-20 that will be delegated to the borrower (i.e DAI)
+     * @param _delegatedAmount the amount of the ERC-20 that will be delegated to the borrower (i.e 500 DAI)
+     * @return ConditionStoreLibrary.ConditionState the state of the condition (Fulfilled if everything went good) 
+     */
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
@@ -128,7 +154,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         );
 
         ConditionStoreLibrary.ConditionState state =
-        super.fulfill(_id, ConditionStoreLibrary.ConditionState.Fulfilled);
+            super.fulfill(_id, ConditionStoreLibrary.ConditionState.Fulfilled);
 
         return state;
     }

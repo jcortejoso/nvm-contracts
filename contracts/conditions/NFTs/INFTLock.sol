@@ -22,8 +22,8 @@ interface INFTLock {
      *        with the following parameters
      * @param _did the DID of the asset with NFTs attached to lock    
      * @param _lockAddress the contract address where the NFT will be locked
-     * @param _amount is the amount of the locked tokens
-     * @param _nftContractAddress Is the address of the NFT (ERC-721) contract to use              
+     * @param _amount is the amount of the NFTs locked
+     * @param _nftContractAddress Is the address of the NFT (ERC-721, ERC-1155) contract to use              
      * @return bytes32 hash of all these values 
      */
     function hashValues(
