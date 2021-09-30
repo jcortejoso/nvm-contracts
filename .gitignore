@@ -60,6 +60,7 @@ slitherReport.txt
 circuits/input.json
 circuits/keytransfer.r1cs
 circuits/keytransfer.sym
+circuits/keytransfer.wasm
 circuits/proof.json
 circuits/public.json
 circuits/verification_key.json
