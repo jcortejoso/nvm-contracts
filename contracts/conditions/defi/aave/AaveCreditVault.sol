@@ -3,13 +3,13 @@ pragma solidity 0.6.12;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
-import {IERC20, ILendingPool, ILendingPoolAddressesProvider, IProtocolDataProvider, IStableDebtToken, IPriceOracleGetter} from "../../../interfaces/IAaveInterfaces.sol";
-import {SafeERC20, SafeMath} from "../../../libraries/AaveLibrary.sol";
-import "../../../interfaces/IWETHGateway.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {IERC20, ILendingPool, ILendingPoolAddressesProvider, IProtocolDataProvider, IStableDebtToken, IPriceOracleGetter} from '../../../interfaces/IAaveInterfaces.sol';
+import {SafeERC20, SafeMath} from '../../../libraries/AaveLibrary.sol';
+import '../../../interfaces/IWETHGateway.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 contract AaveCreditVault is
   ReentrancyGuardUpgradeable,
@@ -31,9 +31,9 @@ contract AaveCreditVault is
   uint256 private constant FEE_BASE = 10000;
   address private treasuryAddress;
 
-  bytes32 public constant BORROWER_ROLE = keccak256("BORROWER_ROLE");
-  bytes32 public constant LENDER_ROLE = keccak256("LENDER_ROLE");
-  bytes32 public constant CONDITION_ROLE = keccak256("CONDITION_ROLE");
+  bytes32 public constant BORROWER_ROLE = keccak256('BORROWER_ROLE');
+  bytes32 public constant LENDER_ROLE = keccak256('LENDER_ROLE');
+  bytes32 public constant CONDITION_ROLE = keccak256('CONDITION_ROLE');
 
   /**
    * Vault constructor, creates a unique vault for each agreement
@@ -162,7 +162,7 @@ contract AaveCreditVault is
     address _delgatee,
     uint256 interestRateMode
   ) public {
-    require(hasRole(CONDITION_ROLE, msg.sender), "Only conditions");
+    require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
     borrowedAsset = _assetToBorrow;
     borrowedAmount = _amount;
     lendingPool.borrow(_assetToBorrow, _amount, interestRateMode, 0, address(this));
@@ -174,11 +174,11 @@ contract AaveCreditVault is
    * @param _asset The asset to be repaid
    */
   function repay(address _asset, uint256 interestRateMode) public returns (uint256) {
-    require(hasRole(CONDITION_ROLE, msg.sender), "Only conditions");
+    require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
     IERC20(_asset).approve(address(lendingPool), uint256(-1));
     lendingPool.repay(_asset, uint256(-1), interestRateMode, address(this));
 
-    require(getActualCreditDebt() == 0, "Not enough amount to repay");
+    require(getActualCreditDebt() == 0, 'Not enough amount to repay');
   }
 
   /**
@@ -238,7 +238,7 @@ contract AaveCreditVault is
    * @param _delegator Delegator address that deposited the collateral
    */
   function withdrawCollateral(address _asset, address _delegator) public {
-    require(hasRole(CONDITION_ROLE, msg.sender), "Only conditions");
+    require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
 
     lendingPool.withdraw(_asset, uint256(-1), _delegator);
     uint256 delegatorFee = borrowedAmount.div(FEE_BASE).mul(agreementFee);
