@@ -96,7 +96,8 @@ contract AaveRepayCondition is Condition, Common {
         bytes32 _did,
         address _vaultAddress,
         address _assetToRepay,
-        uint256 _amountToRepay
+        uint256 _amountToRepay,
+        uint256 _interestRateMode
     ) 
     external 
     returns (ConditionStoreLibrary.ConditionState) 
@@ -110,7 +111,7 @@ contract AaveRepayCondition is Condition, Common {
         
         token.transferFrom(msg.sender, _vaultAddress, totalDebt);
         
-        vault.repay(_assetToRepay);
+        vault.repay(_assetToRepay, _interestRateMode);
         
         bytes32 _id = generateId(
             _agreementId, 

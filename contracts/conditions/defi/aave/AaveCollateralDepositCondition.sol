@@ -118,7 +118,8 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         address _collateralAsset,
         address _delegatedAsset,
         uint256 _delegatedAmount,
-        uint256 _collateralAmount
+        uint256 _collateralAmount,
+        uint256 _interestRateMode
     ) 
     external 
     payable
@@ -138,7 +139,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         }
 
         vault.deposit{value: msg.value}(_collateralAsset, _collateralAmount);
-        vault.approveBorrower(_borrower, _delegatedAmount, _delegatedAsset);
+        vault.approveBorrower(_borrower, _delegatedAmount, _delegatedAsset, _interestRateMode);
 
         bytes32 _id =
         generateId(

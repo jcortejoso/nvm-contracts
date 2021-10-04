@@ -43,6 +43,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
     const collateralAmount = '10000000000000000000' // 10 ETH
     const daiProvider = '0xAFD49D613467c0DaBf47B8f5C841089d96Cf7167'
     const agreementFee = '15'
+    const INTEREST_RATE_MODE = 1
 
     const owner = accounts[9]
     const deployer = accounts[8]
@@ -327,6 +328,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 delegatedAsset,
                 delegatedAmount,
                 collateralAmount,
+                INTEREST_RATE_MODE,
                 {
                     from: lender,
                     value: collateralAmount
@@ -342,7 +344,8 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             // Get the actual delegated amount for the delgatee in this specific asset
             const actualAmount = await vault.delegatedAmount(
                 borrower,
-                delegatedAsset
+                delegatedAsset,
+                INTEREST_RATE_MODE
             )
 
             // The delegated borrow amount in the vault should be the same that the
@@ -362,6 +365,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 vaultAddress,
                 delegatedAsset,
                 delegatedAmount,
+                INTEREST_RATE_MODE,
                 {
                     from: borrower
                 }
@@ -414,6 +418,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 vaultAddress,
                 delegatedAsset,
                 delegatedAmount,
+                INTEREST_RATE_MODE,
                 { from: borrower }
             )
             const { state: stateRepay } = await conditionStoreManager.getCondition(

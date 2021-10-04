@@ -102,14 +102,15 @@ contract AaveBorrowCondition is Condition, Common {
         bytes32 _did,
         address _vaultAddress,
         address _assetToBorrow,
-        uint256 _amount
+        uint256 _amount,
+        uint256 _interestRateMode
     ) 
     external 
     returns (ConditionStoreLibrary.ConditionState) 
     {
         AaveCreditVault vault = AaveCreditVault(_vaultAddress);
         require(vault.isBorrower(msg.sender), 'Only borrower');
-        vault.borrow(_assetToBorrow, _amount, msg.sender);
+        vault.borrow(_assetToBorrow, _amount, msg.sender, _interestRateMode);
 
         bytes32 _id =
         generateId(
