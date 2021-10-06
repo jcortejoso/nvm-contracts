@@ -127,16 +127,23 @@ contract AaveCreditVault is
     * @param _borrower delegatee that will borrow the funds
     * @param _amount Amount of funds to delegate
     * @param _asset Asset to delegate the borrow
+    * @param _interestRateMode interest rate type stable 1, variable 2  
     */
     function approveBorrower(
         address _borrower,
         uint256 _amount,
-        address _asset
+        address _asset,
+        uint256 _interestRateMode
     ) 
     public {
-        (, address stableDebtTokenAddress, ) = dataProvider
+        (, address stableDebtTokenAddress, address variableDebtTokenAddress ) = dataProvider
           .getReserveTokensAddresses(_asset);
-        IStableDebtToken(stableDebtTokenAddress).approveDelegation(
+
+        address assetAddress = _interestRateMode == 1
+            ? stableDebtTokenAddress
+            : variableDebtTokenAddress;
+
+        IStableDebtToken(assetAddress).approveDelegation(
           _borrower,
           _amount
         );
@@ -146,20 +153,26 @@ contract AaveCreditVault is
     * Return the actual delegated amount for the borrower in the specific asset
     * @param _borrower The borrower of the funds (i.e. delgatee)
     * @param _asset The asset they are allowed to borrow
+    * @param _interestRateMode interest rate type stable 1, variable 2  
     */
     function delegatedAmount(
         address _borrower, 
-        address _asset
+        address _asset,
+        uint256 _interestRateMode
     )
     public
     view
     returns (uint256)
     {
-        (, address stableDebtTokenAddress, ) = dataProvider
+        (, address stableDebtTokenAddress, address variableDebtTokenAddress ) = dataProvider
           .getReserveTokensAddresses(_asset);
-        
+    
+        address assetAddress = _interestRateMode == 1
+            ? stableDebtTokenAddress
+            : variableDebtTokenAddress;
+
         return
-          IStableDebtToken(stableDebtTokenAddress).borrowAllowance(
+          IStableDebtToken(assetAddress).borrowAllowance(
             address(this),
             _borrower
           );
@@ -170,34 +183,38 @@ contract AaveCreditVault is
     * @param _assetToBorrow The asset they are allowed to borrow
     * @param _amount Amount to borrow
     * @param _delgatee Address where the funds will be transfered
+    * @param _interestRateMode interest rate type stable 1, variable 2  
     */
     function borrow(
         address _assetToBorrow,
         uint256 _amount,
-        address _delgatee
+        address _delgatee,
+        uint256 _interestRateMode
     )
     public 
     {
         require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
         borrowedAsset = _assetToBorrow;
         borrowedAmount = _amount;
-        lendingPool.borrow(_assetToBorrow, _amount, 1, 0, address(this));
+        lendingPool.borrow(_assetToBorrow, _amount, _interestRateMode, 0, address(this));
         IERC20(_assetToBorrow).transfer(_delgatee, _amount);
     }
     
     /**
     * Repay an uncollaterised loan
     * @param _asset The asset to be repaid
+    * @param _interestRateMode interest rate type stable 1, variable 2  
     */
     function repay(
-        address _asset
+        address _asset,
+        uint256 _interestRateMode
     ) 
     public 
     returns (uint256) 
     {
         require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
         IERC20(_asset).approve(address(lendingPool), uint256(-1));
-        lendingPool.repay(_asset, uint256(-1), 1, address(this));
+        lendingPool.repay(_asset, uint256(-1), _interestRateMode, address(this));
         
         require(getActualCreditDebt() == 0, 'Not enough amount to repay');
     }

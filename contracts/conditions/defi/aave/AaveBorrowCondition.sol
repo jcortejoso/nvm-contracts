@@ -65,13 +65,15 @@ contract AaveBorrowCondition is Condition, Common {
      * @param _borrower the address of the borrower/delegatee
      * @param _assetToBorrow the address of the asset to borrow (i.e DAI)     
      * @param _amount the amount of the ERC-20 the assets to borrow (i.e 50 DAI)   
+     * @param _interestRateMode interest rate type stable 1, variable 2  
      * @return bytes32 hash of all these values 
      */
     function hashValues(
         bytes32 _did,
         address _borrower,
         address _assetToBorrow,
-        uint256 _amount
+        uint256 _amount,
+        uint256 _interestRateMode
     ) 
     public 
     pure 
@@ -83,7 +85,8 @@ contract AaveBorrowCondition is Condition, Common {
                 _did,
                 _borrower,
                 _assetToBorrow,
-                _amount
+                _amount,
+                _interestRateMode
             )
         );
     }
@@ -95,6 +98,7 @@ contract AaveBorrowCondition is Condition, Common {
      * @param _vaultAddress the address of vault locking the deposited collateral and the asset
      * @param _assetToBorrow the address of the asset to borrow (i.e DAI)     
      * @param _amount the amount of the ERC-20 the assets to borrow (i.e 50 DAI)   
+     * @param _interestRateMode interest rate type stable 1, variable 2  
      * @return ConditionStoreLibrary.ConditionState the state of the condition (Fulfilled if everything went good) 
      */    
     function fulfill(
@@ -102,19 +106,20 @@ contract AaveBorrowCondition is Condition, Common {
         bytes32 _did,
         address _vaultAddress,
         address _assetToBorrow,
-        uint256 _amount
+        uint256 _amount,
+        uint256 _interestRateMode
     ) 
     external 
     returns (ConditionStoreLibrary.ConditionState) 
     {
         AaveCreditVault vault = AaveCreditVault(_vaultAddress);
         require(vault.isBorrower(msg.sender), 'Only borrower');
-        vault.borrow(_assetToBorrow, _amount, msg.sender);
+        vault.borrow(_assetToBorrow, _amount, msg.sender, _interestRateMode);
 
         bytes32 _id =
         generateId(
             _agreementId,
-            hashValues(_did, msg.sender, _assetToBorrow, _amount)
+            hashValues(_did, msg.sender, _assetToBorrow, _amount, _interestRateMode)
         );
 
         ConditionStoreLibrary.ConditionState state =
