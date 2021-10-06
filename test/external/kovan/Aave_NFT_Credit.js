@@ -474,10 +474,10 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         })
 
         it('Borrower/Delegatee paid the credit so will get back the NFT', async () => {
-//            console.log('NFT Lock Address: ' + vaultAddress)
-//            console.log('Borrower: ' + borrower)
-//            console.log('Lender: ' + lender)
-//            console.log('[BEFORE] Owner of NFT: ' + await erc721.ownerOf(did))
+            //            console.log('NFT Lock Address: ' + vaultAddress)
+            //            console.log('Borrower: ' + borrower)
+            //            console.log('Lender: ' + lender)
+            //            console.log('[BEFORE] Owner of NFT: ' + await erc721.ownerOf(did))
 
             await transferNftCondition.fulfill(
                 agreementId,
@@ -489,7 +489,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 nftTokenAddress,
                 { from: borrower }
             )
-//            console.log('[AFTER] Owner of NFT: ' + await erc721.ownerOf(did))
+            //            console.log('[AFTER] Owner of NFT: ' + await erc721.ownerOf(did))
 
             const { state: stateTransfer } = await conditionStoreManager.getCondition(
                 agreement.conditionIds[5])
