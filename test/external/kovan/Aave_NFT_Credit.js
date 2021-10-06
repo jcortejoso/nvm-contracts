@@ -45,8 +45,8 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
     const daiProvider = '0xAFD49D613467c0DaBf47B8f5C841089d96Cf7167'
     const agreementFee = '15'
 
-    const owner = accounts[9]
-    const deployer = accounts[8]
+    const owner = accounts[6]
+    const deployer = accounts[7]
     const didSeed = testUtils.generateId()
 
     let
