@@ -7,6 +7,7 @@ import {IERC20, ILendingPool, ILendingPoolAddressesProvider, IProtocolDataProvid
 import {SafeERC20, SafeMath} from '../../../libraries/AaveLibrary.sol';
 import '../../../interfaces/IWETHGateway.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
@@ -31,6 +32,8 @@ contract AaveCreditVault is
     uint256 private agreementFee;
     uint256 private constant FEE_BASE = 10000;
     address private treasuryAddress;
+    address private nftAddress;
+    uint256 private nftId;
     
     bytes32 public constant BORROWER_ROLE = keccak256('BORROWER_ROLE');
     bytes32 public constant LENDER_ROLE = keccak256('LENDER_ROLE');
@@ -276,7 +279,27 @@ contract AaveCreditVault is
         uint256 finalBalance = IERC20(borrowedAsset).balanceOf(address(this));
         IERC20(borrowedAsset).transfer(treasuryAddress, finalBalance);
     }
-    
+
+    /**
+    * Transfer a NFT (ERC-721) locked into the vault to a receiver address
+    * @param _tokenId the token id
+    * @param _receiver the receiver adddress
+    */
+    function transferNFT(
+        uint256 _tokenId,
+        address _receiver
+    )
+    public
+    {
+        require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
+        require(nftId == _tokenId, 'Invalid tokenId');
+
+        IERC721Upgradeable token = IERC721Upgradeable(nftAddress);
+        
+        token.approve(_receiver, _tokenId);
+//        token.setApprovalForAll(address(this), true);
+        token.safeTransferFrom(address(this), _receiver, _tokenId);
+    }
     
     /**
     * Transfers the ERC20 token deposited to the Aave contracts
@@ -293,14 +316,24 @@ contract AaveCreditVault is
         token.approve(address(lendingPool), _amount);
         lendingPool.deposit(_collateralAsset, _amount, address(this), 0);
     }
-    
+
     /**
-    * Always returns `IERC721Receiver.onERC721Received.selector`.
-    */
+     * @notice Handle the receipt of an NFT
+     * @dev The ERC721 smart contract calls this function on the recipient
+     * after a {IERC721-safeTransferFrom}. This function MUST return the function selector,
+     * otherwise the caller will revert the transaction. 
+     * 
+     * Note: the ERC721 contract address is always the message sender.
+     * (param not used): operator The address which called `safeTransferFrom` function
+     * (param not used): from The address which previously owned the token
+     * @param _tokenId The NFT identifier which is being transferred
+     * (param not used): data Additional data with no specified format
+     * @return bytes4 `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+     */
     function onERC721Received(
         address,
         address,
-        uint256,
+        uint256 _tokenId,
         bytes memory
     ) 
     public 
@@ -308,6 +341,8 @@ contract AaveCreditVault is
     override 
     returns (bytes4) 
     {
+        nftAddress = msg.sender;
+        nftId = _tokenId;        
         return this.onERC721Received.selector;
     }
 }

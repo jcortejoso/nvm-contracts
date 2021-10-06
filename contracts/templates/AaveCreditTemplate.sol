@@ -7,7 +7,7 @@ import './BaseEscrowTemplate.sol';
 import '../conditions/rewards/EscrowPaymentCondition.sol';
 import '../registry/DIDRegistry.sol';
 import '../conditions/NFTs/INFTLock.sol';
-import '../conditions/NFTs/ITransferNFT.sol';
+import '../conditions/NFTs/DistributeNFTCollateralCondition.sol';
 import '../conditions/defi/aave/AaveCollateralDepositCondition.sol';
 import '../conditions/defi/aave/AaveBorrowCondition.sol';
 import '../conditions/defi/aave/AaveRepayCondition.sol';
@@ -37,12 +37,18 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
     AaveCollateralDepositCondition internal depositCondition;
     AaveBorrowCondition internal borrowCondition;
     AaveRepayCondition internal repayCondition;
-    ITransferNFT internal transferCondition;
+    DistributeNFTCollateralCondition internal transferCondition;
     AaveCollateralWithdrawCondition internal withdrawCondition;
     
     mapping(bytes32 => address) internal vaultAddress;
-//    address[] memory conditions = new address[](6);
     uint256 private nvmFee = 2;
+
+    event VaultCreated(
+        address indexed _vaultAddress,
+        address indexed _creator,
+        address _lender,
+        address _borrower
+    );
     
     /**
     * @notice initialize init the  contract with the following parameters.
@@ -104,7 +110,7 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         
         withdrawCondition = AaveCollateralWithdrawCondition(_withdrawCollateralAddress);
         
-        transferCondition = ITransferNFT(_transferConditionAddress);
+        transferCondition = DistributeNFTCollateralCondition(_transferConditionAddress);
         
         conditionTypes.push(address(nftLockCondition));
         conditionTypes.push(address(depositCondition));
@@ -112,6 +118,30 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         conditionTypes.push(address(repayCondition));
         conditionTypes.push(address(withdrawCondition));
         conditionTypes.push(address(transferCondition));
+    }
+
+    function createVaultAgreement(
+        bytes32 _id,
+        bytes32 _did,
+        bytes32[] memory _conditionIds,
+        uint256[] memory _timeLocks,
+        uint256[] memory _timeOuts,
+        address _vaultAddress
+    )
+    public
+    returns (uint256 size)
+    {
+        vaultAddress[_id] = address(_vaultAddress);
+
+        return
+            super.createAgreement(
+                _id,
+                _did,
+                _conditionIds,
+                _timeLocks,
+                _timeOuts,
+                msg.sender // borrower
+            );
     }
     
     function createAgreement(
@@ -130,8 +160,7 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
     public 
     returns (uint256 size) 
     {
-        
-        AaveCreditVault vault = new AaveCreditVault(
+        AaveCreditVault _vault = new AaveCreditVault(
             _lendingPool,
             _dataProvider,
             _weth,
@@ -142,8 +171,8 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
             _lender,
             conditionTypes
         );
-        
-        vaultAddress[_id] = address(vault);
+        vaultAddress[_id] = address(_vault);
+        emit VaultCreated(address(_vault), msg.sender, _lender, msg.sender);
         
         return
             super.createAgreement(
@@ -154,6 +183,33 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
                 _timeOuts,
                 msg.sender // borrower
             );
+    }
+    
+    function deployVault(
+        address _lendingPool,
+        address _dataProvider,
+        address _weth,
+        uint256 _agreementFee,
+        address _treasuryAddress,
+        address _borrower,
+        address _lender
+    )
+    public
+    returns (address)
+    {
+        AaveCreditVault _vault = new AaveCreditVault(
+            _lendingPool,
+            _dataProvider,
+            _weth,
+            nvmFee,
+            _agreementFee,
+            _treasuryAddress,
+            _borrower, // borrower
+            _lender,
+            conditionTypes
+        );
+        emit VaultCreated(address(_vault), msg.sender, _lender, _borrower);
+        return address(_vault);
     }
     
     function getVaultForAgreement(
