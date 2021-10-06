@@ -32,8 +32,8 @@ const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('End to End NFT Collateral Scenario', (accounts) => {
-    const lender = accounts[1]
-    const borrower = accounts[2]
+    const lender = accounts[3]
+    const borrower = accounts[4]
 
     const lendingPoolAddress = '0xE0fBa4Fc209b4948668006B2bE61711b7f465bAe' // Kovan
     const dataProviderAddress = '0x744C1aaA95232EeF8A9994C4E0b3a89659D9AB79' // Kovan
@@ -294,7 +294,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 agreement: _agreement,
                 checksum,
                 url
-            } = await prepareCreditTemplate({ did: did })
+            } = await prepareCreditTemplate({ did: did, timeOutAccess: 1 })
             agreementId = _agreementId
             agreement = _agreement
 
@@ -400,7 +400,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             assert.strictEqual(stateTransfer.toNumber(), constants.condition.state.unfulfilled)
         })
 
-        it('Borrower/Delegatee repays the loan with DAI', async () => {
+        it('Borrower/Delegatee can not repays the loan with DAI because is timed out', async () => {
             const vault = await AaveCreditVault.at(vaultAddress)
             const totalDebt = await vault.getTotalActualDebt()
             const dai = await ERC20Upgradeable.at(delegatedAsset)
@@ -416,7 +416,10 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 (Number(totalDebt) - Number(delegatedAmount)).toString(),
                 { from: daiProvider })
 
+            const before = await dai.balanceOf(borrower)
+
             // Fullfill the aaveRepayCredit condition
+
             await aaveRepayCredit.fulfill(
                 agreementId,
                 did,
@@ -427,50 +430,28 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             )
             const { state: stateRepay } = await conditionStoreManager.getCondition(
                 agreement.conditionIds[3])
-            assert.strictEqual(stateRepay.toNumber(), constants.condition.state.fulfilled)
+            assert.strictEqual(stateRepay.toNumber(), constants.condition.state.aborted)
 
-            const vaultBalancesAfter = await vault.getActualCreditDebt()
-            // Compare the vault debt after repayment
-            assert.strictEqual(BigNumber(vaultBalancesAfter).toNumber(), 0)
+            const after = await dai.balanceOf(borrower)
+            assert.strictEqual(BigNumber(after).toNumber(), BigNumber(before).toNumber())
         })
 
         it('Delegator withdraw collateral and fees', async () => {
-            const dai = await ERC20Upgradeable.at(delegatedAsset)
-            const weth = await ERC20Upgradeable.at(collateralAsset)
-
-            const daiBefore = await dai.balanceOf(lender)
-            const ethBalanceBefore = await weth.balanceOf(lender)
-
             // Fullfill the AaveCollateralWithdraw condition
-            await aaveWithdrawnCollateral.fulfill(
-                agreementId,
-                did,
-                vaultAddress,
-                lender,
-                collateralAsset,
-                agreement.conditionIds[3],
-                { from: lender }
+            await assert.isRejected(
+                aaveWithdrawnCollateral.fulfill(
+                    agreementId,
+                    did,
+                    vaultAddress,
+                    lender,
+                    collateralAsset,
+                    agreement.conditionIds[3],
+                    { from: lender }
+                )
             )
             const { state: stateRepay } = await conditionStoreManager.getCondition(
                 agreement.conditionIds[3])
-            assert.strictEqual(stateRepay.toNumber(), constants.condition.state.fulfilled)
-
-            const daiAfter = await dai.balanceOf(lender)
-            const ethBalanceAfter = await weth.balanceOf(lender)
-            const daiFee = (delegatedAmount / 10000) * agreementFee
-
-            // Compare the lender fees after withdraw
-            assert.strictEqual(
-                BigNumber(daiFee).toNumber(),
-                BigNumber(daiAfter).toNumber() - BigNumber(daiBefore).toNumber()
-            )
-
-            assert.isAbove(
-                BigNumber(ethBalanceAfter).toNumber() -
-                BigNumber(ethBalanceBefore).toNumber() -
-                BigNumber(collateralAmount).toNumber(),
-                0
-            )
+            assert.strictEqual(stateRepay.toNumber(), constants.condition.state.aborted)
         })
 
         it('Borrower/Delegatee paid the credit so will get back the NFT', async () => {
@@ -482,7 +463,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 lender,
                 agreement.conditionIds[3],
                 nftTokenAddress,
-                { from: borrower }
+                { from: lender }
             )
             //            console.log('[AFTER] Owner of NFT: ' + await erc721.ownerOf(did))
 

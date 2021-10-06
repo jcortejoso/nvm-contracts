@@ -21,17 +21,19 @@ contract AaveCreditVault is
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
     
-    ILendingPool private lendingPool;
-    IProtocolDataProvider private dataProvider;
-    IWETHGateway private weth;
+    ILendingPool public lendingPool;
+    IProtocolDataProvider public dataProvider;
+    IWETHGateway public weth;
     ILendingPoolAddressesProvider private addressProvider;
     IPriceOracleGetter private priceOracle;
     address private borrowedAsset;
     uint256 private borrowedAmount;
-    uint256 private nvmFee;
-    uint256 private agreementFee;
+    uint256 public nvmFee;
+    uint256 public agreementFee;
     uint256 private constant FEE_BASE = 10000;
-    address private treasuryAddress;
+    address public treasuryAddress;
+    address public borrower;
+    address public lender;
     address private nftAddress;
     uint256 private nftId;
     
@@ -68,7 +70,8 @@ contract AaveCreditVault is
         nvmFee = _nvmFee;
         agreementFee = _agreementFee;
         treasuryAddress = _treasuryAddress;
-        
+        borrower = _borrower;
+        lender = _lender;
         AccessControlUpgradeable.__AccessControl_init();
         AccessControlUpgradeable._setupRole(BORROWER_ROLE, _borrower);
         AccessControlUpgradeable._setupRole(LENDER_ROLE, _lender);
@@ -105,7 +108,10 @@ contract AaveCreditVault is
     * @param _collateralAsset collateral asset that will be deposit on Aave
     * @param _amount Amount of collateral to deposit
     */
-    function deposit(address _collateralAsset, uint256 _amount)
+    function deposit(
+        address _collateralAsset, 
+        uint256 _amount
+    )
         public
         payable
         nonReentrant
@@ -118,41 +124,44 @@ contract AaveCreditVault is
     
     /**
     * Appproves delegatee to borrow funds from Aave on behalf of delegator
-    * @param borrower delegatee that will borrow the funds
-    * @param amount Amount of funds to delegate
-    * @param asset Asset to delegate the borrow
+    * @param _borrower delegatee that will borrow the funds
+    * @param _amount Amount of funds to delegate
+    * @param _asset Asset to delegate the borrow
     */
     function approveBorrower(
-        address borrower,
-        uint256 amount,
-        address asset
+        address _borrower,
+        uint256 _amount,
+        address _asset
     ) 
     public {
         (, address stableDebtTokenAddress, ) = dataProvider
-          .getReserveTokensAddresses(asset);
+          .getReserveTokensAddresses(_asset);
         IStableDebtToken(stableDebtTokenAddress).approveDelegation(
-          borrower,
-          amount
+          _borrower,
+          _amount
         );
     }
     
     /**
     * Return the actual delegated amount for the borrower in the specific asset
-    * @param borrower The borrower of the funds (i.e. delgatee)
-    * @param asset The asset they are allowed to borrow
+    * @param _borrower The borrower of the funds (i.e. delgatee)
+    * @param _asset The asset they are allowed to borrow
     */
-    function delegatedAmount(address borrower, address asset)
+    function delegatedAmount(
+        address _borrower, 
+        address _asset
+    )
     public
     view
     returns (uint256)
     {
         (, address stableDebtTokenAddress, ) = dataProvider
-          .getReserveTokensAddresses(asset);
+          .getReserveTokensAddresses(_asset);
         
         return
           IStableDebtToken(stableDebtTokenAddress).borrowAllowance(
             address(this),
-            borrower
+            _borrower
           );
     }
     
@@ -180,7 +189,9 @@ contract AaveCreditVault is
     * Repay an uncollaterised loan
     * @param _asset The asset to be repaid
     */
-    function repay(address _asset) 
+    function repay(
+        address _asset
+    ) 
     public 
     returns (uint256) 
     {
@@ -202,7 +213,9 @@ contract AaveCreditVault is
     * Returns the priceof the asset in the Aave oracles
     * @param _asset The asset to get the actual price
     */
-    function getAssetPrice(address _asset) 
+    function getAssetPrice(
+        address _asset
+    ) 
     public 
     view 
     returns (uint256) 

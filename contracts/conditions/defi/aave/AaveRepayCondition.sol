@@ -107,21 +107,21 @@ contract AaveRepayCondition is Condition, Common {
         uint256 totalDebt = vault.getTotalActualDebt();
         uint256 initialBorrow = vault.getBorrowedAmount();
         require(initialBorrow == _amountToRepay, 'Amount to repay is not the same borrowed amount');
-        
-        token.transferFrom(msg.sender, _vaultAddress, totalDebt);
-        
-        vault.repay(_assetToRepay);
-        
+
         bytes32 _id = generateId(
-            _agreementId, 
+            _agreementId,
             hashValues(_did, msg.sender, _assetToRepay, _amountToRepay)
         );
-        
+
         ConditionStoreLibrary.ConditionState state = super.fulfill(
-            _id, 
+            _id,
             ConditionStoreLibrary.ConditionState.Fulfilled
         );
         
+        if (state == ConditionStoreLibrary.ConditionState.Fulfilled)    {
+            token.transferFrom(msg.sender, _vaultAddress, totalDebt);
+            vault.repay(_assetToRepay);            
+        }
         return state;
     }
 }
