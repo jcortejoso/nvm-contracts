@@ -72,6 +72,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
      * @param _collateralAmount the amount of the ERC-20 that will be used as collateral (i.e 10 WETH)   
      * @param _delegatedAsset the address of the ERC-20 that will be delegated to the borrower (i.e DAI)
      * @param _delegatedAmount the amount of the ERC-20 that will be delegated to the borrower (i.e 500 DAI)
+     * @param _interestRateMode interest rate type stable 1, variable 2
      * @return bytes32 hash of all these values 
      */    
     function hashValues(
@@ -80,7 +81,8 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         address _collateralAsset,
         uint256 _collateralAmount,
         address _delegatedAsset,
-        uint256 _delegatedAmount
+        uint256 _delegatedAmount,
+        uint256 _interestRateMode
     ) 
     public 
     pure 
@@ -93,7 +95,8 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
                 _collateralAsset,
                 _delegatedAsset,
                 _delegatedAmount,
-                _collateralAmount
+                _collateralAmount,
+                _interestRateMode
             )
         );
     }
@@ -108,6 +111,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
      * @param _collateralAmount the amount of the ERC-20 that will be used as collateral (i.e 10 WETH)   
      * @param _delegatedAsset the address of the ERC-20 that will be delegated to the borrower (i.e DAI)
      * @param _delegatedAmount the amount of the ERC-20 that will be delegated to the borrower (i.e 500 DAI)
+     * @param _interestRateMode interest rate type stable 1, variable 2
      * @return ConditionStoreLibrary.ConditionState the state of the condition (Fulfilled if everything went good) 
      */
     function fulfill(
@@ -118,7 +122,8 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         address _collateralAsset,
         address _delegatedAsset,
         uint256 _delegatedAmount,
-        uint256 _collateralAmount
+        uint256 _collateralAmount,
+        uint256 _interestRateMode
     ) 
     external 
     payable
@@ -138,7 +143,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         }
 
         vault.deposit{value: msg.value}(_collateralAsset, _collateralAmount);
-        vault.approveBorrower(_borrower, _delegatedAmount, _delegatedAsset);
+        vault.approveBorrower(_borrower, _delegatedAmount, _delegatedAsset, _interestRateMode);
 
         bytes32 _id =
         generateId(
@@ -149,7 +154,8 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
                 _collateralAsset,
                 _collateralAmount,
                 _delegatedAsset,
-                _delegatedAmount
+                _delegatedAmount,
+                _interestRateMode
             )
         );
 
