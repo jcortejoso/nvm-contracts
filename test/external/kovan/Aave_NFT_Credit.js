@@ -313,12 +313,11 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 { from: borrower }
             )
 
-            //External user try to update nevermined fee
+            // External user try to update nevermined fee
             await assert.isRejected(aaveCreditTemplate.updateNVMFee(10, { from: borrower }))
 
-            //Owner updates nevermined fee
+            // Owner updates nevermined fee
             await aaveCreditTemplate.updateNVMFee(3, { from: owner })
-                
         })
 
         it('The borrower locks the NFT', async () => {
