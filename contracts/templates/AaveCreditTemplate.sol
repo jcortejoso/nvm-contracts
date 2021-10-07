@@ -221,4 +221,16 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
     {
         return vaultAddress[_agreementId];
     }
+
+    /**
+    * @notice Updates the nevermined fee for this type of agreement
+    * @param _newFee New nevermined fee expressed in basis points
+    */
+    function updateNVMFee(
+        uint256 _newFee
+    )
+    public onlyOwner
+    {
+        nvmFee = _newFee;
+    }
 }

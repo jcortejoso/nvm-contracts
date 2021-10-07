@@ -26,7 +26,6 @@ const NeverminedToken = artifacts.require('NeverminedToken')
 const AaveCreditVault = artifacts.require('AaveCreditVault')
 const ERC20Upgradeable = artifacts.require('ERC20Upgradeable')
 const TestERC721 = artifacts.require('TestERC721')
-const MarketPlaceTreasury = artifacts.require('MarketPlaceTreasury')
 
 const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
@@ -48,6 +47,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
     const owner = accounts[6]
     const deployer = accounts[7]
+    const treasuryAddress = accounts[5]
     const didSeed = testUtils.generateId()
 
     let
@@ -67,7 +67,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         nftTokenAddress,
         vaultAddress,
         did,
-        treasuryAddress,
         agreementId,
         agreement
 
@@ -179,8 +178,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         await templateStoreManager.approveTemplate(aaveCreditTemplate.address, { from: owner })
 
         const templateId = aaveCreditTemplate.address
-
-        treasuryAddress = (await MarketPlaceTreasury.new()).address
 
         return {
             didRegistry,
@@ -315,6 +312,12 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 vaultAddress,
                 { from: borrower }
             )
+
+            // External user try to update nevermined fee
+            await assert.isRejected(aaveCreditTemplate.updateNVMFee(10, { from: borrower }))
+
+            // Owner updates nevermined fee
+            await aaveCreditTemplate.updateNVMFee(3, { from: owner })
         })
 
         it('The borrower locks the NFT', async () => {
@@ -410,7 +413,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             const vault = await AaveCreditVault.at(vaultAddress)
             const totalDebt = await vault.getTotalActualDebt()
             const dai = await ERC20Upgradeable.at(delegatedAsset)
-            const allowanceAmount = Number(totalDebt) + (Number(totalDebt) / 10000 * 1)
+            const allowanceAmount = Number(totalDebt) + (Number(totalDebt) / 10000 * 10)
 
             // Delegatee allows Nevermined contracts spend DAI to repay the loan
             await dai.approve(aaveRepayCredit.address, allowanceAmount.toString(),
@@ -419,7 +422,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             // Send some DAI to borrower to pay the debt + fees
             await dai.transfer(
                 borrower,
-                (Number(totalDebt) - Number(delegatedAmount)).toString(),
+                (Number(allowanceAmount) - Number(delegatedAmount)).toString(),
                 { from: daiProvider })
 
             // Fullfill the aaveRepayCredit condition
