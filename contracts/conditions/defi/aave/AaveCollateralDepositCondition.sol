@@ -67,7 +67,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
      * @notice hashValues generates the hash of condition inputs 
      *        with the following parameters
      * @param _did the DID of the asset
-     * @param _borrower the address of the borrower/delegatee
+     * @param _vaultAddress Address of the vault
      * @param _collateralAsset the address of the ERC-20 that will be used as collateral (i.e WETH)     
      * @param _collateralAmount the amount of the ERC-20 that will be used as collateral (i.e 10 WETH)   
      * @param _delegatedAsset the address of the ERC-20 that will be delegated to the borrower (i.e DAI)
@@ -77,7 +77,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
      */    
     function hashValues(
         bytes32 _did,
-        address _borrower,
+        address _vaultAddress,
         address _collateralAsset,
         uint256 _collateralAmount,
         address _delegatedAsset,
@@ -91,7 +91,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         keccak256(
             abi.encode(
                 _did,
-                _borrower,
+                _vaultAddress,
                 _collateralAsset,
                 _delegatedAsset,
                 _delegatedAmount,
@@ -106,7 +106,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
      * @notice It fulfills the condition if the collateral can be deposited into the vault
      * @param _agreementId the identifier of the agreement     
      * @param _did the DID of the asset
-     * @param _borrower the address of the borrower/delegatee
+     * @param _vaultAddress Address of the vault
      * @param _collateralAsset the address of the ERC-20 that will be used as collateral (i.e WETH)     
      * @param _collateralAmount the amount of the ERC-20 that will be used as collateral (i.e 10 WETH)   
      * @param _delegatedAsset the address of the ERC-20 that will be delegated to the borrower (i.e DAI)
@@ -118,7 +118,6 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         bytes32 _agreementId,
         bytes32 _did,
         address _vaultAddress,
-        address _borrower,
         address _collateralAsset,
         address _delegatedAsset,
         uint256 _delegatedAmount,
@@ -143,7 +142,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         }
 
         vault.deposit{value: msg.value}(_collateralAsset, _collateralAmount);
-        vault.approveBorrower(_borrower, _delegatedAmount, _delegatedAsset, _interestRateMode);
+        vault.approveBorrower(vault.borrower(), _delegatedAmount, _delegatedAsset, _interestRateMode);
 
         bytes32 _id =
         generateId(
