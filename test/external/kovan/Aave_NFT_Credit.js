@@ -218,7 +218,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             agreementId,
             await aaveRepayCredit.hashValues(
                 did,
-                _borrower,
+                vaultAddress,
                 delegatedAsset,
                 delegatedAmount,
                 INTEREST_RATE_MODE
@@ -238,7 +238,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         const conditionIdTransfer = await transferNftCondition.generateId(
             agreementId,
             await transferNftCondition.hashValues(
-                did, vaultAddress, conditionIdRepay, nftTokenAddress))
+                did, vaultAddress, nftTokenAddress))
 
         // construct agreement
         const agreement = {
@@ -410,7 +410,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                     agreementId,
                     did,
                     vaultAddress,
-                    agreement.conditionIds[3],
                     nftTokenAddress,
                     { from: borrower }
                 )
@@ -498,7 +497,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 agreementId,
                 did,
                 vaultAddress,
-                agreement.conditionIds[3],
                 nftTokenAddress,
                 { from: borrower }
             )

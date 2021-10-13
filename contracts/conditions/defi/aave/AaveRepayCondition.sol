@@ -64,7 +64,7 @@ contract AaveRepayCondition is Condition, Common {
      * @notice hashValues generates the hash of condition inputs 
      *        with the following parameters
      * @param _did the DID of the asset
-     * @param _borrower the address of the borrower/delegatee
+     * @param _vaultAddress the address of vault locking the deposited collateral and the asset
      * @param _assetToRepay the address of the asset to repay (i.e DAI)  
      * @param _amountToRepay Amount to repay        
      * @param _interestRateMode interest rate type stable 1, variable 2  
@@ -72,7 +72,7 @@ contract AaveRepayCondition is Condition, Common {
      */    
     function hashValues(
         bytes32 _did,
-        address _borrower,
+        address _vaultAddress,
         address _assetToRepay,
         uint256 _amountToRepay,
         uint256 _interestRateMode
@@ -81,7 +81,7 @@ contract AaveRepayCondition is Condition, Common {
     pure 
     returns (bytes32) 
     {
-        return keccak256(abi.encode(_did, _borrower, _assetToRepay, _amountToRepay, _interestRateMode));
+        return keccak256(abi.encode(_did, _vaultAddress, _assetToRepay, _amountToRepay, _interestRateMode));
     }
 
     /**
@@ -114,7 +114,7 @@ contract AaveRepayCondition is Condition, Common {
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, msg.sender, _assetToRepay, _amountToRepay, _interestRateMode)
+            hashValues(_did, _vaultAddress, _assetToRepay, _amountToRepay, _interestRateMode)
         );
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
@@ -124,7 +124,9 @@ contract AaveRepayCondition is Condition, Common {
         
         if (state == ConditionStoreLibrary.ConditionState.Fulfilled)    {
             token.transferFrom(msg.sender, _vaultAddress, totalDebt);
-            vault.repay(_assetToRepay, _interestRateMode);
+            vault.repay(_assetToRepay, _interestRateMode, _id);
+        } else if (state == ConditionStoreLibrary.ConditionState.Aborted)    {
+            vault.setLockConditionId(_id);
         }
         return state;
     }

@@ -217,7 +217,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             agreementId,
             await aaveRepayCredit.hashValues(
                 did,
-                _borrower,
+                vaultAddress,
                 delegatedAsset,
                 delegatedAmount,
                 INTEREST_RATE_MODE
@@ -237,7 +237,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         const conditionIdTransfer = await transferNftCondition.generateId(
             agreementId,
             await transferNftCondition.hashValues(
-                did, vaultAddress, conditionIdRepay, nftTokenAddress))
+                did, vaultAddress,  nftTokenAddress))
 
         // construct agreement
         const agreement = {
@@ -393,7 +393,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                     agreementId,
                     did,
                     vaultAddress,
-                    agreement.conditionIds[3],
                     nftTokenAddress,
                     { from: borrower }
                 )
@@ -422,7 +421,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             const before = await dai.balanceOf(borrower)
 
             // Fullfill the aaveRepayCredit condition
-
             await aaveRepayCredit.fulfill(
                 agreementId,
                 did,
@@ -458,15 +456,17 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         })
 
         it('Borrower/Delegatee paid the credit so will get back the NFT', async () => {
+
+            const vault = await AaveCreditVault.at(vaultAddress)
+            console.log('[AGREE] Repay Condition Id: ' + agreement.conditionIds[3])
+            console.log('[VAULT] Repay Condition Id: ' + await vault.repayConditionId())
             await transferNftCondition.fulfill(
                 agreementId,
                 did,
                 vaultAddress,
-                agreement.conditionIds[3],
                 nftTokenAddress,
                 { from: lender }
             )
-            //            console.log('[AFTER] Owner of NFT: ' + await erc721.ownerOf(did))
 
             const { state: stateTransfer } = await conditionStoreManager.getCondition(
                 agreement.conditionIds[5])

@@ -71,14 +71,12 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
     *        with the following parameters
     * @param _did refers to the DID in which secret store will issue the decryption keys
     * @param _vaultAddress The contract address of the vault
-    * @param _lockCondition lock condition identifier    
     * @param _nftContractAddress NFT contract to use
     * @return bytes32 hash of all these values 
     */
     function hashValues(
         bytes32 _did,
         address _vaultAddress,     
-        bytes32 _lockCondition,
         address _nftContractAddress
     )
         public
@@ -87,7 +85,7 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
     {
         return keccak256(
             abi.encode(
-                _did, _vaultAddress, _lockCondition, _nftContractAddress
+                _did, _vaultAddress, _nftContractAddress
             )
         );
     }
@@ -100,7 +98,6 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
      * @param _agreementId agreement identifier
      * @param _did refers to the DID in which secret store will issue the decryption keys
      * @param _vaultAddress The contract address of the vault
-     * @param _lockPaymentCondition lock payment condition identifier
      * @param _nftContractAddress NFT contract to use
      * @return condition state (Fulfilled/Aborted)
      */
@@ -108,7 +105,6 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
         bytes32 _agreementId,
         bytes32 _did,
         address _vaultAddress,
-        bytes32 _lockPaymentCondition,
         address _nftContractAddress
     )
         public
@@ -123,7 +119,7 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
         
         ConditionStoreLibrary.ConditionState lockConditionState;
         (,lockConditionState,,,,,,) = conditionStoreManager
-            .getCondition(_lockPaymentCondition);
+            .getCondition(vault.repayConditionId());
 
         IERC721Upgradeable token = IERC721Upgradeable(_nftContractAddress);
         require(
@@ -133,7 +129,7 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _vaultAddress, _lockPaymentCondition, _nftContractAddress)
+            hashValues(_did, _vaultAddress, _nftContractAddress)
         );
 
         if (lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled) {

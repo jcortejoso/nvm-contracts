@@ -34,6 +34,7 @@ contract AaveCreditVault is
     address public treasuryAddress;
     address public borrower;
     address public lender;
+    bytes32 public repayConditionId;
     address private nftAddress;
     uint256 private nftId;
     
@@ -206,20 +207,32 @@ contract AaveCreditVault is
     * Repay an uncollaterised loan
     * @param _asset The asset to be repaid
     * @param _interestRateMode interest rate type stable 1, variable 2  
+    * @param _repayConditionId identifier of the condition id working as lock for other vault methods    
     */
     function repay(
         address _asset,
-        uint256 _interestRateMode
+        uint256 _interestRateMode,
+        bytes32 _repayConditionId
     ) 
     public 
-    returns (uint256) 
     {
         require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
         IERC20(_asset).approve(address(lendingPool), uint256(-1));
         lendingPool.repay(_asset, uint256(-1), _interestRateMode, address(this));
         
         require(getActualCreditDebt() == 0, 'Not enough amount to repay');
+        repayConditionId = _repayConditionId;
     }
+    
+    function setLockConditionId(
+        bytes32 _repayConditionId
+    )
+    public
+    {
+        require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
+        repayConditionId = _repayConditionId;
+    }
+        
     
     /**
     * Returns the borrowed amount from the delegatee on this agreement
