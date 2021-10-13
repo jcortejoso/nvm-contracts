@@ -17,7 +17,6 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
  */
 contract AaveBorrowCondition is Condition, Common {
     
-    DIDRegistry internal didRegistry;
     AaveCreditVault internal aaveCreditVault;
 
     bytes32 public constant CONDITION_TYPE = keccak256('AaveBorrowCondition');
@@ -33,18 +32,15 @@ contract AaveBorrowCondition is Condition, Common {
      * @dev this function is called only once during the contract initialization.
      * @param _owner contract's owner account address
      * @param _conditionStoreManagerAddress condition store manager address
-     * @param _didRegistryAddress DID Registry address
      */
     function initialize(
         address _owner,
-        address _conditionStoreManagerAddress,
-        address _didRegistryAddress
+        address _conditionStoreManagerAddress
     ) 
     external 
     initializer() 
     {
         require(
-            _didRegistryAddress != address(0) &&
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
@@ -54,7 +50,6 @@ contract AaveBorrowCondition is Condition, Common {
             _conditionStoreManagerAddress
         );
 
-        didRegistry = DIDRegistry(_didRegistryAddress);
     }
 
 
