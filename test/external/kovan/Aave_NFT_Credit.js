@@ -124,7 +124,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         await aaveCollateralDeposit.initialize(
             lender,
             conditionStoreManager.address,
-            didRegistry.address,
             { from: owner }
         )
 
@@ -141,7 +140,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         await aaveRepayCredit.initialize(
             owner,
             conditionStoreManager.address,
-            didRegistry.address,
             { from: owner }
         )
 
