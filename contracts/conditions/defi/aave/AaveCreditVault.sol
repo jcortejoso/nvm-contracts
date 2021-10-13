@@ -136,6 +136,8 @@ contract AaveCreditVault is
         uint256 _interestRateMode
     ) 
     public {
+        require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
+        
         (, address stableDebtTokenAddress, address variableDebtTokenAddress ) = dataProvider
           .getReserveTokensAddresses(_asset);
 
