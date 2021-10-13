@@ -70,17 +70,14 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters
     * @param _did refers to the DID in which secret store will issue the decryption keys
-    * @param _nftReceiver is the address of the user who will receive the NFT if the lock condition was fulfilled
-    * @param _nftReceiverIfAborted is the address of the user who will receive the NFT if the lock condition is in aborted state
+    * @param _vaultAddress The contract address of the vault
     * @param _lockCondition lock condition identifier    
     * @param _nftContractAddress NFT contract to use
     * @return bytes32 hash of all these values 
     */
     function hashValues(
         bytes32 _did,
-        address _nftHolder,
-        address _nftReceiver,
-        address _nftReceiverIfAborted,
+        address _vaultAddress,     
         bytes32 _lockCondition,
         address _nftContractAddress
     )
@@ -90,7 +87,7 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
     {
         return keccak256(
             abi.encode(
-                _did, _nftHolder, _nftReceiver, _nftReceiverIfAborted, _lockCondition, _nftContractAddress
+                _did, _vaultAddress, _lockCondition, _nftContractAddress
             )
         );
     }
@@ -102,8 +99,7 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
      *       When true then fulfill the condition
      * @param _agreementId agreement identifier
      * @param _did refers to the DID in which secret store will issue the decryption keys
-     * @param _nftReceiver is the address of the user who will receive the NFT if the lock condition was fulfilled
-     * @param _nftReceiverIfAborted is the address of the user who will receive the NFT if the lock condition is in aborted state
+     * @param _vaultAddress The contract address of the vault
      * @param _lockPaymentCondition lock payment condition identifier
      * @param _nftContractAddress NFT contract to use
      * @return condition state (Fulfilled/Aborted)
@@ -111,9 +107,7 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
-        address _nftHolder,
-        address _nftReceiver,
-        address _nftReceiverIfAborted,
+        address _vaultAddress,
         bytes32 _lockPaymentCondition,
         address _nftContractAddress
     )
@@ -122,8 +116,8 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
         returns (ConditionStoreLibrary.ConditionState)
     {
 
-        AaveCreditVault vault = AaveCreditVault(_nftHolder);
-        require(vault.isBorrower(_nftReceiver) && vault.isLender(_nftReceiverIfAborted),
+        AaveCreditVault vault = AaveCreditVault(_vaultAddress);
+        require(vault.isBorrower(vault.borrower()) && vault.isLender(vault.lender()),
             'Invalid users'
         );
         
@@ -133,21 +127,21 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
 
         IERC721Upgradeable token = IERC721Upgradeable(_nftContractAddress);
         require(
-            (_nftHolder == msg.sender || _nftHolder == token.ownerOf(uint256(_did))),
+            (_vaultAddress == token.ownerOf(uint256(_did))),
             'Not enough balance'
         );
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _nftHolder, _nftReceiver, _nftReceiverIfAborted, _lockPaymentCondition, _nftContractAddress)
+            hashValues(_did, _vaultAddress, _lockPaymentCondition, _nftContractAddress)
         );
 
         if (lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled) {
-            vault.transferNFT(uint256(_did), _nftReceiver);
-            emit Fulfilled(_agreementId, _did, _nftReceiver, _id, _nftContractAddress);
+            vault.transferNFT(uint256(_did), vault.borrower());
+            emit Fulfilled(_agreementId, _did, vault.borrower(), _id, _nftContractAddress);
         } else if (lockConditionState == ConditionStoreLibrary.ConditionState.Aborted) {
-            vault.transferNFT(uint256(_did), _nftReceiverIfAborted);
-            emit Fulfilled(_agreementId, _did, _nftReceiverIfAborted, _id, _nftContractAddress);
+            vault.transferNFT(uint256(_did), vault.lender());
+            emit Fulfilled(_agreementId, _did, vault.lender(), _id, _nftContractAddress);
         }   else {
             require(false, 'Still not fulfilled or aborted');
         }
