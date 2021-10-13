@@ -209,7 +209,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             agreementId,
             await aaveBorrowCredit.hashValues(
                 did,
-                _borrower,
+                vaultAddress,
                 delegatedAsset,
                 delegatedAmount,
                 INTEREST_RATE_MODE))

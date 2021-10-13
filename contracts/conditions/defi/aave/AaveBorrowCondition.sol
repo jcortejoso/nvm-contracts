@@ -57,7 +57,7 @@ contract AaveBorrowCondition is Condition, Common {
      * @notice hashValues generates the hash of condition inputs 
      *        with the following parameters
      * @param _did the DID of the asset
-     * @param _borrower the address of the borrower/delegatee
+     * @param _vaultAddress the address of vault locking the deposited collateral and the asset
      * @param _assetToBorrow the address of the asset to borrow (i.e DAI)     
      * @param _amount the amount of the ERC-20 the assets to borrow (i.e 50 DAI)   
      * @param _interestRateMode interest rate type stable 1, variable 2  
@@ -65,7 +65,7 @@ contract AaveBorrowCondition is Condition, Common {
      */
     function hashValues(
         bytes32 _did,
-        address _borrower,
+        address _vaultAddress,
         address _assetToBorrow,
         uint256 _amount,
         uint256 _interestRateMode
@@ -78,7 +78,7 @@ contract AaveBorrowCondition is Condition, Common {
         keccak256(
             abi.encode(
                 _did,
-                _borrower,
+                _vaultAddress,
                 _assetToBorrow,
                 _amount,
                 _interestRateMode
@@ -114,7 +114,7 @@ contract AaveBorrowCondition is Condition, Common {
         bytes32 _id =
         generateId(
             _agreementId,
-            hashValues(_did, msg.sender, _assetToBorrow, _amount, _interestRateMode)
+            hashValues(_did, _vaultAddress, _assetToBorrow, _amount, _interestRateMode)
         );
 
         ConditionStoreLibrary.ConditionState state =

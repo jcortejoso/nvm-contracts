@@ -197,6 +197,8 @@ contract AaveCreditVault is
     public 
     {
         require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
+        require(borrowedAmount == 0, 'Already borrowed');
+        
         borrowedAsset = _assetToBorrow;
         borrowedAmount = _amount;
         lendingPool.borrow(_assetToBorrow, _amount, _interestRateMode, 0, address(this));
