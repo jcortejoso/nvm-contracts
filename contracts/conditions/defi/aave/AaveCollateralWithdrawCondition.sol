@@ -24,7 +24,6 @@ contract AaveCollateralWithdrawCondition is
     Common,
     ReentrancyGuardUpgradeable {
 
-    DIDRegistry internal didRegistry;
     AaveCreditVault internal aaveCreditVault;
     
     bytes32 public constant CONDITION_TYPE = keccak256('AaveCollateralWithdrawCondition');
@@ -40,18 +39,15 @@ contract AaveCollateralWithdrawCondition is
     * @dev this function is called only once during the contract initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address
-    * @param _didRegistryAddress DID Registry address
     */
     function initialize(
         address _owner,
-        address _conditionStoreManagerAddress,
-        address _didRegistryAddress
+        address _conditionStoreManagerAddress
     ) 
     external 
     initializer 
     {
         require(
-            _didRegistryAddress != address(0) &&
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
@@ -61,21 +57,20 @@ contract AaveCollateralWithdrawCondition is
             _conditionStoreManagerAddress
         );
         
-        didRegistry = DIDRegistry(_didRegistryAddress);
     }
 
     /**
      * @notice hashValues generates the hash of condition inputs 
      *        with the following parameters
      * @param _did the DID of the asset
-     * @param _lender the address of the _lender
+     * @param _vaultAddress Address of the vault
      * @param _collateralAsset the address of the asset used as collateral (i.e DAI) 
      * @param _lockCondition the condition that needs to be fulfill to allow the withdraw             
      * @return bytes32 hash of all these values 
      */
     function hashValues(
         bytes32 _did,
-        address _lender,
+        address _vaultAddress,
         address _collateralAsset,
         bytes32 _lockCondition
 
@@ -84,7 +79,7 @@ contract AaveCollateralWithdrawCondition is
     pure 
     returns (bytes32) 
     {
-        return keccak256(abi.encode(_did, _lender, _collateralAsset, _lockCondition));
+        return keccak256(abi.encode(_did, _vaultAddress, _collateralAsset, _lockCondition));
     }
 
 
@@ -92,7 +87,7 @@ contract AaveCollateralWithdrawCondition is
      * @notice It allows the borrower to repay the loan
      * @param _agreementId the identifier of the agreement     
      * @param _did the DID of the asset
-     * @param _lender the address of the _lender
+     * @param _vaultAddress Address of the vault     
      * @param _collateralAsset the address of the asset used as collateral (i.e DAI)
      * @param _lockCondition the condition that needs to be fulfill to allow the withdraw                        
      * @return ConditionStoreLibrary.ConditionState the state of the condition (Fulfilled if everything went good) 
@@ -101,7 +96,6 @@ contract AaveCollateralWithdrawCondition is
         bytes32 _agreementId,
         bytes32 _did,
         address _vaultAddress,
-        address _lender,
         address _collateralAsset,
         bytes32 _lockCondition
     )
@@ -124,11 +118,11 @@ contract AaveCollateralWithdrawCondition is
         );        
         
         require(vault.isLender(msg.sender), 'Only lender');
-        vault.withdrawCollateral(_collateralAsset, _lender);
+        vault.withdrawCollateral(_collateralAsset, vault.lender());
         
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _lender, _collateralAsset, _lockCondition)
+            hashValues(_did, _vaultAddress, _collateralAsset, _lockCondition)
         );
         
         ConditionStoreLibrary.ConditionState state = super.fulfill(

@@ -150,7 +150,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         await aaveWithdrawnCollateral.initialize(
             owner,
             conditionStoreManager.address,
-            didRegistry.address,
             { from: owner }
         )
 
@@ -230,7 +229,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             agreementId,
             await aaveWithdrawnCollateral.hashValues(
                 did,
-                _lender,
+                vaultAddress,
                 collateralAsset,
                 conditionIdRepay
             )
@@ -468,7 +467,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 agreementId,
                 did,
                 vaultAddress,
-                lender,
                 collateralAsset,
                 agreement.conditionIds[3],
                 { from: lender }
