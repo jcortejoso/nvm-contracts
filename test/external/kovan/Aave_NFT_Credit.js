@@ -115,7 +115,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         await transferNftCondition.initialize(
             owner,
             conditionStoreManager.address,
-            didRegistry.address,
             nftLockCondition.address,
             { from: owner }
         )

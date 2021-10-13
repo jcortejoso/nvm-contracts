@@ -20,7 +20,6 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
 
     bytes32 private constant CONDITION_TYPE = keccak256('DistributeNFTCollateralCondition');
 
-    DIDRegistry private registry;
     AaveCreditVault internal aaveCreditVault;
 
     address private _lockConditionAddress;
@@ -40,12 +39,11 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
     *       initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address    
-    * @param _didRegistryAddress DID Registry address
+    * @param _lockNFTConditionAddress Lock NFT Condition address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress,
         address _lockNFTConditionAddress
     )
         external
@@ -54,7 +52,6 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
         require(
             _owner != address(0) &&
             _conditionStoreManagerAddress != address(0) &&
-            _didRegistryAddress != address(0) &&
             _lockNFTConditionAddress != address(0),
             'Invalid address'
         );
@@ -66,9 +63,6 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
             _conditionStoreManagerAddress
         );
 
-        registry = DIDRegistry(
-            _didRegistryAddress
-        );
         _lockConditionAddress = _lockNFTConditionAddress;
     }
 
