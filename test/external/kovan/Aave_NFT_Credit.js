@@ -203,7 +203,8 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
         const conditionIdDeposit = await aaveCollateralDeposit.generateId(
             agreementId,
-            await aaveCollateralDeposit.hashValues(did, vaultAddress, collateralAsset, collateralAmount, delegatedAsset, delegatedAmount, INTEREST_RATE_MODE))
+            await aaveCollateralDeposit.hashValues(did, vaultAddress, collateralAsset,
+                collateralAmount, delegatedAsset, delegatedAmount, INTEREST_RATE_MODE))
 
         const conditionIdBorrow = await aaveBorrowCredit.generateId(
             agreementId,
@@ -351,9 +352,9 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 did,
                 vaultAddress,
                 collateralAsset,
+                collateralAmount,
                 delegatedAsset,
                 delegatedAmount,
-                collateralAmount,
                 INTEREST_RATE_MODE,
                 {
                     from: lender,

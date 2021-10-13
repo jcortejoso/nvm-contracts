@@ -93,9 +93,9 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
                 _did,
                 _vaultAddress,
                 _collateralAsset,
+                _collateralAmount,
                 _delegatedAsset,
                 _delegatedAmount,
-                _collateralAmount,
                 _interestRateMode
             )
         );
@@ -119,9 +119,9 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         bytes32 _did,
         address _vaultAddress,
         address _collateralAsset,
+        uint256 _collateralAmount,
         address _delegatedAsset,
         uint256 _delegatedAmount,
-        uint256 _collateralAmount,
         uint256 _interestRateMode
     ) 
     external 
@@ -149,7 +149,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
             _agreementId,
             hashValues(
                 _did,
-                _borrower,
+                _vaultAddress,
                 _collateralAsset,
                 _collateralAmount,
                 _delegatedAsset,

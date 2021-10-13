@@ -335,9 +335,9 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 did,
                 vaultAddress,
                 collateralAsset,
+                collateralAmount,
                 delegatedAsset,
                 delegatedAmount,
-                collateralAmount,
                 INTEREST_RATE_MODE,
                 {
                     from: lender,
