@@ -327,6 +327,22 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             const { state: stateNftLock } = await conditionStoreManager.getCondition(agreement.conditionIds[0])
             assert.strictEqual(stateNftLock.toNumber(), constants.condition.state.fulfilled)
             assert.strictEqual(vaultAddress, await erc721.ownerOf(did))
+
+            // A second NFT can't be locked into the Vault
+            await assert.isRejected(aaveCreditTemplate.updateNVMFee(10, { from: borrower }))
+        })
+
+        it('A second NFT cant be locked into the Vault', async () => {
+            const newErc721 = await TestERC721.new()
+            await newErc721.initialize({ from: owner })
+            const _tokenId = testUtils.generateId()
+            await newErc721.mint(_tokenId, { from: owner })
+            await newErc721.approve(vaultAddress, _tokenId, { from: owner })
+
+            await assert.isRejected(
+                newErc721.safeTransferFrom(owner, vaultAddress, _tokenId, { from: owner }),
+                'NFT already locked'
+            )
         })
 
         it('Lender deposits ETH as collateral in Aave and approves borrower to borrow DAI', async () => {

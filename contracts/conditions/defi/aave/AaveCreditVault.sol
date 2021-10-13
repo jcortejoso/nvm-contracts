@@ -329,7 +329,6 @@ contract AaveCreditVault is
         IERC721Upgradeable token = IERC721Upgradeable(nftAddress);
         
         token.approve(_receiver, _tokenId);
-//        token.setApprovalForAll(address(this), true);
         token.safeTransferFrom(address(this), _receiver, _tokenId);
     }
     
@@ -373,6 +372,7 @@ contract AaveCreditVault is
     override 
     returns (bytes4) 
     {
+        require(nftAddress == address(0), 'NFT already locked');
         nftAddress = msg.sender;
         nftId = _tokenId;        
         return this.onERC721Received.selector;
