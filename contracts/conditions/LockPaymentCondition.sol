@@ -10,6 +10,7 @@ import '../Common.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
+import './ILockPayment.sol';
 
 /**
  * @title Lock Payment Condition
@@ -19,23 +20,14 @@ import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
  * This condition allows to lock payment for multiple receivers taking
  * into account the royalties to be paid to the original creators in a secondary market.  
  */
-contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
+contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condition, Common {
 
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     DIDRegistry internal didRegistry;
 
     bytes32 constant public CONDITION_TYPE = keccak256('LockPaymentCondition');
-
-    event Fulfilled(
-        bytes32 indexed _agreementId,
-        bytes32 indexed _did,
-        bytes32 indexed _conditionId,
-        address _rewardAddress,
-        address _tokenAddress,
-        address[] _receivers,
-        uint256[] _amounts
-    );
+    bytes32 constant public KEY_ASSET_RECEIVER = keccak256('_assetReceiverAddress');
 
    /**
     * @notice initialize init the contract with the following parameters
@@ -90,6 +82,7 @@ contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
     )
         public
         pure
+        override
         returns (bytes32)
     {
         return keccak256(abi.encode(
@@ -121,6 +114,7 @@ contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
         address[] memory _receivers
     )
     external
+    override
     payable
     nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
@@ -149,6 +143,14 @@ contract LockPaymentCondition is ReentrancyGuardUpgradeable, Condition, Common {
             ConditionStoreLibrary.ConditionState.Fulfilled
         );
 
+        if (state == ConditionStoreLibrary.ConditionState.Fulfilled)    {
+            conditionStoreManager.updateConditionMapping(
+                _id,
+                KEY_ASSET_RECEIVER,
+                Common.addressToBytes32(msg.sender)
+            );
+        }
+        
         emit Fulfilled(
             _agreementId, 
             _did,

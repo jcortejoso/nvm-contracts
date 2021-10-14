@@ -31,9 +31,11 @@ library ConditionStoreLibrary {
 
     struct ConditionList {
         mapping(bytes32 => Condition) conditions;
+        mapping(bytes32 => mapping(bytes32 => bytes32)) map; 
         bytes32[] conditionIds;
     }
-
+    
+    
    /**
     * @notice create new condition
     * @dev check whether the condition exists, assigns 
@@ -98,5 +100,16 @@ library ConditionStoreLibrary {
         _self.conditions[_id].lastUpdatedBy = msg.sender;
         _self.conditions[_id].blockNumberUpdated = block.number;
 
+    }
+    
+    function updateKeyValue(
+        ConditionList storage _self,
+        bytes32 _id,
+        bytes32 _key,
+        bytes32 _value
+    )
+    internal
+    {
+        _self.map[_id][_key] = _value;
     }
 }

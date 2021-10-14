@@ -76,5 +76,25 @@ contract Common {
             _totalAmount = _totalAmount.add(_amounts[i]);
         return _totalAmount;
     }
+
+    function addressToBytes32(
+        address _addr
+    ) 
+    public 
+    pure 
+    returns (bytes32) 
+    {
+        return bytes32(uint256(uint160(_addr)));
+    }
+
+    function bytes32ToAddress(
+        bytes32 _b32
+    ) 
+    public 
+    pure 
+    returns (address) 
+    {
+        return address(uint160(uint256(_b32)));
+    }    
     
 }
