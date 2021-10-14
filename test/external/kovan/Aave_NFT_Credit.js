@@ -228,8 +228,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             await aaveWithdrawnCollateral.hashValues(
                 did,
                 vaultAddress,
-                collateralAsset,
-                conditionIdRepay
+                collateralAsset
             )
         )
 
@@ -465,7 +464,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 did,
                 vaultAddress,
                 collateralAsset,
-                agreement.conditionIds[3],
                 { from: lender }
             )
             const { state: stateRepay } = await conditionStoreManager.getCondition(

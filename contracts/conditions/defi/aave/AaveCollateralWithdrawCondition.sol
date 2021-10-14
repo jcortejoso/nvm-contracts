@@ -65,21 +65,19 @@ contract AaveCollateralWithdrawCondition is
      * @param _did the DID of the asset
      * @param _vaultAddress Address of the vault
      * @param _collateralAsset the address of the asset used as collateral (i.e DAI) 
-     * @param _lockCondition the condition that needs to be fulfill to allow the withdraw             
      * @return bytes32 hash of all these values 
      */
     function hashValues(
         bytes32 _did,
         address _vaultAddress,
-        address _collateralAsset,
-        bytes32 _lockCondition
+        address _collateralAsset
 
     ) 
     public 
     pure 
     returns (bytes32) 
     {
-        return keccak256(abi.encode(_did, _vaultAddress, _collateralAsset, _lockCondition));
+        return keccak256(abi.encode(_did, _vaultAddress, _collateralAsset));
     }
 
 
@@ -89,15 +87,13 @@ contract AaveCollateralWithdrawCondition is
      * @param _did the DID of the asset
      * @param _vaultAddress Address of the vault     
      * @param _collateralAsset the address of the asset used as collateral (i.e DAI)
-     * @param _lockCondition the condition that needs to be fulfill to allow the withdraw                        
      * @return ConditionStoreLibrary.ConditionState the state of the condition (Fulfilled if everything went good) 
      */    
     function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
         address _vaultAddress,
-        address _collateralAsset,
-        bytes32 _lockCondition
+        address _collateralAsset
     )
     external
     payable
@@ -106,23 +102,23 @@ contract AaveCollateralWithdrawCondition is
     {
         // Withdraw the collateral from the Aave Lending pool contract and the agreement fees
         AaveCreditVault vault = AaveCreditVault(_vaultAddress);
+        require(vault.isLender(msg.sender), 'Only lender');
 
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
         (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
-            .getCondition(_lockCondition);
+            .getCondition(vault.repayConditionId());
 
         require(
             lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
             'Lock Condition needs to be Fulfilled'
         );        
         
-        require(vault.isLender(msg.sender), 'Only lender');
         vault.withdrawCollateral(_collateralAsset, vault.lender());
         
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _vaultAddress, _collateralAsset, _lockCondition)
+            hashValues(_did, _vaultAddress, _collateralAsset)
         );
         
         ConditionStoreLibrary.ConditionState state = super.fulfill(

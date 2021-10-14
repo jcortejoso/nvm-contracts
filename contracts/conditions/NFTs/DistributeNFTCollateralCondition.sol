@@ -113,7 +113,7 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
     {
 
         AaveCreditVault vault = AaveCreditVault(_vaultAddress);
-        require(vault.isBorrower(vault.borrower()) && vault.isLender(vault.lender()),
+        require(vault.isBorrower(msg.sender) || vault.isLender(msg.sender),
             'Invalid users'
         );
         
