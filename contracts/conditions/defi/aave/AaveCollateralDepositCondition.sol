@@ -85,6 +85,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         return
         keccak256(
             abi.encode(
+                CONDITION_TYPE,
                 _did,
                 _vaultAddress,
                 _collateralAsset,

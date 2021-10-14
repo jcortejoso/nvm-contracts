@@ -77,7 +77,14 @@ contract AaveCollateralWithdrawCondition is
     pure 
     returns (bytes32) 
     {
-        return keccak256(abi.encode(_did, _vaultAddress, _collateralAsset));
+        return keccak256(
+                abi.encode(
+                    CONDITION_TYPE, 
+                    _did, 
+                    _vaultAddress, 
+                    _collateralAsset
+                )
+        );
     }
 
 

@@ -85,7 +85,10 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
     {
         return keccak256(
             abi.encode(
-                _did, _vaultAddress, _nftContractAddress
+                CONDITION_TYPE,
+                _did, 
+                _vaultAddress, 
+                _nftContractAddress
             )
         );
     }

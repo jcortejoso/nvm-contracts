@@ -77,6 +77,7 @@ contract AaveBorrowCondition is Condition, Common {
         return
         keccak256(
             abi.encode(
+                CONDITION_TYPE,
                 _did,
                 _vaultAddress,
                 _assetToBorrow,

@@ -101,7 +101,15 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
         override
         returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _lockAddress, _amount, _nftContractAddress));
+        return keccak256(
+                abi.encode(
+                    CONDITION_TYPE,
+                    _did, 
+                    _lockAddress, 
+                    _amount, 
+                    _nftContractAddress
+                )
+        );
     }
 
     /**

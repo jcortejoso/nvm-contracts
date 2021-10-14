@@ -76,7 +76,16 @@ contract AaveRepayCondition is Condition, Common {
     pure 
     returns (bytes32) 
     {
-        return keccak256(abi.encode(_did, _vaultAddress, _assetToRepay, _amountToRepay, _interestRateMode));
+        return keccak256(
+            abi.encode(
+                CONDITION_TYPE, 
+                _did,
+                _vaultAddress, 
+                _assetToRepay, 
+                _amountToRepay, 
+                _interestRateMode
+            )
+        );
     }
 
     /**
