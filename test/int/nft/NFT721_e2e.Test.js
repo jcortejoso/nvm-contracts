@@ -123,10 +123,11 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         )
 
         transferCondition = await TransferNFTCondition.new()
-        await transferCondition.methods['initialize(address,address,address)'](
+        await transferCondition.methods['initialize(address,address,address,address)'](
             owner,
             conditionStoreManager.address,
             didRegistry.address,
+            lockPaymentCondition.address,
             { from: deployer }
         )
 

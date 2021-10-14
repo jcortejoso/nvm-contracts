@@ -1,6 +1,6 @@
 {
   "name": "@nevermined-io/contracts",
-  "version": "1.1.8",
+  "version": "1.2.0",
   "description": "Nevermined implementation of Nevermined in Solidity",
   "bugs": {
     "url": "https://github.com/nevermined-io/contracts/issues"
@@ -51,6 +51,7 @@
     "test": "truffle test",
     "test:unit": "truffle test $(find ./test/unit -name '*.*s')",
     "test:integration": "truffle test $(find ./test/int -name '*.*s')",
+    "test:kovan-integration": "truffle test $(find ./test/external/kovan -name '*.*s')",
     "test:fast": "truffle test $(find ./test/unit -name '*.*s') $(find ./test/int -name '*.*s')",
     "test:upgrade": "truffle test $(find ./test/upgrade -name '*.*s')",
     "test:cover": "truffle run coverage",
