@@ -452,7 +452,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         })
 
         it('Borrower/Delegatee paid the credit so will get back the NFT', async () => {
-            const vault = await AaveCreditVault.at(vaultAddress)
             await transferNftCondition.fulfill(
                 agreementId,
                 did,
