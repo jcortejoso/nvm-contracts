@@ -150,8 +150,9 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         IERC721Upgradeable token = IERC721Upgradeable(_contract);
         address nftOwner = token.ownerOf(uint256(_did));
         require(
-            _nftAmount == 0 || 
-            (_nftAmount == 1 && (nftOwner == msg.sender || nftOwner == _lockConditionAddress)),
+            _nftAmount == 0 ||
+            (_nftAmount == 1 && (nftOwner == msg.sender)),        
+//            (_nftAmount == 1 && (nftOwner == msg.sender || nftOwner == _lockConditionAddress)),
             'Not enough balance'
         );
 
