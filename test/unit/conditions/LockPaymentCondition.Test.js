@@ -132,7 +132,15 @@ contract('LockPaymentCondition', (accounts) => {
             const balanceSenderBefore = await getBalance(token, sender)
             const balanceReceiverBefore = await getBalance(token, rewardAddress)
 
-            const result = await lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers)
+            const result = await lockPaymentCondition.fulfill(
+                agreementId,
+                did,
+                rewardAddress,
+                token.address,
+                amounts,
+                receivers
+            )
+
             const { state } = await conditionStoreManager.getCondition(conditionId)
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
 
@@ -151,6 +159,14 @@ contract('LockPaymentCondition', (accounts) => {
 
             assert.strictEqual(balanceSenderAfter, balanceSenderBefore - 10)
             assert.strictEqual(balanceReceiverAfter, balanceReceiverBefore + 10)
+
+            const mappingValue = await conditionStoreManager.getMappingValue(
+                conditionId,
+                testUtils.sha3('_assetReceiverAddress')
+            )
+
+            const addressInMapping = await conditionStoreManager.bytes32ToAddress(mappingValue)
+            assert.strictEqual(accounts[0], addressInMapping)
         })
 
         it('ETH: should fulfill if conditions exist and everything is okay', async () => {
