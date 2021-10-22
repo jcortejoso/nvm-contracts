@@ -54,6 +54,16 @@ module.exports = {
             gasPrice: 10000,
             from: '0xe2DD09d719Da89e5a3D0F2549c7E24566e947260'
         },
+        'polygon-localnet': {
+            provider: () => setupWallet(
+                url || 'http://localhost:8545'
+            ),
+            network_id: 8997,
+            skipDryRun: true,
+            gas: 8000000,
+            gasPrice: 0,
+            from: '0xe2DD09d719Da89e5a3D0F2549c7E24566e947260'
+        },
         'aurora-localnet': {
             provider: () => setupWallet(
                 url || 'http://localhost:8545'
