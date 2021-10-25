@@ -5,4 +5,4 @@ mkdir -p /nevermined-contracts/artifacts
 cp -rp /artifacts/* /nevermined-contracts/artifacts/
 
 cd /polygon-sdk
-go run main.go dev
+exec go run main.go server "$@"

@@ -10,10 +10,13 @@ echo "deploy contracts is ${DEPLOY_CONTRACTS}"
 if [ "${DEPLOY_CONTRACTS}" = "true" ]
 then
     cd /polygon-sdk
-    go run /polygon-sdk/main.go dev &
+    rm -rf test-chain
+    cat genesis.json
+    go run main.go server --dev --chain genesis.json &
 
     sleep 5
     curl --data '{"method":"web3_clientVersion","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+    cat genesis.json
 
     # remove ready flag if we deploy contracts
     rm -f /nevermined-contracts/artifacts/*
