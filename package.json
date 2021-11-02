@@ -8,7 +8,7 @@
   "homepage": "https://github.com/nevermined-io/contracts#readme",
   "main": "README.md",
   "scripts": {
-    "compile": "truffle compile",
+    "compile": "hardhat compile",
     "audit": "npx truffle exec ./scripts/deploy/truffle-wrapper/auditWrapper.js",
     "audit:development": "export NETWORK=development&&yarn run audit --network development",
     "audit:aurora-testnet": "export NETWORK=aurora-testnet&&yarn run audit --network aurora-testnet",
@@ -50,7 +50,7 @@
     "upgrade:production": "export NETWORK=production&&yarn run upgrade --network production",
     "upgrade:mainnet": "export NETWORK=mainnet&&yarn run upgrade --network mainnet",
     "test": "truffle test",
-    "test:unit": "truffle test $(find ./test/unit -name '*.*s')",
+    "test:unit": "hardhat test $(find ./test/unit -name '*.*s')",
     "test:integration": "truffle test $(find ./test/int -name '*.*s')",
     "test:kovan-integration": "truffle test $(find ./test/external/kovan -name '*.*s')",
     "test:fast": "truffle test $(find ./test/unit -name '*.*s') $(find ./test/int -name '*.*s')",
