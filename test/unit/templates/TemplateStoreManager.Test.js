@@ -30,8 +30,6 @@ contract('TemplateStoreManager', (accounts) => {
     } = {}) {
         if (!templateStoreManager) {
             common = await Common.new()
-            templateStoreLibrary = await TemplateStoreLibrary.new()
-            await TemplateStoreManager.link('TemplateStoreLibrary', templateStoreLibrary.address)
             templateStoreManager = await TemplateStoreManager.new()
             await templateStoreManager.initialize(createRole)
         }
@@ -48,9 +46,6 @@ contract('TemplateStoreManager', (accounts) => {
 
     describe('deploy and setup', () => {
         it('contract should deploy', async () => {
-            // act-assert
-            const templateStoreLibrary = await TemplateStoreLibrary.new()
-            await TemplateStoreManager.link('TemplateStoreLibrary', templateStoreLibrary.address)
             await TemplateStoreManager.new()
         })
     })

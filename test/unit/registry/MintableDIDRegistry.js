@@ -27,10 +27,10 @@ contract('Mintable DIDRegistry', (accounts) => {
     async function setupTest() {
         if (!didRegistry) {
             didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistryLibraryProxy.link('DIDRegistryLibrary', didRegistryLibrary.address)
+            await DIDRegistryLibraryProxy.link(didRegistryLibrary)
             didRegistryLibraryProxy = await DIDRegistryLibraryProxy.new()
 
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
+            await DIDRegistry.link(didRegistryLibrary)
 
             didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner)

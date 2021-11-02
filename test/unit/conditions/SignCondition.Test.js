@@ -16,9 +16,13 @@ const testUtils = require('../../helpers/utils.js')
 contract('SignCondition constructor', (accounts) => {
     const createRole = accounts[0]
     const owner = accounts[1]
-    let epochLibrary
     let conditionStoreManager
     let signCondition
+
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+    })
 
     async function setupTest({
         conditionId = constants.bytes32.one,
@@ -27,9 +31,6 @@ contract('SignCondition constructor', (accounts) => {
         owner = accounts[1]
     } = {}) {
         if (!signCondition) {
-            epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
                 owner,
@@ -54,9 +55,6 @@ contract('SignCondition constructor', (accounts) => {
 
     describe('deploy and setup', () => {
         it('contract should deploy', async () => {
-            const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
             const conditionStoreManager = await ConditionStoreManager.new()
             const signCondition = await SignCondition.new()
             await signCondition.initialize(

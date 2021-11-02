@@ -18,11 +18,16 @@ const testUtils = require('../../helpers/utils.js')
 contract('Whitelisting Condition', (accounts) => {
     const owner = accounts[1]
     const createRole = accounts[0]
-    let epochLibrary
-    let hashListLibrary
     let hashList
     let conditionStoreManager
     let whitelistingCondition
+
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new()
+        const hashListLibrary = await HashListLibrary.new()
+        await HashLists.link(hashListLibrary)
+        await ConditionStoreManager.link(epochLibrary)
+    })
 
     beforeEach(async () => {
         await setupTest()
@@ -35,12 +40,6 @@ contract('Whitelisting Condition', (accounts) => {
         owner = accounts[1]
     } = {}) {
         if (!whitelistingCondition) {
-            epochLibrary = await EpochLibrary.new()
-            hashListLibrary = await HashListLibrary.new()
-
-            await HashLists.link('HashListLibrary', hashListLibrary.address)
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
             hashList = await HashLists.new()
             await hashList.initialize(
                 owner,
@@ -72,12 +71,6 @@ contract('Whitelisting Condition', (accounts) => {
 
     describe('deploy and setup', () => {
         it('contract should deploy', async () => {
-            const epochLibrary = await EpochLibrary.new()
-            const hashListLibrary = await HashListLibrary.new()
-
-            await HashLists.link('HashListLibrary', hashListLibrary.address)
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
             const hashList = await HashLists.new()
             await hashList.initialize(
                 owner,

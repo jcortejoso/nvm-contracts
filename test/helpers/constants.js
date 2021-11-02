@@ -17,7 +17,7 @@ const constants = {
     },
     error: {
         idAlreadyExists: 'Id already exists',
-        revert: 'Returned error: VM Exception while processing transaction: revert'
+        revert: 'VM Exception while processing transaction: revert'
     },
     condition: {
         state: {

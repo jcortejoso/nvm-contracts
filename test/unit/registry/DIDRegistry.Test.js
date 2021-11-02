@@ -36,7 +36,7 @@ contract('DIDRegistry', (accounts) => {
     async function setupTest() {
         if (!didRegistry) {
             const didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
+            await DIDRegistry.link(didRegistryLibrary)
             didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner)
             common = await Common.new()

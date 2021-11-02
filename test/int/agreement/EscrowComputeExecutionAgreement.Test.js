@@ -13,7 +13,7 @@ const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
 const { getBalance } = require('../../helpers/getBalance.js')
-const increaseTime = require('../../helpers/increaseTime.ts')
+const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils')
 
 contract('Escrow Compute Execution Template integration test', (accounts) => {

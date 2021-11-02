@@ -77,13 +77,13 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
     describe('deploy and setup', () => {
         it('contract should deploy', async () => {
             const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
+            await ConditionStoreManager.link(epochLibrary)
             const conditionStoreManager = await ConditionStoreManager.new()
-            const agreementStoreLibrary = await AgreementStoreLibrary.new()
-            await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
+//            const agreementStoreLibrary = await AgreementStoreLibrary.new()
+//            await AgreementStoreManager.link(agreementStoreLibrary)
             const agreementStoreManager = await AgreementStoreManager.new()
             const didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
+            await DIDRegistry.link(didRegistryLibrary)
             const didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(accounts[0])
             const computeExecutionCondition = await ComputeExecutionCondition.new()

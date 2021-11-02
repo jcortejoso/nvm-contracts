@@ -21,7 +21,7 @@ contract('HashLists', (accounts) => {
     beforeEach(async () => {
         if (!hashList) {
             hashListLibrary = await HashListLibrary.new()
-            HashLists.link('HashListLibrary', hashListLibrary.address)
+            HashLists.link(hashListLibrary)
             hashList = await HashLists.new()
             await hashList.initialize(accounts[0], { from: owner })
             listId = await hashList.hash(owner)
@@ -276,7 +276,7 @@ contract('HashLists', (accounts) => {
 
         it('should fail in case of invalid list owner', async () => {
             const oldValue = await hashList.hash(testUtils.generateAccount().address)
-            const invalidOwner = testUtils.generateAccount().address
+            const invalidOwner = accounts[19]
             await hashList.methods['add(bytes32)'](
                 oldValue,
                 {

@@ -33,16 +33,20 @@ contract('TransferNFT Condition constructor', (accounts) => {
     let paymentReceivers
     let token,
         didRegistry,
-        didRegistryLibrary,
-        epochLibrary,
         templateStoreManager,
-        agreementStoreLibrary,
         agreementStoreManager,
         conditionStoreManager,
         lockPaymentCondition,
         escrowCondition,
         transferCondition
 
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+        const didRegistryLibrary = await DIDRegistryLibrary.new()
+        await DIDRegistry.link(didRegistryLibrary)
+    })
+    
     async function setupTest({
         conditionId = testUtils.generateId(),
         conditionType = constants.address.dummy,
@@ -58,13 +62,9 @@ contract('TransferNFT Condition constructor', (accounts) => {
             token = await NeverminedToken.new()
             await token.initialize(owner, owner)
 
-            didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner)
 
-            epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
             conditionStoreManager = await ConditionStoreManager.new()
 
             templateStoreManager = await TemplateStoreManager.new()
@@ -73,8 +73,6 @@ contract('TransferNFT Condition constructor', (accounts) => {
                 { from: owner }
             )
 
-            agreementStoreLibrary = await AgreementStoreLibrary.new()
-            await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
             agreementStoreManager = await AgreementStoreManager.new()
             await agreementStoreManager.methods['initialize(address,address,address,address)'](
                 owner,
@@ -157,13 +155,9 @@ contract('TransferNFT Condition constructor', (accounts) => {
             const token = await NeverminedToken.new()
             await token.initialize(owner, owner)
 
-            const didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             const didRegistry = await DIDRegistry.new()
             didRegistry.initialize(owner)
 
-            const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
             const conditionStoreManager = await ConditionStoreManager.new()
 
             const templateStoreManager = await TemplateStoreManager.new()
@@ -172,8 +166,6 @@ contract('TransferNFT Condition constructor', (accounts) => {
                 { from: owner }
             )
 
-            const agreementStoreLibrary = await AgreementStoreLibrary.new()
-            await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
             const agreementStoreManager = await AgreementStoreManager.new()
             await agreementStoreManager.methods['initialize(address,address,address,address)'](
                 owner,

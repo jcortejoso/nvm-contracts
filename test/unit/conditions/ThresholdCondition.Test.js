@@ -24,6 +24,11 @@ contract('Threshold Condition', (accounts) => {
     let thresholdCondition
     const randomConditions = []
 
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+    })
+
     async function setupTest({
         conditionId = testUtils.generateId(),
         conditionType = constants.address.dummy,
@@ -34,9 +39,6 @@ contract('Threshold Condition', (accounts) => {
         MaxNConditions = 50
     } = {}) {
         if (!thresholdCondition) {
-            epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
                 owner,
@@ -138,9 +140,6 @@ contract('Threshold Condition', (accounts) => {
 
     describe('deploy and setup', () => {
         it('contract should deploy', async () => {
-            const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
             const conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
                 owner,

@@ -13,7 +13,7 @@ const ConditionStoreLibrary = artifacts.require('ConditionStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 
 const constants = require('../../helpers/constants.js')
-const increaseTime = require('../../helpers/increaseTime.ts')
+const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('ConditionStoreManager', (accounts) => {
@@ -26,6 +26,11 @@ contract('ConditionStoreManager', (accounts) => {
     const createRole = accounts[0]
     const owner = accounts[0]
 
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+    })
+
     beforeEach(async () => {
         await setupTest()
     })
@@ -34,11 +39,6 @@ contract('ConditionStoreManager', (accounts) => {
         // let conditionId = testUtils.generateId()
         if (!conditionStoreManager) {
             common = await Common.new()
-            epochLibrary = await EpochLibrary.new()
-            ConditionStoreLibrary.link('EpochLibrary', epochLibrary.address)
-            conditionStoreLibrary = await ConditionStoreLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-            await ConditionStoreManager.link('ConditionStoreLibrary', conditionStoreLibrary.address)
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
                 owner,
@@ -56,12 +56,6 @@ contract('ConditionStoreManager', (accounts) => {
 
     describe('deploy and initialize', () => {
         it('contract should deploy', async () => {
-            // act-assert
-            const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreLibrary.link('EpochLibrary', epochLibrary.address)
-            const conditionStoreLibrary = await ConditionStoreLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-            await ConditionStoreManager.link('ConditionStoreLibrary', conditionStoreLibrary.address)
             await ConditionStoreManager.new()
         })
 

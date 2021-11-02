@@ -19,19 +19,24 @@ const { getBalance, getETHBalance } = require('../../../helpers/getBalance.js')
 const testUtils = require('../../../helpers/utils.js')
 
 contract('EscrowPaymentCondition constructor', (accounts) => {
-    let epochLibrary
     let conditionStoreManager
     let token
     let lockPaymentCondition
     let escrowPayment
     let didRegistry
-    let didRegistryLibrary
 
     const createRole = accounts[0]
     const owner = accounts[9]
     const deployer = accounts[8]
     const checksum = testUtils.generateId()
     const url = 'https://nevermined.io/did/test-attr-example.txt'
+
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+        const didRegistryLibrary = await DIDRegistryLibrary.new()
+        await DIDRegistry.link(didRegistryLibrary)
+    })
 
     beforeEach(async () => {
         await setupTest()
@@ -42,9 +47,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
         conditionType = testUtils.generateId()
     } = {}) {
         if (!escrowPayment) {
-            epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
                 owner,
@@ -56,8 +58,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 { from: owner }
             )
 
-            didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner)
 
@@ -94,8 +94,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
 
     describe('init failure', () => {
         it('needed contract addresses cannot be 0', async () => {
-            const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
             const conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
@@ -108,8 +106,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
                 { from: owner }
             )
 
-            const didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             const didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner)
 

@@ -30,19 +30,21 @@ contract('LockPaymentCondition', (accounts) => {
     const checksum = testUtils.generateId()
     const url = 'https://nevermined.io/did/test-attr-example.txt'
 
+    before(async () => {
+        epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+        didRegistryLibrary = await DIDRegistryLibrary.new()
+        await DIDRegistry.link(didRegistryLibrary)
+    })
+
     beforeEach(async () => {
         await setupTest()
     })
 
     async function setupTest() {
         if (!conditionStoreManager) {
-            didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner, { from: owner })
-
-            epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(owner, { from: owner })
@@ -68,13 +70,8 @@ contract('LockPaymentCondition', (accounts) => {
 
     describe('init failure', () => {
         it('needed contract addresses cannot be 0', async () => {
-            const didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             const didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner, { from: owner })
-
-            const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
             const conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(owner, { from: owner })
