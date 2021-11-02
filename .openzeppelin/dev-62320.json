@@ -3955,22 +3955,7 @@
       }
     }
   },
-  "solidityLibs": {
-    "DIDRegistryLibrary": {
-      "address": "0x93468169aB043284E53fb005Db176c8f3ea1b3AE",
-      "constructorCode": "6106ba610026600b82828239805160001a60731461001957fe5b30600052607381538281f3fe",
-      "bodyBytecodeHash": "486a10ef5fcc04db63ed94cbea8b333eb3a6afb9e94726a41510010ae550481e",
-      "localBytecodeHash": "24bb001c372130c2c311b36a849f5b1eb22e8abbb552392ed21f78c9e6905d44",
-      "deployedBytecodeHash": "24bb001c372130c2c311b36a849f5b1eb22e8abbb552392ed21f78c9e6905d44"
-    },
-    "EpochLibrary": {
-      "address": "0x42623Afd182D3752e2505DaD90563d85B539DD9B",
-      "constructorCode": "610247610026600b82828239805160001a60731461001957fe5b30600052607381538281f3fe",
-      "bodyBytecodeHash": "e2e30a7cceab0a3c02f64ff88d67978fdccbc77d1fe5be29adba09742885e87e",
-      "localBytecodeHash": "787503c016c0242b15c4eaf25a6439f34aeeb67a5849a235d5f6e01a33f8b847",
-      "deployedBytecodeHash": "787503c016c0242b15c4eaf25a6439f34aeeb67a5849a235d5f6e01a33f8b847"
-    }
-  },
+  "solidityLibs": {},
   "proxies": {
     "@nevermined-io/contracts/DIDRegistry": [
       {
