@@ -8,7 +8,6 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const Common = artifacts.require('Common')
-const TemplateStoreLibrary = artifacts.require('TemplateStoreLibrary')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 
 const constants = require('../../helpers/constants.js')
@@ -16,7 +15,6 @@ const testUtils = require('../../helpers/utils.js')
 
 contract('TemplateStoreManager', (accounts) => {
     let common,
-        templateStoreLibrary,
         templateStoreManager,
         templateId
 

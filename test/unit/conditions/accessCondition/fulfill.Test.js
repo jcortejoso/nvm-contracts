@@ -7,7 +7,6 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const EpochLibrary = artifacts.require('EpochLibrary')
-const AgreementStoreLibrary = artifacts.require('AgreementStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const DIDRegistry = artifacts.require('DIDRegistry')

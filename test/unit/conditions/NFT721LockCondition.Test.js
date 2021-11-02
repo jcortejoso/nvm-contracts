@@ -17,10 +17,8 @@ const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('NFT721LockCondition', (accounts) => {
-    let epochLibrary
     let conditionStoreManager
     let didRegistry
-    let didRegistryLibrary
     let lockCondition
     let erc721
     let nftTokenAddress

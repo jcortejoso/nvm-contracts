@@ -94,7 +94,6 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
 
     describe('init failure', () => {
         it('needed contract addresses cannot be 0', async () => {
-
             const conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
                 owner,

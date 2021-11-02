@@ -15,7 +15,6 @@ const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('HashLockCondition constructor', (accounts) => {
-    let epochLibrary
     let conditionStoreManager
     let hashLockCondition
 

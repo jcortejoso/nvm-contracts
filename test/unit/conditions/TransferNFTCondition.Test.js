@@ -9,7 +9,6 @@ const EpochLibrary = artifacts.require('EpochLibrary')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
 const NeverminedToken = artifacts.require('NeverminedToken')
-const AgreementStoreLibrary = artifacts.require('AgreementStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
@@ -46,7 +45,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
         const didRegistryLibrary = await DIDRegistryLibrary.new()
         await DIDRegistry.link(didRegistryLibrary)
     })
-    
+
     async function setupTest({
         conditionId = testUtils.generateId(),
         conditionType = constants.address.dummy,

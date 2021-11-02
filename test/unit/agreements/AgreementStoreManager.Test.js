@@ -9,7 +9,6 @@ chai.use(chaiAsPromised)
 
 const Common = artifacts.require('Common')
 const EpochLibrary = artifacts.require('EpochLibrary')
-const AgreementStoreLibrary = artifacts.require('AgreementStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
@@ -94,7 +93,6 @@ contract('AgreementStoreManager', (accounts) => {
 
     describe('deploy and setup', () => {
         it('contract should deploy', async () => {
-
             // const agreementStoreLibrary = await AgreementStoreLibrary.new()
             // await AgreementStoreManager.link(agreementStoreLibrary)
             await AgreementStoreManager.new()

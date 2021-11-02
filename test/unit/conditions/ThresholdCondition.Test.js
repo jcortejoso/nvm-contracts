@@ -19,7 +19,6 @@ contract('Threshold Condition', (accounts) => {
     const createRole = accounts[0]
     let hashLockCondition
     let randomConditionID
-    let epochLibrary
     let conditionStoreManager
     let thresholdCondition
     const randomConditions = []
