@@ -31,6 +31,7 @@ const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('End to End NFT Collateral Scenario', (accounts) => {
+    console.log(accounts)
     const lender = accounts[1]
     const borrower = accounts[2]
 
@@ -76,18 +77,16 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
         const didRegistryLibrary = await DIDRegistryLibrary.new()
         await DIDRegistry.link(didRegistryLibrary)
-        didRegistry = await DIDRegistry.new()
+        didRegistry = await DIDRegistry.new({gas: 19000000})
         await didRegistry.initialize(owner)
 
         const epochLibrary = await EpochLibrary.new()
-        await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
+        await ConditionStoreManager.link(epochLibrary)
         conditionStoreManager = await ConditionStoreManager.new()
 
         templateStoreManager = await TemplateStoreManager.new()
         await templateStoreManager.initialize(owner, { from: deployer })
 
-        const agreementStoreLibrary = await AgreementStoreLibrary.new()
-        await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
         agreementStoreManager = await AgreementStoreManager.new()
         await agreementStoreManager.methods['initialize(address,address,address,address)'](
             owner,
@@ -118,6 +117,8 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             nftLockCondition.address,
             { from: owner }
         )
+
+        console.log("transfer nft")
 
         aaveCollateralDeposit = await AaveCollateralDeposit.new()
 
@@ -164,6 +165,8 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             transferNftCondition.address,
             { from: deployer }
         )
+
+        console.log("make erc20")
 
         erc721 = await TestERC721.new()
         await erc721.initialize({ from: owner })
@@ -265,8 +268,14 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         }
     }
 
-    describe('Create a credit NFT collateral agreement', () => {
+    describe('Create a credit NFT collateral agreement', function () {
+        this.timeout(100000)
         it('Create a credit agreement', async () => {
+            await network.provider.request({
+                method: "hardhat_impersonateAccount",
+                params: ["0xAFD49D613467c0DaBf47B8f5C841089d96Cf7167"],
+            })
+
             const { didRegistry, aaveCreditTemplate } = await setupTest()
 
             const result = await aaveCreditTemplate.deployVault(

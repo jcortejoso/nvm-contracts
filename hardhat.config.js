@@ -10,6 +10,9 @@ module.exports = {
         hardhat: {
             allowUnlimitedContractSize: true,
             initialBaseFeePerGas: 0
-        }
+        },
+        external: {
+            url: 'http://localhost:18545',
+        },
     }
 }

@@ -78,14 +78,13 @@ jobs:
           ALCHEMY_TOKEN: ${{ secrets.KOVAN_ALCHEMY_TOKEN }}
         run: |
           yarn
-          npm install ganache-cli@~6.12.2 -g
-          ganache-cli -q --unlock 0xAFD49D613467c0DaBf47B8f5C841089d96Cf7167 -p 18545 -f https://eth-kovan.alchemyapi.io/v2/-$ALCHEMY_TOKEN &
+          yarn run hardhat node --port 18545 --fork https://eth-kovan.alchemyapi.io/v2/-$ALCHEMY_TOKEN --fork-block-number 28000000 &
       - name: Compile and Lint
         run: |
           yarn lint
           yarn clean
           yarn compile
-      - name: Run Upgrade Tests
+      - name: Run Kovan Tests
         run: |
           yarn test:kovan-integration
         env:

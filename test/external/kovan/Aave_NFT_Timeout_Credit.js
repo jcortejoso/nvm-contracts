@@ -75,19 +75,17 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         await token.initialize(owner, owner)
 
         const didRegistryLibrary = await DIDRegistryLibrary.new()
-        await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
+        await DIDRegistry.link(didRegistryLibrary)
         didRegistry = await DIDRegistry.new()
         await didRegistry.initialize(owner)
 
         const epochLibrary = await EpochLibrary.new()
-        await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
+        await ConditionStoreManager.link(epochLibrary)
         conditionStoreManager = await ConditionStoreManager.new()
 
         templateStoreManager = await TemplateStoreManager.new()
         await templateStoreManager.initialize(owner, { from: deployer })
 
-        const agreementStoreLibrary = await AgreementStoreLibrary.new()
-        await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
         agreementStoreManager = await AgreementStoreManager.new()
         await agreementStoreManager.methods['initialize(address,address,address,address)'](
             owner,
@@ -264,8 +262,13 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         }
     }
 
-    describe('Create a credit NFT collateral agreement', () => {
+    describe('Create a credit NFT collateral agreement', function () {
+        this.timeout(100000)
         it('Create a credit agreement', async () => {
+            await network.provider.request({
+                method: "hardhat_impersonateAccount",
+                params: ["0xAFD49D613467c0DaBf47B8f5C841089d96Cf7167"],
+            });
             const { didRegistry, aaveCreditTemplate } = await setupTest()
 
             const result = await aaveCreditTemplate.deployVault(
