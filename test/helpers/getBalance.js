@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js')
-/* globals web3 */
+/* globals web3 BigInt */
 
 const getBalance = async (token, address) => {
     return web3.utils.toDecimal(
