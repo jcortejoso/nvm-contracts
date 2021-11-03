@@ -206,7 +206,7 @@ contract('Access Proof Template integration test', (accounts) => {
         }
     }
 
-    describe('create and fulfill escrow agreement', function () {
+    describe('create and fulfill escrow agreement', function() {
         this.timeout(100000)
         it('should create escrow agreement and fulfill with multiple reward addresses', async () => {
             const { owner } = await setupTest()
@@ -340,7 +340,7 @@ contract('Access Proof Template integration test', (accounts) => {
         })
     })
 
-    describe('create and fulfill escrow agreement with access secret store and timeLock', function () {
+    describe('create and fulfill escrow agreement with access secret store and timeLock', function() {
         this.timeout(100000)
         it('should create escrow agreement and fulfill', async () => {
             const { owner } = await setupTest()
