@@ -16,7 +16,6 @@ const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
 const EpochLibrary = artifacts.require('EpochLibrary')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
-const AgreementStoreLibrary = artifacts.require('AgreementStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
@@ -65,6 +64,13 @@ contract('End to End NFT721 Scenarios', (accounts) => {
     const amounts2 = [90, 10]
     const receivers2 = [collector1, artist]
 
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+        const didRegistryLibrary = await DIDRegistryLibrary.new()
+        await DIDRegistry.link(didRegistryLibrary)
+    })
+
     let
         didRegistry,
         token,
@@ -86,20 +92,14 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         token = await NeverminedToken.new()
         await token.initialize(owner, owner)
 
-        const didRegistryLibrary = await DIDRegistryLibrary.new()
-        await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
         didRegistry = await DIDRegistry.new()
         await didRegistry.initialize(owner)
 
-        const epochLibrary = await EpochLibrary.new()
-        await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
         conditionStoreManager = await ConditionStoreManager.new()
 
         templateStoreManager = await TemplateStoreManager.new()
         await templateStoreManager.initialize(owner, { from: deployer })
 
-        const agreementStoreLibrary = await AgreementStoreLibrary.new()
-        await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
         agreementStoreManager = await AgreementStoreManager.new()
         await agreementStoreManager.methods['initialize(address,address,address,address)'](
             owner,

@@ -26,7 +26,8 @@ const F = new ZqField(Scalar.fromString('218882428718392752222464057452572750885
 const snarkjs = require('snarkjs')
 const { unstringifyBigInts } = require('ffjavascript').utils
 
-contract('Access Template integration test', (accounts) => {
+contract('Access Proof Template integration test', (accounts) => {
+    const web3 = global.web3
     let token,
         didRegistry,
         agreementStoreManager,
@@ -317,7 +318,7 @@ contract('Access Template integration test', (accounts) => {
             assert.strictEqual(result.logs.length, 0)
 
             // wait: for time out
-            await increaseTime.mineBlocks(timeOutAccess)
+            await increaseTime.mineBlocks(web3, timeOutAccess)
 
             // abort: fulfill access after timeout
             await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })
@@ -373,7 +374,7 @@ contract('Access Template integration test', (accounts) => {
             // expect(await accessCondition.checkPermissions(receiver, agreement.did)).to.equal(false)
 
             // wait: for time lock
-            await increaseTime.mineBlocks(timeLockAccess)
+            await increaseTime.mineBlocks(web3, timeLockAccess)
 
             // execute: fulfill access after time lock
             await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })

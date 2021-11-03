@@ -27,6 +27,8 @@ contract('Access Template integration test', (accounts) => {
         lockPaymentCondition,
         escrowPaymentCondition
 
+    const web3 = global.web3
+
     async function setupTest({
         deployer = accounts[8],
         owner = accounts[9]
@@ -227,7 +229,7 @@ contract('Access Template integration test', (accounts) => {
             assert.strictEqual(result.logs.length, 0)
 
             // wait: for time out
-            await increaseTime.mineBlocks(timeOutAccess)
+            await increaseTime.mineBlocks(web3, timeOutAccess)
 
             // abort: fulfill access after timeout
             await accessCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
@@ -282,7 +284,7 @@ contract('Access Template integration test', (accounts) => {
             // expect(await accessCondition.checkPermissions(receiver, agreement.did)).to.equal(false)
 
             // wait: for time lock
-            await increaseTime.mineBlocks(timeLockAccess)
+            await increaseTime.mineBlocks(web3, timeLockAccess)
 
             // execute: fulfill access after time lock
             await accessCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })

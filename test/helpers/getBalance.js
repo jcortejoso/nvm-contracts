@@ -14,4 +14,11 @@ const getETHBalance = async (address) => {
         })
 }
 
-module.exports = { getBalance, getETHBalance }
+const getETHBalanceBN = async (address) => {
+    return web3.eth.getBalance(address, 'latest')
+        .then((balance) => {
+            return new BigNumber(balance)
+        })
+}
+
+module.exports = { getBalance, getETHBalance, getETHBalanceBN }

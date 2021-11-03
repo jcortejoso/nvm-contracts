@@ -17,6 +17,7 @@ const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils')
 
 contract('Escrow Compute Execution Template integration test', (accounts) => {
+    const web3 = global.web3
     let token,
         didRegistry,
         agreementStoreManager,
@@ -227,7 +228,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             assert.strictEqual(result.logs.length, 0)
 
             // wait: for time out
-            await increaseTime.mineBlocks(timeOutAccess)
+            await increaseTime.mineBlocks(web3, timeOutAccess)
 
             // abort: fulfill access after timeout
             await computeExecutionCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
@@ -279,7 +280,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             )
 
             // wait: for time lock
-            await increaseTime.mineBlocks(timeLockAccess)
+            await increaseTime.mineBlocks(web3, timeLockAccess)
 
             // execute: fulfill access after time lock
             await computeExecutionCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
