@@ -12,7 +12,7 @@ module.exports = {
             initialBaseFeePerGas: 0
         },
         external: {
-            url: 'http://localhost:18545',
-        },
+            url: 'http://localhost:18545'
+        }
     }
 }

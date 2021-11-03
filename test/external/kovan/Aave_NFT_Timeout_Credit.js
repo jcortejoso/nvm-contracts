@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it */
+/* global artifacts, contract, describe, it, network */
 
 const chai = require('chai')
 const { assert } = chai
@@ -18,7 +18,6 @@ const AaveCollateralWithdraw = artifacts.require('AaveCollateralWithdrawConditio
 const EpochLibrary = artifacts.require('EpochLibrary')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
-const AgreementStoreLibrary = artifacts.require('AgreementStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
@@ -262,13 +261,13 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         }
     }
 
-    describe('Create a credit NFT collateral agreement', function () {
+    describe('Create a credit NFT collateral agreement', function() {
         this.timeout(100000)
         it('Create a credit agreement', async () => {
             await network.provider.request({
-                method: "hardhat_impersonateAccount",
-                params: ["0xAFD49D613467c0DaBf47B8f5C841089d96Cf7167"],
-            });
+                method: 'hardhat_impersonateAccount',
+                params: ['0xAFD49D613467c0DaBf47B8f5C841089d96Cf7167']
+            })
             const { didRegistry, aaveCreditTemplate } = await setupTest()
 
             const result = await aaveCreditTemplate.deployVault(
