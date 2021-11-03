@@ -10,7 +10,7 @@ const getBalance = async (token, address) => {
 const getETHBalance = async (address) => {
     return web3.eth.getBalance(address, 'latest')
         .then((balance) => {
-            return new BigNumber(balance).toNumber()
+            return BigInt(balance)
         })
 }
 

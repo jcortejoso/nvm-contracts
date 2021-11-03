@@ -18,7 +18,7 @@ const constants = require('../../../helpers/constants.js')
 const { getBalance, getETHBalance } = require('../../../helpers/getBalance.js')
 const testUtils = require('../../../helpers/utils.js')
 
-contract('EscrowPaymentCondition constructor', (accounts) => {
+contract('EscrowPaymentCondition contract', (accounts) => {
     let conditionStoreManager
     let token
     let lockPaymentCondition
@@ -240,7 +240,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             const agreementId = testUtils.generateId()
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, accounts[0])
-            const totalAmount = 500000000000
+            const totalAmount = 500000000000n
             const amounts = [totalAmount]
             const receivers = [accounts[1]]
 
@@ -282,11 +282,11 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             //            console.log('Balance Contract Before: ' + balanceContractBefore)
             //            console.log('Balance Receiver Before: ' + balanceReceiverBefore)
 
-            assert.isAtLeast(balanceSenderBefore, totalAmount)
+            assert(balanceSenderBefore >= totalAmount)
 
             await lockPaymentCondition.fulfill(
                 agreementId, did, escrowPayment.address, constants.address.zero, amounts, receivers,
-                { from: sender, value: totalAmount })
+                { from: sender, value: Number(totalAmount), gasPrice: 0 })
 
             const balanceSenderAfterLock = await getETHBalance(sender)
             const balanceContractAfterLock = await getETHBalance(escrowPayment.address)
@@ -296,8 +296,8 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             // console.log('Balance Contract Lock: ' + balanceContractAfterLock)
             // console.log('Balance Receiver Lock: ' + balanceReceiverAfterLock)
 
-            assert.isAtMost(balanceSenderAfterLock, balanceSenderBefore - totalAmount)
-            assert.isAtLeast(balanceContractAfterLock, balanceContractBefore + totalAmount)
+            assert(balanceSenderAfterLock >= balanceSenderBefore - totalAmount)
+            assert(balanceContractAfterLock <= balanceContractBefore + totalAmount)
 
             const result = await escrowPayment.fulfill(
                 agreementId,
@@ -319,7 +319,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             expect(eventArgs._agreementId).to.equal(agreementId)
             expect(eventArgs._conditionId).to.equal(escrowConditionId)
             expect(eventArgs._receivers[0]).to.equal(receivers[0])
-            expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
+            expect(eventArgs._amounts[0].toNumber()).to.equal(Number(amounts[0]))
 
             const balanceSenderAfterEscrow = await getETHBalance(sender)
             const balanceContractAfterEscrow = await getETHBalance(escrowPayment.address)
@@ -329,9 +329,9 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             // console.log('Balance Contract Escrow: ' + balanceContractAfterEscrow)
             // console.log('Balance Receiver Escrow: ' + balanceReceiverAfterEscrow)
 
-            assert.isAtMost(balanceSenderAfterEscrow, balanceSenderBefore - totalAmount)
-            assert.isAtMost(balanceContractAfterEscrow, balanceContractBefore)
-            assert.isAtLeast(balanceReceiverAfterEscrow, balanceReceiverBefore + totalAmount)
+            assert(balanceSenderAfterEscrow <= balanceSenderBefore - totalAmount)
+            assert(balanceContractAfterEscrow <= balanceContractBefore)
+            assert(balanceReceiverAfterEscrow >= balanceReceiverBefore + totalAmount)
             await assert.isRejected(
                 escrowPayment.fulfill(agreementId, did, amounts, receivers, escrowPayment.address, constants.address.zero, lockConditionId, releaseConditionId),
                 undefined
@@ -342,7 +342,7 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             const agreementId = testUtils.generateId()
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, accounts[0])
-            const totalAmount = 500000000000
+            const totalAmount = 500000000000n
             const sender = accounts[0]
             const amounts = [totalAmount]
             const receivers = [escrowPayment.address]
@@ -380,17 +380,17 @@ contract('EscrowPaymentCondition constructor', (accounts) => {
             const balanceSenderBefore = await getETHBalance(sender)
             const balanceContractBefore = await getETHBalance(escrowPayment.address)
 
-            assert.isAtLeast(balanceSenderBefore, totalAmount)
+            assert(balanceSenderBefore >= totalAmount)
 
             await lockPaymentCondition.fulfill(
                 agreementId, did, escrowPayment.address, constants.address.zero, amounts, receivers,
-                { from: sender, value: totalAmount })
+                { from: sender, value: String(totalAmount) })
 
             const balanceSenderAfterLock = await getETHBalance(sender)
             const balanceContractAfterLock = await getETHBalance(escrowPayment.address)
 
-            assert.isAtMost(balanceSenderAfterLock, balanceSenderBefore - totalAmount)
-            assert.isAtLeast(balanceContractAfterLock, balanceContractBefore + totalAmount)
+            assert(balanceSenderAfterLock <= balanceSenderBefore - totalAmount)
+            assert(balanceContractAfterLock >= balanceContractBefore + totalAmount)
 
             await assert.isRejected(
                 escrowPayment.fulfill(agreementId, did, amounts, receivers, escrowPayment.address, constants.address.zero, lockConditionId, releaseConditionId),
