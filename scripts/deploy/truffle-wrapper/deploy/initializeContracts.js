@@ -100,7 +100,7 @@ async function initializeContracts({
         const PlonkVerifier = await ethers.getContractFactory('PlonkVerifier')
         const plonkVerifier = await upgrades.deployProxy(PlonkVerifier)
         await plonkVerifier.deployed()
-        cache['PlonkVerifier'] = plonkVerifier
+        cache.PlonkVerifier = plonkVerifier
         proxies.PlonkVerifier = plonkVerifier.address
     }
 
@@ -503,7 +503,7 @@ async function initializeContracts({
         }
     }
 
-    return {cache, addressBook}
+    return { cache, addressBook }
 }
 
 module.exports = initializeContracts

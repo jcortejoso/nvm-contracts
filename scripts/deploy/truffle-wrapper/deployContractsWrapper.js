@@ -7,7 +7,8 @@ const { getImplementationAddress } = require('@openzeppelin/upgrades-core')
 const { ethers, upgrades } = require('hardhat')
 const glob = require('glob')
 const fs = require('fs')
-const { name, version } = require(`${process.env.PWD}/package.json`)
+
+const { version } = JSON.parse(fs.readFileSync('./package.json'))
 
 const web3Utils = require('web3-utils')
 
@@ -55,9 +56,9 @@ function createArtifact(
 }
 
 async function exportArtifacts(contracts, addressBook) {
-    let files = glob.sync('./artifacts/**/*.json').filter(a => !a.match('.dbg.')).filter(a => contracts.some(b => a.match(b+'.json')))
-    let provider = {
-        send: function (method, params) {
+    const files = glob.sync('./artifacts/**/*.json').filter(a => !a.match('.dbg.')).filter(a => contracts.some(b => a.match(b + '.json')))
+    const provider = {
+        send: function(method, params) {
             return new Promise((resolve, reject) => {
                 web3.currentProvider.send(
                     {
@@ -70,18 +71,18 @@ async function exportArtifacts(contracts, addressBook) {
                         if (error) {
                             return reject(error)
                         }
-                            resolve(result.result)
+                        resolve(result.result)
                     }
                 )
             })
         }
     }
-    for (let c of contracts) {
+    for (const c of contracts) {
         const implAddress = await getImplementationAddress(provider, addressBook[c])
-        let file = files.find(a => a.match(c))
-        let contract = JSON.parse(fs.readFileSync(file))
-        let artifact = createArtifact(c, contract, addressBook[c], implAddress, `v${version}`)
-        fs.writeFileSync(`new-artifacts/${c}.json`, JSON.stringify(artifact,null,2))
+        const file = files.find(a => a.match(c))
+        const contract = JSON.parse(fs.readFileSync(file))
+        const artifact = createArtifact(c, contract, addressBook[c], implAddress, `v${version}`)
+        fs.writeFileSync(`new-artifacts/${c}.json`, JSON.stringify(artifact, null, 2))
     }
 }
 
@@ -114,7 +115,7 @@ async function main() {
     }
 
     console.log(roles)
-    const {cache, addressBook} = await initializeContracts({
+    const { cache, addressBook } = await initializeContracts({
         contracts,
         roles,
         network: '',
@@ -133,9 +134,9 @@ async function main() {
 
     contracts.push('DIDRegistryLibrary')
     contracts.push('EpochLibrary')
-    addressBook['DIDRegistryLibrary'] = didRegistryLibrary.address
-    addressBook['EpochLibrary'] = epochLibrary.address
-    addressBook['PlonkVerifier'] = cache['PlonkVerifier'].address
+    addressBook.DIDRegistryLibrary = didRegistryLibrary.address
+    addressBook.EpochLibrary = epochLibrary.address
+    addressBook.PlonkVerifier = cache.PlonkVerifier.address
     await exportArtifacts(contracts, addressBook)
 
     process.exit(0)
