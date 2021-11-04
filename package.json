@@ -22,7 +22,7 @@
     "audit:staging": "export NETWORK=staging&&yarn run audit --network staging",
     "audit:production": "export NETWORK=production&&yarn run audit --network production",
     "audit:mainnet": "export NETWORK=mainnet&&yarn run audit --network mainnet",
-    "deploy": "npx truffle exec ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js",
+    "deploy": "npx hardhat exec ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js",
     "deploy:development": "export NETWORK=development&&yarn deploy --network development --testnet true",
     "deploy:aurora-testnet": "export NETWORK=aurora-testnet&&yarn deploy --network aurora-testnet --testnet true",
     "deploy:aurora": "export NETWORK=aurora&&yarn deploy --network aurora",

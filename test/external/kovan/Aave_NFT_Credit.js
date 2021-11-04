@@ -30,7 +30,6 @@ const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('End to End NFT Collateral Scenario', (accounts) => {
-    console.log(accounts)
     const lender = accounts[1]
     const borrower = accounts[2]
 
@@ -117,8 +116,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             { from: owner }
         )
 
-        console.log('transfer nft')
-
         aaveCollateralDeposit = await AaveCollateralDeposit.new()
 
         await aaveCollateralDeposit.initialize(
@@ -164,8 +161,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             transferNftCondition.address,
             { from: deployer }
         )
-
-        console.log('make erc20')
 
         erc721 = await TestERC721.new()
         await erc721.initialize({ from: owner })

@@ -1,13 +1,21 @@
 /* eslint-disable no-console */
-const { zosCreate } = require('@nevermined-io/contract-tools')
 const ZeroAddress = '0x0000000000000000000000000000000000000000'
-/* eslint-disable-next-line security/detect-child-process */
-const { execSync } = require('child_process')
+const { ethers, upgrades } = require("hardhat")
+
+async function zosCreate({contract, args, libraries}) {
+    let C = await ethers.getContractFactory(contract, {libraries})
+    const c = await upgrades.deployProxy(C, args, {unsafeAllowLinkedLibraries: true})
+    await c.deployed()
+    console.log(`${contract}: ${c.address}`)
+    return c.address
+}
 
 async function initializeContracts({
     contracts,
     roles,
     network,
+    didRegistryLibrary,
+    epochLibrary,
     verbose = true
 } = {}) {
     // Deploy all implementations in the specified network.
@@ -34,17 +42,18 @@ async function initializeContracts({
     }
 
     if (contracts.indexOf('DIDRegistry') > -1) {
-        addressBook.DIDRegistry = zosCreate({
+        addressBook.DIDRegistry = await zosCreate({
             contract: 'DIDRegistry',
             network,
             args: [roles.deployer],
+            libraries: {"DIDRegistryLibrary": didRegistryLibrary},
             verbose
         })
     }
 
     // testnet only!
     if (contracts.indexOf('NeverminedToken') > -1) {
-        addressBook.NeverminedToken = zosCreate({
+        addressBook.NeverminedToken = await zosCreate({
             contract: 'NeverminedToken',
             network,
             args: [
@@ -63,7 +72,7 @@ async function initializeContracts({
         contracts.indexOf('Dispenser') > -1 &&
         getAddress('Token')
     ) {
-        addressBook.Dispenser = zosCreate({
+        addressBook.Dispenser = await zosCreate({
             contract: 'Dispenser',
             network,
             args: [
@@ -75,22 +84,24 @@ async function initializeContracts({
     }
 
     if (contracts.indexOf('ConditionStoreManager') > -1) {
-        addressBook.ConditionStoreManager = zosCreate({
+        addressBook.ConditionStoreManager = await zosCreate({
             contract: 'ConditionStoreManager',
             network,
+            libraries: {"EpochLibrary": epochLibrary},
             args: [roles.deployer],
             verbose
         })
     }
 
     if (contracts.indexOf('PlonkVerifier') > -1) {
-        const flags = verbose ? '-v' : '-s'
-        const TIMEOUT = 1 * 60 * 60 // 1 hour
-        proxies.PlonkVerifier = execSync(`npx zos create PlonkVerifier ${flags} --timeout ${TIMEOUT}`).toString().trim()
+        let PlonkVerifier = await ethers.getContractFactory('PlonkVerifier')
+        const plonkVerifier = await upgrades.deployProxy(PlonkVerifier)
+        await plonkVerifier.deployed()
+        proxies.PlonkVerifier = plonkVerifier.address
     }
 
     if (contracts.indexOf('TemplateStoreManager') > -1) {
-        addressBook.TemplateStoreManager = zosCreate({
+        addressBook.TemplateStoreManager = await zosCreate({
             contract: 'TemplateStoreManager',
             network,
             args: [roles.deployer],
@@ -100,7 +111,7 @@ async function initializeContracts({
 
     if (getAddress('ConditionStoreManager')) {
         if (contracts.indexOf('EscrowPaymentCondition') > -1) {
-            addressBook.EscrowPaymentCondition = zosCreate({
+            addressBook.EscrowPaymentCondition = await zosCreate({
                 contract: 'EscrowPaymentCondition',
                 network,
                 args: [
@@ -112,7 +123,7 @@ async function initializeContracts({
         }
 
         if (contracts.indexOf('SignCondition') > -1) {
-            addressBook.SignCondition = zosCreate({
+            addressBook.SignCondition = await zosCreate({
                 contract: 'SignCondition',
                 network,
                 args: [
@@ -124,7 +135,7 @@ async function initializeContracts({
         }
 
         if (contracts.indexOf('HashLockCondition') > -1) {
-            addressBook.HashLockCondition = zosCreate({
+            addressBook.HashLockCondition = await zosCreate({
                 contract: 'HashLockCondition',
                 network,
                 args: [
@@ -136,7 +147,7 @@ async function initializeContracts({
         }
 
         if (contracts.indexOf('ThresholdCondition') > -1) {
-            addressBook.ThresholdCondition = zosCreate({
+            addressBook.ThresholdCondition = await zosCreate({
                 contract: 'ThresholdCondition',
                 network,
                 args: [
@@ -148,7 +159,7 @@ async function initializeContracts({
         }
 
         if (contracts.indexOf('WhitelistingCondition') > -1) {
-            addressBook.WhitelistingCondition = zosCreate({
+            addressBook.WhitelistingCondition = await zosCreate({
                 contract: 'WhitelistingCondition',
                 network,
                 args: [
@@ -164,7 +175,7 @@ async function initializeContracts({
         getAddress('TemplateStoreManager') &&
         getAddress('DIDRegistry')) {
         if (contracts.indexOf('AgreementStoreManager') > -1) {
-            addressBook.AgreementStoreManager = zosCreate({
+            addressBook.AgreementStoreManager = await zosCreate({
                 contract: 'AgreementStoreManager',
                 network,
                 args: [
@@ -181,7 +192,7 @@ async function initializeContracts({
     if (getAddress('ConditionStoreManager') &&
         getAddress('DIDRegistry')) {
         if (contracts.indexOf('LockPaymentCondition') > -1) {
-            addressBook.LockPaymentCondition = zosCreate({
+            addressBook.LockPaymentCondition = await zosCreate({
                 contract: 'LockPaymentCondition',
                 network,
                 args: [
@@ -193,7 +204,7 @@ async function initializeContracts({
             })
         }
         if (contracts.indexOf('NFTHolderCondition') > -1) {
-            addressBook.NFTHolderCondition = zosCreate({
+            addressBook.NFTHolderCondition = await zosCreate({
                 contract: 'NFTHolderCondition',
                 network,
                 args: [
@@ -205,7 +216,7 @@ async function initializeContracts({
             })
         }
         if (contracts.indexOf('NFT721HolderCondition') > -1) {
-            addressBook.NFT721HolderCondition = zosCreate({
+            addressBook.NFT721HolderCondition = await zosCreate({
                 contract: 'NFT721HolderCondition',
                 network,
                 args: [
@@ -216,7 +227,7 @@ async function initializeContracts({
             })
         }
         if (contracts.indexOf('NFTAccessCondition') > -1) {
-            addressBook.NFTAccessCondition = zosCreate({
+            addressBook.NFTAccessCondition = await zosCreate({
                 contract: 'NFTAccessCondition',
                 network,
                 args: [
@@ -228,7 +239,7 @@ async function initializeContracts({
             })
         }
         if (getAddress('PlonkVerifier') && contracts.indexOf('AccessProofCondition') > -1) {
-            addressBook.AccessProofCondition = zosCreate({
+            addressBook.AccessProofCondition = await zosCreate({
                 contract: 'AccessProofCondition',
                 network,
                 args: [
@@ -241,7 +252,7 @@ async function initializeContracts({
             })
         }
         if (contracts.indexOf('TransferNFTCondition') > -1) {
-            addressBook.TransferNFTCondition = zosCreate({
+            addressBook.TransferNFTCondition = await zosCreate({
                 contract: 'TransferNFTCondition',
                 network,
                 args: [
@@ -255,7 +266,7 @@ async function initializeContracts({
         }
 
         if (contracts.indexOf('TransferDIDOwnershipCondition') > -1) {
-            addressBook.TransferDIDOwnershipCondition = zosCreate({
+            addressBook.TransferDIDOwnershipCondition = await zosCreate({
                 contract: 'TransferDIDOwnershipCondition',
                 network,
                 args: [
@@ -267,7 +278,7 @@ async function initializeContracts({
             })
         }
         if (contracts.indexOf('NFTLockCondition') > -1) {
-            addressBook.NFTLockCondition = zosCreate({
+            addressBook.NFTLockCondition = await zosCreate({
                 contract: 'NFTLockCondition',
                 network,
                 args: [
@@ -283,7 +294,7 @@ async function initializeContracts({
     if (getAddress('ConditionStoreManager') &&
         getAddress('AgreementStoreManager')) {
         if (contracts.indexOf('AccessCondition') > -1) {
-            addressBook.AccessCondition = zosCreate({
+            addressBook.AccessCondition = await zosCreate({
                 contract: 'AccessCondition',
                 network,
                 args: [
@@ -295,7 +306,7 @@ async function initializeContracts({
             })
         }
         if (contracts.indexOf('ComputeExecutionCondition') > -1) {
-            addressBook.ComputeExecutionCondition = zosCreate({
+            addressBook.ComputeExecutionCondition = await zosCreate({
                 contract: 'ComputeExecutionCondition',
                 network,
                 args: [
@@ -312,7 +323,7 @@ async function initializeContracts({
         getAddress('DIDRegistry') &&
         getAddress('LockPaymentCondition')) {
         if (contracts.indexOf('TransferNFT721Condition') > -1) {
-            addressBook.TransferNFT721Condition = zosCreate({
+            addressBook.TransferNFT721Condition = await zosCreate({
                 contract: 'TransferNFT721Condition',
                 network,
                 args: [
@@ -332,7 +343,7 @@ async function initializeContracts({
         getAddress('LockPaymentCondition') &&
         getAddress('EscrowPaymentCondition')) {
         if (contracts.indexOf('AccessTemplate') > -1) {
-            addressBook.AccessTemplate = zosCreate({
+            addressBook.AccessTemplate = await zosCreate({
                 contract: 'AccessTemplate',
                 network,
                 args: [
@@ -354,7 +365,7 @@ async function initializeContracts({
         getAddress('LockPaymentCondition') &&
         getAddress('EscrowPaymentCondition')) {
         if (contracts.indexOf('AccessProofTemplate') > -1) {
-            addressBook.AccessProofTemplate = zosCreate({
+            addressBook.AccessProofTemplate = await zosCreate({
                 contract: 'AccessProofTemplate',
                 network,
                 args: [
@@ -376,7 +387,7 @@ async function initializeContracts({
         getAddress('LockPaymentCondition') &&
         getAddress('EscrowPaymentCondition')) {
         if (contracts.indexOf('EscrowComputeExecutionTemplate') > -1) {
-            addressBook.EscrowComputeExecutionTemplate = zosCreate({
+            addressBook.EscrowComputeExecutionTemplate = await zosCreate({
                 contract: 'EscrowComputeExecutionTemplate',
                 network,
                 args: [
@@ -396,7 +407,7 @@ async function initializeContracts({
         getAddress('NFTAccessCondition') &&
         getAddress('NFTHolderCondition')) {
         if (contracts.indexOf('NFTAccessTemplate') > -1) {
-            addressBook.NFTAccessTemplate = zosCreate({
+            addressBook.NFTAccessTemplate = await zosCreate({
                 contract: 'NFTAccessTemplate',
                 network,
                 args: [
@@ -414,7 +425,7 @@ async function initializeContracts({
         getAddress('NFTAccessCondition') &&
         getAddress('NFT721HolderCondition')) {
         if (contracts.indexOf('NFT721AccessTemplate') > -1) {
-            addressBook.NFT721AccessTemplate = zosCreate({
+            addressBook.NFT721AccessTemplate = await zosCreate({
                 contract: 'NFT721AccessTemplate',
                 network,
                 args: [
@@ -433,7 +444,7 @@ async function initializeContracts({
         getAddress('TransferNFTCondition') &&
         getAddress('EscrowPaymentCondition')) {
         if (contracts.indexOf('NFTSalesTemplate') > -1) {
-            addressBook.NFTSalesTemplate = zosCreate({
+            addressBook.NFTSalesTemplate = await zosCreate({
                 contract: 'NFTSalesTemplate',
                 network,
                 args: [
@@ -453,7 +464,7 @@ async function initializeContracts({
         getAddress('TransferNFT721Condition') &&
         getAddress('EscrowPaymentCondition')) {
         if (contracts.indexOf('NFT721SalesTemplate') > -1) {
-            addressBook.NFT721SalesTemplate = zosCreate({
+            addressBook.NFT721SalesTemplate = await zosCreate({
                 contract: 'NFT721SalesTemplate',
                 network,
                 args: [
@@ -473,7 +484,7 @@ async function initializeContracts({
         getAddress('TransferDIDOwnershipCondition') &&
         getAddress('EscrowPaymentCondition')) {
         if (contracts.indexOf('DIDSalesTemplate') > -1) {
-            addressBook.DIDSalesTemplate = zosCreate({
+            addressBook.DIDSalesTemplate = await zosCreate({
                 contract: 'DIDSalesTemplate',
                 network,
                 args: [

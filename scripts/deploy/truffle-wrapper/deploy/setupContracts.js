@@ -7,10 +7,15 @@ async function approveTemplate({
 } = {}) {
     const contractOwner = await TemplateStoreManagerInstance.owner()
     if (contractOwner === roles.deployer) {
-        await TemplateStoreManagerInstance.approveTemplate(
-            templateAddress,
-            { from: roles.deployer }
-        )
+        try {
+            await TemplateStoreManagerInstance.approveTemplate(
+                templateAddress,
+                { from: roles.deployer, gas: 100000 }
+            )
+        }
+        catch (e) {
+            console.log('Approve failed for', templateAddress, roles.deployer, TemplateStoreManagerInstance.address)
+        }
     } else {
         // todo: make call to multi sig wallet here instead of warning!
         console.log('=====================================================================================')

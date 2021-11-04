@@ -973,21 +973,18 @@
     fastfile "0.0.19"
     ffjavascript "^0.2.30"
 
-"@nevermined-io/contract-tools@~0.2.5":
+"@nevermined-io/contract-tools@../contract-tools":
   version "0.2.5"
-  resolved "https://registry.yarnpkg.com/@nevermined-io/contract-tools/-/contract-tools-0.2.5.tgz#2ad3c8c1e44d87a5018c9d95dd6d76be9259e8a0"
-  integrity sha512-zs5WR+dw7ApYRhlePKioVnHv+7kExTrW5h0RPqZwofK7LfH0KowbCMPzBSrwLXRrgJHBJ3HowGBONK6yDXTanw==
   dependencies:
-    "@nevermined-io/multisigwallet" "^0.2.2"
+    "@nevermined-io/multisigwallet" "git+https://github.com/nevermined-io/multisigwallet.git#71b3ece2914e9a1afe43c56c38e213230a6f8230"
     "@truffle/contract" "~4.2.5"
     glob "^7.1.4"
-    web3-utils "~1.2.1"
+    web3-utils "~1.6.0"
     zos "2.2.3"
 
-"@nevermined-io/multisigwallet@^0.2.2":
+"@nevermined-io/multisigwallet@git+https://github.com/nevermined-io/multisigwallet.git#71b3ece2914e9a1afe43c56c38e213230a6f8230":
   version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@nevermined-io/multisigwallet/-/multisigwallet-0.2.2.tgz#8d499e965204309ec0ace9dddfe39d0adea8331d"
-  integrity sha512-OtNAH499xp1GPajTLn9CbA9grAhLKBVoQpdQsvvzUOlRoZxfpw+4PiixvDCXyrvqpLZm282cV85CyjSFFOiFag==
+  resolved "git+https://github.com/nevermined-io/multisigwallet.git#71b3ece2914e9a1afe43c56c38e213230a6f8230"
   dependencies:
     truffle "~5.1.25"
     truffle-hdwallet-provider "~1.0.12"
@@ -12024,7 +12021,7 @@ web3-utils@1.5.3:
     randombytes "^2.1.0"
     utf8 "3.0.0"
 
-web3-utils@1.6.0:
+web3-utils@1.6.0, web3-utils@~1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.6.0.tgz#1975c5ee5b7db8a0836eb7004848a7cd962d1ddc"
   integrity sha512-bgCAWAeQnJF035YTFxrcHJ5mGEfTi/McsjqldZiXRwlHK7L1PyOqvXiQLE053dlzvy1kdAxWl/sSSfLMyNUAXg==
@@ -12041,20 +12038,6 @@ web3-utils@^1.3.0:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.3.4.tgz#9b1aa30d7549f860b573e7bb7e690999e7192198"
   integrity sha512-/vC2v0MaZNpWooJfpRw63u0Y3ag2gNjAWiLtMSL6QQLmCqCy4SQIndMt/vRyx0uMoeGt1YTwSXEcHjUzOhLg0A==
-  dependencies:
-    bn.js "^4.11.9"
-    eth-lib "0.2.8"
-    ethereum-bloom-filters "^1.0.6"
-    ethjs-unit "0.1.6"
-    number-to-bn "1.7.0"
-    randombytes "^2.1.0"
-    underscore "1.9.1"
-    utf8 "3.0.0"
-
-web3-utils@~1.2.1:
-  version "1.2.11"
-  resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.2.11.tgz#af1942aead3fb166ae851a985bed8ef2c2d95a82"
-  integrity sha512-3Tq09izhD+ThqHEaWYX4VOT7dNPdZiO+c/1QMA0s5X2lDFKK/xHJb7cyTRRVzN2LvlHbR7baS1tmQhSua51TcQ==
   dependencies:
     bn.js "^4.11.9"
     eth-lib "0.2.8"

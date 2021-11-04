@@ -31,31 +31,6 @@ function evaluateContracts({
         }
     }
 
-    if (handleAliases) {
-        // do alias detection
-        for (const contract of contracts) {
-            const c = contract.split(':')
-            if (c.length < 2) continue
-            const [original, alias] = c
-            const basePath = './build/contracts'
-            const src = `${basePath}/${original}.json`
-            const dest = `${basePath}/${alias}.json`
-
-            // replace with the alias
-            contracts.splice(contracts.indexOf(contract), 1, alias)
-
-            // avoid overriding
-            if (!fs.existsSync(dest)) {
-                fs.copyFileSync(src, dest)
-                if (verbose) {
-                    console.log(
-                        `Copied contract artifact: '${original}' to '${alias}'`
-                    )
-                }
-            }
-        }
-    }
-
     if (verbose) {
         console.log(
             `Contracts: '${contracts.join(', ')}'`
