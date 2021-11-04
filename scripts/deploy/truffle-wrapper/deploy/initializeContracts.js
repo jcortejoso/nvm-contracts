@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 const ZeroAddress = '0x0000000000000000000000000000000000000000'
-const { ethers, upgrades } = require("hardhat")
+const { ethers, upgrades } = require('hardhat')
 
-async function zosCreate({contract, args, libraries}) {
-    let C = await ethers.getContractFactory(contract, {libraries})
-    const c = await upgrades.deployProxy(C, args, {unsafeAllowLinkedLibraries: true})
+async function zosCreate({ contract, args, libraries }) {
+    const C = await ethers.getContractFactory(contract, { libraries })
+    const c = await upgrades.deployProxy(C, args, { unsafeAllowLinkedLibraries: true })
     await c.deployed()
     console.log(`${contract}: ${c.address}`)
     return c.address
@@ -46,7 +46,7 @@ async function initializeContracts({
             contract: 'DIDRegistry',
             network,
             args: [roles.deployer],
-            libraries: {"DIDRegistryLibrary": didRegistryLibrary},
+            libraries: { DIDRegistryLibrary: didRegistryLibrary },
             verbose
         })
     }
@@ -87,14 +87,14 @@ async function initializeContracts({
         addressBook.ConditionStoreManager = await zosCreate({
             contract: 'ConditionStoreManager',
             network,
-            libraries: {"EpochLibrary": epochLibrary},
+            libraries: { EpochLibrary: epochLibrary },
             args: [roles.deployer],
             verbose
         })
     }
 
     if (contracts.indexOf('PlonkVerifier') > -1) {
-        let PlonkVerifier = await ethers.getContractFactory('PlonkVerifier')
+        const PlonkVerifier = await ethers.getContractFactory('PlonkVerifier')
         const plonkVerifier = await upgrades.deployProxy(PlonkVerifier)
         await plonkVerifier.deployed()
         proxies.PlonkVerifier = plonkVerifier.address

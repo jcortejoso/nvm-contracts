@@ -3,13 +3,11 @@
 // eslint-disable-next-line security/detect-non-literal-require
 const contractNames = require(`${process.env.PWD}/contracts.json`)
 const { argv } = require('yargs')
-const fs = require('fs')
 
 function evaluateContracts({
     contracts,
     testnet,
-    verbose,
-    handleAliases = true
+    verbose
 } = {}) {
     if (!contracts || contracts.length === 0) {
         // contracts not supplied, loading from disc

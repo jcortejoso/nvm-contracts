@@ -12,8 +12,7 @@ async function approveTemplate({
                 templateAddress,
                 { from: roles.deployer, gas: 100000 }
             )
-        }
-        catch (e) {
+        } catch (e) {
             console.log('Approve failed for', templateAddress, roles.deployer, TemplateStoreManagerInstance.address)
         }
     } else {
