@@ -4,9 +4,11 @@ const initializeContracts = require('./deploy/initializeContracts.js')
 const setupContracts = require('./deploy/setupContracts.js')
 const evaluateContracts = require('./evaluateContracts.js')
 const { getImplementationAddress } = require('@openzeppelin/upgrades-core')
-const { ethers, upgrades } = require('hardhat')
+const { ethers, upgrades, hardhatArguments } = require('hardhat')
 const glob = require('glob')
 const fs = require('fs')
+
+const network = hardhatArguments.network || 'hardhat'
 
 const { version } = JSON.parse(fs.readFileSync('./package.json'))
 
@@ -82,7 +84,7 @@ async function exportArtifacts(contracts, addressBook) {
         const file = files.find(a => a.match(c))
         const contract = JSON.parse(fs.readFileSync(file))
         const artifact = createArtifact(c, contract, addressBook[c], implAddress, `v${version}`)
-        fs.writeFileSync(`new-artifacts/${c}.json`, JSON.stringify(artifact, null, 2))
+        fs.writeFileSync(`new-artifacts/${c}.${network}.json`, JSON.stringify(artifact, null, 2))
     }
 }
 
