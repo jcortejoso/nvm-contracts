@@ -54,8 +54,8 @@ async function main() {
     addressBook.EpochLibrary = epochLibrary.address
     addressBook.PlonkVerifier = cache.PlonkVerifier.address
     const libraries = {
-        'DIDRegistry': { DIDRegistryLibrary: didRegistryLibrary.address },
-        'ConditionStoreManager': { EpochLibrary: epochLibrary.address },
+        DIDRegistry: { DIDRegistryLibrary: didRegistryLibrary.address },
+        ConditionStoreManager: { EpochLibrary: epochLibrary.address }
     }
     await exportArtifacts(contracts, addressBook, libraries)
 

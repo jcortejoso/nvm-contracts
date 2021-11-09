@@ -1,4 +1,4 @@
-/* global web3 */
+/* global ethers */
 const { upgrades } = require('hardhat')
 const { argv } = require('yargs')
 const { readArtifact, writeArtifact } = require('./artifacts')
@@ -14,16 +14,14 @@ async function main() {
         testnet
     })
 
-    for (let c of contracts) {
-        let afact = readArtifact(c)
+    for (const c of contracts) {
+        const afact = readArtifact(c)
         const C = await ethers.getContractFactory(c, { libraries: afact.libraries })
         console.log(`upgrading ${c} at ${afact.address}`)
-        let contract = await upgrades.upgradeProxy(afact.address, C, {unsafeAllowLinkedLibraries: true})
-        console.log(contract.address, afact.address)
+        const contract = await upgrades.upgradeProxy(afact.address, C, { unsafeAllowLinkedLibraries: true })
         await contract.deployed()
         await writeArtifact(c, contract, afact.libraries)
     }
-
 }
 
 main()

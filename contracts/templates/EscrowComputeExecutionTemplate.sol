@@ -102,4 +102,8 @@ contract EscrowComputeExecutionTemplate is BaseEscrowTemplate {
         conditionTypes.push(address(lockPaymentCondition));
         conditionTypes.push(address(escrowPayment));
     }
+
+    function name() public pure returns (string memory) {
+        return 'EscrowComputeExecutionTemplate';
+    }
 }
