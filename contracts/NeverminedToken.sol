@@ -1,11 +1,12 @@
-pragma solidity 0.6.12;
+pragma solidity ^0.8.0;
 // Copyright 2020 Keyko GmbH.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 /* solium-disable-next-line */
-import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20CappedUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20CappedUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol';
 /* solium-disable-next-line */
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 

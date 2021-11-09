@@ -1,4 +1,4 @@
-pragma solidity 0.6.12;
+pragma solidity ^0.8.0;
 // Copyright 2020 Keyko GmbH.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
@@ -14,7 +14,9 @@ import '../token/erc1155/NFTUpgradeable.sol';
  * @dev Implementation of a Mintable DID Registry.
  */
 contract DIDRegistry is DIDFactory, NFTUpgradeable {
-    
+
+    using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
+    using SafeMathUpgradeable for uint256;
 
     //////////////////////////////////////////////////////////////
     ////////  EVENTS  ////////////////////////////////////////////

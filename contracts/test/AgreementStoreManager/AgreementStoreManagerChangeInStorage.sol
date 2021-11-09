@@ -1,4 +1,4 @@
-pragma solidity 0.6.12;
+pragma solidity ^0.8.0;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)

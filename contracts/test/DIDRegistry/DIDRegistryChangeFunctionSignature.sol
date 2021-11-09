@@ -1,4 +1,4 @@
-pragma solidity 0.6.12;
+pragma solidity ^0.8.0;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
@@ -8,7 +8,7 @@ pragma solidity 0.6.12;
 import '../../registry/DIDFactory.sol';
 
 contract DIDRegistryChangeFunctionSignature is DIDFactory {
-
+    using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
     // swap _checksum with _did
     function registerAttribute (
         bytes32 _didSeed,

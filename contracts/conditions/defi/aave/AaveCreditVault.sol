@@ -1,4 +1,4 @@
-pragma solidity 0.6.12;
+pragma solidity ^0.8.0;
 // Copyright 2020 Keyko GmbH.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
@@ -9,7 +9,7 @@ import '../../../interfaces/IWETHGateway.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 contract AaveCreditVault is
@@ -219,8 +219,8 @@ contract AaveCreditVault is
     public 
     {
         require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
-        IERC20(_asset).approve(address(lendingPool), uint256(-1));
-        lendingPool.repay(_asset, uint256(-1), _interestRateMode, address(this));
+        IERC20(_asset).approve(address(lendingPool), uint256(2**256 - 1));
+        lendingPool.repay(_asset, uint256(2**256 - 1), _interestRateMode, address(this));
         
         require(getActualCreditDebt() == 0, 'Not enough amount to repay');
         repayConditionId = _repayConditionId;
@@ -320,7 +320,7 @@ contract AaveCreditVault is
     {
         require(hasRole(CONDITION_ROLE, msg.sender), 'Only conditions');
 
-        lendingPool.withdraw(_asset, uint256(-1), _delegator);
+        lendingPool.withdraw(_asset, uint256(2**256 - 1), _delegator);
         uint256 delegatorFee = borrowedAmount.div(FEE_BASE).mul(agreementFee);
         IERC20(borrowedAsset).transfer(_delegator, delegatorFee);
         uint256 finalBalance = IERC20(borrowedAsset).balanceOf(address(this));
