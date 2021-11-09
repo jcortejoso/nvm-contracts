@@ -91,7 +91,7 @@ async function exportArtifacts(contracts, addressBook) {
 async function main() {
     const parameters = argv._
     const verbose = true
-    const testnet = true
+    const testnet = process.env.TESTNET === true
     const contracts = evaluateContracts({
         contracts: parameters.splice(2),
         verbose,
@@ -99,9 +99,6 @@ async function main() {
     })
 
     const accounts = await web3.eth.getAccounts()
-    // console.log(web3.eth.accounts)
-
-    // console.log(contracts)
     const DIDRegistryLibrary = await ethers.getContractFactory('DIDRegistryLibrary')
     const didRegistryLibrary = await upgrades.deployProxy(DIDRegistryLibrary)
     await didRegistryLibrary.deployed()
@@ -116,7 +113,6 @@ async function main() {
         upgraderWallet: accounts[3]
     }
 
-    console.log(roles)
     const { cache, addressBook } = await initializeContracts({
         contracts,
         roles,
