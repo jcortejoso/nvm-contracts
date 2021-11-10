@@ -5,7 +5,15 @@ require('@openzeppelin/hardhat-upgrades')
 require('@nomiclabs/hardhat-truffle5')
 
 module.exports = {
-    solidity: '0.8.9',
+    solidity: {
+        version: '0.8.9',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 10,
+          },
+        },
+    },
     networks: {
         hardhat: {
             allowUnlimitedContractSize: true,

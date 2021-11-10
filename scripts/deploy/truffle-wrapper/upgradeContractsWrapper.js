@@ -7,7 +7,7 @@ const evaluateContracts = require('./evaluateContracts.js')
 async function main() {
     const parameters = argv._
     const verbose = true
-    const testnet = process.env.TESTNET === true
+    const testnet = process.env.TESTNET === 'true'
     const contracts = evaluateContracts({
         contracts: parameters.splice(2),
         verbose,

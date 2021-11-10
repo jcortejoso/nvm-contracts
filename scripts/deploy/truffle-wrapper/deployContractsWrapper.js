@@ -9,7 +9,7 @@ const { exportArtifacts } = require('./artifacts')
 async function main() {
     const parameters = argv._
     const verbose = true
-    const testnet = process.env.TESTNET === true
+    const testnet = process.env.TESTNET === 'true'
     const contracts = evaluateContracts({
         contracts: parameters.splice(2),
         verbose,
@@ -18,10 +18,12 @@ async function main() {
 
     const accounts = await web3.eth.getAccounts()
     const DIDRegistryLibrary = await ethers.getContractFactory('DIDRegistryLibrary')
-    const didRegistryLibrary = await upgrades.deployProxy(DIDRegistryLibrary)
+    const didRegistryLibrary = await DIDRegistryLibrary.deploy()
+    // const didRegistryLibrary = await upgrades.deployProxy(DIDRegistryLibrary)
     await didRegistryLibrary.deployed()
     const EpochLibrary = await ethers.getContractFactory('EpochLibrary')
-    const epochLibrary = await upgrades.deployProxy(EpochLibrary)
+    const epochLibrary = await EpochLibrary.deploy()
+    // const epochLibrary = await upgrades.deployProxy(EpochLibrary)
     await epochLibrary.deployed()
 
     const roles = {
@@ -48,8 +50,8 @@ async function main() {
         verbose
     })
 
-    contracts.push('DIDRegistryLibrary')
-    contracts.push('EpochLibrary')
+    // contracts.push('DIDRegistryLibrary')
+    // contracts.push('EpochLibrary')
     addressBook.DIDRegistryLibrary = didRegistryLibrary.address
     addressBook.EpochLibrary = epochLibrary.address
     addressBook.PlonkVerifier = cache.PlonkVerifier.address
