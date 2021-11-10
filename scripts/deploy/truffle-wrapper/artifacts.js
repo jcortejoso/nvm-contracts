@@ -1,4 +1,3 @@
-/* global web3 */
 const { hardhatArguments, upgrades } = require('hardhat')
 const glob = require('glob')
 const fs = require('fs')
@@ -73,7 +72,7 @@ async function writeArtifact(c, contract, libraries) {
     const files = glob.sync('./artifacts/**/*.json').filter(a => !a.match('.dbg.')).filter(a => a.match(c + '.json'))
     const file = files.find(a => a.match(c))
     const data = JSON.parse(fs.readFileSync(file))
-    const implAddress = await upgrades.erc1967.getImplementationAddress(addressBook[c])
+    const implAddress = await upgrades.erc1967.getImplementationAddress(contract.address)
     const artifact = createArtifact(c, data, contract.address, implAddress, `v${version}`, libraries || {})
     fs.writeFileSync(`new-artifacts/${c}.${network}.json`, JSON.stringify(artifact, null, 2))
 }

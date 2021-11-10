@@ -29,13 +29,15 @@ async function main() {
     let wallets = []
     try {
         wallets = JSON.parse(`wallets_${network}.json`)
-    } catch (_) {}
+    } catch (_) {
+        console.log('Using default accounts')
+    }
 
     const roles = {
         deployer: accounts[0],
         upgrader: accounts[1],
-        ownerWallet: accounts[2],
-        upgraderWallet: accounts[3]
+        ownerWallet: (wallets.find(a => a.name === 'owner') || { account: accounts[2] }).account,
+        upgraderWallet: (wallets.find(a => a.name === 'upgrader') || { account: accounts[3] }).account
     }
 
     const { cache, addressBook } = await initializeContracts({
