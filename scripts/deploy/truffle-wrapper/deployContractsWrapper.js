@@ -3,7 +3,7 @@ const { argv } = require('yargs')
 const initializeContracts = require('./deploy/initializeContracts.js')
 const setupContracts = require('./deploy/setupContracts.js')
 const evaluateContracts = require('./evaluateContracts.js')
-const { ethers } = require('hardhat')
+const { ethers, network } = require('hardhat')
 const { exportArtifacts } = require('./artifacts')
 
 async function main() {
@@ -25,6 +25,11 @@ async function main() {
     const epochLibrary = await EpochLibrary.deploy()
     // const epochLibrary = await upgrades.deployProxy(EpochLibrary)
     await epochLibrary.deployed()
+
+    let wallets = []
+    try {
+        wallets = JSON.parse(`wallets_${network}.json`)
+    } catch (_) {}
 
     const roles = {
         deployer: accounts[0],

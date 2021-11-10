@@ -1,6 +1,5 @@
 /* global web3 */
-const { getImplementationAddress } = require('@openzeppelin/upgrades-core')
-const { hardhatArguments } = require('hardhat')
+const { hardhatArguments, upgrades } = require('hardhat')
 const glob = require('glob')
 const fs = require('fs')
 
@@ -56,28 +55,8 @@ function createArtifact(
 
 async function exportArtifacts(contracts, addressBook, libraries) {
     const files = glob.sync('./artifacts/**/*.json').filter(a => !a.match('.dbg.')).filter(a => contracts.some(b => a.match(b + '.json')))
-    const provider = {
-        send: function(method, params) {
-            return new Promise((resolve, reject) => {
-                web3.currentProvider.send(
-                    {
-                        jsonrpc: '2.0',
-                        method,
-                        params,
-                        id: Date.now()
-                    },
-                    (error, result) => {
-                        if (error) {
-                            return reject(error)
-                        }
-                        resolve(result.result)
-                    }
-                )
-            })
-        }
-    }
     for (const c of contracts) {
-        const implAddress = await getImplementationAddress(provider, addressBook[c])
+        const implAddress = await upgrades.erc1967.getImplementationAddress(addressBook[c])
         const file = files.find(a => a.match(c))
         const contract = JSON.parse(fs.readFileSync(file))
         const artifact = createArtifact(c, contract, addressBook[c], implAddress, `v${version}`, libraries[c] || {})
@@ -92,29 +71,9 @@ function readArtifact(c) {
 
 async function writeArtifact(c, contract, libraries) {
     const files = glob.sync('./artifacts/**/*.json').filter(a => !a.match('.dbg.')).filter(a => a.match(c + '.json'))
-    const provider = {
-        send: function(method, params) {
-            return new Promise((resolve, reject) => {
-                web3.currentProvider.send(
-                    {
-                        jsonrpc: '2.0',
-                        method,
-                        params,
-                        id: Date.now()
-                    },
-                    (error, result) => {
-                        if (error) {
-                            return reject(error)
-                        }
-                        resolve(result.result)
-                    }
-                )
-            })
-        }
-    }
     const file = files.find(a => a.match(c))
     const data = JSON.parse(fs.readFileSync(file))
-    const implAddress = await getImplementationAddress(provider, contract.address)
+    const implAddress = await upgrades.erc1967.getImplementationAddress(addressBook[c])
     const artifact = createArtifact(c, data, contract.address, implAddress, `v${version}`, libraries || {})
     fs.writeFileSync(`new-artifacts/${c}.${network}.json`, JSON.stringify(artifact, null, 2))
 }
