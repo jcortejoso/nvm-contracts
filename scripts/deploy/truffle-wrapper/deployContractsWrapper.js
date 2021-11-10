@@ -3,7 +3,7 @@ const { argv } = require('yargs')
 const initializeContracts = require('./deploy/initializeContracts.js')
 const setupContracts = require('./deploy/setupContracts.js')
 const evaluateContracts = require('./evaluateContracts.js')
-const { ethers, upgrades } = require('hardhat')
+const { ethers } = require('hardhat')
 const { exportArtifacts } = require('./artifacts')
 
 async function main() {
