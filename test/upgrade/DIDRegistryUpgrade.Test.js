@@ -7,9 +7,13 @@ chai.use(chaiAsPromised)
 
 const testUtils = require('../helpers/utils.js')
 
+/*
 const {
     confirmUpgrade
 } = require('@nevermined-io/contract-tools')
+*/
+
+function confirmUpgrade() {}
 
 const {
     deploy,
@@ -171,18 +175,18 @@ contract('DIDRegistry', (accounts) => {
         it('Should be possible to append storage variables ', async () => {
             const { did } = await setupTest()
 
+            const DIDRegistryChangeInStorageInstance =
+                            await DIDRegistryChangeInStorage.at(DIDRegistryProxyAddress)
+
+            // should not be able to be called before upgrade is approved
+            await assert.isRejected(DIDRegistryChangeInStorageInstance.timeOfRegister(did))
+
             // Upgrade to new version
             const taskBook = await upgrade({
                 web3,
                 contracts: ['DIDRegistryChangeInStorage:DIDRegistry'],
                 verbose
             })
-
-            const DIDRegistryChangeInStorageInstance =
-                            await DIDRegistryChangeInStorage.at(DIDRegistryProxyAddress)
-
-            // should not be able to be called before upgrade is approved
-            await assert.isRejected(DIDRegistryChangeInStorageInstance.timeOfRegister(did))
 
             // call again after approved
             await confirmUpgrade(
@@ -200,18 +204,18 @@ contract('DIDRegistry', (accounts) => {
         it('Should be possible to append storage variables and change logic', async () => {
             const { did } = await setupTest()
 
+            const DIDRegistryChangeInStorageAndLogicInstance =
+                            await DIDRegistryChangeInStorageAndLogic.at(DIDRegistryProxyAddress)
+
+            // should not be able to be called before upgrade is approved
+            await assert.isRejected(DIDRegistryChangeInStorageAndLogicInstance.timeOfRegister(did))
+
             // Upgrade to new version
             const taskBook = await upgrade({
                 web3,
                 contracts: ['DIDRegistryChangeInStorageAndLogic:DIDRegistry'],
                 verbose
             })
-
-            const DIDRegistryChangeInStorageAndLogicInstance =
-                            await DIDRegistryChangeInStorageAndLogic.at(DIDRegistryProxyAddress)
-
-            // should not be able to be called before upgrade is approved
-            await assert.isRejected(DIDRegistryChangeInStorageAndLogicInstance.timeOfRegister(did))
 
             await confirmUpgrade(
                 web3,
@@ -257,18 +261,18 @@ contract('DIDRegistry', (accounts) => {
         it('Should be able to call new method added after upgrade is approved', async () => {
             await setupTest()
 
+            const DIDRegistryExtraFunctionalityInstance =
+                            await DIDRegistryExtraFunctionality.at(DIDRegistryProxyAddress)
+
+            // should not be able to be called before upgrade is approved
+            await assert.isRejected(DIDRegistryExtraFunctionalityInstance.getNumber())
+
             // Upgrade to new version
             const taskBook = await upgrade({
                 web3,
                 contracts: ['DIDRegistryExtraFunctionality:DIDRegistry'],
                 verbose
             })
-
-            const DIDRegistryExtraFunctionalityInstance =
-                            await DIDRegistryExtraFunctionality.at(DIDRegistryProxyAddress)
-
-            // should not be able to be called before upgrade is approved
-            await assert.isRejected(DIDRegistryExtraFunctionalityInstance.getNumber())
 
             await confirmUpgrade(
                 web3,

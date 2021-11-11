@@ -9,8 +9,8 @@ async function zosCreate({ contract, args, libraries, verbose, cache }) {
     cache[contract] = c
     if (verbose) {
         console.log(`${contract}: ${c.address}`)
-        return c.address
     }
+    return c.address
 }
 
 async function initializeContracts({

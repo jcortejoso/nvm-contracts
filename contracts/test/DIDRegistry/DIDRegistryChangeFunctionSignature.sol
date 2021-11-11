@@ -5,9 +5,9 @@ pragma solidity ^0.8.0;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 // Contain upgraded version of the contracts for test
-import '../../registry/DIDFactory.sol';
+import '../../registry/DIDRegistry.sol';
 
-contract DIDRegistryChangeFunctionSignature is DIDFactory {
+contract DIDRegistryChangeFunctionSignature is DIDRegistry {
     using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
     // swap _checksum with _did
     function registerAttribute (

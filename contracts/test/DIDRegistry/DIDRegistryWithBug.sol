@@ -5,9 +5,9 @@ pragma solidity ^0.8.0;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 // Contain upgraded version of the contracts for test
-import '../../registry/DIDFactory.sol';
+import '../../registry/DIDRegistry.sol';
 
-contract DIDRegistryWithBug is DIDFactory {
+contract DIDRegistryWithBug is DIDRegistry {
     using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
     /**
      * @notice registerAttribute is called only by DID owner.

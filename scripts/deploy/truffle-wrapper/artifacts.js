@@ -75,6 +75,7 @@ async function writeArtifact(c, contract, libraries) {
     const implAddress = await upgrades.erc1967.getImplementationAddress(contract.address)
     const artifact = createArtifact(c, data, contract.address, implAddress, `v${version}`, libraries || {})
     fs.writeFileSync(`new-artifacts/${c}.${network}.json`, JSON.stringify(artifact, null, 2))
+    return artifact
 }
 
 module.exports = {

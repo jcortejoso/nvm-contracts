@@ -104,10 +104,7 @@ async function setupContracts({
      * -----------------------------------------------------------------------
      */
     if (addressBook.TemplateStoreManager) {
-        const TemplateStoreManager =
-            artifacts.require('TemplateStoreManager')
-        const TemplateStoreManagerInstance =
-            await TemplateStoreManager.at(addressBook.TemplateStoreManager)
+        const TemplateStoreManagerInstance = artifacts.TemplateStoreManager
 
         await setupTemplate({
             verbose,
@@ -175,16 +172,14 @@ async function setupContracts({
 
         await transferOwnership({
             ContractInstance: TemplateStoreManagerInstance,
-            name: TemplateStoreManager.contractName,
+            name: 'TemplateStoreManager',
             roles,
             verbose
         })
     }
 
     if (addressBook.ConditionStoreManager) {
-        const ConditionStoreManager = artifacts.require('ConditionStoreManager')
-        const ConditionStoreManagerInstance =
-            await ConditionStoreManager.at(addressBook.ConditionStoreManager)
+        const ConditionStoreManagerInstance = artifacts.ConditionStoreManager
 
         if (addressBook.AgreementStoreManager) {
             if (verbose) {
@@ -201,16 +196,14 @@ async function setupContracts({
 
         await transferOwnership({
             ContractInstance: ConditionStoreManagerInstance,
-            name: ConditionStoreManager.contractName,
+            name: 'ConditionStoreManager',
             roles,
             verbose
         })
     }
 
     if (addressBook.TransferDIDOwnershipCondition && addressBook.DIDRegistry) {
-        const DIDRegistry = artifacts.require('DIDRegistry')
-        const DIDRegistryInstance =
-            await DIDRegistry.at(addressBook.DIDRegistry)
+        const DIDRegistryInstance = artifacts.DIDRegistry
 
         console.log('TransferDIDOwnershipCondition : ' + addressBook.TransferDIDOwnershipCondition)
         await DIDRegistryInstance.setManager(
@@ -218,9 +211,7 @@ async function setupContracts({
     }
 
     if (addressBook.TransferNFTCondition && addressBook.DIDRegistry) {
-        const DIDRegistry = artifacts.require('DIDRegistry')
-        const DIDRegistryInstance =
-            await DIDRegistry.at(addressBook.DIDRegistry)
+        const DIDRegistryInstance = artifacts.DIDRegistry
 
         console.log('TransferNFTCondition : ' + addressBook.TransferNFTCondition)
         await DIDRegistryInstance.setProxyApproval(
@@ -228,21 +219,18 @@ async function setupContracts({
     }
 
     if (addressBook.DIDRegistry) {
-        const DIDRegistry = artifacts.require('DIDRegistry')
-        const DIDRegistryInstance =
-            await DIDRegistry.at(addressBook.DIDRegistry)
+        const DIDRegistryInstance = artifacts.DIDRegistry
 
         await transferOwnership({
             ContractInstance: DIDRegistryInstance,
-            name: DIDRegistry.contractName,
+            name: 'DIDRegistry',
             roles,
             verbose
         })
     }
 
     if (addressBook.NeverminedToken) {
-        const NeverminedToken = artifacts.require('NeverminedToken')
-        const token = await NeverminedToken.at(addressBook.NeverminedToken)
+        const token = artifacts.NeverminedToken
 
         if (addressBook.Dispenser) {
             if (verbose) {
