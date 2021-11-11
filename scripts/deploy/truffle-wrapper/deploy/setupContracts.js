@@ -240,7 +240,7 @@ async function setupContracts({
             }
 
             await token.grantRole(
-                web3.utils.toHex('minter'),
+                web3.utils.toHex('minter').padEnd(66, '0'),
                 addressBook.Dispenser,
                 { from: roles.deployer }
             )
@@ -254,7 +254,7 @@ async function setupContracts({
 
         // await token.renounceMinter({ from: roles.deployer })
         await token.revokeRole(
-            web3.utils.toHex('minter'),
+            web3.utils.toHex('minter').padEnd(66, '0'),
             roles.deployer,
             { from: roles.deployer }
         )
