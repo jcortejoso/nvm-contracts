@@ -291,6 +291,21 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
         return updateState;
     }
 
+    function updateConditionMapping(
+        bytes32 _id,
+        bytes32 _key,
+        bytes32 _value
+    )
+    external
+    onlyUpdateRole(_id)
+    {
+        conditionList.updateKeyValue(
+            _id, 
+            _key, 
+            _value
+        );
+    }
+    
     /**
      * @dev getConditionListSize 
      * @return size the length of the condition list 
@@ -377,6 +392,18 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
         return conditionList.conditions[_id].createdBy;
     }
 
+    /**
+     * @dev getConditionState  
+     * @return condition state
+     */
+    function getMappingValue(bytes32 _id, bytes32 _key)
+    external
+    view
+    virtual
+    returns (bytes32)
+    {
+        return conditionList.map[_id][_key];
+    }    
 
     /**
      * @dev isConditionTimeLocked  

@@ -1,6 +1,6 @@
 {
   "name": "@nevermined-io/contracts",
-  "version": "1.1.8",
+  "version": "1.2.0",
   "description": "Nevermined implementation of Nevermined in Solidity",
   "bugs": {
     "url": "https://github.com/nevermined-io/contracts/issues"
@@ -27,6 +27,7 @@
     "deploy:aurora-testnet": "export NETWORK=aurora-testnet&&yarn deploy --network aurora-testnet --testnet true",
     "deploy:aurora": "export NETWORK=aurora&&yarn deploy --network aurora",
     "deploy:spree": "export NETWORK=spree&&yarn deploy --network spree --testnet true",
+    "deploy:polygon-localnet": "export NETWORK=polygon-localnet&&yarn deploy --network polygon-localnet --testnet true",
     "deploy:rinkeby": "export NETWORK=rinkeby&&yarn deploy --network rinkeby --testnet true",
     "deploy:alfajores": "export NETWORK=celo-alfajores&&yarn deploy --network celo-alfajores --testnet true",
     "deploy:baklava": "export NETWORK=celo-baklava&&yarn deploy --network celo-baklava --testnet true",
@@ -51,6 +52,7 @@
     "test": "truffle test",
     "test:unit": "truffle test $(find ./test/unit -name '*.*s')",
     "test:integration": "truffle test $(find ./test/int -name '*.*s')",
+    "test:kovan-integration": "truffle test $(find ./test/external/kovan -name '*.*s')",
     "test:fast": "truffle test $(find ./test/unit -name '*.*s') $(find ./test/int -name '*.*s')",
     "test:upgrade": "truffle test $(find ./test/upgrade -name '*.*s')",
     "test:cover": "truffle run coverage",
@@ -61,7 +63,7 @@
     "clean": "yarn clean:build&&yarn clean:coverage&&yarn clean:zos",
     "clean:build": "rm -rf ./build/ ./artifacts/*.development.json ./artifacts/*.spree.json",
     "clean:coverage": "rm -rf ./coverage/ ./coverageEnv/ ./coverage.json",
-    "clean:zos": "rm -rf ./zos.json ./zos.dev-8996.json ./.zos.session ./wallets.json zos/",
+    "clean:zos": "rm -rf ./zos.json ./zos.dev-8996.json ./zos.dev-8997.json ./.zos.session ./wallets.json zos/",
     "lint": "yarn lint:eslint&&yarn lint:ethlint",
     "lint:eslint": "eslint --ignore-path .gitignore --ignore-pattern circuits --ext .js .",
     "lint:ethlint": "solhint --max-warnings 0 'contracts/**/*.sol'",

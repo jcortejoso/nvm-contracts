@@ -22,7 +22,16 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
     bytes32 private constant CONDITION_TYPE = keccak256('TransferNFTCondition');
 
     DIDRegistry private registry;
-    
+    address private _lockConditionAddress;
+
+    event Fulfilled(
+        bytes32 indexed _agreementId,
+        bytes32 indexed _did,
+        address indexed _receiver,
+        uint256 _amount,
+        bytes32 _conditionId,
+        address _contract
+    );    
     
    /**
     * @notice initialize init the contract with the following parameters
@@ -35,7 +44,8 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress
+        address _didRegistryAddress,
+        address _lockNFTConditionAddress
     )
         external
         initializer()
@@ -43,7 +53,8 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         require(
             _owner != address(0) &&
             _conditionStoreManagerAddress != address(0) &&
-            _didRegistryAddress != address(0),
+            _didRegistryAddress != address(0) &&
+            _lockNFTConditionAddress != address(0),
             'Invalid address'
         );
         
@@ -56,7 +67,8 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
 
         registry = DIDRegistry(
             _didRegistryAddress
-        );        
+        );
+        _lockConditionAddress = _lockNFTConditionAddress;
     }
 
    /**
@@ -126,16 +138,24 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
             lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
             'LockCondition needs to be Fulfilled'
         );
+
+        // Check that nft receiver is the same enabled in the lock payment condition
+        require(
+            conditionStoreManager.bytes32ToAddress(
+                conditionStoreManager.getMappingValue(_lockPaymentCondition, keccak256('_assetReceiverAddress'))
+            ) == _nftReceiver,
+            'Invalid receiver'
+        );
         
         IERC721Upgradeable token = IERC721Upgradeable(_contract);
-
+        address nftOwner = token.ownerOf(uint256(_did));
         require(
-            _nftAmount == 0 || (_nftAmount == 1 && token.ownerOf(uint256(_did)) == msg.sender),
+            _nftAmount == 0 || (_nftAmount == 1 && nftOwner == msg.sender),        
             'Not enough balance'
         );
 
         if (_nftAmount == 1) {
-            token.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did));
+            token.safeTransferFrom(nftOwner, _nftReceiver, uint256(_did));
         }
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(

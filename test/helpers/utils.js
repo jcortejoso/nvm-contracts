@@ -6,6 +6,10 @@ const utils = {
         return web3.utils.sha3(Math.random().toString())
     },
 
+    sha3: (message) => {
+        return web3.utils.sha3(message)
+    },
+
     generateAccount: () => {
         return web3.eth.accounts.create()
     },

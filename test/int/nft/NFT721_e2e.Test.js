@@ -123,10 +123,11 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         )
 
         transferCondition = await TransferNFTCondition.new()
-        await transferCondition.methods['initialize(address,address,address)'](
+        await transferCondition.methods['initialize(address,address,address,address)'](
             owner,
             conditionStoreManager.address,
             didRegistry.address,
+            lockPaymentCondition.address,
             { from: deployer }
         )
 
@@ -270,7 +271,15 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                 await token.approve(lockPaymentCondition.address, nftPrice, { from: collector1 })
                 await token.approve(escrowCondition.address, nftPrice, { from: collector1 })
 
-                await lockPaymentCondition.fulfill(agreementId, did, escrowCondition.address, token.address, amounts, receivers, { from: collector1 })
+                await lockPaymentCondition.fulfill(
+                    agreementId,
+                    did,
+                    escrowCondition.address,
+                    token.address,
+                    amounts,
+                    receivers,
+                    { from: collector1 }
+                )
 
                 const { state } = await conditionStoreManager.getCondition(nftSalesAgreement.conditionIds[0])
                 assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
@@ -280,6 +289,14 @@ contract('End to End NFT721 Scenarios', (accounts) => {
 
             it('The artist can check the payment and transfer the NFT to the collector', async () => {
                 await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
+
+                const mappingValue = await conditionStoreManager.getMappingValue(
+                    nftSalesAgreement.conditionIds[0],
+                    testUtils.sha3('_assetReceiverAddress')
+                )
+                const addressInMapping = await conditionStoreManager.bytes32ToAddress(mappingValue)
+                assert.strictEqual(collector1, addressInMapping)
+
                 await transferCondition.fulfill(
                     agreementId,
                     did,
