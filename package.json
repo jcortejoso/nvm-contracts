@@ -93,6 +93,7 @@
   "author": "Nevermined",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@gnosis.pm/safe-contracts": "1.2.0",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-truffle5": "^2.0.2",
     "@nomiclabs/hardhat-web3": "^2.0.0",
@@ -118,6 +119,7 @@
     "findit": "^2.0.0",
     "glob": "^7.2.0",
     "hardhat": "^2.6.7",
+    "hardhat-dependency-compiler": "^1.1.2",
     "mathjs": "~7.5.1",
     "prettier": "^2.1.2",
     "snarkjs": "^0.4.6",
@@ -141,5 +143,8 @@
     "zos/web3": "1.5.3",
     "zos-lib/web3": "1.5.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@gnosis.pm/safe-core-sdk": "^1.0.0",
+    "@gnosis.pm/safe-deployments": "^1.4.0"
+  }
 }

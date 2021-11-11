@@ -7,6 +7,7 @@ async function main() {
     await deployContracts({
         contracts: argv._.splice(2),
         verbose,
+        makeWallet: true,
         testnet
     })
     process.exit(0)

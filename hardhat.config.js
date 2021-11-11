@@ -3,16 +3,38 @@
  */
 require('@openzeppelin/hardhat-upgrades')
 require('@nomiclabs/hardhat-truffle5')
+require('hardhat-dependency-compiler');
 
 module.exports = {
     solidity: {
-        version: '0.8.9',
-        settings: {
-            optimizer: {
-                enabled: true,
-                runs: 10
+        compilers: [
+            {
+                version: '0.8.9',
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 10
+                    }
+                }
+            },
+            {
+                version: '0.5.3',
+                settings: {
+                    evmVersion: 'constantinople',
+                    optimizer: {
+                        enabled: true,
+                        runs: 10
+                    }
+                }
             }
-        }
+        ]
+    },
+    dependencyCompiler: {
+        paths: [
+            '@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol',
+            '@gnosis.pm/safe-contracts/contracts/libraries/MultiSend.sol',
+            '@gnosis.pm/safe-contracts/contracts/proxies/GnosisSafeProxyFactory.sol'
+        ],
     },
     networks: {
         hardhat: {
