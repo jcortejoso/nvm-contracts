@@ -37,7 +37,7 @@
     "deploy:staging": "export NETWORK=staging&&yarn deploy --network staging",
     "deploy:production": "export NETWORK=production&&yarn deploy --network production",
     "deploy:mainnet": "export NETWORK=mainnet&&yarn deploy --network mainnet",
-    "upgrade": "npx truffle exec ./scripts/deploy/truffle-wrapper/upgradeContractsWrapper.js",
+    "upgrade": "npx hardhat run ./scripts/deploy/truffle-wrapper/upgradeContractsWrapper.js",
     "upgrade:development": "export NETWORK=development&&yarn run upgrade --network development --testnet true",
     "upgrade:external": "export NETWORK=external&&export TESTNET=true&&yarn run upgrade --network external",
     "upgrade:aurora-testnet": "export NETWORK=aurora-testnet&&yarn run upgrade --network aurora-testnet --testnet true",
