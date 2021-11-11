@@ -1,13 +1,13 @@
-/* global artifacts, web3 */
+/* global web3 */
 const initializeContracts = require('./deploy/initializeContracts.js')
 const setupContracts = require('./deploy/setupContracts.js')
 const evaluateContracts = require('./evaluateContracts.js')
 const { ethers, network } = require('hardhat')
 const { exportArtifacts } = require('./artifacts')
 
-async function deployContracts({ contracts: orig_contracts, verbose, testnet }) {
+async function deployContracts({ contracts: origContracts, verbose, testnet }) {
     const contracts = evaluateContracts({
-        contracts: orig_contracts,
+        contracts: origContracts,
         verbose,
         testnet
     })

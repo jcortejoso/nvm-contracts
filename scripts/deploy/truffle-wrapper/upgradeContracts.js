@@ -3,10 +3,10 @@ const { upgrades } = require('hardhat')
 const { readArtifact, writeArtifact } = require('./artifacts')
 const evaluateContracts = require('./evaluateContracts.js')
 
-async function upgradeContracts({ contracts: orig_contracts, verbose, testnet }) {
+async function upgradeContracts({ contracts: origContracts, verbose, testnet }) {
     const table = {}
     let contracts = []
-    for (const e of orig_contracts) {
+    for (const e of origContracts) {
         if (e.match(':')) {
             const [a, b] = e.split(':')
             table[b] = a

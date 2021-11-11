@@ -1,20 +1,11 @@
 /* eslint-env mocha */
-/* global artifacts, web3, contract, describe, xit, it, beforeEach */
+/* global artifacts, web3, contract, describe, it, beforeEach */
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const constants = require('../helpers/constants.js')
-
-/*
-const {
-    confirmUpgrade,
-    loadWallet,
-    submitTransaction,
-    confirmTransaction
-} = require('@nevermined-io/contract-tools')
-*/
 
 function confirmUpgrade() {}
 
@@ -32,12 +23,10 @@ const ConditionStoreExtraFunctionality = artifacts.require('ConditionStoreExtraF
 const ConditionStoreWithBug = artifacts.require('ConditionStoreWithBug')
 
 contract('ConditionStoreManager', (accounts) => {
-    let conditionStoreManagerAddress,
-        ownerWallet
+    let conditionStoreManagerAddress
 
     const verbose = false
 
-    const upgrader = accounts[1]
     const approver = accounts[2]
     const conditionCreater = accounts[5]
 
@@ -48,13 +37,6 @@ contract('ConditionStoreManager', (accounts) => {
             contracts: ['ConditionStoreManager'],
             verbose
         })
-
-        /*
-        ownerWallet = await loadWallet(
-            web3,
-            'owner',
-            verbose
-        ) */
 
         conditionStoreManagerAddress = addressBook.ConditionStoreManager
         assert(conditionStoreManagerAddress)
