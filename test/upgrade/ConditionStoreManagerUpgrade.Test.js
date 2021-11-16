@@ -99,7 +99,7 @@ contract('ConditionStoreManager', (accounts) => {
             const ConditionStoreChangeFunctionSignatureInstance =
                 await ConditionStoreChangeFunctionSignature.at(conditionStoreManagerAddress)
 
-            await ConditionStoreChangeFunctionSignatureInstance.delegateCreateRole(conditionCreater, { from: accounts[2] })
+            await ConditionStoreChangeFunctionSignatureInstance.delegateCreateRole(conditionCreater, { from: accounts[0] })
             // call delegateCreateRole over multi sig wallet
             /*
             const txId = await submitTransaction(
@@ -191,7 +191,7 @@ contract('ConditionStoreManager', (accounts) => {
             const ConditionStoreChangeInStorageAndLogicInstance =
                 await ConditionStoreChangeInStorageAndLogic.at(conditionStoreManagerAddress)
 
-            await ConditionStoreChangeInStorageAndLogicInstance.delegateCreateRole(conditionCreater, { from: accounts[2] })
+            await ConditionStoreChangeInStorageAndLogicInstance.delegateCreateRole(conditionCreater, { from: accounts[0] })
             /*
                 const txId = await submitTransaction(
                 ownerWallet,

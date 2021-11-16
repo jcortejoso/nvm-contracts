@@ -5,7 +5,10 @@ const fs = require('fs')
 
 async function loadWallet({ makeWallet }) {
     const accounts = await web3.eth.getAccounts()
-    let wallets = []
+    let wallets = [
+        { name: 'owner', account: accounts[0] },
+        { name: 'upgrader', account: accounts[0] }
+    ]
     let contractNetworks = {}
     if (makeWallet) {
         const SafeContract = await ethers.getContractFactory('GnosisSafe')
