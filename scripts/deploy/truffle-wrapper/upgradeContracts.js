@@ -26,7 +26,7 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet }) 
 
     const taskBook = {}
 
-    let {roles, contractNetworks} = await loadWallet({})
+    const { roles, contractNetworks } = await loadWallet({})
 
     for (const c of contracts) {
         const afact = readArtifact(c)
@@ -41,44 +41,43 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet }) 
         } catch (e) {
             const address = await upgrades.prepareUpgrade(afact.address, C, { unsafeAllowLinkedLibraries: true })
             taskBook[c] = await updateArtifact(c, afact.address, address, afact.libraries)
-            let prevAddress = await upgrades.erc1967.getImplementationAddress(afact.address)
+            const prevAddress = await upgrades.erc1967.getImplementationAddress(afact.address)
             if (address !== prevAddress) {
                 console.log('Nothing to upgrade')
             } else {
                 console.log('Multisig upgrade', address, prevAddress)
-                let adminAddress = await upgrades.erc1967.getAdminAddress(afact.address)
-                let adminABI = [
+                const adminAddress = await upgrades.erc1967.getAdminAddress(afact.address)
+                const adminABI = [
                     {
-                        "inputs": [
+                        inputs: [
                             {
-                                "name": "proxy",
-                                "type": "address"
+                                name: 'proxy',
+                                type: 'address'
                             },
                             {
-                                "name": "implementation",
-                                "type": "address"
+                                name: 'implementation',
+                                type: 'address'
                             }
                         ],
-                        "name": "upgrade",
-                        "stateMutability": "nonpayable",
-                        "type": "function",
-                      },
+                        name: 'upgrade',
+                        stateMutability: 'nonpayable',
+                        type: 'function'
+                    }
                 ]
-                let admin = new ethers.Contract(adminAddress, adminABI)
-                let tx = await admin.populateTransaction.upgrade(afact.address, address)
+                const admin = new ethers.Contract(adminAddress, adminABI)
+                const tx = await admin.populateTransaction.upgrade(afact.address, address)
                 console.log(tx)
 
-                const ethAdapterOwner1 = new EthersAdapter({ ethers,  signer: ethers.provider.getSigner(0), contractNetworks })
-                const ethAdapterOwner2 = new EthersAdapter({ ethers,  signer: ethers.provider.getSigner(1), contractNetworks })
+                const ethAdapterOwner1 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(0), contractNetworks })
+                const ethAdapterOwner2 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(1), contractNetworks })
                 const safeSdk1 = await Safe.default.create({ ethAdapter: ethAdapterOwner1, safeAddress: roles.upgraderWallet, contractNetworks })
-                const safeTx = await safeSdk1.createTransaction({...tx, value: 0})
+                const safeTx = await safeSdk1.createTransaction({ ...tx, value: 0 })
                 const txHash = await safeSdk1.getTransactionHash(safeTx)
                 const res1 = await safeSdk1.approveTransactionHash(txHash)
                 await res1.transactionResponse?.wait()
                 const safeSdk2 = await Safe.default.create({ ethAdapter: ethAdapterOwner2, safeAddress: roles.upgraderWallet, contractNetworks })
                 const res2 = await safeSdk2.executeTransaction(safeTx)
                 await res2.transactionResponse?.wait()
-
             }
         }
     }

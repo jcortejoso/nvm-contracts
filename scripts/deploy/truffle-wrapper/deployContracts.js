@@ -2,10 +2,9 @@
 const initializeContracts = require('./deploy/initializeContracts.js')
 const setupContracts = require('./deploy/setupContracts.js')
 const evaluateContracts = require('./evaluateContracts.js')
-const { ethers, hardhatArguments, upgrades } = require('hardhat')
+const { ethers, upgrades } = require('hardhat')
 const { exportArtifacts } = require('./artifacts')
 const { loadWallet } = require('./wallets.js')
-const network = hardhatArguments.network || 'hardhat'
 
 async function deployContracts({ contracts: origContracts, verbose, testnet, makeWallet }) {
     const contracts = evaluateContracts({
@@ -14,7 +13,6 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
         testnet
     })
 
-    const accounts = await web3.eth.getAccounts()
     const DIDRegistryLibrary = await ethers.getContractFactory('DIDRegistryLibrary')
     const didRegistryLibrary = await DIDRegistryLibrary.deploy()
     await didRegistryLibrary.deployed()
@@ -22,7 +20,7 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
     const epochLibrary = await EpochLibrary.deploy()
     await epochLibrary.deployed()
 
-    const { roles } = await loadWallet({makeWallet})
+    const { roles } = await loadWallet({ makeWallet })
 
     const { cache, addressBook } = await initializeContracts({
         contracts,

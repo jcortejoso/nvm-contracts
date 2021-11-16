@@ -3,7 +3,7 @@
  */
 require('@openzeppelin/hardhat-upgrades')
 require('@nomiclabs/hardhat-truffle5')
-require('hardhat-dependency-compiler');
+require('hardhat-dependency-compiler')
 
 module.exports = {
     solidity: {
@@ -34,7 +34,7 @@ module.exports = {
             '@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol',
             '@gnosis.pm/safe-contracts/contracts/libraries/MultiSend.sol',
             '@gnosis.pm/safe-contracts/contracts/proxies/GnosisSafeProxyFactory.sol'
-        ],
+        ]
     },
     networks: {
         hardhat: {

@@ -1,9 +1,9 @@
-const { hardhatArguments, web3 } = require('hardhat')
+const { hardhatArguments, web3, ethers } = require('hardhat')
 const network = hardhatArguments.network || 'hardhat'
-const { EthersAdapter, Safe, SafeFactory } = require('@gnosis.pm/safe-core-sdk')
+const { EthersAdapter, SafeFactory } = require('@gnosis.pm/safe-core-sdk')
 const fs = require('fs')
 
-async function loadWallet({makeWallet}) {
+async function loadWallet({ makeWallet }) {
     const accounts = await web3.eth.getAccounts()
     let wallets = []
     let contractNetworks = {}
@@ -26,7 +26,7 @@ async function loadWallet({makeWallet}) {
             }
         }
 
-        const ethAdapterOwner1 = new EthersAdapter({ ethers,  signer: ethers.provider.getSigner(0), contractNetworks })
+        const ethAdapterOwner1 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(0), contractNetworks })
         const safeFactory = await SafeFactory.create({ ethAdapter: ethAdapterOwner1, contractNetworks })
         const safe1 = await safeFactory.deploySafe({
             owners: [accounts[0], accounts[1]],
@@ -37,13 +37,13 @@ async function loadWallet({makeWallet}) {
             threshold: 2
         })
         wallets = [
-            {name: "owner", account: safe1.getAddress()},
-            {name: "upgrader", account: safe2.getAddress()}
+            { name: 'owner', account: safe1.getAddress() },
+            { name: 'upgrader', account: safe2.getAddress() }
         ]
-        fs.writeFileSync(`wallets_${network}.json`, JSON.stringify({wallets, contractNetworks}, null, 2))
+        fs.writeFileSync(`wallets_${network}.json`, JSON.stringify({ wallets, contractNetworks }, null, 2))
     } else {
         try {
-            let a = JSON.parse(fs.readFileSync(`wallets_${network}.json`))
+            const a = JSON.parse(fs.readFileSync(`wallets_${network}.json`))
             wallets = a.wallets
             contractNetworks = a.contractNetworks
         } catch (_) {
@@ -58,7 +58,7 @@ async function loadWallet({makeWallet}) {
         upgraderWallet: (wallets.find(a => a.name === 'upgrader') || { account: accounts[1] }).account,
         contractNetworks
     }
-    return {roles, contractNetworks}
+    return { roles, contractNetworks }
 }
 
 module.exports = {
