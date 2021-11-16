@@ -1,7 +1,9 @@
-/* global ethers */
-const { upgrades } = require('hardhat')
-const { readArtifact, writeArtifact } = require('./artifacts')
+const { upgrades, ethers } = require('hardhat')
+const { readArtifact, updateArtifact, writeArtifact } = require('./artifacts')
 const evaluateContracts = require('./evaluateContracts.js')
+const { EthersAdapter } = require('@gnosis.pm/safe-core-sdk')
+const Safe = require('@gnosis.pm/safe-core-sdk')
+const { loadWallet } = require('./wallets')
 
 async function upgradeContracts({ contracts: origContracts, verbose, testnet }) {
     const table = {}
@@ -24,15 +26,61 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet }) 
 
     const taskBook = {}
 
+    let {roles, contractNetworks} = await loadWallet({})
+
     for (const c of contracts) {
         const afact = readArtifact(c)
         const C = await ethers.getContractFactory(table[c] || c, { libraries: afact.libraries })
         if (verbose) {
             console.log(`upgrading ${c} at ${afact.address}`)
         }
-        const contract = await upgrades.upgradeProxy(afact.address, C, { unsafeAllowLinkedLibraries: true })
-        await contract.deployed()
-        taskBook[c] = await writeArtifact(c, contract, afact.libraries)
+        try {
+            const contract = await upgrades.upgradeProxy(afact.address, C, { unsafeAllowLinkedLibraries: true })
+            await contract.deployed()
+            taskBook[c] = await writeArtifact(c, contract, afact.libraries)
+        } catch (e) {
+            const address = await upgrades.prepareUpgrade(afact.address, C, { unsafeAllowLinkedLibraries: true })
+            taskBook[c] = await updateArtifact(c, afact.address, address, afact.libraries)
+            let prevAddress = await upgrades.erc1967.getImplementationAddress(afact.address)
+            if (address !== prevAddress) {
+                console.log('Nothing to upgrade')
+            } else {
+                console.log('Multisig upgrade', address, prevAddress)
+                let adminAddress = await upgrades.erc1967.getAdminAddress(afact.address)
+                let adminABI = [
+                    {
+                        "inputs": [
+                            {
+                                "name": "proxy",
+                                "type": "address"
+                            },
+                            {
+                                "name": "implementation",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "upgrade",
+                        "stateMutability": "nonpayable",
+                        "type": "function",
+                      },
+                ]
+                let admin = new ethers.Contract(adminAddress, adminABI)
+                let tx = await admin.populateTransaction.upgrade(afact.address, address)
+                console.log(tx)
+
+                const ethAdapterOwner1 = new EthersAdapter({ ethers,  signer: ethers.provider.getSigner(0), contractNetworks })
+                const ethAdapterOwner2 = new EthersAdapter({ ethers,  signer: ethers.provider.getSigner(1), contractNetworks })
+                const safeSdk1 = await Safe.default.create({ ethAdapter: ethAdapterOwner1, safeAddress: roles.upgraderWallet, contractNetworks })
+                const safeTx = await safeSdk1.createTransaction({...tx, value: 0})
+                const txHash = await safeSdk1.getTransactionHash(safeTx)
+                const res1 = await safeSdk1.approveTransactionHash(txHash)
+                await res1.transactionResponse?.wait()
+                const safeSdk2 = await Safe.default.create({ ethAdapter: ethAdapterOwner2, safeAddress: roles.upgraderWallet, contractNetworks })
+                const res2 = await safeSdk2.executeTransaction(safeTx)
+                await res2.transactionResponse?.wait()
+
+            }
+        }
     }
     return taskBook
 }

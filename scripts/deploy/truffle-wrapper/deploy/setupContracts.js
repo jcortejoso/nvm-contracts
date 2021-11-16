@@ -10,9 +10,10 @@ async function approveTemplate({
         try {
             await TemplateStoreManagerInstance.approveTemplate(
                 templateAddress,
-                { from: roles.deployer, gas: 100000 }
+                { from: roles.deployer }
             )
         } catch (e) {
+            console.log(e)
             console.log('Approve failed for', templateAddress, roles.deployer, TemplateStoreManagerInstance.address)
         }
     } else {
@@ -85,19 +86,6 @@ async function setupContracts({
     roles,
     verbose = true
 } = {}) {
-    /*
-     * -----------------------------------------------------------------------
-     * Reset deployer account, because it will be left in a strange state
-     * sometimes by zeppelin os
-     * -----------------------------------------------------------------------
-     */
-    await web3.eth.sendTransaction({
-        from: roles.deployer,
-        to: roles.deployer,
-        value: 0,
-        nonce: await web3.eth.getTransactionCount(roles.deployer)
-    })
-
     /*
      * -----------------------------------------------------------------------
      * setup deployed contracts

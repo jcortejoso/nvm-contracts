@@ -78,7 +78,17 @@ async function writeArtifact(c, contract, libraries) {
     return artifact
 }
 
+async function updateArtifact(c, contractAddress, implAddress, libraries) {
+    const files = glob.sync('./artifacts/**/*.json').filter(a => !a.match('.dbg.')).filter(a => a.match(c + '.json'))
+    const file = files.find(a => a.match(c))
+    const data = JSON.parse(fs.readFileSync(file))
+    const artifact = createArtifact(c, data, contractAddress, implAddress, `v${version}`, libraries || {})
+    fs.writeFileSync(`new-artifacts/${c}.${network}.json`, JSON.stringify(artifact, null, 2))
+    return artifact
+}
+
 module.exports = {
+    updateArtifact,
     writeArtifact,
     readArtifact,
     exportArtifacts
