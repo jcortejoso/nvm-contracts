@@ -21,12 +21,12 @@ async function loadWallet({ makeWallet }) {
         const multiContract = await MultiContract.deploy()
         await multiContract.deployed()
 
-        contractNetworks = {
-            31337: {
-                safeProxyFactoryAddress: factoryContract.address,
-                safeMasterCopyAddress: safeContract.address,
-                multiSendAddress: multiContract.address
-            }
+        const chainId = await web3.eth.getChainId()
+
+        contractNetworks[chainId] = {
+            safeProxyFactoryAddress: factoryContract.address,
+            safeMasterCopyAddress: safeContract.address,
+            multiSendAddress: multiContract.address
         }
 
         const ethAdapterOwner1 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(0), contractNetworks })

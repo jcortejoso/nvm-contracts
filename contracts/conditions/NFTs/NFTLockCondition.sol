@@ -225,7 +225,7 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
     ) 
     external
     override
-    view 
+    pure 
     returns (bool) 
     {
         return  interfaceId == 0x01ffc9a7 ||    // ERC165

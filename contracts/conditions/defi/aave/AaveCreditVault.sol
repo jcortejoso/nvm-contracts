@@ -61,8 +61,7 @@ contract AaveCreditVault is
         address _borrower,
         address _lender,
         address[] memory _conditions
-    ) 
-    public {
+    ) {
         lendingPool = ILendingPool(_lendingPool);
         dataProvider = IProtocolDataProvider(_dataProvider);
         weth = IWETHGateway(_weth);

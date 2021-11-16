@@ -53,23 +53,23 @@ function createArtifact(
 }
 
 async function exportArtifacts(contracts, addressBook, libraries) {
-    const files = glob.sync('./artifacts/**/*.json').filter(a => !a.match('.dbg.')).filter(a => contracts.some(b => a.match(b + '.json')))
+    const files = glob.sync('./build/**/*.json').filter(a => !a.match('.dbg.')).filter(a => contracts.some(b => a.match(b + '.json')))
     for (const c of contracts) {
         const implAddress = await upgrades.erc1967.getImplementationAddress(addressBook[c])
         const file = files.find(a => a.match(c))
         const contract = JSON.parse(fs.readFileSync(file))
         const artifact = createArtifact(c, contract, addressBook[c], implAddress, `v${version}`, libraries[c] || {})
-        fs.writeFileSync(`new-artifacts/${c}.${network}.json`, JSON.stringify(artifact, null, 2))
+        fs.writeFileSync(`artifacts/${c}.${network}.json`, JSON.stringify(artifact, null, 2))
     }
-    fs.writeFileSync('new-artifacts/ready', '')
+    fs.writeFileSync('artifacts/ready', '')
 }
 
 function readArtifact(c) {
-    return JSON.parse(fs.readFileSync(`new-artifacts/${c}.${network}.json`))
+    return JSON.parse(fs.readFileSync(`artifacts/${c}.${network}.json`))
 }
 
 async function writeArtifact(c, contract, libraries) {
-    const files = glob.sync('./artifacts/**/*.json').filter(a => !a.match('.dbg.')).filter(a => a.match(c + '.json'))
+    const files = glob.sync('./build/**/*.json').filter(a => !a.match('.dbg.')).filter(a => a.match(c + '.json'))
     const file = files.find(a => a.match(c))
     const data = JSON.parse(fs.readFileSync(file))
     const implAddress = await upgrades.erc1967.getImplementationAddress(contract.address)
@@ -79,11 +79,11 @@ async function writeArtifact(c, contract, libraries) {
 }
 
 async function updateArtifact(c, contractAddress, implAddress, libraries) {
-    const files = glob.sync('./artifacts/**/*.json').filter(a => !a.match('.dbg.')).filter(a => a.match(c + '.json'))
+    const files = glob.sync('./build/**/*.json').filter(a => !a.match('.dbg.')).filter(a => a.match(c + '.json'))
     const file = files.find(a => a.match(c))
     const data = JSON.parse(fs.readFileSync(file))
     const artifact = createArtifact(c, data, contractAddress, implAddress, `v${version}`, libraries || {})
-    fs.writeFileSync(`new-artifacts/${c}.${network}.json`, JSON.stringify(artifact, null, 2))
+    fs.writeFileSync(`artifacts/${c}.${network}.json`, JSON.stringify(artifact, null, 2))
     return artifact
 }
 

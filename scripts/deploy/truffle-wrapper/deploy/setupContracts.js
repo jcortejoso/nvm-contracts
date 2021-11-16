@@ -8,10 +8,11 @@ async function approveTemplate({
     const contractOwner = await TemplateStoreManagerInstance.owner()
     if (contractOwner === roles.deployer) {
         try {
-            await TemplateStoreManagerInstance.approveTemplate(
+            const tx = await TemplateStoreManagerInstance.approveTemplate(
                 templateAddress,
-                { from: roles.deployer }
+                { from: roles.deployer, gasLimit: 100000 }
             )
+            await tx.wait()
         } catch (e) {
             console.log(e)
             console.log('Approve failed for', templateAddress, roles.deployer, TemplateStoreManagerInstance.address)
@@ -34,10 +35,11 @@ async function setupTemplate({ verbose, TemplateStoreManagerInstance, templateNa
             )
         }
 
-        await TemplateStoreManagerInstance.proposeTemplate(
+        const tx = await TemplateStoreManagerInstance.proposeTemplate(
             templateAddress,
             { from: roles.deployer }
         )
+        await tx.wait()
 
         if (verbose) {
             console.log(
@@ -67,10 +69,11 @@ async function transferOwnership({
 
     const contractOwner = await ContractInstance.owner()
     if (contractOwner === roles.deployer) {
-        await ContractInstance.transferOwnership(
+        const tx = await ContractInstance.transferOwnership(
             roles.ownerWallet,
             { from: roles.deployer }
         )
+        await tx.wait()
     } else {
         console.log('=====================================================================================')
         console.log('WARNING: Ownership was not transferred!')
@@ -176,10 +179,11 @@ async function setupContracts({
                 )
             }
 
-            await ConditionStoreManagerInstance.delegateCreateRole(
+            const tx = await ConditionStoreManagerInstance.delegateCreateRole(
                 addressBook.AgreementStoreManager,
                 { from: roles.deployer }
             )
+            await tx.wait()
         }
 
         await transferOwnership({
@@ -194,16 +198,18 @@ async function setupContracts({
         const DIDRegistryInstance = artifacts.DIDRegistry
 
         console.log('TransferDIDOwnershipCondition : ' + addressBook.TransferDIDOwnershipCondition)
-        await DIDRegistryInstance.setManager(
+        const tx = await DIDRegistryInstance.setManager(
             addressBook.TransferDIDOwnershipCondition, { from: roles.deployer })
+        await tx.wait()
     }
 
     if (addressBook.TransferNFTCondition && addressBook.DIDRegistry) {
         const DIDRegistryInstance = artifacts.DIDRegistry
 
         console.log('TransferNFTCondition : ' + addressBook.TransferNFTCondition)
-        await DIDRegistryInstance.setProxyApproval(
+        const tx = await DIDRegistryInstance.setProxyApproval(
             addressBook.TransferNFTCondition, true, { from: roles.deployer })
+        await tx.wait()
     }
 
     if (addressBook.DIDRegistry) {
@@ -227,11 +233,12 @@ async function setupContracts({
                 )
             }
 
-            await token.grantRole(
+            const tx = await token.grantRole(
                 web3.utils.toHex('minter').padEnd(66, '0'),
                 addressBook.Dispenser,
                 { from: roles.deployer }
             )
+            await tx.wait()
         }
 
         if (verbose) {
@@ -240,12 +247,12 @@ async function setupContracts({
             )
         }
 
-        // await token.renounceMinter({ from: roles.deployer })
-        await token.revokeRole(
+        const tx = await token.revokeRole(
             web3.utils.toHex('minter').padEnd(66, '0'),
             roles.deployer,
             { from: roles.deployer }
         )
+        await tx.wait()
     }
 }
 

@@ -29,6 +29,9 @@ module.exports = {
             }
         ]
     },
+    paths: {
+        artifacts: 'build'
+    },
     dependencyCompiler: {
         paths: [
             '@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol',

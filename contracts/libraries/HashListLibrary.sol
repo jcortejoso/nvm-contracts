@@ -145,23 +145,23 @@ library HashListLibrary {
     /**
      * @dev has value by index 
      * @param _self is a pointer to list in the storage
-     * @param index is where is value is stored in the list
+     * @param __index is where is value is stored in the list
      * @return the value if exists
      */
     function get(
         List storage _self,
-        uint256 index
+        uint256 __index
     )
         public
         view
         returns(bytes32)
     {
         require(
-            index > 0 &&
-            index <= _self.values.length,
+            __index > 0 &&
+            __index <= _self.values.length,
             'Index is out of range'
         );
-        return _self.values[index - 1];
+        return _self.values[__index - 1];
     }
     
     /**
