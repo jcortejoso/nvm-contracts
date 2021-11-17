@@ -75,9 +75,9 @@ contract('LockPaymentCondition', (accounts) => {
 
     describe('init failure', () => {
         it('needed contract addresses cannot be 0', async () => {
-            let nft = await NFT.new()
+            const nft = await NFT.new()
             await nft.initialize('')
-            let didRegistry = await DIDRegistry.new()
+            const didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner, nft.address, { from: owner })
             await nft.addMinter(didRegistry.address)
 

@@ -94,7 +94,7 @@ contract('End to End NFT Scenarios', (accounts) => {
 
         nft = await NFT.new()
         await nft.initialize('')
-    
+
         didRegistry = await DIDRegistry.new()
         await didRegistry.initialize(owner, nft.address)
         await nft.addMinter(didRegistry.address)

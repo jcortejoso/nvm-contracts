@@ -101,14 +101,14 @@ contract('Mintable DIDRegistry', (accounts) => {
 
             await didRegistry.registerMintableDID(
                 didSeed, checksum, [], value, 20, 0, constants.activities.GENERATED, '', { from: owner })
-            const result = await didRegistry.mint(did, 10, { from: owner })
-
+            await didRegistry.mint(did, 10, { from: owner })
             /*
+            const result = await didRegistry.mint(did, 10, { from: owner })
             testUtils.assertEmitted(
                 result,
                 1,
                 'TransferSingle'
-            )*/
+            ) */
 
             let balance = await didRegistry.balanceOf(owner, did)
             assert.strictEqual(10, balance.toNumber())
