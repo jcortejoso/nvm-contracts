@@ -39,10 +39,11 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet }) 
             await contract.deployed()
             taskBook[c] = await writeArtifact(c, contract, afact.libraries)
         } catch (e) {
+            console.log('Cannot upgrade', e)
             const address = await upgrades.prepareUpgrade(afact.address, C, { unsafeAllowLinkedLibraries: true })
             taskBook[c] = await updateArtifact(c, afact.address, address, afact.libraries)
             const prevAddress = await upgrades.erc1967.getImplementationAddress(afact.address)
-            if (address !== prevAddress) {
+            if (address === prevAddress) {
                 console.log('Nothing to upgrade')
             } else {
                 console.log('Multisig upgrade', address, prevAddress)
