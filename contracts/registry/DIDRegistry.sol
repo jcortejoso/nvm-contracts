@@ -13,10 +13,12 @@ import '../token/erc1155/NFTUpgradeable.sol';
  *
  * @dev Implementation of a Mintable DID Registry.
  */
-contract DIDRegistry is DIDFactory, NFTUpgradeable {
+contract DIDRegistry is DIDFactory {
 
     using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
     using SafeMathUpgradeable for uint256;
+
+    NFTUpgradeable public erc1155;
 
     //////////////////////////////////////////////////////////////
     ////////  EVENTS  ////////////////////////////////////////////
@@ -28,14 +30,14 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
      * @param _owner refers to the owner of the contract.
      */
     function initialize(
-        address _owner
+        address _owner,
+        address _erc1155
     )
     public
-    override
     initializer
     {
         OwnableUpgradeable.__Ownable_init();
-        NFTUpgradeable.__NFTUpgradeable_init('');
+        erc1155 = NFTUpgradeable(_erc1155);
         transferOwnership(_owner);
         manager = _owner;
     }
@@ -144,7 +146,7 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
             keccak256(abi.encode(_did, msg.sender, 'mint', _amount, block.number)),
             _did, msg.sender, keccak256('mint'), '', 'mint');
 
-        super._mint(msg.sender, uint256(_did), _amount, '');
+        erc1155.mint(msg.sender, uint256(_did), _amount, '');
     }
 
     /**
@@ -164,13 +166,16 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
     onlyDIDOwner(_did)
     nftIsInitialized(_did)
     {
-
-        super._burn(msg.sender, uint256(_did), _amount);
+        erc1155.burn(msg.sender, uint256(_did), _amount);
         didRegisterList.didRegisters[_did].nftSupply -= _amount;
 
         super.used(
             keccak256(abi.encode(_did, msg.sender, 'burn', _amount, block.number)),
             _did, msg.sender, keccak256('burn'), '', 'burn');
+    }
+
+    function balanceOf(address account, uint id) public view returns (uint) {
+        return erc1155.balanceOf(account, id);
     }
     
 }
