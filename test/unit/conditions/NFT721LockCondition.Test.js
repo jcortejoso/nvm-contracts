@@ -43,7 +43,7 @@ contract('NFT721LockCondition', (accounts) => {
     async function setupTest() {
         if (!didRegistry) {
             didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(owner)
+            await didRegistry.initialize(owner, constants.address.zero)
         }
         if (!conditionStoreManager) {
             conditionStoreManager = await ConditionStoreManager.new()

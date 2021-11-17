@@ -76,7 +76,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         const didRegistryLibrary = await DIDRegistryLibrary.new()
         await DIDRegistry.link(didRegistryLibrary)
         didRegistry = await DIDRegistry.new()
-        await didRegistry.initialize(owner)
+        await didRegistry.initialize(owner, constants.address.zero)
 
         const epochLibrary = await EpochLibrary.new()
         await ConditionStoreManager.link(epochLibrary)

@@ -93,7 +93,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         await token.initialize(owner, owner)
 
         didRegistry = await DIDRegistry.new()
-        await didRegistry.initialize(owner)
+        await didRegistry.initialize(owner, constants.address.zero)
 
         conditionStoreManager = await ConditionStoreManager.new()
 
