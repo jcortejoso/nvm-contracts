@@ -67,7 +67,6 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet }) 
                 ]
                 const admin = new ethers.Contract(adminAddress, adminABI)
                 const tx = await admin.populateTransaction.upgrade(afact.address, address)
-                console.log(tx)
 
                 const ethAdapterOwner1 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(0), contractNetworks })
                 const ethAdapterOwner2 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(1), contractNetworks })
