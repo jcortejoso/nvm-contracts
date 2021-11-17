@@ -1,5 +1,6 @@
 [
   "DIDRegistry",
+  "NFTUpgradeable",
   "ConditionStoreManager",
   "TemplateStoreManager",
   "AgreementStoreManager",

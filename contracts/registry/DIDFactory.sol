@@ -141,6 +141,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      *      Initialize Ownable. Only on contract creation.
      * @param _owner refers to the owner of the contract.
      */
+     /*
     function initialize(
         address _owner
     )
@@ -151,7 +152,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
         manager = _owner;
-    }
+    }*/
 
     /**
      * Sets the manager role. Should be the TransferCondition contract address

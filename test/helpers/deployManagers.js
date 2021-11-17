@@ -6,6 +6,7 @@ const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const NeverminedToken = artifacts.require('NeverminedToken')
+const NFT = artifacts.require('NFTUpgradeable')
 
 let linked = false
 
@@ -22,8 +23,12 @@ const deployManagers = async function(deployer, owner) {
     const token = await NeverminedToken.new({ from: deployer })
     await token.initialize(owner, owner)
 
+    const nft = await NFT.new()
+    await nft.initialize('')
+
     const didRegistry = await DIDRegistry.new()
-    await didRegistry.initialize(owner)
+    await didRegistry.initialize(owner, nft.address)
+    await nft.addMinter(didRegistry.address)
 
     const conditionStoreManager = await ConditionStoreManager.new({ from: deployer })
 
@@ -53,6 +58,7 @@ const deployManagers = async function(deployer, owner) {
         agreementStoreManager,
         conditionStoreManager,
         templateStoreManager,
+        nft,
         deployer,
         owner
     }

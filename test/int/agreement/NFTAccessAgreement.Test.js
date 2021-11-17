@@ -18,6 +18,7 @@ const NFTAccessCondition = artifacts.require('NFTAccessCondition')
 
 contract('NFT Access integration test', (accounts) => {
     let token,
+        nft,
         didRegistry,
         agreementStoreManager,
         conditionStoreManager,
@@ -32,6 +33,7 @@ contract('NFT Access integration test', (accounts) => {
     } = {}) {
         ({
             token,
+            nft,
             didRegistry,
             agreementStoreManager,
             conditionStoreManager,
@@ -148,7 +150,7 @@ contract('NFT Access integration test', (accounts) => {
 
             // mint and transfer the nft
             await didRegistry.mint(agreement.did, nftAmount, { from: sender })
-            await didRegistry.safeTransferFrom(
+            await nft.safeTransferFrom(
                 sender, receiver, BigInt(agreement.did), nftAmount, '0x', { from: sender })
 
             // fulfill nft holder condition

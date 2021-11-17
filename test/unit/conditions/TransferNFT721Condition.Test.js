@@ -228,7 +228,6 @@ contract('TransferNFT721 Condition constructor', (accounts) => {
                 { from: owner }
             )
 
-            await didRegistry.setApprovalForAll(transferCondition.address, true, { from: seller })
             const result = await transferCondition.fulfill(
                 agreementId, did, buyer, numberNFTs,
                 conditionIdPayment, nft.address,

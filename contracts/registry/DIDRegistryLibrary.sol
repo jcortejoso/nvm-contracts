@@ -146,12 +146,14 @@ library DIDRegistryLibrary {
     {
         // If (did.creator == did.owner) - It means the DID is still a first sale so no royalties needed
         // returns true;
-        if (_self.didRegisters[_did].owner == _self.didRegisters[_did].creator)
+        if (_self.didRegisters[_did].owner == _self.didRegisters[_did].creator) {
             return true;
+        }
         
         // If there are no royalties everything is good
-        if (_self.didRegisters[_did].royalties == 0)
+        if (_self.didRegisters[_did].royalties == 0) {
             return true;
+        }
 
         // If (sum(_amounts) == 0) - It means there is no payment so everything is valid
         // returns true;
