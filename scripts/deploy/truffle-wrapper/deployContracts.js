@@ -1,14 +1,11 @@
-/* global web3 */
 const initializeContracts = require('./deploy/initializeContracts.js')
 const setupContracts = require('./deploy/setupContracts.js')
 const evaluateContracts = require('./evaluateContracts.js')
-const { ethers, upgrades } = require('hardhat')
+const { ethers, upgrades, web3 } = require('hardhat')
 const { exportArtifacts } = require('./artifacts')
 const { loadWallet } = require('./wallets.js')
 
 async function deployContracts({ contracts: origContracts, verbose, testnet, makeWallet }) {
-    const accounts = await web3.eth.getAccounts()
-    console.log(accounts)
     const contracts = evaluateContracts({
         contracts: origContracts,
         verbose,
@@ -43,9 +40,6 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
 
     // Move proxy admin to upgrader wallet
     await upgrades.admin.transferProxyAdminOwnership(roles.upgraderWallet)
-
-    const dispenser = cache.Dispenser
-    await dispenser.connect(ethers.provider.getSigner(12)).requestTokens(1234)
 
     addressBook.DIDRegistryLibrary = didRegistryLibrary.address
     addressBook.EpochLibrary = epochLibrary.address
