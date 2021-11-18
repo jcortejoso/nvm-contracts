@@ -230,6 +230,15 @@ async function setupContracts({
         await tx.wait()
     }
 
+    if (addressBook.TransferNFTCondition && addressBook.DIDRegistry) {
+        const NFTInstance = artifacts.NFTUpgradeable
+
+        console.log('DIDRegistry : ' + addressBook.DIDRegistry)
+        const tx = await NFTInstance.setProxyApproval(
+            addressBook.DIDRegistry, true, { from: roles.deployer })
+        await tx.wait()
+    }
+
     if (addressBook.TransferNFT721Condition && addressBook.NFT721Upgradeable) {
         const NFT721Instance = artifacts.NFT721Upgradeable
 

@@ -242,4 +242,21 @@ contract DIDRegistry is DIDFactory {
         return erc1155.balanceOf(account, id);
     }
 
+    /**
+     * @dev See {IERC1155-safeTransferFrom}.
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public {
+        require(
+            from == _msgSender() || erc1155.isApprovedForAll(from, _msgSender()),
+            'ERC1155: caller is not owner nor approved'
+        );
+        erc1155.safeTransferFrom(from, to, id, amount, data);
+    }
+
 }

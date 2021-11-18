@@ -31,6 +31,7 @@ const deployManagers = async function(deployer, owner) {
     const didRegistry = await DIDRegistry.new()
     await didRegistry.initialize(owner, nft.address, constants.address.zero)
     await nft.addMinter(didRegistry.address)
+    await nft.setProxyApproval(didRegistry.address, true)
 
     const conditionStoreManager = await ConditionStoreManager.new({ from: deployer })
 
