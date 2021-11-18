@@ -6,7 +6,7 @@ pragma solidity ^0.8.0;
 
 import './DIDFactory.sol';
 import '../token/erc1155/NFTUpgradeable.sol';
-import '../token/erc1155/NFT721Upgradeable.sol';
+import '../token/erc721/NFT721Upgradeable.sol';
 
 /**
  * @title Mintable DID Registry

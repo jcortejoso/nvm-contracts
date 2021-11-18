@@ -53,11 +53,20 @@ async function initializeContracts({
         })
     }
 
+    if (contracts.indexOf('NFT721Upgradeable') > -1) {
+        addressBook.NFT721Upgradeable = await zosCreate({
+            contract: 'NFT721Upgradeable',
+            cache,
+            args: [],
+            verbose
+        })
+    }
+
     if (contracts.indexOf('DIDRegistry') > -1) {
         addressBook.DIDRegistry = await zosCreate({
             contract: 'DIDRegistry',
             cache,
-            args: [roles.deployer, addressBook.NFTUpgradeable || ZeroAddress],
+            args: [roles.deployer, addressBook.NFTUpgradeable || ZeroAddress, addressBook.NFT721Upgradeable || ZeroAddress],
             libraries: { DIDRegistryLibrary: didRegistryLibrary },
             verbose
         })

@@ -203,6 +203,15 @@ async function setupContracts({
         await tx.wait()
     }
 
+    if (addressBook.NFT721Upgradeable && addressBook.DIDRegistry) {
+        const NFT721Instance = artifacts.NFT721Upgradeable
+
+        console.log('Set NFT721 minter : ' + addressBook.NFT721Upgradeable)
+        const tx = await NFT721Instance.addMinter(
+            addressBook.DIDRegistry, { from: roles.deployer })
+        await tx.wait()
+    }
+
     if (addressBook.TransferDIDOwnershipCondition && addressBook.DIDRegistry) {
         const DIDRegistryInstance = artifacts.DIDRegistry
 
@@ -218,6 +227,15 @@ async function setupContracts({
         console.log('TransferNFTCondition : ' + addressBook.TransferNFTCondition)
         const tx = await NFTInstance.setProxyApproval(
             addressBook.TransferNFTCondition, true, { from: roles.deployer })
+        await tx.wait()
+    }
+
+    if (addressBook.TransferNFT721Condition && addressBook.NFT721Upgradeable) {
+        const NFT721Instance = artifacts.NFT721Upgradeable
+
+        console.log('TransferNFT721Condition : ' + addressBook.TransferNFT721Condition)
+        const tx = await NFT721Instance.setProxyApproval(
+            addressBook.TransferNFT721Condition, true, { from: roles.deployer })
         await tx.wait()
     }
 
