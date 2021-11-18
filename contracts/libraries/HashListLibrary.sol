@@ -1,11 +1,11 @@
-pragma solidity 0.6.12;
+pragma solidity ^0.8.0;
 // Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 
-import '@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol';
 
 /**
  * @title Hash List library
@@ -145,23 +145,23 @@ library HashListLibrary {
     /**
      * @dev has value by index 
      * @param _self is a pointer to list in the storage
-     * @param index is where is value is stored in the list
+     * @param __index is where is value is stored in the list
      * @return the value if exists
      */
     function get(
         List storage _self,
-        uint256 index
+        uint256 __index
     )
         public
         view
         returns(bytes32)
     {
         require(
-            index > 0 &&
-            index <= _self.values.length,
+            __index > 0 &&
+            __index <= _self.values.length,
             'Index is out of range'
         );
-        return _self.values[index - 1];
+        return _self.values[__index - 1];
     }
     
     /**

@@ -19,7 +19,7 @@ contract('HashListLibrary', (accounts) => {
     beforeEach(async () => {
         if (!hashListLibrary) {
             hashListLibrary = await HashListLibrary.new()
-            HashListLibraryProxy.link('HashListLibrary', hashListLibrary.address)
+            HashListLibraryProxy.link(hashListLibrary)
             hashListLibraryProxy = await HashListLibraryProxy.new()
             await hashListLibraryProxy.initialize(accounts[0], { from: owner })
         }

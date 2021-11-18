@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.6.12;
+pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
-contract IPNFT is ERC721Upgradeable, OwnableUpgradeable {
+contract IPNFT is ERC721URIStorageUpgradeable, OwnableUpgradeable {
     // Events
     event TokenURIChanged(uint256 tokenId, string indexed newURI);
 

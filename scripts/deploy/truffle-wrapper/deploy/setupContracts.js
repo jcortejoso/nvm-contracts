@@ -7,10 +7,16 @@ async function approveTemplate({
 } = {}) {
     const contractOwner = await TemplateStoreManagerInstance.owner()
     if (contractOwner === roles.deployer) {
-        await TemplateStoreManagerInstance.approveTemplate(
-            templateAddress,
-            { from: roles.deployer }
-        )
+        try {
+            const tx = await TemplateStoreManagerInstance.approveTemplate(
+                templateAddress,
+                { from: roles.deployer, gasLimit: 100000 }
+            )
+            await tx.wait()
+        } catch (e) {
+            console.log(e)
+            console.log('Approve failed for', templateAddress, roles.deployer, TemplateStoreManagerInstance.address)
+        }
     } else {
         // todo: make call to multi sig wallet here instead of warning!
         console.log('=====================================================================================')
@@ -29,10 +35,11 @@ async function setupTemplate({ verbose, TemplateStoreManagerInstance, templateNa
             )
         }
 
-        await TemplateStoreManagerInstance.proposeTemplate(
+        const tx = await TemplateStoreManagerInstance.proposeTemplate(
             templateAddress,
             { from: roles.deployer }
         )
+        await tx.wait()
 
         if (verbose) {
             console.log(
@@ -62,10 +69,11 @@ async function transferOwnership({
 
     const contractOwner = await ContractInstance.owner()
     if (contractOwner === roles.deployer) {
-        await ContractInstance.transferOwnership(
+        const tx = await ContractInstance.transferOwnership(
             roles.ownerWallet,
             { from: roles.deployer }
         )
+        await tx.wait()
     } else {
         console.log('=====================================================================================')
         console.log('WARNING: Ownership was not transferred!')
@@ -83,27 +91,11 @@ async function setupContracts({
 } = {}) {
     /*
      * -----------------------------------------------------------------------
-     * Reset deployer account, because it will be left in a strange state
-     * sometimes by zeppelin os
-     * -----------------------------------------------------------------------
-     */
-    await web3.eth.sendTransaction({
-        from: roles.deployer,
-        to: roles.deployer,
-        value: 0,
-        nonce: await web3.eth.getTransactionCount(roles.deployer)
-    })
-
-    /*
-     * -----------------------------------------------------------------------
      * setup deployed contracts
      * -----------------------------------------------------------------------
      */
     if (addressBook.TemplateStoreManager) {
-        const TemplateStoreManager =
-            artifacts.require('TemplateStoreManager')
-        const TemplateStoreManagerInstance =
-            await TemplateStoreManager.at(addressBook.TemplateStoreManager)
+        const TemplateStoreManagerInstance = artifacts.TemplateStoreManager
 
         await setupTemplate({
             verbose,
@@ -171,16 +163,14 @@ async function setupContracts({
 
         await transferOwnership({
             ContractInstance: TemplateStoreManagerInstance,
-            name: TemplateStoreManager.contractName,
+            name: 'TemplateStoreManager',
             roles,
             verbose
         })
     }
 
     if (addressBook.ConditionStoreManager) {
-        const ConditionStoreManager = artifacts.require('ConditionStoreManager')
-        const ConditionStoreManagerInstance =
-            await ConditionStoreManager.at(addressBook.ConditionStoreManager)
+        const ConditionStoreManagerInstance = artifacts.ConditionStoreManager
 
         if (addressBook.AgreementStoreManager) {
             if (verbose) {
@@ -189,56 +179,52 @@ async function setupContracts({
                 )
             }
 
-            await ConditionStoreManagerInstance.delegateCreateRole(
+            const tx = await ConditionStoreManagerInstance.delegateCreateRole(
                 addressBook.AgreementStoreManager,
                 { from: roles.deployer }
             )
+            await tx.wait()
         }
 
         await transferOwnership({
             ContractInstance: ConditionStoreManagerInstance,
-            name: ConditionStoreManager.contractName,
+            name: 'ConditionStoreManager',
             roles,
             verbose
         })
     }
 
     if (addressBook.TransferDIDOwnershipCondition && addressBook.DIDRegistry) {
-        const DIDRegistry = artifacts.require('DIDRegistry')
-        const DIDRegistryInstance =
-            await DIDRegistry.at(addressBook.DIDRegistry)
+        const DIDRegistryInstance = artifacts.DIDRegistry
 
         console.log('TransferDIDOwnershipCondition : ' + addressBook.TransferDIDOwnershipCondition)
-        await DIDRegistryInstance.setManager(
+        const tx = await DIDRegistryInstance.setManager(
             addressBook.TransferDIDOwnershipCondition, { from: roles.deployer })
+        await tx.wait()
     }
 
     if (addressBook.TransferNFTCondition && addressBook.DIDRegistry) {
-        const DIDRegistry = artifacts.require('DIDRegistry')
-        const DIDRegistryInstance =
-            await DIDRegistry.at(addressBook.DIDRegistry)
+        const DIDRegistryInstance = artifacts.DIDRegistry
 
         console.log('TransferNFTCondition : ' + addressBook.TransferNFTCondition)
-        await DIDRegistryInstance.setProxyApproval(
+        const tx = await DIDRegistryInstance.setProxyApproval(
             addressBook.TransferNFTCondition, true, { from: roles.deployer })
+        await tx.wait()
     }
 
     if (addressBook.DIDRegistry) {
-        const DIDRegistry = artifacts.require('DIDRegistry')
-        const DIDRegistryInstance =
-            await DIDRegistry.at(addressBook.DIDRegistry)
+        const DIDRegistryInstance = artifacts.DIDRegistry
 
         await transferOwnership({
             ContractInstance: DIDRegistryInstance,
-            name: DIDRegistry.contractName,
+            name: 'DIDRegistry',
             roles,
             verbose
         })
     }
 
     if (addressBook.NeverminedToken) {
-        const NeverminedToken = artifacts.require('NeverminedToken')
-        const token = await NeverminedToken.at(addressBook.NeverminedToken)
+        const token = artifacts.NeverminedToken
 
         if (addressBook.Dispenser) {
             if (verbose) {
@@ -247,11 +233,12 @@ async function setupContracts({
                 )
             }
 
-            await token.grantRole(
-                web3.utils.toHex('minter'),
+            const tx = await token.grantRole(
+                web3.utils.toHex('minter').padEnd(66, '0'),
                 addressBook.Dispenser,
                 { from: roles.deployer }
             )
+            await tx.wait()
         }
 
         if (verbose) {
@@ -260,12 +247,12 @@ async function setupContracts({
             )
         }
 
-        // await token.renounceMinter({ from: roles.deployer })
-        await token.revokeRole(
-            web3.utils.toHex('minter'),
+        const tx = await token.revokeRole(
+            web3.utils.toHex('minter').padEnd(66, '0'),
             roles.deployer,
             { from: roles.deployer }
         )
+        await tx.wait()
     }
 }
 

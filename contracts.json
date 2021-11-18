@@ -23,9 +23,9 @@
   "AccessTemplate",
   "AccessProofTemplate",
   "NFTAccessTemplate",
-  "NFTAccessTemplate:NFT721AccessTemplate",
+  "NFT721AccessTemplate",
   "DIDSalesTemplate",
   "NFTSalesTemplate",
-  "NFTSalesTemplate:NFT721SalesTemplate",
+  "NFT721SalesTemplate",
   "EscrowComputeExecutionTemplate"
 ]

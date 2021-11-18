@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js')
-/* globals web3 */
+/* globals web3 BigInt */
 
 const getBalance = async (token, address) => {
     return web3.utils.toDecimal(
@@ -10,8 +10,15 @@ const getBalance = async (token, address) => {
 const getETHBalance = async (address) => {
     return web3.eth.getBalance(address, 'latest')
         .then((balance) => {
-            return new BigNumber(balance).toNumber()
+            return BigInt(balance)
         })
 }
 
-module.exports = { getBalance, getETHBalance }
+const getETHBalanceBN = async (address) => {
+    return web3.eth.getBalance(address, 'latest')
+        .then((balance) => {
+            return new BigNumber(balance)
+        })
+}
+
+module.exports = { getBalance, getETHBalance, getETHBalanceBN }

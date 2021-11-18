@@ -28,16 +28,16 @@ then
       curl --data '{"method":"web3_clientVersion","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
 
     # remove ready flag if we deploy contracts
-    rm -f /nevermined-contracts/artifacts/*
+    rm -rf /nevermined-contracts/artifacts/*
 
-    npm run clean
-    npm run compile
+    yarn run clean
+    yarn run compile
     export NETWORK="${NETWORK_NAME:-development}"
 
 
 
 
-    npm run deploy:${NETWORK}
+    yarn run deploy:${NETWORK}
 
     # set flag to indicate contracts are ready
     touch /nevermined-contracts/artifacts/ready

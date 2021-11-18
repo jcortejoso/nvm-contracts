@@ -7,7 +7,7 @@ COPY networks/spree/authorities/validator0.pwd /home/openethereum/validator.pwd
 
 
 
-FROM node:10-alpine
+FROM node:14-alpine
 LABEL maintainer="Keyko <root@keyko.io>"
 
 RUN apk add --no-cache --update\

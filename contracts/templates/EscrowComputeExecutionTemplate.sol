@@ -1,4 +1,4 @@
-pragma solidity 0.6.12;
+pragma solidity ^0.8.0;
 // Copyright 2020 Keyko GmbH.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
@@ -101,5 +101,9 @@ contract EscrowComputeExecutionTemplate is BaseEscrowTemplate {
         conditionTypes.push(address(computeExecutionCondition));
         conditionTypes.push(address(lockPaymentCondition));
         conditionTypes.push(address(escrowPayment));
+    }
+
+    function name() public pure returns (string memory) {
+        return 'EscrowComputeExecutionTemplate';
     }
 }

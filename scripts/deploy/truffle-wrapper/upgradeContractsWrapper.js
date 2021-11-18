@@ -1,20 +1,15 @@
-/* global web3 */
 const { argv } = require('yargs')
-const { upgradeContracts } = require('@nevermined-io/contract-tools')
-const evaluateContracts = require('./evaluateContracts.js')
+const { upgradeContracts } = require('./upgradeContracts')
 
-module.exports = (cb) => {
+async function main() {
     const parameters = argv._
-    const contracts = parameters.splice(2)
-
-    upgradeContracts({
-        web3,
-        contracts,
-        evaluateContracts,
-        strict: false,
-        testnet: argv.testnet || false,
-        verbose: argv.verbose && true
+    const verbose = true
+    const testnet = process.env.TESTNET === 'true'
+    await upgradeContracts({
+        contracts: parameters.splice(2),
+        verbose,
+        testnet
     })
-        .then(() => cb())
-        .catch(err => cb(err))
 }
+
+main()

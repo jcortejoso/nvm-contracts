@@ -13,7 +13,7 @@ const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
 const { getBalance } = require('../../helpers/getBalance.js')
-const increaseTime = require('../../helpers/increaseTime.ts')
+const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils')
 const mimcdecrypt = require('../../helpers/mimcdecrypt').decrypt
 
@@ -26,7 +26,8 @@ const F = new ZqField(Scalar.fromString('218882428718392752222464057452572750885
 const snarkjs = require('snarkjs')
 const { unstringifyBigInts } = require('ffjavascript').utils
 
-contract('Access Template integration test', (accounts) => {
+contract('Access Proof Template integration test', (accounts) => {
+    const web3 = global.web3
     let token,
         didRegistry,
         agreementStoreManager,
@@ -205,7 +206,8 @@ contract('Access Template integration test', (accounts) => {
         }
     }
 
-    describe('create and fulfill escrow agreement', () => {
+    describe('create and fulfill escrow agreement', function() {
+        this.timeout(100000)
         it('should create escrow agreement and fulfill with multiple reward addresses', async () => {
             const { owner } = await setupTest()
 
@@ -317,7 +319,7 @@ contract('Access Template integration test', (accounts) => {
             assert.strictEqual(result.logs.length, 0)
 
             // wait: for time out
-            await increaseTime.mineBlocks(timeOutAccess)
+            await increaseTime.mineBlocks(web3, timeOutAccess)
 
             // abort: fulfill access after timeout
             await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })
@@ -338,7 +340,8 @@ contract('Access Template integration test', (accounts) => {
         })
     })
 
-    describe('create and fulfill escrow agreement with access secret store and timeLock', () => {
+    describe('create and fulfill escrow agreement with access secret store and timeLock', function() {
+        this.timeout(100000)
         it('should create escrow agreement and fulfill', async () => {
             const { owner } = await setupTest()
 
@@ -373,7 +376,7 @@ contract('Access Template integration test', (accounts) => {
             // expect(await accessCondition.checkPermissions(receiver, agreement.did)).to.equal(false)
 
             // wait: for time lock
-            await increaseTime.mineBlocks(timeLockAccess)
+            await increaseTime.mineBlocks(web3, timeLockAccess)
 
             // execute: fulfill access after time lock
             await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })

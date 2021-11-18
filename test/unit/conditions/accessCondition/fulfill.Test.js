@@ -7,7 +7,6 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const EpochLibrary = artifacts.require('EpochLibrary')
-const AgreementStoreLibrary = artifacts.require('AgreementStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const DIDRegistry = artifacts.require('DIDRegistry')
@@ -23,13 +22,11 @@ contract('AccessCondition constructor', (accounts) => {
     describe('deploy and setup', () => {
         it('contract should deploy', async () => {
             const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
+            await ConditionStoreManager.link(epochLibrary)
             const conditionStoreManager = await ConditionStoreManager.new()
-            const agreementStoreLibrary = await AgreementStoreLibrary.new()
-            await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
             const agreementStoreManager = await AgreementStoreManager.new()
             const didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
+            await DIDRegistry.link(didRegistryLibrary)
             const didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(accounts[0])
             const accessCondition = await AccessCondition.new()

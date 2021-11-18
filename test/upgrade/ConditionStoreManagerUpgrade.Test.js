@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* global artifacts, web3, contract, describe, xit, it, beforeEach */
+/* global artifacts, web3, contract, describe, it, beforeEach */
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
@@ -7,12 +7,7 @@ chai.use(chaiAsPromised)
 
 const constants = require('../helpers/constants.js')
 
-const {
-    confirmUpgrade,
-    loadWallet,
-    submitTransaction,
-    confirmTransaction
-} = require('@nevermined-io/contract-tools')
+function confirmUpgrade() {}
 
 const {
     deploy,
@@ -28,12 +23,10 @@ const ConditionStoreExtraFunctionality = artifacts.require('ConditionStoreExtraF
 const ConditionStoreWithBug = artifacts.require('ConditionStoreWithBug')
 
 contract('ConditionStoreManager', (accounts) => {
-    let conditionStoreManagerAddress,
-        ownerWallet
+    let conditionStoreManagerAddress
 
     const verbose = false
 
-    const upgrader = accounts[1]
     const approver = accounts[2]
     const conditionCreater = accounts[5]
 
@@ -44,12 +37,6 @@ contract('ConditionStoreManager', (accounts) => {
             contracts: ['ConditionStoreManager'],
             verbose
         })
-
-        ownerWallet = await loadWallet(
-            web3,
-            'owner',
-            verbose
-        )
 
         conditionStoreManagerAddress = addressBook.ConditionStoreManager
         assert(conditionStoreManagerAddress)
@@ -92,7 +79,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
         })
 
-        xit('Should be possible to change function signature', async () => {
+        it('Should be possible to change function signature', async () => {
             const { conditionId, conditionType } = await setupTest()
 
             const taskBook = await upgrade({
@@ -112,7 +99,9 @@ contract('ConditionStoreManager', (accounts) => {
             const ConditionStoreChangeFunctionSignatureInstance =
                 await ConditionStoreChangeFunctionSignature.at(conditionStoreManagerAddress)
 
+            await ConditionStoreChangeFunctionSignatureInstance.delegateCreateRole(conditionCreater, { from: accounts[0] })
             // call delegateCreateRole over multi sig wallet
+            /*
             const txId = await submitTransaction(
                 ownerWallet,
                 conditionStoreManagerAddress,
@@ -131,6 +120,7 @@ contract('ConditionStoreManager', (accounts) => {
                 approver,
                 verbose
             )
+            */
 
             // assert
             assert.strictEqual(
@@ -142,6 +132,7 @@ contract('ConditionStoreManager', (accounts) => {
             await ConditionStoreChangeFunctionSignatureInstance.createCondition(
                 conditionId,
                 conditionType,
+                conditionCreater,
                 conditionCreater,
                 { from: conditionCreater }
             )
@@ -180,7 +171,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
         })
 
-        xit('Should be possible to append storage variables and change logic', async () => {
+        it('Should be possible to append storage variables and change logic', async () => {
             const { conditionId, conditionType } = await setupTest()
 
             const taskBook = await upgrade({
@@ -200,7 +191,9 @@ contract('ConditionStoreManager', (accounts) => {
             const ConditionStoreChangeInStorageAndLogicInstance =
                 await ConditionStoreChangeInStorageAndLogic.at(conditionStoreManagerAddress)
 
-            const txId = await submitTransaction(
+            await ConditionStoreChangeInStorageAndLogicInstance.delegateCreateRole(conditionCreater, { from: accounts[0] })
+            /*
+                const txId = await submitTransaction(
                 ownerWallet,
                 conditionStoreManagerAddress,
                 [
@@ -217,7 +210,7 @@ contract('ConditionStoreManager', (accounts) => {
                 txId,
                 approver,
                 verbose
-            )
+            ) */
 
             assert.strictEqual(
                 (await ConditionStoreChangeInStorageAndLogicInstance.conditionCount()).toNumber(),
@@ -227,6 +220,7 @@ contract('ConditionStoreManager', (accounts) => {
             await ConditionStoreChangeInStorageAndLogicInstance.createCondition(
                 conditionId,
                 conditionType,
+                conditionCreater,
                 conditionCreater,
                 { from: conditionCreater }
             )

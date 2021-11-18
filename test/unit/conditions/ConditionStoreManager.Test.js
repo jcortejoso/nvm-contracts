@@ -9,22 +9,25 @@ chai.use(chaiAsPromised)
 const Common = artifacts.require('Common')
 const HashLockCondition = artifacts.require('HashLockCondition')
 const EpochLibrary = artifacts.require('EpochLibrary')
-const ConditionStoreLibrary = artifacts.require('ConditionStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 
 const constants = require('../../helpers/constants.js')
-const increaseTime = require('../../helpers/increaseTime.ts')
+const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('ConditionStoreManager', (accounts) => {
     let common
     let hashLockCondition
-    let epochLibrary
     let conditionStoreManager
-    let conditionStoreLibrary
+    const web3 = global.web3
     const conditionId = constants.bytes32.one
     const createRole = accounts[0]
     const owner = accounts[0]
+
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+    })
 
     beforeEach(async () => {
         await setupTest()
@@ -34,11 +37,6 @@ contract('ConditionStoreManager', (accounts) => {
         // let conditionId = testUtils.generateId()
         if (!conditionStoreManager) {
             common = await Common.new()
-            epochLibrary = await EpochLibrary.new()
-            ConditionStoreLibrary.link('EpochLibrary', epochLibrary.address)
-            conditionStoreLibrary = await ConditionStoreLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-            await ConditionStoreManager.link('ConditionStoreLibrary', conditionStoreLibrary.address)
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
                 owner,
@@ -56,12 +54,6 @@ contract('ConditionStoreManager', (accounts) => {
 
     describe('deploy and initialize', () => {
         it('contract should deploy', async () => {
-            // act-assert
-            const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreLibrary.link('EpochLibrary', epochLibrary.address)
-            const conditionStoreLibrary = await ConditionStoreLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-            await ConditionStoreManager.link('ConditionStoreLibrary', conditionStoreLibrary.address)
             await ConditionStoreManager.new()
         })
 
@@ -777,7 +769,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // waited for a block
-            await increaseTime.mineBlocks(2)
+            await increaseTime.mineBlocks(web3, 2)
 
             await conditionStoreManager.updateConditionState(conditionId, newState)
             assert.strictEqual(
@@ -827,7 +819,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // wait for two blocks
-            await increaseTime.mineBlocks(2)
+            await increaseTime.mineBlocks(web3, 2)
 
             assert.strictEqual(
                 await conditionStoreManager.isConditionTimedOut(conditionId),
@@ -850,7 +842,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // wait for a block
-            await increaseTime.mineBlocks(1)
+            await increaseTime.mineBlocks(web3, 1)
 
             const newState = constants.condition.state.fulfilled
 
@@ -912,7 +904,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // wait for a block
-            await increaseTime.mineBlocks(1)
+            await increaseTime.mineBlocks(web3, 1)
 
             await hashLockCondition.abortByTimeOut(conditionId)
             assert.strictEqual(
@@ -943,7 +935,7 @@ contract('ConditionStoreManager', (accounts) => {
                 { from: owner }
             )
 
-            await increaseTime.mineBlocks(1)
+            await increaseTime.mineBlocks(web3, 1)
 
             const result = await conditionStoreManager.updateConditionState(conditionId, newState)
 
@@ -973,7 +965,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // wait for a block
-            await increaseTime.mineBlocks(1)
+            await increaseTime.mineBlocks(web3, 1)
 
             await assert.isRejected(
                 hashLockCondition.abortByTimeOut(conditionId),

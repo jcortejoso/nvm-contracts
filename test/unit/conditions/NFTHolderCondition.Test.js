@@ -23,21 +23,23 @@ contract('NFTHolderCondition', (accounts) => {
     let conditionStoreManager
     let nftHolderCondition
 
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+        const didRegistryLibrary = await DIDRegistryLibrary.new()
+        await DIDRegistry.link(didRegistryLibrary)
+    })
+
     beforeEach(async () => {
         await setupTest()
     })
 
     async function setupTest() {
         if (!didRegistry) {
-            const didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner)
         }
         if (!conditionStoreManager) {
-            const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(owner, { from: owner })
             await conditionStoreManager.delegateCreateRole(createRole, { from: owner })

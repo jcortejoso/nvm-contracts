@@ -2,23 +2,29 @@
 const EpochLibrary = artifacts.require('EpochLibrary')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
-const AgreementStoreLibrary = artifacts.require('AgreementStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const NeverminedToken = artifacts.require('NeverminedToken')
 
+let linked = false
+
 const deployManagers = async function(deployer, owner) {
+    if (!linked) {
+        const didRegistryLibrary = await DIDRegistryLibrary.new()
+        await DIDRegistry.link(didRegistryLibrary)
+
+        const epochLibrary = await EpochLibrary.new({ from: deployer })
+        await ConditionStoreManager.link(epochLibrary)
+        linked = true
+    }
+
     const token = await NeverminedToken.new({ from: deployer })
     await token.initialize(owner, owner)
 
-    const didRegistryLibrary = await DIDRegistryLibrary.new()
-    await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
     const didRegistry = await DIDRegistry.new()
     await didRegistry.initialize(owner)
 
-    const epochLibrary = await EpochLibrary.new({ from: deployer })
-    await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
     const conditionStoreManager = await ConditionStoreManager.new({ from: deployer })
 
     const templateStoreManager = await TemplateStoreManager.new({ from: deployer })
@@ -27,8 +33,6 @@ const deployManagers = async function(deployer, owner) {
         { from: deployer }
     )
 
-    const agreementStoreLibrary = await AgreementStoreLibrary.new({ from: deployer })
-    await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
     const agreementStoreManager = await AgreementStoreManager.new({ from: deployer })
     await agreementStoreManager.methods['initialize(address,address,address,address)'](
         owner,

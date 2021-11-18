@@ -9,7 +9,6 @@ chai.use(chaiAsPromised)
 
 const Common = artifacts.require('Common')
 const EpochLibrary = artifacts.require('EpochLibrary')
-const AgreementStoreLibrary = artifacts.require('AgreementStoreLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const AgreementStoreManager = artifacts.require('AgreementStoreManager')
 const TemplateStoreManager = artifacts.require('TemplateStoreManager')
@@ -36,6 +35,11 @@ contract('AgreementStoreManager', (accounts) => {
         templateStoreManager,
         token
 
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new({ from: deployer })
+        await ConditionStoreManager.link(epochLibrary)
+    })
+
     beforeEach(async () => {
         await setupTest()
     })
@@ -46,12 +50,10 @@ contract('AgreementStoreManager', (accounts) => {
             await token.initialize(owner, owner)
 
             const didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
+            await DIDRegistry.link(didRegistryLibrary)
             didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner)
 
-            const epochLibrary = await EpochLibrary.new({ from: deployer })
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
             conditionStoreManager = await ConditionStoreManager.new({ from: deployer })
 
             templateStoreManager = await TemplateStoreManager.new({ from: deployer })
@@ -60,8 +62,8 @@ contract('AgreementStoreManager', (accounts) => {
                 { from: deployer }
             )
 
-            const agreementStoreLibrary = await AgreementStoreLibrary.new({ from: deployer })
-            await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
+            // const agreementStoreLibrary = await AgreementStoreLibrary.new({ from: deployer })
+            // await AgreementStoreManager.link(agreementStoreLibrary)
             agreementStoreManager = await AgreementStoreManager.new({ from: deployer })
             await agreementStoreManager.methods['initialize(address,address,address,address)'](
                 owner,
@@ -91,19 +93,16 @@ contract('AgreementStoreManager', (accounts) => {
 
     describe('deploy and setup', () => {
         it('contract should deploy', async () => {
-            const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
-            const agreementStoreLibrary = await AgreementStoreLibrary.new()
-            await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
+            // const agreementStoreLibrary = await AgreementStoreLibrary.new()
+            // await AgreementStoreManager.link(agreementStoreLibrary)
             await AgreementStoreManager.new()
         })
 
         it('contract should not initialize with zero address', async () => {
             const createRole = accounts[0]
 
-            const agreementStoreLibrary = await AgreementStoreLibrary.new()
-            await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
+            // const agreementStoreLibrary = await AgreementStoreLibrary.new()
+            // await AgreementStoreManager.link(agreementStoreLibrary)
             const agreementStoreManager = await AgreementStoreManager.new()
 
             // setup with zero fails
@@ -156,8 +155,8 @@ contract('AgreementStoreManager', (accounts) => {
         })
 
         it('contract should not initialize without arguments', async () => {
-            const agreementStoreLibrary = await AgreementStoreLibrary.new()
-            await AgreementStoreManager.link('AgreementStoreLibrary', agreementStoreLibrary.address)
+            // const agreementStoreLibrary = await AgreementStoreLibrary.new()
+            // await AgreementStoreManager.link(agreementStoreLibrary)
             const agreementStoreManager = await AgreementStoreManager.new()
 
             // setup with zero fails

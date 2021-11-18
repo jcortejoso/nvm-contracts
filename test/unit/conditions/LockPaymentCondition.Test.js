@@ -30,19 +30,21 @@ contract('LockPaymentCondition', (accounts) => {
     const checksum = testUtils.generateId()
     const url = 'https://nevermined.io/did/test-attr-example.txt'
 
+    before(async () => {
+        epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+        didRegistryLibrary = await DIDRegistryLibrary.new()
+        await DIDRegistry.link(didRegistryLibrary)
+    })
+
     beforeEach(async () => {
         await setupTest()
     })
 
     async function setupTest() {
         if (!conditionStoreManager) {
-            didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner, { from: owner })
-
-            epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(owner, { from: owner })
@@ -68,13 +70,8 @@ contract('LockPaymentCondition', (accounts) => {
 
     describe('init failure', () => {
         it('needed contract addresses cannot be 0', async () => {
-            const didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             const didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner, { from: owner })
-
-            const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
 
             const conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(owner, { from: owner })
@@ -174,7 +171,7 @@ contract('LockPaymentCondition', (accounts) => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, accounts[0])
 
-            const totalAmount = 100000000000
+            const totalAmount = 100000000000n
             const rewardAddress = accounts[3]
             const sender = accounts[0]
             const amounts = [totalAmount]
@@ -194,11 +191,11 @@ contract('LockPaymentCondition', (accounts) => {
             const balanceSenderBefore = await getETHBalance(sender)
             const balanceReceiverBefore = await getETHBalance(rewardAddress)
 
-            assert.isAtLeast(balanceSenderBefore, totalAmount)
+            assert(balanceSenderBefore >= totalAmount)
 
             const result = await lockPaymentCondition.fulfill(
                 agreementId, did, rewardAddress, constants.address.zero, amounts, receivers
-                , { from: sender, value: totalAmount })
+                , { from: sender, value: String(totalAmount) })
 
             const { state } = await conditionStoreManager.getCondition(conditionId)
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
@@ -211,13 +208,13 @@ contract('LockPaymentCondition', (accounts) => {
             expect(eventArgs._rewardAddress).to.equal(rewardAddress)
             expect(eventArgs._tokenAddress).to.equal(constants.address.zero)
             expect(eventArgs._receivers[0]).to.equal(receivers[0])
-            expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
+            expect(eventArgs._amounts[0].toNumber()).to.equal(Number(amounts[0]))
 
             const balanceSenderAfter = await getETHBalance(sender)
             const balanceReceiverAfter = await getETHBalance(rewardAddress)
 
-            assert.isAtMost(balanceSenderAfter, balanceSenderBefore - totalAmount)
-            assert.isAtMost(balanceReceiverAfter, balanceReceiverBefore + totalAmount)
+            assert(balanceSenderAfter <= balanceSenderBefore - totalAmount)
+            assert(balanceReceiverAfter >= balanceReceiverBefore + totalAmount)
         })
     })
 

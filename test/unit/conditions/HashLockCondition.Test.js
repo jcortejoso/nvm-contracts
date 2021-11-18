@@ -15,7 +15,6 @@ const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('HashLockCondition constructor', (accounts) => {
-    let epochLibrary
     let conditionStoreManager
     let hashLockCondition
 
@@ -24,15 +23,17 @@ contract('HashLockCondition constructor', (accounts) => {
     const owner = accounts[1]
     const createRole = accounts[0]
 
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+    })
+
     beforeEach(async () => {
         await setupTest()
     })
 
     async function setupTest() {
         if (!hashLockCondition) {
-            epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
                 owner,
@@ -56,9 +57,6 @@ contract('HashLockCondition constructor', (accounts) => {
 
     describe('deploy and setup', () => {
         it('contract should deploy', async () => {
-            const epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
             const conditionStoreManager = await ConditionStoreManager.new()
             const hashLockCondition = await HashLockCondition.new()
             await hashLockCondition.initialize(

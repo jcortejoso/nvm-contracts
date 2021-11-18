@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
 /* global artifacts, contract, describe, it, beforeEach */
-import BigNumber from "bignumber.js";
-
+const BigNumber = require('bignumber.js')
+const web3 = require('web3')
 const testUtils = require('../../helpers/utils.js')
 // @ts-ignore
 const chai = require('chai')
@@ -15,8 +15,8 @@ const Dispenser = artifacts.require('Dispenser')
 const NeverminedToken = artifacts.require('NeverminedToken')
 
 contract('Dispenser', (accounts) => {
-    let dispenser: any
-    let token: any
+    let dispenser
+    let token
 
     const deployer = accounts[0]
     const someone = accounts[1]
@@ -31,7 +31,7 @@ contract('Dispenser', (accounts) => {
         await dispenser.initialize(token.address, deployer)
 
         // register dispenser as minter in ocean token
-        await token.grantRole(web3.utils.toHex("minter"), dispenser.address)
+        await token.grantRole(web3.utils.toHex('minter'), dispenser.address)
     })
 
     describe('requestTokens', () => {
@@ -43,7 +43,7 @@ contract('Dispenser', (accounts) => {
             )
 
             // assert
-            const balance: BigNumber = new BigNumber(await token.balanceOf(someone))
+            const balance = new BigNumber(await token.balanceOf(someone))
             assert.strictEqual(balance.dividedBy(10 ** 18).toNumber(), 200)
         })
 
@@ -63,7 +63,7 @@ contract('Dispenser', (accounts) => {
             )
 
             // assert
-            const balance: BigNumber = new BigNumber(await token.balanceOf(someone))
+            const balance = new BigNumber(await token.balanceOf(someone))
             assert.strictEqual(balance.dividedBy(10 ** 18).toNumber(), 10)
             testUtils.assertEmitted(result, 1, 'RequestFrequencyExceeded')
         })

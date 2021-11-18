@@ -1,26 +1,16 @@
-/* global artifacts, web3 */
 const { argv } = require('yargs')
-const { deployContracts } = require('@nevermined-io/contract-tools')
-const initializeContracts = require('./deploy/initializeContracts.js')
-const setupContracts = require('./deploy/setupContracts.js')
-const evaluateContracts = require('./evaluateContracts.js')
+const { deployContracts } = require('./deployContracts')
 
-module.exports = (cb) => {
-    const parameters = argv._
-    const contracts = parameters.splice(2)
-
-    deployContracts({
-        web3,
-        artifacts,
-        contracts,
-        evaluateContracts,
-        initializeContracts,
-        setupContracts,
-        forceWalletCreation: argv['force-wallet-creation'] || false,
-        deeperClean: argv['deeper-clean'] || false,
-        testnet: argv.testnet || false,
-        verbose: argv.verbose && true
+async function main() {
+    const verbose = true
+    const testnet = process.env.TESTNET === 'true'
+    await deployContracts({
+        contracts: argv._.splice(2),
+        verbose,
+        makeWallet: false,
+        testnet
     })
-        .then(() => cb())
-        .catch(err => cb(err))
+    process.exit(0)
 }
+
+main()

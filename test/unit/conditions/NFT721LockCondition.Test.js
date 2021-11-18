@@ -17,10 +17,8 @@ const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
 contract('NFT721LockCondition', (accounts) => {
-    let epochLibrary
     let conditionStoreManager
     let didRegistry
-    let didRegistryLibrary
     let lockCondition
     let erc721
     let nftTokenAddress
@@ -31,21 +29,23 @@ contract('NFT721LockCondition', (accounts) => {
     const checksum = constants.bytes32.one
     const amount = 1
 
+    before(async () => {
+        const epochLibrary = await EpochLibrary.new()
+        await ConditionStoreManager.link(epochLibrary)
+        const didRegistryLibrary = await DIDRegistryLibrary.new()
+        await DIDRegistry.link(didRegistryLibrary)
+    })
+
     beforeEach(async () => {
         await setupTest()
     })
 
     async function setupTest() {
         if (!didRegistry) {
-            didRegistryLibrary = await DIDRegistryLibrary.new()
-            await DIDRegistry.link('DIDRegistryLibrary', didRegistryLibrary.address)
             didRegistry = await DIDRegistry.new()
             await didRegistry.initialize(owner)
         }
         if (!conditionStoreManager) {
-            epochLibrary = await EpochLibrary.new()
-            await ConditionStoreManager.link('EpochLibrary', epochLibrary.address)
-
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
                 owner,

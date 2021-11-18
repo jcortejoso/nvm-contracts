@@ -9,17 +9,13 @@ chai.use(chaiAsPromised)
 
 const testUtils = require('../../helpers/utils')
 
-const EpochLibrary = artifacts.require('EpochLibrary')
 const EpochLibraryProxy = artifacts.require('EpochLibraryProxy')
 
 contract('EpochLibrary', (accounts) => {
-    let epochLibrary
     let epochLibraryProxy
 
     beforeEach(async () => {
         if (!epochLibraryProxy) {
-            epochLibrary = await EpochLibrary.new()
-            EpochLibraryProxy.link('EpochLibrary', epochLibrary.address)
             epochLibraryProxy = await EpochLibraryProxy.new()
         }
     })

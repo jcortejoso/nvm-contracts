@@ -1,4 +1,4 @@
-pragma solidity 0.6.12;
+pragma solidity ^0.8.0;
 // Copyright 2020 Keyko GmbH.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
@@ -33,7 +33,7 @@ import '../registry/DIDRegistry.sol';
 contract DIDSalesTemplate is BaseEscrowTemplate {
 
     DIDRegistry internal didRegistry;
-    LockPaymentCondition internal lockCondition;
+    LockPaymentCondition internal lockPaymentCondition;
     TransferDIDOwnershipCondition internal transferCondition;
     EscrowPaymentCondition internal rewardCondition;
 
@@ -80,7 +80,7 @@ contract DIDSalesTemplate is BaseEscrowTemplate {
             agreementStoreManager.getDIDRegistryAddress()
         );
 
-        lockCondition = LockPaymentCondition(
+        lockPaymentCondition = LockPaymentCondition(
             _lockConditionAddress
         );
         
@@ -92,7 +92,7 @@ contract DIDSalesTemplate is BaseEscrowTemplate {
             _escrowPaymentAddress
         );
 
-        conditionTypes.push(address(lockCondition));
+        conditionTypes.push(address(lockPaymentCondition));
         conditionTypes.push(address(transferCondition));
         conditionTypes.push(address(rewardCondition));
     }
