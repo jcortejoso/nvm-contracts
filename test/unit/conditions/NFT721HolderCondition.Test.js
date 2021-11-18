@@ -39,7 +39,7 @@ contract('NFT721HolderCondition', (accounts) => {
     async function setupTest() {
         if (!didRegistry) {
             didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(owner, constants.address.zero)
+            await didRegistry.initialize(owner, constants.address.zero, constants.address.zero)
             token = await ERC721.new()
             await token.initialize()
         }

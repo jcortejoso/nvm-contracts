@@ -6,6 +6,7 @@ pragma solidity ^0.8.0;
 
 import './DIDFactory.sol';
 import '../token/erc1155/NFTUpgradeable.sol';
+import '../token/erc1155/NFT721Upgradeable.sol';
 
 /**
  * @title Mintable DID Registry
@@ -19,6 +20,7 @@ contract DIDRegistry is DIDFactory {
     using SafeMathUpgradeable for uint256;
 
     NFTUpgradeable public erc1155;
+    NFT721Upgradeable public erc721;
 
     //////////////////////////////////////////////////////////////
     ////////  EVENTS  ////////////////////////////////////////////
@@ -31,13 +33,15 @@ contract DIDRegistry is DIDFactory {
      */
     function initialize(
         address _owner,
-        address _erc1155
+        address _erc1155,
+        address _erc721
     )
     public
     initializer
     {
         OwnableUpgradeable.__Ownable_init();
         erc1155 = NFTUpgradeable(_erc1155);
+        erc721 = NFT721Upgradeable(_erc721);
         transferOwnership(_owner);
         manager = _owner;
     }
@@ -116,6 +120,26 @@ contract DIDRegistry is DIDFactory {
             _did, msg.sender, keccak256('enableNft'), '', 'nft initialization');
     }
     
+    function enableAndMintDidNft721(
+        bytes32 _did,
+        uint8 _royalties,
+        bool _preMint
+    )
+    public
+    onlyDIDOwner(_did)
+    returns (bool success)
+    {
+        didRegisterList.initializeNftConfig(_did, 1, _royalties);
+
+        if (_preMint)    {
+            mint721(_did);
+        }
+        
+        return super.used(
+            keccak256(abi.encode(_did, 1, _royalties, msg.sender)),
+            _did, msg.sender, keccak256('enableNft721'), '', 'nft initialization');
+    }
+    
     /**
      * @notice Mints a NFT associated to the DID
      *
@@ -149,6 +173,30 @@ contract DIDRegistry is DIDFactory {
         erc1155.mint(msg.sender, uint256(_did), _amount, '');
     }
 
+    function mint721(
+        bytes32 _did
+    )
+    public
+    onlyDIDOwner(_did)
+    nftIsInitialized(_did)
+    {
+        uint256 _amount = 1;
+        if (didRegisterList.didRegisters[_did].mintCap > 0) {
+            require(
+                didRegisterList.didRegisters[_did].nftSupply.add(_amount) <= didRegisterList.didRegisters[_did].mintCap,
+                'Cap exceeded'
+            );
+        }
+        
+        didRegisterList.didRegisters[_did].nftSupply = didRegisterList.didRegisters[_did].nftSupply.add(_amount);
+        
+        super.used(
+            keccak256(abi.encode(_did, msg.sender, 'mint721', _amount, block.number)),
+            _did, msg.sender, keccak256('mint721'), '', 'mint721');
+
+        erc721.mint(msg.sender, uint256(_did));
+    }
+
     /**
      * @notice Burns NFTs associated to the DID
      *
@@ -177,5 +225,5 @@ contract DIDRegistry is DIDFactory {
     function balanceOf(address account, uint id) public view returns (uint) {
         return erc1155.balanceOf(account, id);
     }
-    
+
 }

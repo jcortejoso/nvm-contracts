@@ -6,7 +6,6 @@ pragma solidity ^0.8.0;
 
 import '../Condition.sol';
 import '../../token/erc1155/NFTUpgradeable.sol';
-// import '../../registry/DIDRegistry.sol';
 import './ITransferNFT.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 

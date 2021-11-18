@@ -48,7 +48,7 @@ contract('LockPaymentCondition', (accounts) => {
             nft = await NFT.new()
             await nft.initialize('')
             didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(owner, nft.address, { from: owner })
+            await didRegistry.initialize(owner, nft.address, constants.address.zero, { from: owner })
             await nft.addMinter(didRegistry.address)
 
             conditionStoreManager = await ConditionStoreManager.new()
@@ -78,7 +78,7 @@ contract('LockPaymentCondition', (accounts) => {
             const nft = await NFT.new()
             await nft.initialize('')
             const didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(owner, nft.address, { from: owner })
+            await didRegistry.initialize(owner, nft.address, constants.address.zero, { from: owner })
             await nft.addMinter(didRegistry.address)
 
             const conditionStoreManager = await ConditionStoreManager.new()

@@ -59,7 +59,7 @@ contract('EscrowPaymentCondition contract', (accounts) => {
             )
 
             didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(owner, constants.address.zero)
+            await didRegistry.initialize(owner, constants.address.zero, constants.address.zero)
 
             token = await NeverminedToken.new()
             await token.initialize(owner, owner)
@@ -106,7 +106,7 @@ contract('EscrowPaymentCondition contract', (accounts) => {
             )
 
             const didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(owner, constants.address.zero)
+            await didRegistry.initialize(owner, constants.address.zero, constants.address.zero)
 
             const token = await NeverminedToken.new()
             await token.initialize(owner, owner)
