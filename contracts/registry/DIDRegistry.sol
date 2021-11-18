@@ -222,6 +222,22 @@ contract DIDRegistry is DIDFactory {
             _did, msg.sender, keccak256('burn'), '', 'burn');
     }
 
+    function burn721(
+        bytes32 _did
+    )
+    public
+    onlyDIDOwner(_did)
+    nftIsInitialized(_did)
+    {
+        uint256 _amount = 1;
+        erc721.burn(uint256(_did));
+        didRegisterList.didRegisters[_did].nftSupply -= _amount;
+
+        super.used(
+            keccak256(abi.encode(_did, msg.sender, 'burn721', _amount, block.number)),
+            _did, msg.sender, keccak256('burn721'), '', 'burn721');
+    }
+
     function balanceOf(address account, uint id) public view returns (uint) {
         return erc1155.balanceOf(account, id);
     }
