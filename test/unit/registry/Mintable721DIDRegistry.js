@@ -98,9 +98,9 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
 
-            await didRegistry.registerMintableDID(
-                didSeed, checksum, [], value, 20, 0, constants.activities.GENERATED, '', { from: owner })
-            await didRegistry.mint721(did, { from: owner })
+            await didRegistry.registerAttribute(
+                didSeed, checksum, [], value, { from: owner })
+            await didRegistry.enableAndMintDidNft721(did, 0, true, { from: owner })
 
             const nftOwner = await nft.ownerOf(did)
             assert.strictEqual(owner, nftOwner)
@@ -112,19 +112,6 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             )
 
             await assert.isRejected(nft.ownerOf(did))
-        })
-
-        it('Should initialize the NFT in the registration', async () => {
-            const didSeed = testUtils.generateId()
-            const did = await didRegistry.hashDID(didSeed, owner)
-            const checksum = testUtils.generateId()
-            await didRegistry.registerMintableDID(
-                didSeed, checksum, [], value, 10, 0, constants.activities.GENERATED, '', { from: owner })
-
-            await didRegistry.mint721(did, { from: owner })
-
-            const nftOwner = await nft.ownerOf(did)
-            assert.strictEqual(owner, nftOwner)
         })
 
         it('Should Mint automatically if is configured that way', async () => {
@@ -145,8 +132,12 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
 
-            await didRegistry.registerMintableDID(
-                didSeed, checksum, [], value, 0, 0, constants.activities.GENERATED, '', { from: owner })
+            await didRegistry.registerAttribute(
+                didSeed, checksum, [], value, { from: owner })
+            await didRegistry.enableAndMintDidNft721(did, 0, false, { from: owner })
+
+            await assert.isRejected(nft.ownerOf(did))
+
             await didRegistry.mint721(did, { from: owner })
 
             const nftOwner = await nft.ownerOf(did)
@@ -157,8 +148,9 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
-            await didRegistry.registerMintableDID(
-                didSeed, checksum, [], value, 1, 0, constants.activities.GENERATED, '', { from: owner })
+            await didRegistry.registerAttribute(
+                didSeed, checksum, [], value, { from: owner })
+            await didRegistry.enableAndMintDidNft721(did, 0, false, { from: owner })
 
             await didRegistry.mint721(did, { from: owner })
             let nftOwner = await nft.ownerOf(did)
@@ -166,7 +158,7 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
 
             await assert.isRejected(
                 didRegistry.mint721(did, { from: owner }),
-                'Cap exceeded'
+                'ERC721: token already minted'
             )
             nftOwner = await nft.ownerOf(did)
             assert.strictEqual(owner, nftOwner)
@@ -199,7 +191,7 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             const checksum = testUtils.generateId()
 
             await didRegistryLibraryProxy.update(did, checksum, value, { from: owner })
-            await didRegistryLibraryProxy.initializeNftConfig(did, 3, 10, { from: owner })
+            await didRegistryLibraryProxy.initializeNft721Config(did, 10, { from: owner })
 
             assert.isOk( // MUST BE TRUE. It's the creator selling the DID
                 await didRegistryLibraryProxy.areRoyaltiesValid(did, [5], [other]))

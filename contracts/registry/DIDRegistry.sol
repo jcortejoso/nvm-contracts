@@ -129,7 +129,7 @@ contract DIDRegistry is DIDFactory {
     onlyDIDOwner(_did)
     returns (bool success)
     {
-        didRegisterList.initializeNftConfig(_did, 1, _royalties);
+        didRegisterList.initializeNft721Config(_did, _royalties);
 
         if (_preMint)    {
             mint721(_did);
@@ -139,7 +139,7 @@ contract DIDRegistry is DIDFactory {
             keccak256(abi.encode(_did, 1, _royalties, msg.sender)),
             _did, msg.sender, keccak256('enableNft721'), '', 'nft initialization');
     }
-    
+
     /**
      * @notice Mints a NFT associated to the DID
      *
@@ -178,20 +178,10 @@ contract DIDRegistry is DIDFactory {
     )
     public
     onlyDIDOwner(_did)
-    nftIsInitialized(_did)
+    nft721IsInitialized(_did)
     {
-        uint256 _amount = 1;
-        if (didRegisterList.didRegisters[_did].mintCap > 0) {
-            require(
-                didRegisterList.didRegisters[_did].nftSupply.add(_amount) <= didRegisterList.didRegisters[_did].mintCap,
-                'Cap exceeded'
-            );
-        }
-        
-        didRegisterList.didRegisters[_did].nftSupply = didRegisterList.didRegisters[_did].nftSupply.add(_amount);
-        
         super.used(
-            keccak256(abi.encode(_did, msg.sender, 'mint721', _amount, block.number)),
+            keccak256(abi.encode(_did, msg.sender, 'mint721', 1, block.number)),
             _did, msg.sender, keccak256('mint721'), '', 'mint721');
 
         erc721.mint(msg.sender, uint256(_did));
@@ -227,14 +217,12 @@ contract DIDRegistry is DIDFactory {
     )
     public
     onlyDIDOwner(_did)
-    nftIsInitialized(_did)
+    nft721IsInitialized(_did)
     {
-        uint256 _amount = 1;
         erc721.burn(uint256(_did));
-        didRegisterList.didRegisters[_did].nftSupply -= _amount;
 
         super.used(
-            keccak256(abi.encode(_did, msg.sender, 'burn721', _amount, block.number)),
+            keccak256(abi.encode(_did, msg.sender, 'burn721', 1, block.number)),
             _did, msg.sender, keccak256('burn721'), '', 'burn721');
     }
 

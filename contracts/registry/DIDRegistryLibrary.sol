@@ -22,9 +22,11 @@ library DIDRegistryLibrary {
         // The percent of the sale that is going back to the original `creator` in the secondary market  
         uint8 royalties;
         // Flag to control if NFTs config was already initialized
-        bool nftInitialized;        
+        bool nftInitialized;
+        // Flag to control if NFTs config was already initialized (erc 721)
+        bool nft721Initialized;
         // DIDRegistry original creator, this can't be modified after the asset is registered 
-        address creator;        
+        address creator;
         // Checksum associated to the DID
         bytes32 lastChecksum;
         // URL to the metadata associated to the DID
@@ -38,7 +40,7 @@ library DIDRegistryLibrary {
         // Delegates able to register provenance events on behalf of the owner or providers
         address[] delegates;
         // The NFTs supply associated to the DID 
-        uint256 nftSupply;        
+        uint256 nftSupply;
         // The max number of NFTs associated to the DID that can be minted 
         uint256 mintCap;
     }
@@ -87,7 +89,8 @@ library DIDRegistryLibrary {
             nftSupply: 0,
             mintCap: 0,
             royalties: 0,
-            nftInitialized: false
+            nftInitialized: false,
+            nft721Initialized: false
         });
 
         return _self.didRegisterIds.length;
@@ -104,7 +107,7 @@ library DIDRegistryLibrary {
      * @param _cap refers to the mint cap
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
      *        The royalties in secondary market for the creator should be between 0% >= x < 100%
-     */        
+     */
     function initializeNftConfig(
         DIDRegisterList storage _self,
         bytes32 _did,
@@ -122,6 +125,23 @@ library DIDRegistryLibrary {
         _self.didRegisters[_did].mintCap = _cap;
         _self.didRegisters[_did].royalties = _royalties;
         _self.didRegisters[_did].nftInitialized = true;
+    }
+
+    function initializeNft721Config(
+        DIDRegisterList storage _self,
+        bytes32 _did,
+        uint8 _royalties
+    )
+    internal
+    {
+        require(_self.didRegisters[_did].owner != address(0), 'DID not stored');
+        
+        require(!_self.didRegisters[_did].nft721Initialized, 'NFT already initialized');
+        
+        require(_royalties < 100, 'Invalid royalties number');
+
+        _self.didRegisters[_did].royalties = _royalties;
+        _self.didRegisters[_did].nft721Initialized = true;
     }
 
 

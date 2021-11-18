@@ -80,6 +80,15 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         _;
     }    
     
+    modifier nft721IsInitialized(bytes32 _did)
+    {
+        require(
+            didRegisterList.didRegisters[_did].nft721Initialized,
+            'NFT not initialized (ERC-721)'
+        );
+        _;
+    }    
+    
     //////////////////////////////////////////////////////////////
     ////////  EVENTS  ////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
