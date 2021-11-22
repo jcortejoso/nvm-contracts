@@ -1,4 +1,4 @@
-FROM node:10-alpine
+FROM node:14-alpine
 LABEL maintainer="Keyko <root@keyko.io>"
 
 RUN apk add --no-cache --update\
@@ -10,7 +10,7 @@ RUN apk add --no-cache --update\
       krb5-libs\
       krb5\
       make\
-      python
+      python3
 
 COPY . /nevermined-contracts
 WORKDIR /nevermined-contracts
