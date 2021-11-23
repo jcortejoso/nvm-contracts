@@ -1,7 +1,7 @@
 FROM golang:1.16
 LABEL maintainer="Keyko <root@keyko.io>"
 
-RUN curl -fsSL https://deb.nodesource.com/setup_12.x | bash -
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get -y update && apt-get -y install \
     nodejs \
     && rm -rf /var/lib/apt/lists/*
