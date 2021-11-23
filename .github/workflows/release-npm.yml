@@ -25,7 +25,7 @@ jobs:
       - name: Generate dev artifacts
         run: |
           yarn compile
-          yarn deploy:development
+          yarn deploy:spree
       - name: Publish package
         run: npm publish --access public
         env:

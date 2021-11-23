@@ -118,7 +118,7 @@
     "ffjavascript": "^0.2.38",
     "findit": "^2.0.0",
     "glob": "^7.2.0",
-    "hardhat": "^2.6.7",
+    "hardhat": "^2.6.8",
     "hardhat-dependency-compiler": "^1.1.2",
     "mathjs": "~7.5.1",
     "prettier": "^2.1.2",
