@@ -247,4 +247,10 @@ contract DIDRegistry is DIDFactory {
         erc1155.safeTransferFrom(from, to, id, amount, data);
     }
 
+    function setApprovalForAll(address operator, bool approved) public virtual {
+        require(_msgSender() != operator, "ERC1155: setting approval status for self");
+
+        erc1155.proxySetApprovalForAll(msg.sender, operator, approved);
+    }
+
 }
