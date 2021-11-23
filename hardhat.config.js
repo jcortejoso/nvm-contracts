@@ -53,7 +53,7 @@ module.exports = {
             initialBaseFeePerGas: 0
         },
         spree: {
-            url: 'http://localhost:8545',
+            url: url || 'http://localhost:8545',
             accounts: {
                 mnemonic: 'taxi music thumb unique chat sand crew more leg another off lamp'
             }

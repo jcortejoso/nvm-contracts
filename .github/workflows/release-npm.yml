@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: 14
           registry-url: https://registry.npmjs.org/
       - name: Pre-install
         run: |
@@ -25,7 +25,7 @@ jobs:
       - name: Generate dev artifacts
         run: |
           yarn compile
-          yarn deploy:development
+          yarn deploy:spree
       - name: Publish package
         run: npm publish --access public
         env:

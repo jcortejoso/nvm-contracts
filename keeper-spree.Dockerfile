@@ -19,7 +19,7 @@ RUN apk add --no-cache --update\
       krb5-libs\
       krb5\
       make\
-      python\
+      python3\
       curl
 
 COPY --from=openethereum /home/openethereum /home/openethereum

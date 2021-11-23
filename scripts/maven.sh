@@ -8,7 +8,8 @@ shopt -s nullglob # Avoid literal evaluation if not files
 mkdir -p ./tmp/
 
 #for file in artifacts/*.development.json
-for file in build/contracts/*.json
+#for file in build/contracts/*.json
+for file in $(find build/contracts/ -iname "*.json"|grep -v interfaces|grep -v ".dbg.json")
 do
     tmpFile=$(basename $file)
     #tmpFile=${tmpFile//.development/}
