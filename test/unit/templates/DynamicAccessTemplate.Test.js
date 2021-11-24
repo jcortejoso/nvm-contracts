@@ -64,7 +64,7 @@ contract('DynamicAccessTemplate', (accounts) => {
             await nftHolderCondition.initialize(
                 owner,
                 conditionStoreManager.address,
-                didRegistry.address,
+                deployment.nft.address,
                 { from: owner }
             )
 

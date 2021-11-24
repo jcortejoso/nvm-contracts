@@ -66,7 +66,7 @@ contract('NFT Access integration test', (accounts) => {
         await nftHolderCondition.initialize(
             owner,
             conditionStoreManager.address,
-            didRegistry.address,
+            nft.address,
             { from: deployer }
         )
 

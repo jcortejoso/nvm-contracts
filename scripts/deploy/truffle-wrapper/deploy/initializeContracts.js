@@ -232,7 +232,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('DIDRegistry')
+                    getAddress('NFTUpgradeable')
                 ],
                 verbose
             })
