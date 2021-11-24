@@ -226,8 +226,8 @@ contract DIDRegistry is DIDFactory {
             _did, msg.sender, keccak256('burn721'), '', 'burn721');
     }
 
-    function balanceOf(address account, uint id) public view returns (uint) {
-        return erc1155.balanceOf(account, id);
+    function balanceOf(address account, bytes32 id) public view returns (uint) {
+        return erc1155.balanceOf(account, uint256(id));
     }
 
     /**
