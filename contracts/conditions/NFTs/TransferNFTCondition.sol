@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 
 
 import '../Condition.sol';
-import '../../registry/DIDRegistry.sol';
+import '../../token/erc1155/NFTUpgradeable.sol';
 import './ITransferNFT.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
@@ -23,7 +23,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
 
     bytes32 private constant MARKET_ROLE = keccak256('MARKETPLACE_ROLE');
     
-    DIDRegistry private registry;
+    NFTUpgradeable private erc1155;
 
    /**
     * @notice initialize init the contract with the following parameters
@@ -57,7 +57,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
             _conditionStoreManagerAddress
         );
 
-        registry = DIDRegistry(
+        erc1155 = NFTUpgradeable(
             _didRegistryAddress
         );
         
@@ -101,7 +101,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         view
         returns (bytes32)
     {
-        return hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, address(registry));
+        return hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, address(erc1155));
     }
 
    /**
@@ -140,7 +140,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         public
         returns (ConditionStoreLibrary.ConditionState)
     {
-        return fulfill(_agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, address(registry));
+        return fulfill(_agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, address(erc1155));
     }
 
     /**
@@ -249,11 +249,11 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         );
         
         require(
-            registry.balanceOf(_nftHolder, uint256(_did)) >= _nftAmount,
+            erc1155.balanceOf(_nftHolder, uint256(_did)) >= _nftAmount,
             'Not enough balance'
         );
 
-        registry.safeTransferFrom(_nftHolder, _nftReceiver, uint256(_did), _nftAmount, '');
+        erc1155.safeTransferFrom(_nftHolder, _nftReceiver, uint256(_did), _nftAmount, '');
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
@@ -266,7 +266,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
             _nftReceiver,
             _nftAmount,
             _id,
-            address(registry)
+            address(erc1155)
         );
 
         return state;

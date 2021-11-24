@@ -80,6 +80,15 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         _;
     }    
     
+    modifier nft721IsInitialized(bytes32 _did)
+    {
+        require(
+            didRegisterList.didRegisters[_did].nft721Initialized,
+            'NFT not initialized (ERC-721)'
+        );
+        _;
+    }    
+    
     //////////////////////////////////////////////////////////////
     ////////  EVENTS  ////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
@@ -141,6 +150,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      *      Initialize Ownable. Only on contract creation.
      * @param _owner refers to the owner of the contract.
      */
+     /*
     function initialize(
         address _owner
     )
@@ -151,7 +161,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
         manager = _owner;
-    }
+    }*/
 
     /**
      * Sets the manager role. Should be the TransferCondition contract address

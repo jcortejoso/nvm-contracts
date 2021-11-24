@@ -12,6 +12,7 @@ const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
 const NeverminedToken = artifacts.require('NeverminedToken')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
+const NFT = artifacts.require('NFTUpgradeable')
 
 const constants = require('../../helpers/constants.js')
 const { getBalance, getETHBalance } = require('../../helpers/getBalance.js')
@@ -24,6 +25,7 @@ contract('LockPaymentCondition', (accounts) => {
     let lockPaymentCondition
     let didRegistry
     let didRegistryLibrary
+    let nft
 
     const owner = accounts[1]
     const createRole = accounts[0]
@@ -43,8 +45,11 @@ contract('LockPaymentCondition', (accounts) => {
 
     async function setupTest() {
         if (!conditionStoreManager) {
+            nft = await NFT.new()
+            await nft.initialize('')
             didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(owner, { from: owner })
+            await didRegistry.initialize(owner, nft.address, constants.address.zero, { from: owner })
+            await nft.addMinter(didRegistry.address)
 
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(owner, { from: owner })
@@ -70,8 +75,11 @@ contract('LockPaymentCondition', (accounts) => {
 
     describe('init failure', () => {
         it('needed contract addresses cannot be 0', async () => {
+            const nft = await NFT.new()
+            await nft.initialize('')
             const didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(owner, { from: owner })
+            await didRegistry.initialize(owner, nft.address, constants.address.zero, { from: owner })
+            await nft.addMinter(didRegistry.address)
 
             const conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(owner, { from: owner })

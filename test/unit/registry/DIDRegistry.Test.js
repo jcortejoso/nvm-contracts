@@ -9,6 +9,7 @@ const Common = artifacts.require('Common')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
 const testUtils = require('../../helpers/utils.js')
+const constants = require('../../helpers/constants')
 
 contract('DIDRegistry', (accounts) => {
     let didRegistry
@@ -38,7 +39,7 @@ contract('DIDRegistry', (accounts) => {
             const didRegistryLibrary = await DIDRegistryLibrary.new()
             await DIDRegistry.link(didRegistryLibrary)
             didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(owner)
+            await didRegistry.initialize(owner, constants.address.zero, constants.address.zero)
             common = await Common.new()
         }
     }

@@ -11,6 +11,7 @@ const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
 const NFTHolderCondition = artifacts.require('NFTHolderCondition')
+const NFT = artifacts.require('NFTUpgradeable')
 
 const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
@@ -22,6 +23,7 @@ contract('NFTHolderCondition', (accounts) => {
     let didRegistry
     let conditionStoreManager
     let nftHolderCondition
+    let nft
 
     before(async () => {
         const epochLibrary = await EpochLibrary.new()
@@ -36,8 +38,12 @@ contract('NFTHolderCondition', (accounts) => {
 
     async function setupTest() {
         if (!didRegistry) {
+            nft = await NFT.new()
+            await nft.initialize('')
+
             didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(owner)
+            await didRegistry.initialize(owner, nft.address, constants.address.zero)
+            await nft.addMinter(didRegistry.address)
         }
         if (!conditionStoreManager) {
             conditionStoreManager = await ConditionStoreManager.new()
@@ -48,7 +54,7 @@ contract('NFTHolderCondition', (accounts) => {
             await nftHolderCondition.initialize(
                 accounts[0],
                 conditionStoreManager.address,
-                didRegistry.address,
+                nft.address,
                 { from: accounts[0] })
         }
     }
@@ -74,7 +80,7 @@ contract('NFTHolderCondition', (accounts) => {
                 didSeed, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
 
-            await didRegistry.safeTransferFrom(
+            await nft.safeTransferFrom(
                 owner, holderAddress, BigInt(did), 10, '0x', { from: owner })
 
             const result = await nftHolderCondition.fulfill(agreementId, did, holderAddress, amount)
@@ -105,7 +111,7 @@ contract('NFTHolderCondition', (accounts) => {
                 didSeed, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
 
-            await didRegistry.safeTransferFrom(
+            await nft.safeTransferFrom(
                 owner, holderAddress, BigInt(did), 10, '0x', { from: owner })
 
             await assert.isRejected(
@@ -136,7 +142,7 @@ contract('NFTHolderCondition', (accounts) => {
                 didSeed, checksum, [], value, 100, 0, constants.activities.GENERATED, '', { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
 
-            await didRegistry.safeTransferFrom(
+            await nft.safeTransferFrom(
                 owner, holderAddress, BigInt(did), 1, '0x', { from: owner })
 
             await assert.isRejected(

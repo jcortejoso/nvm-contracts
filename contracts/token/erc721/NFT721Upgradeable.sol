@@ -2,16 +2,15 @@
 
 pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 /**
  *
  * @dev Implementation of the basic standard multi-token.
- * See https://eips.ethereum.org/EIPS/eip-1155
  */
-contract NFTUpgradeable is ERC1155Upgradeable, OwnableUpgradeable, AccessControlUpgradeable {
+contract NFT721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, AccessControlUpgradeable {
 
     // Mapping from account to proxy approvals
     mapping (address => bool) private _proxyApprovals;
@@ -27,14 +26,13 @@ contract NFTUpgradeable is ERC1155Upgradeable, OwnableUpgradeable, AccessControl
      * @dev See {_setURI}.
      */
     // solhint-disable-next-line
-    function initialize(string memory uri_) public initializer {
+    function initialize() public initializer {
         __Context_init_unchained();
         __ERC165_init_unchained();
-        __ERC1155_init_unchained(uri_);
+        __ERC721_init_unchained('', '');
         __Ownable_init_unchained();
         AccessControlUpgradeable.__AccessControl_init();
         AccessControlUpgradeable._setupRole(MINTER_ROLE, msg.sender);
-//        setProxyApproval(msg.sender, true);
     }
 
     
@@ -50,23 +48,23 @@ contract NFTUpgradeable is ERC1155Upgradeable, OwnableUpgradeable, AccessControl
         return super.isApprovedForAll(account, operator) || _proxyApprovals[operator];
     }
 
-    function mint(address to, uint256 id, uint256 amount, bytes memory data) public {
+    function mint(address to, uint256 id) public {
         require(hasRole(MINTER_ROLE, msg.sender), 'only minter can mint');
-        _mint(to, id, amount, data);
+        _mint(to, id);
     }
 
-    function burn(address to, uint256 id, uint256 amount) public {
+    function burn(uint256 id) public {
         require(hasRole(MINTER_ROLE, msg.sender), 'only minter can burn');
-        _burn(to, id, amount);
+        _burn(id);
     }
 
     function addMinter(address account) public onlyOwner {
         AccessControlUpgradeable._setupRole(MINTER_ROLE, account);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControlUpgradeable, ERC1155Upgradeable) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControlUpgradeable, ERC721Upgradeable) returns (bool) {
         return AccessControlUpgradeable.supportsInterface(interfaceId)
-        || ERC1155Upgradeable.supportsInterface(interfaceId);
+        || ERC721Upgradeable.supportsInterface(interfaceId);
     }
 
 }

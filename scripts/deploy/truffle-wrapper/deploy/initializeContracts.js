@@ -44,11 +44,29 @@ async function initializeContracts({
         return addressBook[contract] || proxies[contract]
     }
 
+    if (contracts.indexOf('NFTUpgradeable') > -1) {
+        addressBook.NFTUpgradeable = await zosCreate({
+            contract: 'NFTUpgradeable',
+            cache,
+            args: [''],
+            verbose
+        })
+    }
+
+    if (contracts.indexOf('NFT721Upgradeable') > -1) {
+        addressBook.NFT721Upgradeable = await zosCreate({
+            contract: 'NFT721Upgradeable',
+            cache,
+            args: [],
+            verbose
+        })
+    }
+
     if (contracts.indexOf('DIDRegistry') > -1) {
         addressBook.DIDRegistry = await zosCreate({
             contract: 'DIDRegistry',
             cache,
-            args: [roles.deployer],
+            args: [roles.deployer, addressBook.NFTUpgradeable || ZeroAddress, addressBook.NFT721Upgradeable || ZeroAddress],
             libraries: { DIDRegistryLibrary: didRegistryLibrary },
             verbose
         })

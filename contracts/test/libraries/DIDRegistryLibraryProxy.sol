@@ -55,6 +55,15 @@ contract DIDRegistryLibraryProxy {
         return didRegisterList.initializeNftConfig(_did, _cap, _royalties);
     }
 
+    function initializeNft721Config(
+        bytes32 _did,
+        uint8 _royalties
+    )
+    public
+    {
+        return didRegisterList.initializeNft721Config(_did, _royalties);
+    }
+
     function getDIDInfo(
         bytes32 _did
     )

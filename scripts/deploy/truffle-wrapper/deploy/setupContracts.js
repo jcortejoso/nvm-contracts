@@ -194,6 +194,24 @@ async function setupContracts({
         })
     }
 
+    if (addressBook.NFTUpgradeable && addressBook.DIDRegistry) {
+        const NFTInstance = artifacts.NFTUpgradeable
+
+        console.log('Set NFT minter : ' + addressBook.NFTUpgradeable)
+        const tx = await NFTInstance.addMinter(
+            addressBook.DIDRegistry, { from: roles.deployer })
+        await tx.wait()
+    }
+
+    if (addressBook.NFT721Upgradeable && addressBook.DIDRegistry) {
+        const NFT721Instance = artifacts.NFT721Upgradeable
+
+        console.log('Set NFT721 minter : ' + addressBook.NFT721Upgradeable)
+        const tx = await NFT721Instance.addMinter(
+            addressBook.DIDRegistry, { from: roles.deployer })
+        await tx.wait()
+    }
+
     if (addressBook.TransferDIDOwnershipCondition && addressBook.DIDRegistry) {
         const DIDRegistryInstance = artifacts.DIDRegistry
 
@@ -203,12 +221,30 @@ async function setupContracts({
         await tx.wait()
     }
 
-    if (addressBook.TransferNFTCondition && addressBook.DIDRegistry) {
-        const DIDRegistryInstance = artifacts.DIDRegistry
+    if (addressBook.TransferNFTCondition && addressBook.NFTUpgradeable) {
+        const NFTInstance = artifacts.NFTUpgradeable
 
         console.log('TransferNFTCondition : ' + addressBook.TransferNFTCondition)
-        const tx = await DIDRegistryInstance.setProxyApproval(
+        const tx = await NFTInstance.setProxyApproval(
             addressBook.TransferNFTCondition, true, { from: roles.deployer })
+        await tx.wait()
+    }
+
+    if (addressBook.TransferNFTCondition && addressBook.DIDRegistry) {
+        const NFTInstance = artifacts.NFTUpgradeable
+
+        console.log('DIDRegistry : ' + addressBook.DIDRegistry)
+        const tx = await NFTInstance.setProxyApproval(
+            addressBook.DIDRegistry, true, { from: roles.deployer })
+        await tx.wait()
+    }
+
+    if (addressBook.TransferNFT721Condition && addressBook.NFT721Upgradeable) {
+        const NFT721Instance = artifacts.NFT721Upgradeable
+
+        console.log('TransferNFT721Condition : ' + addressBook.TransferNFT721Condition)
+        const tx = await NFT721Instance.setProxyApproval(
+            addressBook.TransferNFT721Condition, true, { from: roles.deployer })
         await tx.wait()
     }
 

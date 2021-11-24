@@ -28,7 +28,7 @@ contract('AccessCondition constructor', (accounts) => {
             const didRegistryLibrary = await DIDRegistryLibrary.new()
             await DIDRegistry.link(didRegistryLibrary)
             const didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(accounts[0])
+            await didRegistry.initialize(accounts[0], constants.address.zero, constants.address.zero)
             const accessCondition = await AccessCondition.new()
             const nftAccessCondition = await NFTAccessCondition.new()
 

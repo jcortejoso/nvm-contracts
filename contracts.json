@@ -1,5 +1,7 @@
 [
   "DIDRegistry",
+  "NFTUpgradeable",
+  "NFT721Upgradeable",
   "ConditionStoreManager",
   "TemplateStoreManager",
   "AgreementStoreManager",

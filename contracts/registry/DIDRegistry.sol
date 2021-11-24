@@ -6,6 +6,7 @@ pragma solidity ^0.8.0;
 
 import './DIDFactory.sol';
 import '../token/erc1155/NFTUpgradeable.sol';
+import '../token/erc721/NFT721Upgradeable.sol';
 
 /**
  * @title Mintable DID Registry
@@ -13,10 +14,13 @@ import '../token/erc1155/NFTUpgradeable.sol';
  *
  * @dev Implementation of a Mintable DID Registry.
  */
-contract DIDRegistry is DIDFactory, NFTUpgradeable {
+contract DIDRegistry is DIDFactory {
 
     using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
     using SafeMathUpgradeable for uint256;
+
+    NFTUpgradeable public erc1155;
+    NFT721Upgradeable public erc721;
 
     //////////////////////////////////////////////////////////////
     ////////  EVENTS  ////////////////////////////////////////////
@@ -28,14 +32,16 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
      * @param _owner refers to the owner of the contract.
      */
     function initialize(
-        address _owner
+        address _owner,
+        address _erc1155,
+        address _erc721
     )
     public
-    override
     initializer
     {
         OwnableUpgradeable.__Ownable_init();
-        NFTUpgradeable.__NFTUpgradeable_init('');
+        erc1155 = NFTUpgradeable(_erc1155);
+        erc721 = NFT721Upgradeable(_erc721);
         transferOwnership(_owner);
         manager = _owner;
     }
@@ -114,6 +120,26 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
             _did, msg.sender, keccak256('enableNft'), '', 'nft initialization');
     }
     
+    function enableAndMintDidNft721(
+        bytes32 _did,
+        uint8 _royalties,
+        bool _preMint
+    )
+    public
+    onlyDIDOwner(_did)
+    returns (bool success)
+    {
+        didRegisterList.initializeNft721Config(_did, _royalties);
+
+        if (_preMint)    {
+            mint721(_did);
+        }
+        
+        return super.used(
+            keccak256(abi.encode(_did, 1, _royalties, msg.sender)),
+            _did, msg.sender, keccak256('enableNft721'), '', 'nft initialization');
+    }
+
     /**
      * @notice Mints a NFT associated to the DID
      *
@@ -144,7 +170,21 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
             keccak256(abi.encode(_did, msg.sender, 'mint', _amount, block.number)),
             _did, msg.sender, keccak256('mint'), '', 'mint');
 
-        super._mint(msg.sender, uint256(_did), _amount, '');
+        erc1155.mint(msg.sender, uint256(_did), _amount, '');
+    }
+
+    function mint721(
+        bytes32 _did
+    )
+    public
+    onlyDIDOwner(_did)
+    nft721IsInitialized(_did)
+    {
+        super.used(
+            keccak256(abi.encode(_did, msg.sender, 'mint721', 1, block.number)),
+            _did, msg.sender, keccak256('mint721'), '', 'mint721');
+
+        erc721.mint(msg.sender, uint256(_did));
     }
 
     /**
@@ -164,13 +204,47 @@ contract DIDRegistry is DIDFactory, NFTUpgradeable {
     onlyDIDOwner(_did)
     nftIsInitialized(_did)
     {
-
-        super._burn(msg.sender, uint256(_did), _amount);
+        erc1155.burn(msg.sender, uint256(_did), _amount);
         didRegisterList.didRegisters[_did].nftSupply -= _amount;
 
         super.used(
             keccak256(abi.encode(_did, msg.sender, 'burn', _amount, block.number)),
             _did, msg.sender, keccak256('burn'), '', 'burn');
     }
-    
+
+    function burn721(
+        bytes32 _did
+    )
+    public
+    onlyDIDOwner(_did)
+    nft721IsInitialized(_did)
+    {
+        erc721.burn(uint256(_did));
+
+        super.used(
+            keccak256(abi.encode(_did, msg.sender, 'burn721', 1, block.number)),
+            _did, msg.sender, keccak256('burn721'), '', 'burn721');
+    }
+
+    function balanceOf(address account, uint id) public view returns (uint) {
+        return erc1155.balanceOf(account, id);
+    }
+
+    /**
+     * @dev See {IERC1155-safeTransferFrom}.
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public {
+        require(
+            from == _msgSender() || erc1155.isApprovedForAll(from, _msgSender()),
+            'ERC1155: caller is not owner nor approved'
+        );
+        erc1155.safeTransferFrom(from, to, id, amount, data);
+    }
+
 }
