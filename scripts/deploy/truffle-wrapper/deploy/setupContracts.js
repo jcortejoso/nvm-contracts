@@ -203,6 +203,52 @@ async function setupContracts({
         await tx.wait()
     }
 
+    if (addressBook.LockPaymentCondition && addressBook.AgreementStoreManager) {
+        console.log('Set lock payment condition proxy : ' + addressBook.LockPaymentCondition)
+        const tx = await artifacts.LockPaymentCondition.grantProxyRole(
+            addressBook.AgreementStoreManager, { from: roles.deployer })
+        await tx.wait()
+    }
+
+    const agreements = [
+        'NFTAccessTemplate',
+        'NFTSalesTemplate',
+        'NFT721AccessTemplate',
+        'NFT721SalesTemplate',
+        'AaveCreditTemplate',
+        'AccessProofTemplate',
+        'AccessTemplate',
+        'DIDSalesTemplate',
+        'DynamicAccessTemplate',
+        'EscrowComputeTemplate',
+    ]
+    for (let a of agreements) {
+        if (addressBook[a] && addressBook.AgreementStoreManager) {
+            console.log('Set agreement manager proxy : ' + addressBook[a])
+            const tx = await artifacts.AgreementStoreManager.grantProxyRole(
+                addressBook[a], { from: roles.deployer })
+            await tx.wait()
+        }
+    }
+
+    if (addressBook.LockPaymentCondition) {
+        await transferOwnership({
+            ContractInstance: artifacts.LockPaymentCondition,
+            name: 'LockPaymentCondition',
+            roles,
+            verbose
+        })
+    }
+
+    if (addressBook.AgreementStoreManager) {
+        await transferOwnership({
+            ContractInstance: artifacts.AgreementStoreManager,
+            name: 'AgreementStoreManager',
+            roles,
+            verbose
+        })
+    }
+
     if (addressBook.NFT721Upgradeable && addressBook.DIDRegistry) {
         const NFT721Instance = artifacts.NFT721Upgradeable
 
