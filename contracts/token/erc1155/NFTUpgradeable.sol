@@ -53,14 +53,14 @@ contract NFTUpgradeable is ERC1155Upgradeable, OwnableUpgradeable, AccessControl
     }
 
     function setApprovalForAll(address operator, bool approved) public virtual override {
-        require(_msgSender() != operator, "ERC1155: setting approval status for self");
+        require(_msgSender() != operator, 'ERC1155: setting approval status for self');
 
         _operatorApprovals[_msgSender()][operator] = approved;
         emit ApprovalForAll(_msgSender(), operator, approved);
     }
 
     function proxySetApprovalForAll(address account, address operator, bool approved) public virtual {
-        require(_proxyApprovals[_msgSender()], "ERC1155: only for proxy");
+        require(_proxyApprovals[_msgSender()], 'ERC1155: only for proxy');
 
         _operatorApprovals[account][operator] = approved;
         emit ApprovalForAll(account, operator, approved);

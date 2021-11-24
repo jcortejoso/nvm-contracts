@@ -248,7 +248,7 @@ contract DIDRegistry is DIDFactory {
     }
 
     function setApprovalForAll(address operator, bool approved) public virtual {
-        require(_msgSender() != operator, "ERC1155: setting approval status for self");
+        require(_msgSender() != operator, 'ERC1155: setting approval status for self');
 
         erc1155.proxySetApprovalForAll(msg.sender, operator, approved);
     }
