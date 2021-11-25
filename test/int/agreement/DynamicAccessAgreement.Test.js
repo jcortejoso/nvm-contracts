@@ -23,6 +23,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
         templateStoreManager,
         dynamicAccessTemplate,
         accessCondition,
+        nft,
         nftHolderCondition
 
     const Activities = {
@@ -39,7 +40,8 @@ contract('Dynamic Access Template integration test', (accounts) => {
             didRegistry,
             agreementStoreManager,
             conditionStoreManager,
-            templateStoreManager
+            templateStoreManager,
+            nft
         } = await deployManagers(
             deployer,
             owner
@@ -78,7 +80,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
         await nftHolderCondition.initialize(
             owner,
             conditionStoreManager.address,
-            didRegistry.address,
+            nft.address,
             { from: owner }
         )
 

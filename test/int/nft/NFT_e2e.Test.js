@@ -266,7 +266,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await didRegistry.mint(did, 5, { from: artist })
             await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
 
-            const balance = await nft.balanceOf(artist, did)
+            const balance = await didRegistry.balanceOf(artist, did)
             assert.strictEqual(5, balance.toNumber())
         })
     })

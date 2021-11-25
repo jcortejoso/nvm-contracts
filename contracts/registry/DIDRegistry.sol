@@ -226,8 +226,8 @@ contract DIDRegistry is DIDFactory {
             _did, msg.sender, keccak256('burn721'), '', 'burn721');
     }
 
-    function balanceOf(address account, uint id) public view returns (uint) {
-        return erc1155.balanceOf(account, id);
+    function balanceOf(address account, bytes32 id) public view returns (uint) {
+        return erc1155.balanceOf(account, uint256(id));
     }
 
     /**
@@ -245,6 +245,12 @@ contract DIDRegistry is DIDFactory {
             'ERC1155: caller is not owner nor approved'
         );
         erc1155.safeTransferFrom(from, to, id, amount, data);
+    }
+
+    function setApprovalForAll(address operator, bool approved) public virtual {
+        require(_msgSender() != operator, 'ERC1155: setting approval status for self');
+
+        erc1155.proxySetApprovalForAll(msg.sender, operator, approved);
     }
 
 }

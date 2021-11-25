@@ -59,7 +59,8 @@ module.exports = {
             }
         },
         external: {
-            url: 'http://localhost:18545'
+            url: 'http://localhost:18545',
+            timeout: 200000
         },
         'polygon-localnet': {
             url: url || 'http://localhost:8545',
