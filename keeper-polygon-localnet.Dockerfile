@@ -4,6 +4,7 @@ LABEL maintainer="Keyko <root@keyko.io>"
 RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get -y update && apt-get -y install \
     nodejs \
+    python \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/0xPolygon/polygon-sdk.git /polygon-sdk
