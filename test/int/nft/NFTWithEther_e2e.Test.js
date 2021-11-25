@@ -135,7 +135,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             owner,
             conditionStoreManager.address,
             nft.address,
-            market,
+            owner,
             { from: deployer }
         )
 
@@ -603,7 +603,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
 
             await nft.setApprovalForAll(market, true, { from: artist })
-            await transferCondition.fulfillForMarket(
+            await transferCondition.fulfillForDelegate(
                 agreementId,
                 did,
                 artist,

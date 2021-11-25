@@ -219,7 +219,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
      * @param _nftHolder is the address of the account to receive the NFT
      * @return condition state (Fulfilled/Aborted)
      */
-    function fulfillForMarket(
+    function fulfillForDelegate(
         bytes32 _agreementId,
         bytes32 _did,
         address _nftHolder,
@@ -231,7 +231,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
     
     returns (ConditionStoreLibrary.ConditionState)
     {
-        require(hasRole(MARKET_ROLE, msg.sender), 'Invalid access role');
+        require(hasRole(MARKET_ROLE, msg.sender) || erc1155.isApprovedForAll(_nftHolder, msg.sender), 'Invalid access role');
         
         bytes32 _id = generateId(
             _agreementId,
