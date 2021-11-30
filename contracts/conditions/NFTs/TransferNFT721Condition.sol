@@ -168,7 +168,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         return state;
     }    
 
-    function fulfillForMarket(
+    function fulfillForDelegate(
         bytes32 _agreementId,
         bytes32 _did,
         address _nftHolder,
@@ -180,7 +180,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
     
     returns (ConditionStoreLibrary.ConditionState)
     {
-        require(hasRole(MARKET_ROLE, msg.sender), 'Invalid access role');
+        require(hasRole(MARKET_ROLE, msg.sender) || erc721.isApprovedForAll(_nftHolder, msg.sender), 'Invalid access role');
         
         bytes32 _id = generateId(
             _agreementId,
