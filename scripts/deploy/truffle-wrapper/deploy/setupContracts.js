@@ -201,6 +201,9 @@ async function setupContracts({
         const tx = await NFTInstance.addMinter(
             addressBook.DIDRegistry, { from: roles.deployer })
         await tx.wait()
+        const tx = await NFTInstance.setProxyApproval(
+            addressBook.DIDRegistry, true, { from: roles.deployer })
+        await tx.wait()
     }
 
     if (addressBook.LockPaymentCondition && addressBook.AgreementStoreManager) {
