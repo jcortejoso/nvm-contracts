@@ -2,7 +2,7 @@ const initializeContracts = require('./deploy/initializeContracts.js')
 const setupContracts = require('./deploy/setupContracts.js')
 const evaluateContracts = require('./evaluateContracts.js')
 const { ethers, upgrades, web3 } = require('hardhat')
-const { exportArtifacts } = require('./artifacts')
+const { exportArtifacts, exportLibraryArtifacts } = require('./artifacts')
 const { loadWallet } = require('./wallets.js')
 
 async function deployContracts({ contracts: origContracts, verbose, testnet, makeWallet }) {
@@ -51,6 +51,7 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
         ConditionStoreManager: { EpochLibrary: epochLibrary.address }
     }
     await exportArtifacts(contracts, addressBook, libraries)
+    await exportLibraryArtifacts(['EpochLibrary', 'DIDRegistryLibrary'], addressBook)
     return addressBook
 }
 

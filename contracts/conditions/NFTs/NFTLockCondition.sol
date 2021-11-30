@@ -18,7 +18,7 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
  */
 contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IERC1155ReceiverUpgradeable {
 
-    IERC1155Upgradeable private registry;
+    IERC1155Upgradeable private erc1155;
     
     bytes32 constant public CONDITION_TYPE = keccak256('NFTLockCondition');
 
@@ -37,19 +37,19 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
     *       initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address
-    * @param _didRegistryAddress DIDRegistry contract address
+    * @param _ercAddress Nevermined ERC-1155 address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress
+        address _ercAddress
     )
         external
         initializer()
     {
         require(
             _conditionStoreManagerAddress != address(0) &&
-            _didRegistryAddress != address(0),
+            _ercAddress != address(0),
             'Invalid address'
         );
         OwnableUpgradeable.__Ownable_init();
@@ -58,7 +58,7 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
             _conditionStoreManagerAddress
         );
         
-        registry = IERC1155Upgradeable(_didRegistryAddress);
+        erc1155 = IERC1155Upgradeable(_ercAddress);
     }
 
     /**
@@ -78,7 +78,7 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
     view
     returns (bytes32)
     {
-        return hashValues(_did, _lockAddress, _amount, address(registry));
+        return hashValues(_did, _lockAddress, _amount, address(erc1155));
     }    
     
    /**
@@ -132,7 +132,7 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
     public
     returns (ConditionStoreLibrary.ConditionState)
     {
-        return fulfill(_agreementId, _did, _lockAddress, _amount, address(registry));
+        return fulfill(_agreementId, _did, _lockAddress, _amount, address(erc1155));
     }
     
     /**
@@ -159,7 +159,7 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
         nonReentrant
         returns (ConditionStoreLibrary.ConditionState)
     {
-        registry.safeTransferFrom(msg.sender, _lockAddress, uint256(_did), _amount, '');
+        erc1155.safeTransferFrom(msg.sender, _lockAddress, uint256(_did), _amount, '');
         
         bytes32 _id = generateId(
             _agreementId,

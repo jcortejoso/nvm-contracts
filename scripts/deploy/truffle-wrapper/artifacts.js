@@ -64,6 +64,17 @@ async function exportArtifacts(contracts, addressBook, libraries) {
     fs.writeFileSync('artifacts/ready', '')
 }
 
+async function exportLibraryArtifacts(contracts, addressBook) {
+    const files = glob.sync('./build/**/*.json').filter(a => !a.match('.dbg.')).filter(a => contracts.some(b => a.match(b + '.json')))
+    for (const c of contracts) {
+        const file = files.find(a => a.match(c))
+        const contract = JSON.parse(fs.readFileSync(file))
+        const artifact = createArtifact(c, contract, addressBook[c], addressBook[c], `v${version}`, {})
+        fs.writeFileSync(`artifacts/${c}.${network}.json`, JSON.stringify(artifact, null, 2))
+    }
+    fs.writeFileSync('artifacts/ready', '')
+}
+
 function readArtifact(c) {
     return JSON.parse(fs.readFileSync(`artifacts/${c}.${network}.json`))
 }
@@ -91,5 +102,6 @@ module.exports = {
     updateArtifact,
     writeArtifact,
     readArtifact,
+    exportLibraryArtifacts,
     exportArtifacts
 }
