@@ -201,7 +201,7 @@ async function initializeContracts({
                 contract: 'AgreementStoreManager',
                 cache,
                 args: [
-                    roles.ownerWallet,
+                    roles.deployer,
                     getAddress('ConditionStoreManager'),
                     getAddress('TemplateStoreManager'),
                     getAddress('DIDRegistry')
@@ -218,7 +218,7 @@ async function initializeContracts({
                 contract: 'LockPaymentCondition',
                 cache,
                 args: [
-                    roles.ownerWallet,
+                    roles.deployer,
                     getAddress('ConditionStoreManager'),
                     getAddress('DIDRegistry')
                 ],

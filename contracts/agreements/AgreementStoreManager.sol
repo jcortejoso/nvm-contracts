@@ -7,10 +7,12 @@ pragma solidity ^0.8.0;
 
 import './AgreementStoreLibrary.sol';
 import '../conditions/ConditionStoreManager.sol';
+import '../conditions/LockPaymentCondition.sol';
 import '../registry/DIDRegistry.sol';
 import '../templates/TemplateStoreManager.sol';
 
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 /**
  * @title Agreement Store Manager
@@ -22,7 +24,17 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  *      Agreement templates must to be approved in the Template Store
  *      Each agreement is linked to the DID of an asset.
  */
-contract AgreementStoreManager is OwnableUpgradeable {
+contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
+
+    bytes32 private constant PROXY_ROLE = keccak256('PROXY_ROLE');
+
+    function grantProxyRole(address _address) public onlyOwner {
+        grantRole(PROXY_ROLE, _address);
+    }
+
+    function revokeProxyRole(address _address) public onlyOwner {
+        revokeRole(PROXY_ROLE, _address);
+    }
 
     /**
      * @dev The Agreement Store Library takes care of the basic storage functions
@@ -74,6 +86,8 @@ contract AgreementStoreManager is OwnableUpgradeable {
         didRegistry = DIDRegistry(
             _didRegistryAddress
         );
+        _setupRole(DEFAULT_ADMIN_ROLE, _owner);
+
     }
 
     /**
@@ -170,6 +184,28 @@ contract AgreementStoreManager is OwnableUpgradeable {
         // same as above
         return getAgreementListSize();
     }
+
+    function createAgreementAndPay(
+        bytes32 _id,
+        bytes32 _did,
+        address[] memory _conditionTypes,
+        bytes32[] memory _conditionIds,
+        uint[] memory _timeLocks,
+        uint[] memory _timeOuts,
+        address _creator,
+        uint _idx,
+        address payable _rewardAddress,
+        address _tokenAddress,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    )
+        public payable
+    {
+        require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
+        createAgreement(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts, _creator);
+        LockPaymentCondition(_conditionTypes[_idx]).fulfillProxy(_creator, _id, _did, _rewardAddress, _tokenAddress, _amounts, _receivers);
+    }
+
 
     /**
      * @dev Get agreement with _id.

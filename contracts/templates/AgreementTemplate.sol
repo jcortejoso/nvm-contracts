@@ -56,6 +56,33 @@ contract AgreementTemplate is OwnableUpgradeable {
         );
     }
 
+    function createAgreementAndPay(
+        bytes32 _id,
+        bytes32 _did,
+        bytes32[] memory _conditionIds,
+        uint[] memory _timeLocks,
+        uint[] memory _timeOuts,
+        uint _idx,
+        address payable _rewardAddress,
+        address _tokenAddress,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    )
+        public
+    {
+        agreementStoreManager.createAgreementAndPay(
+            _id,
+            _did,
+            getConditionTypes(),
+            _conditionIds,
+            _timeLocks,
+            _timeOuts,
+            msg.sender,
+            _idx,
+            _rewardAddress, _tokenAddress, _amounts, _receivers
+        );
+    }
+
     /**
      * @notice getConditionTypes gets the conditions addresses list
      * @dev for the current template returns list of condition contracts 

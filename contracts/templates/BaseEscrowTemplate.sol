@@ -66,6 +66,53 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _timeLocks,
             _timeOuts
         );
+        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer);
+
+        return agreementData.agreementIds.length;
+    }
+
+    function createAgreementAndPayEscrow(
+        bytes32 _id,
+        bytes32 _did,
+        bytes32[] memory _conditionIds,
+        uint[] memory _timeLocks,
+        uint[] memory _timeOuts,
+        address _accessConsumer,
+        uint _idx,
+        address payable _rewardAddress,
+        address _tokenAddress,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    )
+        public
+        returns (uint size)
+    {
+        super.createAgreementAndPay(
+            _id,
+            _did,
+            _conditionIds,
+            _timeLocks,
+            _timeOuts,
+            _idx,
+            _rewardAddress,
+            _tokenAddress,
+            _amounts,
+            _receivers
+        );
+        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer);
+
+        return agreementData.agreementIds.length;
+    }
+
+    function _initAgreement(
+        bytes32 _id,
+        bytes32 _did,
+        uint[] memory _timeLocks,
+        uint[] memory _timeOuts,
+        address _accessConsumer
+    )
+        internal
+    {
 
         address owner = address(0);
         address[] memory providers;
@@ -99,7 +146,6 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _timeOuts
         );
 
-        return agreementData.agreementIds.length;
     }
 
     /**

@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
-
 import './Condition.sol';
 import '../registry/DIDRegistry.sol';
 import '../Common.sol';
@@ -11,6 +10,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import './ILockPayment.sol';
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 /**
  * @title Lock Payment Condition
@@ -20,7 +20,7 @@ import './ILockPayment.sol';
  * This condition allows to lock payment for multiple receivers taking
  * into account the royalties to be paid to the original creators in a secondary market.  
  */
-contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condition, Common {
+contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condition, Common, AccessControlUpgradeable {
 
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
@@ -28,6 +28,16 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
 
     bytes32 constant public CONDITION_TYPE = keccak256('LockPaymentCondition');
     bytes32 constant public KEY_ASSET_RECEIVER = keccak256('_assetReceiverAddress');
+
+    bytes32 private constant PROXY_ROLE = keccak256('PROXY_ROLE');
+
+    function grantProxyRole(address _address) public onlyOwner {
+        grantRole(PROXY_ROLE, _address);
+    }
+
+    function revokeProxyRole(address _address) public onlyOwner {
+        revokeRole(PROXY_ROLE, _address);
+    }
 
    /**
     * @notice initialize init the contract with the following parameters
@@ -60,7 +70,8 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             _didRegistryAddress
         );
         
-    }
+        _setupRole(DEFAULT_ADMIN_ROLE, _owner);
+  }
 
    /**
     * @notice hashValues generates the hash of condition inputs 
@@ -163,6 +174,65 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         return state;
     }
  
+    function fulfillProxy(
+        address _account,
+        bytes32 _agreementId,
+        bytes32 _did,
+        address payable _rewardAddress,
+        address _tokenAddress,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    )
+    external
+    payable
+    nonReentrant
+    returns (ConditionStoreLibrary.ConditionState)
+    {
+        require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
+        require(
+            _amounts.length == _receivers.length,
+            'Amounts and Receivers arguments have wrong length'
+        );
+
+        require(
+            didRegistry.areRoyaltiesValid(_did, _amounts, _receivers),
+            'Royalties are not satisfied'
+        );
+
+        if (_tokenAddress != address(0))
+            _transferERC20Proxy(_account, _rewardAddress, _tokenAddress, calculateTotalAmount(_amounts));
+        else
+            _transferETH(_rewardAddress, calculateTotalAmount(_amounts));
+
+        bytes32 _id = generateId(
+            _agreementId,
+            hashValues(_did, _rewardAddress, _tokenAddress, _amounts, _receivers)
+        );
+        ConditionStoreLibrary.ConditionState state = super.fulfill(
+            _id,
+            ConditionStoreLibrary.ConditionState.Fulfilled
+        );
+
+        if (state == ConditionStoreLibrary.ConditionState.Fulfilled)    {
+            conditionStoreManager.updateConditionMapping(
+                _id,
+                KEY_ASSET_RECEIVER,
+                Common.addressToBytes32(msg.sender)
+            );
+        }
+        
+        emit Fulfilled(
+            _agreementId, 
+            _did,
+            _id,
+            _rewardAddress,
+            _tokenAddress,
+            _receivers, 
+            _amounts
+        );
+        return state;
+    }
+ 
    /**
     * @notice _transferERC20 transfer ERC20 tokens 
     * @param _rewardAddress the address to receive the tokens
@@ -179,6 +249,18 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
     {
         IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
         token.safeTransferFrom(msg.sender, _rewardAddress, _amount);
+    }
+
+    function _transferERC20Proxy(
+        address _senderAddress,
+        address _rewardAddress,
+        address _tokenAddress,
+        uint256 _amount
+    )
+    internal
+    {
+        IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
+        token.safeTransferFrom(_senderAddress, _rewardAddress, _amount);
     }
 
    /**
