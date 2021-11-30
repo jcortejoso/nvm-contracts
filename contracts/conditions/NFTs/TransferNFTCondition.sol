@@ -31,13 +31,13 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
     *       initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address    
-    * @param _didRegistryAddress DID Registry address
+    * @param _ercAddress Nevermined ERC-1155 address
     * @param _nftContractAddress Market address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress,
+        address _ercAddress,
         address _nftContractAddress
     )
         external
@@ -46,7 +46,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         require(
             _owner != address(0) &&
             _conditionStoreManagerAddress != address(0) &&
-            _didRegistryAddress != address(0),
+            _ercAddress != address(0),
             'Invalid address'
         );
         
@@ -58,7 +58,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         );
 
         erc1155 = NFTUpgradeable(
-            _didRegistryAddress
+            _ercAddress
         );
         
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);

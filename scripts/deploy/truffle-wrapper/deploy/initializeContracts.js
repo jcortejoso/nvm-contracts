@@ -191,6 +191,28 @@ async function initializeContracts({
                 verbose
             })
         }
+        if (contracts.indexOf('NFT721HolderCondition') > -1) {
+            addressBook.NFT721HolderCondition = await zosCreate({
+                contract: 'NFT721HolderCondition',
+                cache,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager')
+                ],
+                verbose
+            })
+        }
+        if (contracts.indexOf('NFT721HolderCondition') > -1) {
+            addressBook.NFT721HolderCondition = await zosCreate({
+                contract: 'NFT721HolderCondition',
+                cache,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager')
+                ],
+                verbose
+            })
+        }
     }
 
     if (getAddress('ConditionStoreManager') &&
@@ -225,29 +247,6 @@ async function initializeContracts({
                 verbose
             })
         }
-        if (contracts.indexOf('NFTHolderCondition') > -1) {
-            addressBook.NFTHolderCondition = await zosCreate({
-                contract: 'NFTHolderCondition',
-                cache,
-                args: [
-                    roles.ownerWallet,
-                    getAddress('ConditionStoreManager'),
-                    getAddress('NFTUpgradeable')
-                ],
-                verbose
-            })
-        }
-        if (contracts.indexOf('NFT721HolderCondition') > -1) {
-            addressBook.NFT721HolderCondition = await zosCreate({
-                contract: 'NFT721HolderCondition',
-                cache,
-                args: [
-                    roles.ownerWallet,
-                    getAddress('ConditionStoreManager')
-                ],
-                verbose
-            })
-        }
         if (contracts.indexOf('NFTAccessCondition') > -1) {
             addressBook.NFTAccessCondition = await zosCreate({
                 contract: 'NFTAccessCondition',
@@ -273,6 +272,21 @@ async function initializeContracts({
                 verbose
             })
         }
+    }
+    if (getAddress('ConditionStoreManager') &&
+        getAddress('NFTUpgradeable')) {
+        if (contracts.indexOf('NFTHolderCondition') > -1) {
+            addressBook.NFTHolderCondition = await zosCreate({
+                contract: 'NFTHolderCondition',
+                cache,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
+                    getAddress('NFTUpgradeable')
+                ],
+                verbose
+            })
+        }
         if (contracts.indexOf('TransferNFTCondition') > -1) {
             addressBook.TransferNFTCondition = await zosCreate({
                 contract: 'TransferNFTCondition',
@@ -280,7 +294,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('DIDRegistry'),
+                    getAddress('NFTUpgradeable'),
                     ZeroAddress
                 ],
                 verbose
@@ -294,7 +308,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('DIDRegistry')
+                    getAddress('NFTUpgradeable')
                 ],
                 verbose
             })
@@ -306,7 +320,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('DIDRegistry')
+                    getAddress('NFTUpgradeable')
                 ],
                 verbose
             })
@@ -351,7 +365,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('DIDRegistry'),
+                    getAddress('NFTUpgradeable'),
                     getAddress('LockPaymentCondition')
                 ],
                 verbose

@@ -17,7 +17,7 @@ import './INFTHolder.sol';
  */
 contract NFTHolderCondition is Condition, INFTHolder {
 
-    ERC1155BurnableUpgradeable private nftRegistry;
+    ERC1155BurnableUpgradeable private erc1155;
 
     bytes32 private constant CONDITION_TYPE = keccak256('NFTHolderCondition');
 
@@ -28,19 +28,19 @@ contract NFTHolderCondition is Condition, INFTHolder {
     *       initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address
-    * @param _didRegistryAddress DIDRegistry address
+    * @param _ercAddress Nevermined ERC-1155 address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress
+        address _ercAddress
     )
         external
         initializer()
     {
         require(
             _owner != address(0) &&
-            _didRegistryAddress != address(0) &&
+            _ercAddress != address(0) &&
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
@@ -49,7 +49,7 @@ contract NFTHolderCondition is Condition, INFTHolder {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        nftRegistry = ERC1155BurnableUpgradeable(_didRegistryAddress);
+        erc1155 = ERC1155BurnableUpgradeable(_ercAddress);
     }
 
    /**
@@ -69,7 +69,7 @@ contract NFTHolderCondition is Condition, INFTHolder {
         view
         returns (bytes32)
     {
-        return hashValues(_did, _holderAddress, _amount, address(nftRegistry));
+        return hashValues(_did, _holderAddress, _amount, address(erc1155));
     }
 
     function hashValues(
@@ -105,7 +105,7 @@ contract NFTHolderCondition is Condition, INFTHolder {
         public
         returns (ConditionStoreLibrary.ConditionState)
     {
-        return fulfill(_agreementId, _did, _holderAddress, _amount, address(nftRegistry));
+        return fulfill(_agreementId, _did, _holderAddress, _amount, address(erc1155));
     }
     
     function fulfill(
