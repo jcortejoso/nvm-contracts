@@ -125,7 +125,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             didRegistry.address,
             { from: deployer }
         )
-        await lockPaymentCondition.grantProxyRole(agreementStoreManager.address, {from: owner})
+        await lockPaymentCondition.grantProxyRole(agreementStoreManager.address, { from: owner })
 
         transferCondition = await TransferNFTCondition.new()
         await transferCondition.initialize(
@@ -168,7 +168,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             escrowCondition.address,
             { from: deployer }
         )
-        await agreementStoreManager.grantProxyRole(nftSalesTemplate.address, {from:owner})
+        await agreementStoreManager.grantProxyRole(nftSalesTemplate.address, { from: owner })
 
         // Setup NFT Access Template
         nftAccessTemplate = await NFTAccessTemplate.new()
@@ -404,10 +404,10 @@ contract('End to End NFT Scenarios', (accounts) => {
             const extendedAgreement = {
                 ...nftSalesAgreement,
                 _idx: 0,
-                _receiverAddress: escrowCondition.address, 
+                _receiverAddress: escrowCondition.address,
                 _tokenAddress: token.address,
                 _amounts: amounts2,
-                _receivers: receivers2,
+                _receivers: receivers2
             }
 
             const result = await nftSalesTemplate.createAgreementAndPayEscrow(

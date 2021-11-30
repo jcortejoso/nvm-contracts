@@ -220,9 +220,9 @@ async function setupContracts({
         'AccessTemplate',
         'DIDSalesTemplate',
         'DynamicAccessTemplate',
-        'EscrowComputeTemplate',
+        'EscrowComputeTemplate'
     ]
-    for (let a of agreements) {
+    for (const a of agreements) {
         if (addressBook[a] && addressBook.AgreementStoreManager) {
             console.log('Set agreement manager proxy : ' + addressBook[a])
             const tx = await artifacts.AgreementStoreManager.grantProxyRole(
