@@ -24,8 +24,10 @@ then
       --unlock 0x00bd138abd70e2f00903268f3db08f2d25677c9e \
       --node-key 0xb3244c104fb56d28d3979f6cd14a8b5cf5b109171d293f4454c97c173a9f9374 &
 
-      sleep 5
-      curl --data '{"method":"web3_clientVersion","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+    until curl --data '{"method":"web3_clientVersion","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+    do
+        sleep 1
+    done
 
     # remove ready flag if we deploy contracts
     rm -rf /nevermined-contracts/artifacts/*
