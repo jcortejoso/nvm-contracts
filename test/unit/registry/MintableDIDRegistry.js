@@ -70,7 +70,7 @@ contract('Mintable DIDRegistry', (accounts) => {
             await didRegistry.registerAttribute(
                 didSeed, checksum, [], value, { from: owner })
 
-            const balance = await didRegistry.balanceOf(owner, did)
+            const balance = await nft.balanceOf(owner, did)
             assert.strictEqual(0, balance.toNumber())
         })
 
@@ -110,7 +110,7 @@ contract('Mintable DIDRegistry', (accounts) => {
                 'TransferSingle'
             ) */
 
-            let balance = await didRegistry.balanceOf(owner, did)
+            let balance = await nft.balanceOf(owner, did)
             assert.strictEqual(10, balance.toNumber())
 
             await didRegistry.burn(did, 5,
@@ -119,7 +119,7 @@ contract('Mintable DIDRegistry', (accounts) => {
                 }
             )
 
-            balance = await didRegistry.balanceOf(owner, did)
+            balance = await nft.balanceOf(owner, did)
             assert.strictEqual(5, balance.toNumber())
         })
 
@@ -132,7 +132,7 @@ contract('Mintable DIDRegistry', (accounts) => {
 
             await didRegistry.mint(did, 10, { from: owner })
 
-            const balance = await didRegistry.balanceOf(owner, did)
+            const balance = await nft.balanceOf(owner, did)
             assert.strictEqual(10, balance.toNumber())
         })
 
@@ -145,7 +145,7 @@ contract('Mintable DIDRegistry', (accounts) => {
 
             await didRegistry.enableAndMintDidNft(did, 5, 0, true, { from: owner })
 
-            const balanceOwner = await didRegistry.balanceOf(owner, did)
+            const balanceOwner = await nft.balanceOf(owner, did)
             assert.strictEqual(5, balanceOwner.toNumber())
         })
 
@@ -158,7 +158,7 @@ contract('Mintable DIDRegistry', (accounts) => {
                 didSeed, checksum, [], value, 0, 0, constants.activities.GENERATED, '', { from: owner })
             await didRegistry.mint(did, 10, { from: owner })
 
-            const balance = await didRegistry.balanceOf(owner, did)
+            const balance = await nft.balanceOf(owner, did)
             assert.strictEqual(10, balance.toNumber())
         })
 
@@ -176,7 +176,7 @@ contract('Mintable DIDRegistry', (accounts) => {
             )
 
             await didRegistry.mint(did, 5, { from: owner })
-            const balance = await didRegistry.balanceOf(owner, did)
+            const balance = await nft.balanceOf(owner, did)
             assert.strictEqual(5, balance.toNumber())
 
             await assert.isRejected(

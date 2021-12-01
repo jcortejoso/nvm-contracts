@@ -150,7 +150,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
 
             // Mint and Transfer
             await didRegistry.mint(agreement.did, 10, { from: receiver })
-            await didRegistry.safeTransferFrom(
+            await nft.safeTransferFrom(
                 receiver, holder, BigInt(agreement.did), 10, '0x', { from: receiver })
 
             // Conditions need to be added to the template

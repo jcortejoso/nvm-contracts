@@ -13,9 +13,6 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
  */
 contract NFTUpgradeable is ERC1155Upgradeable, OwnableUpgradeable, AccessControlUpgradeable {
 
-    // Mapping from account to operator approvals
-    mapping(address => mapping(address => bool)) private _operatorApprovals;
-
     // Mapping from account to proxy approvals
     mapping (address => bool) private _proxyApprovals;
 
@@ -49,21 +46,7 @@ contract NFTUpgradeable is ERC1155Upgradeable, OwnableUpgradeable, AccessControl
      * @dev See {IERC1155-isApprovedForAll}.
      */
     function isApprovedForAll(address account, address operator) public view virtual override returns (bool) {
-        return _operatorApprovals[account][operator] || _proxyApprovals[operator];
-    }
-
-    function setApprovalForAll(address operator, bool approved) public virtual override {
-        require(_msgSender() != operator, 'ERC1155: setting approval status for self');
-
-        _operatorApprovals[_msgSender()][operator] = approved;
-        emit ApprovalForAll(_msgSender(), operator, approved);
-    }
-
-    function proxySetApprovalForAll(address account, address operator, bool approved) public virtual {
-        require(_proxyApprovals[_msgSender()], 'ERC1155: only for proxy');
-
-        _operatorApprovals[account][operator] = approved;
-        emit ApprovalForAll(account, operator, approved);
+        return super.isApprovedForAll(account, operator) || _proxyApprovals[operator];
     }
 
     function mint(address to, uint256 id, uint256 amount, bytes memory data) public {
