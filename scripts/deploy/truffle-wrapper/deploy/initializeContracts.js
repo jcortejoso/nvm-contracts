@@ -356,7 +356,7 @@ async function initializeContracts({
     }
 
     if (getAddress('ConditionStoreManager') &&
-        getAddress('DIDRegistry') &&
+        getAddress('NFT721Upgradeable') &&
         getAddress('LockPaymentCondition')) {
         if (contracts.indexOf('TransferNFT721Condition') > -1) {
             addressBook.TransferNFT721Condition = await zosCreate({
@@ -365,7 +365,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('NFTUpgradeable'),
+                    getAddress('NFT721Upgradeable'),
                     getAddress('LockPaymentCondition')
                 ],
                 verbose
