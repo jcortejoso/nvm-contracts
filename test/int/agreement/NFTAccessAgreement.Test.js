@@ -176,10 +176,10 @@ contract('NFT Access integration test', (accounts) => {
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
 
-            const balanceSender = await didRegistry.balanceOf(sender, agreement.did)
+            const balanceSender = await nft.balanceOf(sender, agreement.did)
             assert.strictEqual(0, balanceSender.toNumber())
 
-            const balanceReceiver = await didRegistry.balanceOf(receiver, agreement.did)
+            const balanceReceiver = await nft.balanceOf(receiver, agreement.did)
             assert.strictEqual(nftAmount, balanceReceiver.toNumber())
         })
     })

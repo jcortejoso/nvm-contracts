@@ -278,7 +278,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await didRegistry.mint(did, 5, { from: artist })
             await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
 
-            const balance = await didRegistry.balanceOf(artist, did)
+            const balance = await nft.balanceOf(artist, did)
             assert.strictEqual(5, balance.toNumber())
         })
     })
@@ -328,8 +328,8 @@ contract('End to End NFT Scenarios', (accounts) => {
         })
 
         it('The artist can check the payment and transfer the NFT to the collector', async () => {
-            const nftBalanceArtistBefore = await didRegistry.balanceOf(artist, did)
-            const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
+            const nftBalanceArtistBefore = await nft.balanceOf(artist, did)
+            const nftBalanceCollectorBefore = await nft.balanceOf(collector1, did)
 
             await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
             await transferCondition.methods['fulfill(bytes32,bytes32,address,uint256,bytes32)'](
@@ -345,8 +345,8 @@ contract('End to End NFT Scenarios', (accounts) => {
                 nftSalesAgreement.conditionIds[1])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
 
-            const nftBalanceArtistAfter = await didRegistry.balanceOf(artist, did)
-            const nftBalanceCollectorAfter = await didRegistry.balanceOf(collector1, did)
+            const nftBalanceArtistAfter = await nft.balanceOf(artist, did)
+            const nftBalanceCollectorAfter = await nft.balanceOf(collector1, did)
 
             assert.strictEqual(nftBalanceArtistAfter.toNumber(), nftBalanceArtistBefore.toNumber() - numberNFTs)
             assert.strictEqual(nftBalanceCollectorAfter.toNumber(), nftBalanceCollectorBefore.toNumber() + numberNFTs)
@@ -468,10 +468,10 @@ contract('End to End NFT Scenarios', (accounts) => {
                 nftSalesAgreement.conditionIds[1])
             assert.strictEqual(condition[1].toNumber(), constants.condition.state.fulfilled)
 
-            const nftBalance1 = await didRegistry.balanceOf(collector1, did)
+            const nftBalance1 = await nft.balanceOf(collector1, did)
             assert.strictEqual(nftBalance1.toNumber(), numberNFTs - numberNFTs2)
 
-            const nftBalance2 = await didRegistry.balanceOf(collector2, did)
+            const nftBalance2 = await nft.balanceOf(collector2, did)
             assert.strictEqual(nftBalance2.toNumber(), numberNFTs2)
 
             const receiver1Before = toEth(await getETHBalanceBN(receivers2[0]))
@@ -551,7 +551,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await didRegistry.mint(did, 5, { from: artist })
             await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
 
-            const balance = await didRegistry.balanceOf(artist, did)
+            const balance = await nft.balanceOf(artist, did)
             assert.strictEqual(5, balance.toNumber())
         })
 
@@ -599,8 +599,8 @@ contract('End to End NFT Scenarios', (accounts) => {
         })
 
         it('The market can check the payment and can transfer the NFT to the collector', async () => {
-            const nftBalanceArtistBefore = await didRegistry.balanceOf(artist, did)
-            const nftBalanceCollectorBefore = await didRegistry.balanceOf(collector1, did)
+            const nftBalanceArtistBefore = await nft.balanceOf(artist, did)
+            const nftBalanceCollectorBefore = await nft.balanceOf(collector1, did)
 
             await nft.setApprovalForAll(market, true, { from: artist })
             await transferCondition.fulfillForDelegate(
@@ -617,8 +617,8 @@ contract('End to End NFT Scenarios', (accounts) => {
                 nftSalesAgreement.conditionIds[1])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
 
-            const nftBalanceArtistAfter = await didRegistry.balanceOf(artist, did)
-            const nftBalanceCollectorAfter = await didRegistry.balanceOf(collector1, did)
+            const nftBalanceArtistAfter = await nft.balanceOf(artist, did)
+            const nftBalanceCollectorAfter = await nft.balanceOf(collector1, did)
 
             assert.strictEqual(nftBalanceArtistAfter.toNumber(), nftBalanceArtistBefore.toNumber() - numberNFTs)
             assert.strictEqual(nftBalanceCollectorAfter.toNumber(), nftBalanceCollectorBefore.toNumber() + numberNFTs)
