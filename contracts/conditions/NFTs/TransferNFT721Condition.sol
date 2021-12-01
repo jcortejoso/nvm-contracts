@@ -32,12 +32,12 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
     *       initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address    
-    * @param _didRegistryAddress DID Registry address
+    * @param _ercAddress Nevermined ERC-721 address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
-        address _didRegistryAddress,
+        address _ercAddress,
         address _lockNFTConditionAddress
     )
         external
@@ -46,7 +46,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         require(
             _owner != address(0) &&
             _conditionStoreManagerAddress != address(0) &&
-            _didRegistryAddress != address(0) &&
+            _ercAddress != address(0) &&
             _lockNFTConditionAddress != address(0),
             'Invalid address'
         );
@@ -59,7 +59,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         );
 
         erc721 = NFT721Upgradeable(
-            _didRegistryAddress
+            _ercAddress
         );
         _lockConditionAddress = _lockNFTConditionAddress;
     }
