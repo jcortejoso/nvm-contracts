@@ -31,6 +31,17 @@ async function initializeContracts({
         return addressBook[contract] || proxies[contract]
     }
 
+    // testnet only!
+    if (contracts.indexOf('IPNFT') > -1) {
+        addressBook.IPNFT = zosCreate({
+            contract: 'IPNFT',
+            network,
+//            args: [],
+            verbose
+        })
+
+    }
+
     if (contracts.indexOf('DIDRegistry') > -1) {
         addressBook.DIDRegistry = zosCreate({
             contract: 'DIDRegistry',

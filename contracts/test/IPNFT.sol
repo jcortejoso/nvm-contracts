@@ -9,11 +9,12 @@ contract IPNFT is ERC721Upgradeable, OwnableUpgradeable {
     event TokenURIChanged(uint256 tokenId, string indexed newURI);
 
     //calling constructor from this contract plus ERC721 constructor
-    function initialize(string memory _name, string memory _symbol) public initializer {
+    function initialize(address _owner) public initializer {
         __Context_init_unchained();
         __ERC165_init_unchained();
-        __ERC721_init_unchained(_name, _symbol);
+        __ERC721_init_unchained("_name", "_symbol");
         __Ownable_init_unchained();
+        transferOwnership(_owner);
     }
 
     function setTokenURI(uint256 tokenId, string memory _tokenURI)
