@@ -36,7 +36,7 @@ async function initializeContracts({
         addressBook.IPNFT = zosCreate({
             contract: 'IPNFT',
             network,
-//            args: [],
+            args: [roles.ownerWallet],
             verbose
         })
 
