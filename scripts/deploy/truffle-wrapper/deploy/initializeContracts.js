@@ -31,12 +31,15 @@ async function initializeContracts({
         return addressBook[contract] || proxies[contract]
     }
 
+    console.log(roles)
+    roles.ownerWallet = roles.deployer
+
     // testnet only!
     if (contracts.indexOf('IPNFT') > -1) {
         addressBook.IPNFT = zosCreate({
             contract: 'IPNFT',
             network,
-            args: [roles.ownerWallet],
+            args: [roles.deployer],
             verbose
         })
 
