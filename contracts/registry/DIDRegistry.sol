@@ -58,7 +58,7 @@ contract DIDRegistry is DIDFactory {
      * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
      * @param _cap refers to the mint cap
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
-     * @param _preMint it mints the ERC-1155 attached to the asset
+     * @param _mint if true it mints the ERC-1155 NFTs attached to the asset
      * @param _activityId refers to activity
      * @param _attributes refers to the provenance attributes     
      * @return size refers to the size of the registry after the register action.
@@ -70,7 +70,7 @@ contract DIDRegistry is DIDFactory {
         string memory _url,
         uint256 _cap,
         uint8 _royalties,
-        bool _preMint,
+        bool _mint,
         bytes32 _activityId,
         string memory _attributes
     )
@@ -83,7 +83,7 @@ contract DIDRegistry is DIDFactory {
             hashDID(_didSeed, msg.sender),
             _cap,
             _royalties,
-            _preMint
+            _mint
         );
         return result;
     }    
