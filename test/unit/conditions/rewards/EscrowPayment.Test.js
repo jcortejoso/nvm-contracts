@@ -246,7 +246,7 @@ contract('EscrowPaymentCondition contract', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 0, false, constants.activities.GENERATED, '')
 
             const hashValuesLock = await lockPaymentCondition.hashValues(
                 did, escrowPayment.address, constants.address.zero, amounts, receivers)
@@ -349,7 +349,7 @@ contract('EscrowPaymentCondition contract', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 0, false, constants.activities.GENERATED, '')
 
             const hashValuesLock = await lockPaymentCondition.hashValues(
                 did, escrowPayment.address, constants.address.zero, amounts, receivers)

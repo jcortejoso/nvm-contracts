@@ -83,7 +83,7 @@ contract('NFT721LockCondition', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amount, 0, false, constants.activities.GENERATED, '')
             await erc721.mint(did)
             await erc721.approve(lockCondition.address, did)
 
@@ -119,7 +119,7 @@ contract('NFT721LockCondition', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amount, 0, false, constants.activities.GENERATED, '')
             await erc721.mint(did)
             await erc721.approve(lockCondition.address, did)
 
@@ -138,7 +138,7 @@ contract('NFT721LockCondition', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amount, 0, false, constants.activities.GENERATED, '')
             await erc721.mint(did)
             await erc721.approve(lockCondition.address, did)
 
@@ -164,7 +164,7 @@ contract('NFT721LockCondition', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amount, 0, false, constants.activities.GENERATED, '')
             await erc721.mint(did)
             await erc721.approve(lockCondition.address, did)
 
@@ -202,7 +202,7 @@ contract('NFT721LockCondition', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amount, 0, false, constants.activities.GENERATED, '')
             await erc721.mint(did)
             await erc721.approve(lockCondition.address, did)
 
