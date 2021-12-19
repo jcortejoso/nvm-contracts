@@ -133,13 +133,13 @@ contract DIDRegistry is DIDFactory {
      * @param _did refers to decentralized identifier (a byte32 length ID)
      * @param _cap refers to the mint cap
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
-     * @param _preMint if is true mint directly the amount capped tokens and lock in the _lockAddress
+     * @param _mint if is true mint directly the amount capped tokens and lock in the _lockAddress
      */
     function enableAndMintDidNft(
         bytes32 _did,
         uint256 _cap,
         uint8 _royalties,
-        bool _preMint
+        bool _mint
     )
     public
     onlyDIDOwner(_did)
@@ -147,7 +147,7 @@ contract DIDRegistry is DIDFactory {
     {
         didRegisterList.initializeNftConfig(_did, _cap, _royalties);
 
-        if (_preMint)    {
+        if (_mint)    {
             mint(_did, _cap);
         }
         
@@ -159,7 +159,7 @@ contract DIDRegistry is DIDFactory {
     function enableAndMintDidNft721(
         bytes32 _did,
         uint8 _royalties,
-        bool _preMint
+        bool _mint
     )
     public
     onlyDIDOwner(_did)
@@ -167,7 +167,7 @@ contract DIDRegistry is DIDFactory {
     {
         didRegisterList.initializeNft721Config(_did, _royalties);
 
-        if (_preMint)    {
+        if (_mint)    {
             mint721(_did);
         }
         
