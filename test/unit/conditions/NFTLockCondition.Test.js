@@ -118,8 +118,8 @@ contract('NFTLockCondition', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amount, 0, constants.activities.GENERATED, '')
-            await didRegistry.mint(did, amount)
+                didSeed, checksum, [], url, amount, 0, true, constants.activities.GENERATED, '')
+
             await nft.setApprovalForAll(lockCondition.address, true)
 
             await assert.isRejected(

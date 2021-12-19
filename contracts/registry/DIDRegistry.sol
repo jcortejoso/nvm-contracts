@@ -58,6 +58,48 @@ contract DIDRegistry is DIDFactory {
      * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
      * @param _cap refers to the mint cap
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
+     * @param _mint if true it mints the ERC-1155 NFTs attached to the asset
+     * @param _activityId refers to activity
+     * @param _attributes refers to the provenance attributes     
+     * @return size refers to the size of the registry after the register action.
+     */
+    function registerMintableDID(
+        bytes32 _didSeed,
+        bytes32 _checksum,
+        address[] memory _providers,
+        string memory _url,
+        uint256 _cap,
+        uint8 _royalties,
+        bool _mint,
+        bytes32 _activityId,
+        string memory _attributes
+    )
+    public
+    onlyValidAttributes(_attributes)
+    returns (uint size)
+    {
+        uint result = registerDID(_didSeed, _checksum, _providers, _url, _activityId, _attributes);
+        enableAndMintDidNft(
+            hashDID(_didSeed, msg.sender),
+            _cap,
+            _royalties,
+            _mint
+        );
+        return result;
+    }    
+    
+    /**
+     * @notice Register a Mintable DID.
+     *
+     * @dev The first attribute of a DID registered sets the DID owner.
+     *      Subsequent updates record _checksum and update info.
+     *
+     * @param _didSeed refers to decentralized identifier seed (a bytes32 length ID).
+     * @param _checksum includes a one-way HASH calculated using the DDO content.
+     * @param _providers list of addresses that can act as an asset provider     
+     * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
+     * @param _cap refers to the mint cap
+     * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
      * @param _activityId refers to activity
      * @param _attributes refers to the provenance attributes     
      * @return size refers to the size of the registry after the register action.
@@ -76,14 +118,8 @@ contract DIDRegistry is DIDFactory {
     onlyValidAttributes(_attributes)
     returns (uint size)
     {
-        uint result = registerDID(_didSeed, _checksum, _providers, _url, _activityId, _attributes);
-        enableAndMintDidNft(
-            hashDID(_didSeed, msg.sender), 
-            _cap, 
-            _royalties, 
-            false
-        );
-        return result;
+        return registerMintableDID(
+            _didSeed, _checksum, _providers, _url, _cap, _royalties, false, _activityId, _attributes);
     }
 
     
@@ -97,13 +133,13 @@ contract DIDRegistry is DIDFactory {
      * @param _did refers to decentralized identifier (a byte32 length ID)
      * @param _cap refers to the mint cap
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
-     * @param _preMint if is true mint directly the amount capped tokens and lock in the _lockAddress
+     * @param _mint if is true mint directly the amount capped tokens and lock in the _lockAddress
      */
     function enableAndMintDidNft(
         bytes32 _did,
         uint256 _cap,
         uint8 _royalties,
-        bool _preMint
+        bool _mint
     )
     public
     onlyDIDOwner(_did)
@@ -111,7 +147,7 @@ contract DIDRegistry is DIDFactory {
     {
         didRegisterList.initializeNftConfig(_did, _cap, _royalties);
 
-        if (_preMint)    {
+        if (_mint)    {
             mint(_did, _cap);
         }
         
@@ -123,7 +159,7 @@ contract DIDRegistry is DIDFactory {
     function enableAndMintDidNft721(
         bytes32 _did,
         uint8 _royalties,
-        bool _preMint
+        bool _mint
     )
     public
     onlyDIDOwner(_did)
@@ -131,7 +167,7 @@ contract DIDRegistry is DIDFactory {
     {
         didRegisterList.initializeNft721Config(_did, _royalties);
 
-        if (_preMint)    {
+        if (_mint)    {
             mint721(_did);
         }
         

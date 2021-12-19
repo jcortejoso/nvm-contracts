@@ -101,17 +101,10 @@ contract('Mintable DIDRegistry', (accounts) => {
 
             await didRegistry.registerMintableDID(
                 didSeed, checksum, [], value, 20, 0, constants.activities.GENERATED, '', { from: owner })
-            await didRegistry.mint(did, 10, { from: owner })
-            /*
-            const result = await didRegistry.mint(did, 10, { from: owner })
-            testUtils.assertEmitted(
-                result,
-                1,
-                'TransferSingle'
-            ) */
+            await didRegistry.mint(did, 20, { from: owner })
 
             let balance = await nft.balanceOf(owner, did)
-            assert.strictEqual(10, balance.toNumber())
+            assert.strictEqual(20, balance.toNumber())
 
             await didRegistry.burn(did, 5,
                 {
@@ -120,7 +113,7 @@ contract('Mintable DIDRegistry', (accounts) => {
             )
 
             balance = await nft.balanceOf(owner, did)
-            assert.strictEqual(5, balance.toNumber())
+            assert.strictEqual(15, balance.toNumber())
         })
 
         it('Should initialize the NFT in the registration', async () => {
@@ -129,7 +122,6 @@ contract('Mintable DIDRegistry', (accounts) => {
             const checksum = testUtils.generateId()
             await didRegistry.registerMintableDID(
                 didSeed, checksum, [], value, 10, 0, constants.activities.GENERATED, '', { from: owner })
-
             await didRegistry.mint(did, 10, { from: owner })
 
             const balance = await nft.balanceOf(owner, did)
