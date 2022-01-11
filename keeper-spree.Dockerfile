@@ -1,4 +1,4 @@
-FROM openethereum/openethereum:v3.2.6 as openethereum
+FROM openethereum/openethereum:v3.3.2 as openethereum
 
 COPY networks/spree/config /home/openethereum/config
 COPY networks/spree/authorities/validator0.json /home/openethereum/.local/keys/spree/validator.json
@@ -37,6 +37,6 @@ ENV NETWORK_NAME=spree
 ENV KEEPER_RPC_HOST=localhost
 ENV KEEPER_RPC_PORT=8545
 
-RUN /nevermined-contracts/scripts/keeper_deploy_dockerfile.sh
+RUN  /nevermined-contracts/scripts/keeper_deploy_dockerfile.sh
 
 ENTRYPOINT ["/nevermined-contracts/scripts/keeper_entrypoint_nodeploy.sh"]
