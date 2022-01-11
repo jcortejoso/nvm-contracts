@@ -213,6 +213,61 @@ async function initializeContracts({
                 verbose
             })
         }
+        if (contracts.indexOf('NFT721LockCondition') > -1) {
+            addressBook.NFT721LockCondition = await zosCreate({
+                contract: 'NFT721LockCondition',
+                cache,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager')
+                ],
+                verbose
+            })
+        }
+        if (contracts.indexOf('AaveBorrowCondition') > -1) {
+            addressBook.AaveBorrowCondition = await zosCreate({
+                contract: 'AaveBorrowCondition',
+                cache,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager')
+                ],
+                verbose
+            })
+        }
+        if (contracts.indexOf('AaveCollateralDepositCondition') > -1) {
+            addressBook.AaveCollateralDepositCondition = await zosCreate({
+                contract: 'AaveCollateralDepositCondition',
+                cache,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager')
+                ],
+                verbose
+            })
+        }
+        if (contracts.indexOf('AaveCollateralWithdrawCondition') > -1) {
+            addressBook.AaveCollateralWithdrawCondition = await zosCreate({
+                contract: 'AaveCollateralWithdrawCondition',
+                cache,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager')
+                ],
+                verbose
+            })
+        }
+        if (contracts.indexOf('AaveRepayCondition') > -1) {
+            addressBook.AaveRepayCondition = await zosCreate({
+                contract: 'AaveRepayCondition',
+                cache,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager')
+                ],
+                verbose
+            })
+        }
     }
 
     if (getAddress('ConditionStoreManager') &&
@@ -366,6 +421,22 @@ async function initializeContracts({
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
                     getAddress('NFT721Upgradeable'),
+                    getAddress('LockPaymentCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('ConditionStoreManager') &&
+        getAddress('LockPaymentCondition')) {
+        if (contracts.indexOf('DistributeNFTCollateralCondition') > -1) {
+            addressBook.DistributeNFTCollateralCondition = await zosCreate({
+                contract: 'DistributeNFTCollateralCondition',
+                cache,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager'),
                     getAddress('LockPaymentCondition')
                 ],
                 verbose
@@ -529,6 +600,32 @@ async function initializeContracts({
                     getAddress('LockPaymentCondition'),
                     getAddress('TransferDIDOwnershipCondition'),
                     getAddress('EscrowPaymentCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('NFTLockCondition') &&
+        getAddress('AaveCollateralDepositCondition') &&
+        getAddress('AaveBorrowCondition') &&
+        getAddress('AaveRepayCondition') &&
+        getAddress('AaveCollateralWithdrawCondition') &&
+        getAddress('DistributeNFTCollateralCondition')) {
+        if (contracts.indexOf('AaveCreditTemplate') > -1) {
+            addressBook.AaveCreditTemplate = await zosCreate({
+                contract: 'AaveCreditTemplate',
+                cache,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('NFTLockCondition'),
+                    getAddress('AaveCollateralDepositCondition'),
+                    getAddress('AaveBorrowCondition'),
+                    getAddress('AaveRepayCondition'),
+                    getAddress('AaveCollateralWithdrawCondition'),
+                    getAddress('DistributeNFTCollateralCondition')
                 ],
                 verbose
             })

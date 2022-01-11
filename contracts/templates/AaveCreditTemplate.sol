@@ -41,7 +41,7 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
     AaveCollateralWithdrawCondition internal withdrawCondition;
     
     mapping(bytes32 => address) internal vaultAddress;
-    uint256 private nvmFee = 2;
+    uint256 private nvmFee;
 
     event VaultCreated(
         address indexed _vaultAddress,
@@ -118,6 +118,7 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         conditionTypes.push(address(repayCondition));
         conditionTypes.push(address(withdrawCondition));
         conditionTypes.push(address(transferCondition));
+        nvmFee = 2;
     }
 
     function createVaultAgreement(
