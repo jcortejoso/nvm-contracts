@@ -161,6 +161,14 @@ async function setupContracts({
             roles
         })
 
+        await setupTemplate({
+            verbose,
+            TemplateStoreManagerInstance,
+            templateName: 'AaveCreditTemplate',
+            addressBook,
+            roles
+        })
+
         await transferOwnership({
             ContractInstance: TemplateStoreManagerInstance,
             name: 'TemplateStoreManager',

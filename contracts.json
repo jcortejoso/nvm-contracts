@@ -11,6 +11,7 @@
   "NFTHolderCondition",
   "NFT721HolderCondition",
   "NFTLockCondition",
+  "NFT721LockCondition",
   "TransferNFTCondition",
   "TransferNFT721Condition",
   "AccessCondition",
@@ -29,5 +30,12 @@
   "DIDSalesTemplate",
   "NFTSalesTemplate",
   "NFT721SalesTemplate",
-  "EscrowComputeExecutionTemplate"
+  "EscrowComputeExecutionTemplate",
+  "DistributeNFTCollateralCondition",
+  "AaveBorrowCondition",
+  "AaveCollateralDepositCondition",
+  "AaveCollateralWithdrawCondition",
+  "AaveCreditVault",
+  "AaveRepayCondition",
+  "AaveCreditTemplate"
 ]

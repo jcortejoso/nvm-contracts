@@ -55,6 +55,10 @@ function createArtifact(
 async function exportArtifacts(contracts, addressBook, libraries) {
     const files = glob.sync('./build/**/*.json').filter(a => !a.match('.dbg.')).filter(a => contracts.some(b => a.match(b + '.json')))
     for (const c of contracts) {
+        if (!addressBook[c]) {
+            console.warn(`Not deployed: ${c}`)
+            continue
+        }
         const implAddress = await upgrades.erc1967.getImplementationAddress(addressBook[c])
         const file = files.find(a => a.match(c))
         const contract = JSON.parse(fs.readFileSync(file))
