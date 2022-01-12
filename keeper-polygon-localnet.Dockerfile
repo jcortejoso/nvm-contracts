@@ -12,6 +12,8 @@ COPY networks/polygon-localnet/genesis.json /polygon-sdk/genesis.json
 COPY scripts/keeper_entrypoint_polygon.sh /
 
 WORKDIR /polygon-sdk
+RUN git pull
+RUN git checkout a0f86ec925ca7b8df439e86de0fa572a41e7cb09
 RUN go build main.go
 
 COPY . /nevermined-contracts
