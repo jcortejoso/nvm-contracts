@@ -147,11 +147,11 @@ contract DIDRegistry is DIDFactory {
     {
         didRegisterList.initializeNftConfig(_did, _cap, _royalties);
         
-        erc1155.setTokenRoyalty(uint256(_did), msg.sender, _royalties);
+        if (_royalties > 0)
+            erc1155.setTokenRoyalty(uint256(_did), msg.sender, _royalties);
         
-        if (_mint)    {
+        if (_mint)
             mint(_did, _cap);
-        }
         
         return super.used(
             keccak256(abi.encode(_did, _cap, _royalties, msg.sender)),
@@ -169,11 +169,11 @@ contract DIDRegistry is DIDFactory {
     {
         didRegisterList.initializeNft721Config(_did, _royalties);
 
-        erc721.setTokenRoyalty(uint256(_did), msg.sender, _royalties);
+        if (_royalties > 0)
+            erc721.setTokenRoyalty(uint256(_did), msg.sender, _royalties);
         
-        if (_mint)    {
+        if (_mint)
             mint721(_did);
-        }
         
         return super.used(
             keccak256(abi.encode(_did, 1, _royalties, msg.sender)),
