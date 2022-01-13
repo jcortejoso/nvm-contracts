@@ -128,6 +128,18 @@ contract('Mintable DIDRegistry', (accounts) => {
             assert.strictEqual(10, balance.toNumber())
         })
 
+        it('The royalties should be initialized and retrieved (ERC-2981)', async () => {
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
+            const checksum = testUtils.generateId()
+            await didRegistry.registerMintableDID(
+                didSeed, checksum, [], value, 999, 10, constants.activities.GENERATED, '', { from: owner })
+
+            const { receiver, royaltyAmount } = await nft.royaltyInfo(did, 500)
+            assert.strictEqual(owner, receiver)
+            assert.strictEqual(50, royaltyAmount.toNumber())
+        })
+
         it('Should Mint automatically if is configured that way', async () => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, owner)
@@ -140,6 +152,7 @@ contract('Mintable DIDRegistry', (accounts) => {
             const balanceOwner = await nft.balanceOf(owner, did)
             assert.strictEqual(5, balanceOwner.toNumber())
         })
+
 
         it('Should mint if is not capped', async () => {
             const didSeed = testUtils.generateId()
@@ -233,6 +246,7 @@ contract('Mintable DIDRegistry', (accounts) => {
 
             assert.isNotOk( // MUST BE FALSE. Original creator is not getting royalties
                 await didRegistryLibraryProxy.areRoyaltiesValid(did, [100], [other]))
+
         })
     })
 })

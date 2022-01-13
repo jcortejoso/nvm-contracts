@@ -5,12 +5,13 @@ pragma solidity ^0.8.0;
 import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
+import "../erc2981/ERC2981.sol";
 
 /**
  *
  * @dev Implementation of the basic standard multi-token.
  */
-contract NFT721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, AccessControlUpgradeable {
+contract NFT721Upgradeable is ERC721Upgradeable, ERC2981, OwnableUpgradeable, AccessControlUpgradeable {
 
     // Mapping from account to proxy approvals
     mapping (address => bool) private _proxyApprovals;
@@ -47,7 +48,11 @@ contract NFT721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, AccessContr
     function isApprovedForAll(address account, address operator) public view virtual override returns (bool) {
         return super.isApprovedForAll(account, operator) || _proxyApprovals[operator];
     }
-
+    
+    function addMinter(address account) public onlyOwner {
+        AccessControlUpgradeable._setupRole(MINTER_ROLE, account);
+    }    
+    
     function mint(address to, uint256 id) public {
         require(hasRole(MINTER_ROLE, msg.sender), 'only minter can mint');
         _mint(to, id);
@@ -58,13 +63,35 @@ contract NFT721Upgradeable is ERC721Upgradeable, OwnableUpgradeable, AccessContr
         _burn(id);
     }
 
-    function addMinter(address account) public onlyOwner {
-        AccessControlUpgradeable._setupRole(MINTER_ROLE, account);
+    /**
+    * @dev Record the asset royalties
+    * @param tokenId the id of the asset with the royalties associated
+    * @param receiver the receiver of the royalties (the original creator)
+    * @param royaltyAmount percentage (no decimals, between 0 and 100)    
+    */
+    function setTokenRoyalty(
+        uint256 tokenId,
+        address receiver,
+        uint256 royaltyAmount
+    )
+    public
+    {
+        require(hasRole(MINTER_ROLE, msg.sender), 'only minter');
+        _setTokenRoyalty(tokenId, receiver, royaltyAmount);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControlUpgradeable, ERC721Upgradeable) returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) 
+    public 
+    view 
+    virtual 
+    override(AccessControlUpgradeable, ERC721Upgradeable, ERC2981) 
+    returns (bool) 
+    {
         return AccessControlUpgradeable.supportsInterface(interfaceId)
-        || ERC721Upgradeable.supportsInterface(interfaceId);
+        || ERC721Upgradeable.supportsInterface(interfaceId)
+        || ERC2981.supportsInterface(interfaceId);
     }
 
 }

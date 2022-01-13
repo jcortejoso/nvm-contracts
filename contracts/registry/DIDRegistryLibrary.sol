@@ -120,7 +120,7 @@ library DIDRegistryLibrary {
         
         require(!_self.didRegisters[_did].nftInitialized, 'NFT already initialized');
         
-        require(_royalties < 100, 'Invalid royalties number');
+        require(_royalties <= 100, 'Invalid royalties number');
         require(_royalties >= _self.didRegisters[_did].royalties, 'Cannot decrease royalties');
 
         _self.didRegisters[_did].mintCap = _cap;

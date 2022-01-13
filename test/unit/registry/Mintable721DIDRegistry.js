@@ -114,6 +114,23 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             await assert.isRejected(nft.ownerOf(did))
         })
 
+        it('The royalties should be initialized and retrieved (ERC-2981)', async () => {
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
+            const checksum = testUtils.generateId()
+            await didRegistry.registerAttribute(
+                didSeed, checksum, [], value, { from: owner })
+
+            await didRegistry.enableAndMintDidNft721(did, 10, true, { from: owner })
+
+            const nftOwner = await nft.ownerOf(did)
+            assert.strictEqual(owner, nftOwner)
+
+            const { receiver, royaltyAmount } = await nft.royaltyInfo(did, 500)
+            assert.strictEqual(owner, receiver)
+            assert.strictEqual(50, royaltyAmount.toNumber())
+        })
+
         it('Should Mint automatically if is configured that way', async () => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, owner)

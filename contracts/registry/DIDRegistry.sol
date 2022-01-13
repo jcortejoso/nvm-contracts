@@ -146,7 +146,9 @@ contract DIDRegistry is DIDFactory {
     returns (bool success)
     {
         didRegisterList.initializeNftConfig(_did, _cap, _royalties);
-
+        
+        erc1155.setTokenRoyalty(uint256(_did), msg.sender, _royalties);
+        
         if (_mint)    {
             mint(_did, _cap);
         }
@@ -167,6 +169,8 @@ contract DIDRegistry is DIDFactory {
     {
         didRegisterList.initializeNft721Config(_did, _royalties);
 
+        erc721.setTokenRoyalty(uint256(_did), msg.sender, _royalties);
+        
         if (_mint)    {
             mint721(_did);
         }
