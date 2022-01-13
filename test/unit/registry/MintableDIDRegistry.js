@@ -153,7 +153,6 @@ contract('Mintable DIDRegistry', (accounts) => {
             assert.strictEqual(5, balanceOwner.toNumber())
         })
 
-
         it('Should mint if is not capped', async () => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, owner)
@@ -246,7 +245,6 @@ contract('Mintable DIDRegistry', (accounts) => {
 
             assert.isNotOk( // MUST BE FALSE. Original creator is not getting royalties
                 await didRegistryLibraryProxy.areRoyaltiesValid(did, [100], [other]))
-
         })
     })
 })
