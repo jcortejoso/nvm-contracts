@@ -408,7 +408,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                     _amounts: amounts2,
                     _receivers: receivers2
                 }
-    
+
                 const result = await nftSalesTemplate.createAgreementAndPayEscrow(agreementId2, ...Object.values(extendedAgreement), { from: collector2 })
 
                 testUtils.assertEmitted(result, 1, 'AgreementCreated')
