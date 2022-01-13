@@ -162,6 +162,8 @@ contract('End to End NFT721 Scenarios', (accounts) => {
             escrowCondition.address,
             { from: deployer }
         )
+        await agreementStoreManager.grantProxyRole(nftSalesTemplate.address, { from: owner })
+        await lockPaymentCondition.grantProxyRole(agreementStoreManager.address, { from: owner })
 
         // Setup NFT Access Template
         nftAccessTemplate = await NFTAccessTemplate.new()
@@ -392,17 +394,26 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                     _numberNFTs: numberNFTs2
                 })
 
-                const result = await nftSalesTemplate.createAgreement(
-                    agreementId2, ...Object.values(nftSalesAgreement))
-
-                testUtils.assertEmitted(result, 1, 'AgreementCreated')
-
                 // Collector2: Lock the payment
                 await token.mint(collector2, nftPrice2, { from: owner })
                 await token.approve(lockPaymentCondition.address, nftPrice2, { from: collector2 })
                 await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
 
-                await lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, token.address, amounts2, receivers2, { from: collector2 })
+                // const result = await nftSalesTemplate.createAgreement(agreementId2, ...Object.values(nftSalesAgreement))
+                const extendedAgreement = {
+                    ...nftSalesAgreement,
+                    _idx: 0,
+                    _receiverAddress: escrowCondition.address,
+                    _tokenAddress: token.address,
+                    _amounts: amounts2,
+                    _receivers: receivers2
+                }
+
+                const result = await nftSalesTemplate.createAgreementAndPayEscrow(agreementId2, ...Object.values(extendedAgreement), { from: collector2 })
+
+                testUtils.assertEmitted(result, 1, 'AgreementCreated')
+
+                // await lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, token.address, amounts2, receivers2, { from: collector2 })
 
                 const { state } = await conditionStoreManager.getCondition(
                     nftSalesAgreement.conditionIds[0])

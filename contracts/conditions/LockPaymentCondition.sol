@@ -217,7 +217,7 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             conditionStoreManager.updateConditionMapping(
                 _id,
                 KEY_ASSET_RECEIVER,
-                Common.addressToBytes32(msg.sender)
+                Common.addressToBytes32(_account)
             );
         }
         
