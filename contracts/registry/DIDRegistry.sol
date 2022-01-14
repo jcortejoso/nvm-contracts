@@ -83,7 +83,8 @@ contract DIDRegistry is DIDFactory {
             hashDID(_didSeed, msg.sender),
             _cap,
             _royalties,
-            _mint
+            _mint,
+            _nftMetadata
         );
         return result;
     }
@@ -101,7 +102,7 @@ contract DIDRegistry is DIDFactory {
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
      * @param _mint if true it mints the ERC-1155 NFTs attached to the asset
      * @param _activityId refers to activity
-     * @param _attributes refers to the provenance attributes     
+     * @param _nftMetadata refers to the url providing the NFT Metadata     
      * @return size refers to the size of the registry after the register action.
      */
     function registerMintableDID721(
@@ -112,17 +113,18 @@ contract DIDRegistry is DIDFactory {
         uint8 _royalties,
         bool _mint,
         bytes32 _activityId,
-        string memory _attributes
+        string memory _nftMetadata
     )
     public
-    onlyValidAttributes(_attributes)
+    onlyValidAttributes(_nftMetadata)
     returns (uint size)
     {
-        uint result = registerDID(_didSeed, _checksum, _providers, _url, _activityId, _attributes);
+        uint result = registerDID(_didSeed, _checksum, _providers, _url, _activityId, '');
         enableAndMintDidNft721(
             hashDID(_didSeed, msg.sender),
             _royalties,
-            _mint
+            _mint,
+            _nftMetadata
         );
         return result;
     }
@@ -190,6 +192,9 @@ contract DIDRegistry is DIDFactory {
     {
         didRegisterList.initializeNftConfig(_did, _cap, _royalties);
         
+        if (bytes(_nftMetadata).length > 0)
+            erc1155.setNFTMetadata(uint256(_did), _nftMetadata);
+        
         if (_royalties > 0)
             erc1155.setTokenRoyalty(uint256(_did), msg.sender, _royalties);
         
@@ -225,6 +230,9 @@ contract DIDRegistry is DIDFactory {
     {
         didRegisterList.initializeNft721Config(_did, _royalties);
 
+        if (bytes(_nftMetadata).length > 0)
+            erc721.setNFTMetadata(uint256(_did), _nftMetadata);
+        
         if (_royalties > 0)
             erc721.setTokenRoyalty(uint256(_did), msg.sender, _royalties);
         

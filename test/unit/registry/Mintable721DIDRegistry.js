@@ -17,6 +17,7 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
     const other = accounts[2]
     const consumer = accounts[3]
     const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
+    const nftMetadataURL = 'https://nevermined.io/metadata.json'
     let didRegistry
     let didRegistryLibrary
     let didRegistryLibraryProxy
@@ -100,18 +101,32 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
 
             await didRegistry.registerAttribute(
                 didSeed, checksum, [], value, { from: owner })
-            await didRegistry.enableAndMintDidNft721(did, 0, true, { from: owner })
+            await didRegistry.enableAndMintDidNft721(did, 0, true, nftMetadataURL, { from: owner })
 
             const nftOwner = await nft.ownerOf(did)
             assert.strictEqual(owner, nftOwner)
 
-            await didRegistry.burn721(did,
-                {
-                    from: owner
-                }
-            )
-
+            await didRegistry.burn721(did, { from: owner })
             await assert.isRejected(nft.ownerOf(did))
+
+            const _nftURI = await nft.tokenURI(did)
+            assert.strictEqual(nftMetadataURL, _nftURI)
+        })
+
+        it('Should work with an empty NFT Metadata URL', async () => {
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
+            const checksum = testUtils.generateId()
+
+            await didRegistry.registerAttribute(
+                didSeed, checksum, [], value, { from: owner })
+            await didRegistry.enableAndMintDidNft721(did, 0, true, '', { from: owner })
+
+            const nftOwner = await nft.ownerOf(did)
+            assert.strictEqual(owner, nftOwner)
+
+            const _nftURI = await nft.tokenURI(did)
+            assert.strictEqual('', _nftURI)
         })
 
         it('The royalties should be initialized and retrieved (ERC-2981)', async () => {
@@ -121,7 +136,7 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             await didRegistry.registerAttribute(
                 didSeed, checksum, [], value, { from: owner })
 
-            await didRegistry.enableAndMintDidNft721(did, 10, true, { from: owner })
+            await didRegistry.enableAndMintDidNft721(did, 10, true, nftMetadataURL, { from: owner })
 
             const nftOwner = await nft.ownerOf(did)
             assert.strictEqual(owner, nftOwner)
@@ -138,7 +153,7 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             await didRegistry.registerAttribute(
                 didSeed, checksum, [], value, { from: owner })
 
-            await didRegistry.enableAndMintDidNft721(did, 0, true, { from: owner })
+            await didRegistry.enableAndMintDidNft721(did, 0, true, nftMetadataURL, { from: owner })
 
             const nftOwner = await nft.ownerOf(did)
             assert.strictEqual(owner, nftOwner)
@@ -151,7 +166,7 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
 
             await didRegistry.registerAttribute(
                 didSeed, checksum, [], value, { from: owner })
-            await didRegistry.enableAndMintDidNft721(did, 0, false, { from: owner })
+            await didRegistry.enableAndMintDidNft721(did, 0, false, nftMetadataURL, { from: owner })
 
             await assert.isRejected(nft.ownerOf(did))
 
@@ -167,7 +182,7 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             const checksum = testUtils.generateId()
             await didRegistry.registerAttribute(
                 didSeed, checksum, [], value, { from: owner })
-            await didRegistry.enableAndMintDidNft721(did, 0, false, { from: owner })
+            await didRegistry.enableAndMintDidNft721(did, 0, false, nftMetadataURL, { from: owner })
 
             await didRegistry.mint721(did, { from: owner })
             let nftOwner = await nft.ownerOf(did)
@@ -190,11 +205,11 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
 
             await assert.isRejected(
                 // Must not allow to initialize NFTs if not the owner
-                didRegistry.enableAndMintDidNft721(did, 0, true, { from: other }),
+                didRegistry.enableAndMintDidNft721(did, 0, true, nftMetadataURL, { from: other }),
                 'Only owner'
             )
 
-            await didRegistry.enableAndMintDidNft721(did, 0, true, { from: owner })
+            await didRegistry.enableAndMintDidNft721(did, 0, true, nftMetadataURL, { from: owner })
             await assert.isRejected(
                 // Must not allow to mint tokens without previous initialization
                 didRegistry.mint721(did, { from: other }),

@@ -4,34 +4,63 @@ pragma solidity ^0.8.0;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 import '@openzeppelin/contracts-upgradeable/interfaces/IERC2981Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol';
 
 /**
  *
  * @dev Implementation of the Royalties EIP-2981 base contract
  * See https://eips.ethereum.org/EIPS/eip-2981
  */
-abstract contract ERC2981 is IERC2981Upgradeable {
+abstract contract NFTBase is IERC2981Upgradeable, OwnableUpgradeable, AccessControlUpgradeable {
 
+    // Mapping from account to proxy approvals
+    mapping (address => bool) internal _proxyApprovals;
+
+    bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');    
+    
     struct RoyaltyInfo {
         address receiver;
         uint256 royaltyAmount;
     }
 
+    struct NFTMetadata {
+        string nftURI;
+    }
+    
     // Mapping of Royalties per tokenId (DID)
     mapping(uint256 => RoyaltyInfo) internal _royalties;
 
-    function supportsInterface(bytes4 interfaceId)
-    public
-    view
-    virtual
-    override
-    returns (bool)
-    {
-        return
-        interfaceId == type(IERC2981Upgradeable).interfaceId ||
-        supportsInterface(interfaceId);
-    }
+    mapping(uint256 => NFTMetadata) internal _metadata;
+
+    /** 
+     * Event for recording proxy approvals.
+     */
+    event ProxyApproval(address sender, address operator, bool approved);
+
     
+    function setProxyApproval(
+        address operator, 
+        bool approved
+    ) 
+    public 
+    onlyOwner 
+    virtual 
+    {
+        _proxyApprovals[operator] = approved;
+        emit ProxyApproval(_msgSender(), operator, approved);
+    }
+
+    function _setNFTMetadata(
+        uint256 tokenId,
+        string memory tokenURI
+    )
+    internal
+    {
+        _metadata[tokenId] = NFTMetadata(tokenURI);
+    }
+
     function _setTokenRoyalty(
         uint256 tokenId,
         address receiver,

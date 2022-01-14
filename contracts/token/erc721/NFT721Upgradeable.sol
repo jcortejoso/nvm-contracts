@@ -3,25 +3,13 @@
 pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import '../erc2981/ERC2981.sol';
+import '../NFTBase.sol';
 
 /**
  *
  * @dev Implementation of the basic standard multi-token.
  */
-contract NFT721Upgradeable is ERC721Upgradeable, ERC2981, OwnableUpgradeable, AccessControlUpgradeable {
-
-    // Mapping from account to proxy approvals
-    mapping (address => bool) private _proxyApprovals;
-
-    bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
-    
-    /** 
-     * Event for recording proxy approvals.
-     */
-    event ProxyApproval(address sender, address operator, bool approved);
+contract NFT721Upgradeable is ERC721Upgradeable, NFTBase {
 
     /**
      * @dev See {_setURI}.
@@ -35,13 +23,7 @@ contract NFT721Upgradeable is ERC721Upgradeable, ERC2981, OwnableUpgradeable, Ac
         AccessControlUpgradeable.__AccessControl_init();
         AccessControlUpgradeable._setupRole(MINTER_ROLE, msg.sender);
     }
-
     
-    function setProxyApproval(address operator, bool approved) public onlyOwner virtual {
-        _proxyApprovals[operator] = approved;
-        emit ProxyApproval(_msgSender(), operator, approved);
-    }
-
     /**
      * @dev See {IERC1155-isApprovedForAll}.
      */
@@ -62,14 +44,26 @@ contract NFT721Upgradeable is ERC721Upgradeable, ERC2981, OwnableUpgradeable, Ac
         require(hasRole(MINTER_ROLE, msg.sender), 'only minter can burn');
         _burn(id);
     }
-
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-
-        string memory baseURI = _baseURI();
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
-    }    
     
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        return _metadata[tokenId].nftURI;
+    }
+
+    /**
+    * @dev Record some NFT Metadata
+    * @param tokenId the id of the asset with the royalties associated
+    * @param nftURI the URI (https, ipfs, etc) to the metadata describing the NFT
+    */
+    function setNFTMetadata(
+        uint256 tokenId,
+        string memory nftURI
+    )
+    public
+    {
+        require(hasRole(MINTER_ROLE, msg.sender), 'only minter');
+        _setNFTMetadata(tokenId, nftURI);
+    }
+
     /**
     * @dev Record the asset royalties
     * @param tokenId the id of the asset with the royalties associated
@@ -93,12 +87,12 @@ contract NFT721Upgradeable is ERC721Upgradeable, ERC2981, OwnableUpgradeable, Ac
     public 
     view 
     virtual 
-    override(AccessControlUpgradeable, ERC721Upgradeable, ERC2981) 
+    override(ERC721Upgradeable, IERC165Upgradeable) 
     returns (bool) 
     {
         return AccessControlUpgradeable.supportsInterface(interfaceId)
         || ERC721Upgradeable.supportsInterface(interfaceId)
-        || ERC2981.supportsInterface(interfaceId);
+        || interfaceId == type(IERC2981Upgradeable).interfaceId;
     }
 
 }
