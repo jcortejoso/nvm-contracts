@@ -47,7 +47,7 @@ contract DIDRegistry is DIDFactory {
     }
 
     /**
-     * @notice Register a Mintable DID.
+     * @notice Register a Mintable DID using NFTs based in the ERC-1155 standard.
      *
      * @dev The first attribute of a DID registered sets the DID owner.
      *      Subsequent updates record _checksum and update info.
@@ -86,8 +86,49 @@ contract DIDRegistry is DIDFactory {
             _mint
         );
         return result;
-    }    
-    
+    }
+
+    /**
+     * @notice Register a Mintable DID using NFTs based in the ERC-721 standard.
+     *
+     * @dev The first attribute of a DID registered sets the DID owner.
+     *      Subsequent updates record _checksum and update info.
+     *
+     * @param _didSeed refers to decentralized identifier seed (a bytes32 length ID).
+     * @param _checksum includes a one-way HASH calculated using the DDO content.
+     * @param _providers list of addresses that can act as an asset provider     
+     * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
+     * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
+     * @param _mint if true it mints the ERC-1155 NFTs attached to the asset
+     * @param _activityId refers to activity
+     * @param _attributes refers to the provenance attributes     
+     * @return size refers to the size of the registry after the register action.
+     */
+    function registerMintableDID721(
+        bytes32 _didSeed,
+        bytes32 _checksum,
+        address[] memory _providers,
+        string memory _url,
+        uint8 _royalties,
+        bool _mint,
+        bytes32 _activityId,
+        string memory _attributes
+    )
+    public
+    onlyValidAttributes(_attributes)
+    returns (uint size)
+    {
+        uint result = registerDID(_didSeed, _checksum, _providers, _url, _activityId, _attributes);
+        enableAndMintDidNft721(
+            hashDID(_didSeed, msg.sender),
+            _royalties,
+            _mint
+        );
+        return result;
+    }
+
+
+
     /**
      * @notice Register a Mintable DID.
      *
