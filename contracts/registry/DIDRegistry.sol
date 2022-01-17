@@ -47,7 +47,7 @@ contract DIDRegistry is DIDFactory {
     }
 
     /**
-     * @notice Register a Mintable DID.
+     * @notice Register a Mintable DID using NFTs based in the ERC-1155 standard.
      *
      * @dev The first attribute of a DID registered sets the DID owner.
      *      Subsequent updates record _checksum and update info.
@@ -60,7 +60,7 @@ contract DIDRegistry is DIDFactory {
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
      * @param _mint if true it mints the ERC-1155 NFTs attached to the asset
      * @param _activityId refers to activity
-     * @param _attributes refers to the provenance attributes     
+     * @param _nftMetadata refers to the url providing the NFT Metadata     
      * @return size refers to the size of the registry after the register action.
      */
     function registerMintableDID(
@@ -72,22 +72,65 @@ contract DIDRegistry is DIDFactory {
         uint8 _royalties,
         bool _mint,
         bytes32 _activityId,
-        string memory _attributes
+        string memory _nftMetadata
     )
     public
-    onlyValidAttributes(_attributes)
+    onlyValidAttributes(_nftMetadata)
     returns (uint size)
     {
-        uint result = registerDID(_didSeed, _checksum, _providers, _url, _activityId, _attributes);
+        uint result = registerDID(_didSeed, _checksum, _providers, _url, _activityId, '');
         enableAndMintDidNft(
             hashDID(_didSeed, msg.sender),
             _cap,
             _royalties,
-            _mint
+            _mint,
+            _nftMetadata
         );
         return result;
-    }    
-    
+    }
+
+    /**
+     * @notice Register a Mintable DID using NFTs based in the ERC-721 standard.
+     *
+     * @dev The first attribute of a DID registered sets the DID owner.
+     *      Subsequent updates record _checksum and update info.
+     *
+     * @param _didSeed refers to decentralized identifier seed (a bytes32 length ID).
+     * @param _checksum includes a one-way HASH calculated using the DDO content.
+     * @param _providers list of addresses that can act as an asset provider     
+     * @param _url refers to the url resolving the DID into a DID Document (DDO), limited to 2048 bytes.
+     * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
+     * @param _mint if true it mints the ERC-1155 NFTs attached to the asset
+     * @param _activityId refers to activity
+     * @param _nftMetadata refers to the url providing the NFT Metadata     
+     * @return size refers to the size of the registry after the register action.
+     */
+    function registerMintableDID721(
+        bytes32 _didSeed,
+        bytes32 _checksum,
+        address[] memory _providers,
+        string memory _url,
+        uint8 _royalties,
+        bool _mint,
+        bytes32 _activityId,
+        string memory _nftMetadata
+    )
+    public
+    onlyValidAttributes(_nftMetadata)
+    returns (uint size)
+    {
+        uint result = registerDID(_didSeed, _checksum, _providers, _url, _activityId, '');
+        enableAndMintDidNft721(
+            hashDID(_didSeed, msg.sender),
+            _royalties,
+            _mint,
+            _nftMetadata
+        );
+        return result;
+    }
+
+
+
     /**
      * @notice Register a Mintable DID.
      *
@@ -101,7 +144,7 @@ contract DIDRegistry is DIDFactory {
      * @param _cap refers to the mint cap
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
      * @param _activityId refers to activity
-     * @param _attributes refers to the provenance attributes     
+     * @param _nftMetadata refers to the url providing the NFT Metadata     
      * @return size refers to the size of the registry after the register action.
      */
     function registerMintableDID(
@@ -112,19 +155,19 @@ contract DIDRegistry is DIDFactory {
         uint256 _cap,
         uint8 _royalties,
         bytes32 _activityId,
-        string memory _attributes
+        string memory _nftMetadata
     )
     public
-    onlyValidAttributes(_attributes)
+    onlyValidAttributes(_nftMetadata)
     returns (uint size)
     {
         return registerMintableDID(
-            _didSeed, _checksum, _providers, _url, _cap, _royalties, false, _activityId, _attributes);
+            _didSeed, _checksum, _providers, _url, _cap, _royalties, false, _activityId, _nftMetadata);
     }
 
     
     /**
-     * @notice enableDidNft creates the initial setup of NFTs minting and royalties distribution.
+     * @notice enableDidNft creates the initial setup of NFTs minting and royalties distribution for ERC-1155 NFTs.
      * After this initial setup, this data can't be changed anymore for the DID given, even for the owner of the DID.
      * The reason of this is to avoid minting additional NFTs after the initial agreement, what could affect the 
      * valuation of NFTs of a DID already created.
@@ -134,32 +177,52 @@ contract DIDRegistry is DIDFactory {
      * @param _cap refers to the mint cap
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
      * @param _mint if is true mint directly the amount capped tokens and lock in the _lockAddress
+     * @param _nftMetadata refers to the url providing the NFT Metadata          
      */
     function enableAndMintDidNft(
         bytes32 _did,
         uint256 _cap,
         uint8 _royalties,
-        bool _mint
+        bool _mint,
+        string memory _nftMetadata
     )
     public
     onlyDIDOwner(_did)
     returns (bool success)
     {
         didRegisterList.initializeNftConfig(_did, _cap, _royalties);
-
-        if (_mint)    {
+        
+        if (bytes(_nftMetadata).length > 0)
+            erc1155.setNFTMetadata(uint256(_did), _nftMetadata);
+        
+        if (_royalties > 0)
+            erc1155.setTokenRoyalty(uint256(_did), msg.sender, _royalties);
+        
+        if (_mint)
             mint(_did, _cap);
-        }
         
         return super.used(
             keccak256(abi.encode(_did, _cap, _royalties, msg.sender)),
             _did, msg.sender, keccak256('enableNft'), '', 'nft initialization');
     }
-    
+
+    /**
+     * @notice enableAndMintDidNft721 creates the initial setup of NFTs minting and royalties distribution for ERC-721 NFTs.
+     * After this initial setup, this data can't be changed anymore for the DID given, even for the owner of the DID.
+     * The reason of this is to avoid minting additional NFTs after the initial agreement, what could affect the 
+     * valuation of NFTs of a DID already created.
+      
+     * @dev update the DID registry providers list by adding the mintCap and royalties configuration
+     * @param _did refers to decentralized identifier (a byte32 length ID)
+     * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
+     * @param _mint if is true mint directly the amount capped tokens and lock in the _lockAddress
+     * @param _nftMetadata refers to the url providing the NFT Metadata          
+     */    
     function enableAndMintDidNft721(
         bytes32 _did,
         uint8 _royalties,
-        bool _mint
+        bool _mint,
+        string memory _nftMetadata
     )
     public
     onlyDIDOwner(_did)
@@ -167,9 +230,14 @@ contract DIDRegistry is DIDFactory {
     {
         didRegisterList.initializeNft721Config(_did, _royalties);
 
-        if (_mint)    {
+        if (bytes(_nftMetadata).length > 0)
+            erc721.setNFTMetadata(uint256(_did), _nftMetadata);
+        
+        if (_royalties > 0)
+            erc721.setTokenRoyalty(uint256(_did), msg.sender, _royalties);
+        
+        if (_mint)
             mint721(_did);
-        }
         
         return super.used(
             keccak256(abi.encode(_did, 1, _royalties, msg.sender)),

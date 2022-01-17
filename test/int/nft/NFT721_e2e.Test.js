@@ -23,8 +23,7 @@ const NeverminedToken = artifacts.require('NeverminedToken')
 const NFTAccessCondition = artifacts.require('NFTAccessCondition')
 const NFTHolderCondition = artifacts.require('NFT721HolderCondition')
 
-const TestERC721 = artifacts.require('TestERC721')
-const VitaDAOERC721 = artifacts.require('IPNFT')
+const TestERC721 = artifacts.require('NFT721Upgradeable')
 
 const constants = require('../../helpers/constants.js')
 const { getBalance } = require('../../helpers/getBalance.js')
@@ -32,7 +31,6 @@ const testUtils = require('../../helpers/utils.js')
 
 contract('End to End NFT721 Scenarios', (accounts) => {
     const royalties = 10 // 10% of royalties in the secondary market
-    const cappedAmount = 5
     const didSeed = testUtils.generateId()
     let did
     const agreementId = testUtils.generateId()
@@ -92,8 +90,13 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         token = await NeverminedToken.new()
         await token.initialize(owner, owner)
 
+        nft = await TestERC721.new({ from: deployer })
+        await nft.initialize({ from: owner })
+
         didRegistry = await DIDRegistry.new()
-        await didRegistry.initialize(owner, constants.address.zero, constants.address.zero)
+        await didRegistry.initialize(owner, constants.address.zero, nft.address)
+
+        await nft.addMinter(didRegistry.address)
 
         conditionStoreManager = await ConditionStoreManager.new()
 
@@ -502,37 +505,13 @@ contract('End to End NFT721 Scenarios', (accounts) => {
     describe('Test NFT721', () => {
         describe('As an artist I want to register a new artwork', () => {
             it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
-                nft = await TestERC721.new({ from: deployer })
-                await nft.initialize({ from: owner })
-
                 const { didRegistry } = await setupTest()
 
                 did = await didRegistry.hashDID(didSeed, artist)
 
-                await didRegistry.registerMintableDID(
-                    didSeed, checksum, [], url, cappedAmount, royalties, constants.activities.GENERATED, '', { from: artist })
+                await didRegistry.registerMintableDID721(
+                    didSeed, checksum, [], url, royalties, true, constants.activities.GENERATED, '', { from: artist })
 
-                await nft.mint(did, { from: artist })
-                await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
-            })
-        })
-
-        runTests()
-    })
-
-    describe('VitaDAO NFT721', () => {
-        describe('As an artist I want to register a new artwork', () => {
-            it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
-                nft = await VitaDAOERC721.new({ from: deployer })
-                await nft.initialize('VitaNFT', 'VitaNFT', { from: owner })
-                const { didRegistry } = await setupTest()
-
-                did = await didRegistry.hashDID(didSeed, artist)
-
-                await didRegistry.registerMintableDID(
-                    didSeed, checksum, [], url, cappedAmount, royalties, constants.activities.GENERATED, '', { from: artist })
-
-                await nft.mint(artist, did, url, { from: owner })
                 await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
             })
         })
