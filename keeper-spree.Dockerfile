@@ -7,8 +7,7 @@ COPY networks/spree/authorities/validator0.pwd /home/openethereum/validator.pwd
 
 
 
-FROM node:14-alpine
-LABEL maintainer="Keyko <root@keyko.io>"
+FROM node:14-alpine as deploy
 
 RUN apk add --no-cache --update\
       bash\
@@ -39,4 +38,12 @@ ENV KEEPER_RPC_PORT=8545
 
 RUN  /nevermined-contracts/scripts/keeper_deploy_dockerfile.sh
 
-ENTRYPOINT ["/nevermined-contracts/scripts/keeper_entrypoint_nodeploy.sh"]
+FROM openethereum/openethereum:v3.3.2
+LABEL maintainer="Keyko <root@keyko.io>"
+
+COPY scripts/keeper_entrypoint_nodeploy.sh /
+
+COPY --from=deploy /nevermined-contracts/artifacts2 /nevermined-contracts/artifacts2
+COPY --from=deploy /home/openethereum /home/openethereum
+
+ENTRYPOINT ["/keeper_entrypoint_nodeploy.sh"]
