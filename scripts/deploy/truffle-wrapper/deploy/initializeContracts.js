@@ -118,8 +118,9 @@ async function initializeContracts({
         const PlonkVerifier = await ethers.getContractFactory('PlonkVerifier')
         const plonkVerifier = await upgrades.deployProxy(PlonkVerifier)
         await plonkVerifier.deployed()
+        const h1 = plonkVerifier.deployTransaction.hash
         cache.PlonkVerifier = plonkVerifier
-        proxies.PlonkVerifier = plonkVerifier.address
+        proxies.PlonkVerifier = (await web3.eth.getTransactionReceipt(h1)).contractAddress
     }
 
     if (contracts.indexOf('TemplateStoreManager') > -1) {
@@ -632,7 +633,7 @@ async function initializeContracts({
         }
     }
 
-    return { cache, addressBook }
+    return { cache, addressBook, proxies }
 }
 
 module.exports = initializeContracts

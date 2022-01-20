@@ -12,21 +12,28 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
         testnet
     })
 
-    const DIDRegistryLibrary = await ethers.getContractFactory('DIDRegistryLibrary')
-    const didRegistryLibrary = await DIDRegistryLibrary.deploy()
-    await didRegistryLibrary.deployed()
-    const EpochLibrary = await ethers.getContractFactory('EpochLibrary')
-    const epochLibrary = await EpochLibrary.deploy()
-    await epochLibrary.deployed()
-
     const { roles } = await loadWallet({ makeWallet })
 
-    const { cache, addressBook } = await initializeContracts({
+    const DIDRegistryLibrary = await ethers.getContractFactory('DIDRegistryLibrary')
+    const didRegistryLibrary = await DIDRegistryLibrary.deploy()
+    const h1 = didRegistryLibrary.deployTransaction.hash
+    await didRegistryLibrary.deployed()
+    const didRegistryLibraryAddress = (await web3.eth.getTransactionReceipt(h1)).contractAddress
+    console.log('registry library', didRegistryLibraryAddress)
+
+    const EpochLibrary = await ethers.getContractFactory('EpochLibrary')
+    const epochLibrary = await EpochLibrary.deploy()
+    const h2 = epochLibrary.deployTransaction.hash
+    await epochLibrary.deployed()
+    const epochLibraryAddress = (await web3.eth.getTransactionReceipt(h2)).contractAddress
+    console.log('epoch library', epochLibraryAddress)
+
+    const { cache, addressBook, proxies } = await initializeContracts({
         contracts,
         roles,
         network: '',
-        didRegistryLibrary: didRegistryLibrary.address,
-        epochLibrary: epochLibrary.address,
+        didRegistryLibrary: didRegistryLibraryAddress,
+        epochLibrary: epochLibraryAddress,
         verbose
     })
 
@@ -41,14 +48,14 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
     // Move proxy admin to upgrader wallet
     await upgrades.admin.transferProxyAdminOwnership(roles.upgraderWallet)
 
-    addressBook.DIDRegistryLibrary = didRegistryLibrary.address
-    addressBook.EpochLibrary = epochLibrary.address
+    addressBook.DIDRegistryLibrary = didRegistryLibraryAddress
+    addressBook.EpochLibrary = epochLibraryAddress
     if (cache.PlonkVerifier) {
-        addressBook.PlonkVerifier = cache.PlonkVerifier.address
+        addressBook.PlonkVerifier = proxies.PlonkVerifier
     }
     const libraries = {
-        DIDRegistry: { DIDRegistryLibrary: didRegistryLibrary.address },
-        ConditionStoreManager: { EpochLibrary: epochLibrary.address }
+        DIDRegistry: { DIDRegistryLibrary: didRegistryLibraryAddress },
+        ConditionStoreManager: { EpochLibrary: epochLibraryAddress }
     }
     await exportArtifacts(contracts.filter(a => a !== 'AaveCreditVault'), addressBook, libraries)
     await exportLibraryArtifacts(['EpochLibrary', 'DIDRegistryLibrary'], addressBook)
