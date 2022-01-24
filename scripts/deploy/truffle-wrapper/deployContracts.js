@@ -5,7 +5,22 @@ const { ethers, upgrades, web3 } = require('hardhat')
 const { exportArtifacts, exportLibraryArtifacts } = require('./artifacts')
 const { loadWallet } = require('./wallets.js')
 
-async function deployContracts({ contracts: origContracts, verbose, testnet, makeWallet }) {
+async function deployLibrary(name, addresses) {
+    if (addresses[name]) {
+        console.log(`Contract ${name} found from cache`)
+        return addresses[name]
+    } else {
+        const factory = await ethers.getContractFactory(name)
+        const library = await factory.deploy()
+        const h1 = library.deployTransaction.hash
+        await library.deployed()
+        const address = (await web3.eth.getTransactionReceipt(h1)).contractAddress
+        addresses[name] = address
+        return address
+    }
+}
+
+async function deployContracts({ contracts: origContracts, verbose, testnet, makeWallet, addresses }) {
     const contracts = evaluateContracts({
         contracts: origContracts,
         verbose,
@@ -14,18 +29,10 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
 
     const { roles } = await loadWallet({ makeWallet })
 
-    const DIDRegistryLibrary = await ethers.getContractFactory('DIDRegistryLibrary')
-    const didRegistryLibrary = await DIDRegistryLibrary.deploy()
-    const h1 = didRegistryLibrary.deployTransaction.hash
-    await didRegistryLibrary.deployed()
-    const didRegistryLibraryAddress = (await web3.eth.getTransactionReceipt(h1)).contractAddress
+    const didRegistryLibraryAddress = await deployLibrary('DIDRegistryLibrary', addresses)
     console.log('registry library', didRegistryLibraryAddress)
 
-    const EpochLibrary = await ethers.getContractFactory('EpochLibrary')
-    const epochLibrary = await EpochLibrary.deploy()
-    const h2 = epochLibrary.deployTransaction.hash
-    await epochLibrary.deployed()
-    const epochLibraryAddress = (await web3.eth.getTransactionReceipt(h2)).contractAddress
+    const epochLibraryAddress = await deployLibrary('EpochLibrary', addresses)
     console.log('epoch library', epochLibraryAddress)
 
     const { cache, addressBook, proxies } = await initializeContracts({
@@ -34,7 +41,8 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
         network: '',
         didRegistryLibrary: didRegistryLibraryAddress,
         epochLibrary: epochLibraryAddress,
-        verbose
+        verbose,
+        addresses
     })
 
     await setupContracts({
@@ -42,7 +50,8 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
         addressBook,
         artifacts: cache,
         roles,
-        verbose
+        verbose,
+        addresses
     })
 
     // Move proxy admin to upgrader wallet
