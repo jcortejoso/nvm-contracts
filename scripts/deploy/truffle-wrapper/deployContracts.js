@@ -66,7 +66,7 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
         DIDRegistry: { DIDRegistryLibrary: didRegistryLibraryAddress },
         ConditionStoreManager: { EpochLibrary: epochLibraryAddress }
     }
-    await exportArtifacts(contracts.filter(a => a !== 'AaveCreditVault'), addressBook, libraries)
+    await exportArtifacts(contracts.filter(a => a !== 'AaveCreditVault' && a !== 'PlonkVerifier'), addressBook, libraries)
     await exportLibraryArtifacts(['EpochLibrary', 'DIDRegistryLibrary'], addressBook)
 
     if (contracts.indexOf('AaveCreditVault') > -1) {

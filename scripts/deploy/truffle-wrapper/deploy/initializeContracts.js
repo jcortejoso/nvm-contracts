@@ -22,11 +22,11 @@ async function zosCreate({ contract, args, libraries, verbose, ctx }) {
     }
 }
 
-async function deployLibrary(name, addresses) {
+async function deployLibrary(name, addresses, cache) {
     if (addresses[name]) {
         console.log(`Contract ${name} found from cache`)
-        const C = await ethers.getContractFactory(name, { libraries })
-        cache[contract] = C.attach(addresses[name])
+        const C = await ethers.getContractFactory(name)
+        cache[name] = C.attach(addresses[name])
         return addresses[name]
     } else {
         const factory = await ethers.getContractFactory(name)
@@ -35,6 +35,7 @@ async function deployLibrary(name, addresses) {
         await library.deployed()
         const address = (await web3.eth.getTransactionReceipt(h1)).contractAddress
         addresses[name] = address
+        cache[name] = library
         return address
     }
 }
@@ -143,7 +144,7 @@ async function initializeContracts({
     }
 
     if (contracts.indexOf('PlonkVerifier') > -1) {
-        proxies.PlonkVerifier = await deployLibrary('PlonkVerifier', addresses)
+        proxies.PlonkVerifier = await deployLibrary('PlonkVerifier', addresses, cache)
     }
 
     if (contracts.indexOf('TemplateStoreManager') > -1) {
