@@ -22,6 +22,7 @@
     "audit:staging": "export NETWORK=staging&&yarn run audit --network staging",
     "audit:production": "export NETWORK=production&&yarn run audit --network production",
     "audit:mainnet": "export NETWORK=mainnet&&yarn run audit --network mainnet",
+    "audit:matic": "export NETWORK=matic&&yarn run audit --network matic",
     "deploy": "npx hardhat run ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js",
     "deploy:development": "export NETWORK=development&&export TESTNET=true&&yarn deploy --network development",
     "deploy:external": "export NETWORK=development&&export TESTNET=true&&yarn deploy --network external",
@@ -37,6 +38,7 @@
     "deploy:staging": "export NETWORK=staging&&yarn deploy --network staging",
     "deploy:production": "export NETWORK=production&&yarn deploy --network production",
     "deploy:mainnet": "export NETWORK=mainnet&&yarn deploy --network mainnet",
+    "deploy:matic": "export NETWORK=matic&&export TESTNET=false&&yarn deploy --network matic",
     "upgrade": "npx hardhat run ./scripts/deploy/truffle-wrapper/upgradeContractsWrapper.js",
     "upgrade:development": "export NETWORK=development&&yarn run upgrade --network development --testnet true",
     "upgrade:external": "export NETWORK=external&&export TESTNET=true&&yarn run upgrade --network external",
@@ -51,6 +53,7 @@
     "upgrade:staging": "export NETWORK=staging&&yarn run upgrade --network staging",
     "upgrade:production": "export NETWORK=production&&yarn run upgrade --network production",
     "upgrade:mainnet": "export NETWORK=mainnet&&yarn run upgrade --network mainnet",
+    "upgrade:matic": "export NETWORK=matic&&yarn run upgrade --network matic",
     "test": "hardhat test",
     "test:unit": "hardhat test $(find ./test/unit -name '*.*s')",
     "test:integration": "hardhat test $(find ./test/int -name '*.*s')",
@@ -145,6 +148,7 @@
   },
   "dependencies": {
     "@gnosis.pm/safe-core-sdk": "^1.0.0",
-    "@gnosis.pm/safe-deployments": "^1.4.0"
+    "@gnosis.pm/safe-deployments": "^1.4.0",
+    "@nevermined-io/contract-tools": "^0.2.5"
   }
 }
