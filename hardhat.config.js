@@ -174,8 +174,8 @@ module.exports = {
             timeoutBlocks: 200,
             skipDryRun: true,
             from: '0xCF3D200356Fe8e5E2fa9f6fd59B01D41732BCf4c',
-            gas: "auto",
-            gasPrice: "auto",
+            gas: 'auto',
+            gasPrice: 'auto',
             gasMultiplier: 3
         },
         // mainnet the ethereum mainnet
