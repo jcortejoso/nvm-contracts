@@ -39,7 +39,6 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
         agreementStoreManager,
         conditionStoreManager,
         templateStoreManager,
-        nftAccessTemplate,
         did,
         transferCondition,
         nftSalesTemplate,
@@ -53,7 +52,6 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
         deployer,
         artist,
         receiver,
-        someone,
         gallery,
         market
     ] = accounts
@@ -197,8 +195,8 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
                 conditionIdEscrow,
                 conditionIdAccess
             ],
-            timeLocks: [0, 0, 0],
-            timeOuts: [0, 0, 0]
+            timeLocks: [0, 0, 0, 0],
+            timeOuts: [0, 0, 0, 0]
         }
 
         const data = {
@@ -253,7 +251,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
             expect((await agreementStoreManager.getAgreement(agreementId)).did)
                 .to.equal(did)
 
-            const conditionTypes = await nftAccessTemplate.getConditionTypes()
+            const conditionTypes = await nftSalesTemplate.getConditionTypes()
             let storedCondition
             agreement.conditionIds.forEach(async (conditionId, i) => {
                 storedCondition = await conditionStoreManager.getCondition(conditionId)
