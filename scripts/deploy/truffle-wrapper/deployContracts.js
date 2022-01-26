@@ -30,10 +30,10 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
     const { roles } = await loadWallet({ makeWallet })
 
     const didRegistryLibraryAddress = await deployLibrary('DIDRegistryLibrary', addresses)
-    console.log('registry library', didRegistryLibraryAddress)
+    console.log('Registry library', didRegistryLibraryAddress)
 
     const epochLibraryAddress = await deployLibrary('EpochLibrary', addresses)
-    console.log('epoch library', epochLibraryAddress)
+    console.log('Epoch library', epochLibraryAddress)
 
     const { cache, addressBook, proxies } = await initializeContracts({
         contracts,
