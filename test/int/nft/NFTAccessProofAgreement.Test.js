@@ -37,13 +37,15 @@ contract('NFT Access Proof Template integration test', (accounts) => {
         conditionStoreManager,
         templateStoreManager,
         nftAccessTemplate,
+        did,
+        nftHolderCondition,
         accessProofCondition
     const [
         owner,
         deployer,
         artist,
         receiver,
-        someone,
+        someone
     ] = accounts
     async function setupTest() {
         ({
@@ -59,9 +61,7 @@ contract('NFT Access Proof Template integration test', (accounts) => {
         ));
 
         ({
-            accessProofCondition,
-            lockPaymentCondition,
-            escrowPaymentCondition
+            accessProofCondition
         } = await deployConditions(
             deployer,
             owner,
@@ -211,7 +211,7 @@ contract('NFT Access Proof Template integration test', (accounts) => {
             const balance = await nft.balanceOf(artist, did)
             assert.strictEqual(5, balance.toNumber())
 
-            await nft.safeTransferFrom(artist, receiver, did, 2, '0x', {from: artist})
+            await nft.safeTransferFrom(artist, receiver, did, 2, '0x', { from: artist })
         })
     })
 
@@ -248,9 +248,6 @@ contract('NFT Access Proof Template integration test', (accounts) => {
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
-
         })
-
     })
-
 })
