@@ -37,8 +37,8 @@ contract AaveBorrowCondition is Condition, Common {
         address _owner,
         address _conditionStoreManagerAddress
     ) 
-    external 
-    initializer() 
+    external
+    initializer
     {
         require(
             _conditionStoreManagerAddress != address(0),

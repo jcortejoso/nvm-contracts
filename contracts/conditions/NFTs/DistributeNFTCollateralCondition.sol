@@ -47,7 +47,7 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
         address _lockNFTConditionAddress
     )
         external
-        initializer()
+        initializer
     {
         require(
             _owner != address(0) &&

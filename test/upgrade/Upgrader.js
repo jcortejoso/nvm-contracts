@@ -24,7 +24,8 @@ const deploy = async function({
         contracts,
         forceWalletCreation: true,
         deeperClean: true,
-        verbose
+        verbose,
+        addresses: []
     })
 }
 

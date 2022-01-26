@@ -1,25 +1,26 @@
-FROM golang:1.16
-LABEL maintainer="Keyko <root@keyko.io>"
+FROM 0xpolygon/polygon-sdk:0.1.0 as polygon
 
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get -y update && apt-get -y install \
-    nodejs \
-    python \
-    && rm -rf /var/lib/apt/lists/*
+FROM node:14-alpine as deploy
 
-RUN git clone https://github.com/0xPolygon/polygon-sdk.git /polygon-sdk
+COPY --from=polygon /usr/local/bin/polygon-sdk /usr/local/bin/polygon-sdk
+
+RUN apk add --no-cache --update\
+      bash\
+      g++\
+      gcc\
+      git\
+      krb5-dev\
+      krb5-libs\
+      krb5\
+      make\
+      python3\
+      curl
+
 COPY networks/polygon-localnet/genesis.json /polygon-sdk/genesis.json
-COPY scripts/keeper_entrypoint_polygon.sh /
-
-WORKDIR /polygon-sdk
-RUN git pull
-RUN git checkout a0f86ec925ca7b8df439e86de0fa572a41e7cb09
-RUN go build main.go
 
 COPY . /nevermined-contracts
 WORKDIR /nevermined-contracts
 
-RUN npm install -g yarn
 RUN yarn
 
 ENV MNEMONIC="taxi music thumb unique chat sand crew more leg another off lamp"
@@ -31,5 +32,12 @@ ENV KEEPER_RPC_HOST=localhost
 ENV KEEPER_RPC_PORT=8545
 
 RUN /nevermined-contracts/scripts/keeper_deploy_polygon_dockerfile.sh
+
+FROM 0xpolygon/polygon-sdk:0.1.0
+LABEL maintainer="Keyko <root@keyko.io>"
+
+COPY scripts/keeper_entrypoint_polygon.sh /
+COPY --from=deploy /artifacts /artifacts
+COPY --from=deploy /polygon-sdk /polygon-sdk
 
 ENTRYPOINT ["/keeper_entrypoint_polygon.sh"]

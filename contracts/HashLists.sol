@@ -33,7 +33,7 @@ contract HashLists is OwnableUpgradeable, IList {
     function initialize(
         address _owner
     )
-        public
+        public initializer
     {
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
