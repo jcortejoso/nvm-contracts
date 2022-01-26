@@ -13,10 +13,7 @@ const NFTHolderCondition = artifacts.require('NFTHolderCondition')
 const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
-const { getBalance } = require('../../helpers/getBalance.js')
-const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils')
-const mimcdecrypt = require('../../helpers/mimcdecrypt').decrypt
 
 const poseidon = require('circomlib').poseidon
 const babyJub = require('circomlib').babyJub
@@ -28,7 +25,6 @@ const snarkjs = require('snarkjs')
 const { unstringifyBigInts } = require('ffjavascript').utils
 
 contract('NFT Access Proof Template integration test', (accounts) => {
-    const web3 = global.web3
     const didSeed = testUtils.generateId()
     const checksum = testUtils.generateId()
     const url = 'https://raw.githubusercontent.com/nevermined-io/assets/main/images/logo/banner_logo.png'
@@ -41,18 +37,13 @@ contract('NFT Access Proof Template integration test', (accounts) => {
         conditionStoreManager,
         templateStoreManager,
         nftAccessTemplate,
-        accessProofCondition,
-        lockPaymentCondition,
-        escrowPaymentCondition
+        accessProofCondition
     const [
         owner,
         deployer,
         artist,
-        collector1,
-        collector2,
-        gallery,
-        market,
-        someone
+        receiver,
+        someone,
     ] = accounts
     async function setupTest() {
         ({
@@ -114,15 +105,12 @@ contract('NFT Access Proof Template integration test', (accounts) => {
         escrowAmounts = [11, 4],
         timeLockAccess = 0,
         timeOutAccess = 0,
-        didSeed = testUtils.generateId(),
         url = constants.registry.url,
         checksum = constants.bytes32.one
     } = {}) {
         const orig1 = 222n
         const orig2 = 333n
         const origHash = poseidon([orig1, orig2])
-
-        const did = await didRegistry.hashDID(didSeed, receivers[0])
 
         const buyerK = 123
         const providerK = 234
@@ -169,7 +157,7 @@ contract('NFT Access Proof Template integration test', (accounts) => {
         const proofData = proofSolidity.split(',')[0]
 
         // construct agreement
-        const conditionIdNFTHolder = await nftHolderCondition.generateId(agreementAccessId,
+        const conditionIdNFTHolder = await nftHolderCondition.generateId(agreementId,
             await nftHolderCondition.hashValues(did, receiver, 1))
         const conditionIdAccess = await accessProofCondition.generateId(agreementId,
             await accessProofCondition.hashValues(origHash, buyerPub, providerPub))
@@ -210,7 +198,7 @@ contract('NFT Access Proof Template integration test', (accounts) => {
         }
     }
 
-    describe.only('As an artist I want to register a new artwork', () => {
+    describe('As an artist I want to register a new artwork', () => {
         it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
             await setupTest()
 
@@ -222,27 +210,24 @@ contract('NFT Access Proof Template integration test', (accounts) => {
 
             const balance = await nft.balanceOf(artist, did)
             assert.strictEqual(5, balance.toNumber())
+
+            await nft.safeTransferFrom(artist, receiver, did, 2, '0x', {from: artist})
         })
     })
 
     describe('create and fulfill access agreement', function() {
         this.timeout(100000)
         it('should create access agreement', async () => {
-            // prepare: escrow agreement
-            const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, buyerK, providerPub, origHash } = await prepareAgreement()
-            const totalAmount = escrowAmounts[0] + escrowAmounts[1]
-            const receiver = receivers[0]
-            // register DID
-            await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
+            const { agreementId, data, agreement } = await prepareAgreement()
 
             // create agreement
-            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await nftAccessTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
             // check state of agreement and conditions
             expect((await agreementStoreManager.getAgreement(agreementId)).did)
                 .to.equal(did)
 
-            const conditionTypes = await accessTemplate.getConditionTypes()
+            const conditionTypes = await nftAccessTemplate.getConditionTypes()
             let storedCondition
             agreement.conditionIds.forEach(async (conditionId, i) => {
                 storedCondition = await conditionStoreManager.getCondition(conditionId)
@@ -250,111 +235,22 @@ contract('NFT Access Proof Template integration test', (accounts) => {
                 expect(storedCondition.state.toNumber()).to.equal(constants.condition.state.unfulfilled)
             })
 
-            // fill up wallet
-            await token.mint(sender, totalAmount, { from: owner })
-
-            assert.strictEqual(await getBalance(token, sender), totalAmount)
-            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, receiver), 0)
-
-            // fulfill lock reward
-            await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
-            await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers, { from: sender })
-
-            assert.strictEqual(await getBalance(token, sender), 0)
-            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), totalAmount)
-            assert.strictEqual(await getBalance(token, receiver), 0)
-
+            // fulfill holder
+            await nftHolderCondition.fulfill(
+                agreementId, did, receiver, 1, { from: someone })
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
+                (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
 
             // fulfill access
-            // await disputeManager.setAccepted(...Object.values(data))
-            await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })
+            await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: artist })
 
-            assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
-                constants.condition.state.fulfilled)
-
-            // get reward
-            await escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
-
-            assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
-                constants.condition.state.fulfilled
-            )
-
-            assert.strictEqual(await getBalance(token, sender), 0)
-            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, receivers[0]), escrowAmounts[0])
-            assert.strictEqual(await getBalance(token, receivers[1]), escrowAmounts[1])
-
-            // make sure decryption works
-            const ev = await accessProofCondition.getPastEvents('Fulfilled', { fromBlock: 0, toBlock: 'latest', filter: { _agreementId: agreementId } })
-            const [cipherL, cipherR] = ev[0].returnValues._cipher
-            const k2 = babyJub.mulPointEscalar(providerPub, F.e(buyerK))
-
-            const plain = mimcdecrypt(cipherL, cipherR, k2[0])
-            assert.strictEqual(origHash, poseidon([plain.xL, plain.xR]))
-        })
-
-        it('should create escrow agreement and abort after timeout', async () => {
-            const { owner } = await setupTest()
-
-            // prepare: escrow agreement
-            const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeOutAccess } = await prepareEscrowAgreementMultipleEscrow({ timeOutAccess: 10 })
-            const totalAmount = escrowAmounts[0] + escrowAmounts[1]
-            const receiver = receivers[0]
-
-            // register DID
-            await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
-
-            // create agreement
-            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
-
-            // fill up wallet
-            await token.mint(sender, totalAmount, { from: owner })
-
-            // fulfill lock reward
-            await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
-            await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers, { from: sender })
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
 
-            // No update since access is not fulfilled yet
-            // refund
-            const result = await escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
-            assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
-                constants.condition.state.unfulfilled
-            )
-            assert.strictEqual(result.logs.length, 0)
-
-            // wait: for time out
-            await increaseTime.mineBlocks(web3, timeOutAccess)
-
-            // abort: fulfill access after timeout
-            await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })
-            assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
-                constants.condition.state.aborted)
-
-            // refund
-            await escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: sender })
-            assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
-                constants.condition.state.fulfilled
-            )
-            assert.strictEqual(await getBalance(token, receivers[0]), 0)
-            assert.strictEqual(await getBalance(token, receivers[1]), 0)
-            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, sender), totalAmount)
         })
+
     })
 
 })
