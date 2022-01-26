@@ -32,7 +32,7 @@ contract WhitelistingCondition is Condition, Common {
         address _conditionStoreManagerAddress
     )
         external
-        initializer()
+        initializer
     {
         require(
             _conditionStoreManagerAddress != address(0),
