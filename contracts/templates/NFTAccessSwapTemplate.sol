@@ -49,14 +49,12 @@ contract NFTAccessSwapTemplate is BaseEscrowTemplate {
     * @param _owner contract's owner account address
     * @param _agreementStoreManagerAddress agreement store manager contract address
     * @param _lockPaymentConditionAddress lock reward condition contract address
-    * @param _transferConditionAddress transfer NFT condition contract address
     * @param _escrowPaymentAddress escrow reward condition contract address    
     */
     function initialize(
         address _owner,
         address _agreementStoreManagerAddress,
         address _lockPaymentConditionAddress,
-        address _transferConditionAddress,
         address payable _escrowPaymentAddress,
         address _accessCondition
     )
@@ -67,7 +65,6 @@ contract NFTAccessSwapTemplate is BaseEscrowTemplate {
             _owner != address(0) &&
             _agreementStoreManagerAddress != address(0) &&
             _lockPaymentConditionAddress != address(0) &&
-            _transferConditionAddress != address(0) &&
             _escrowPaymentAddress != address(0) &&
             _accessCondition != address(0),
             'Invalid address'

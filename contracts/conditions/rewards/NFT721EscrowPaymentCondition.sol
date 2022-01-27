@@ -207,10 +207,10 @@ contract NFT721EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradea
         );        
         
         if (allFulfilled) {
-            return _transferAndFulfillNFT(_agreementId, _did, id, _tokenAddress, _receiver, _amount);
+            return _transferAndFulfillNFT(_agreementId, id, _did, _tokenAddress, _receiver, _amount);
 
         } else if (allAborted) {
-            return _transferAndFulfillNFT(_agreementId, _did, id, _tokenAddress, conditionStoreManager.getConditionCreatedBy(_lockCondition), _amount);
+            return _transferAndFulfillNFT(_agreementId, id, _did, _tokenAddress, conditionStoreManager.getConditionCreatedBy(_lockCondition), _amount);
             
             
         } else {

@@ -8,7 +8,8 @@ import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol';
+import 'hardhat/console.sol';
 /**
  * @title Escrow Payment Condition
  * @author Keyko
@@ -19,7 +20,7 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
  *      can release reward if lock and release conditions
  *      are fulfilled.
  */
-contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
+contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable, IERC1155ReceiverUpgradeable {
 
     bytes32 constant public CONDITION_TYPE = keccak256('NFTEscrowPayment');
 
@@ -207,11 +208,11 @@ contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable
         );        
         
         if (allFulfilled) {
-            return _transferAndFulfillNFT(_agreementId, _did, id, _tokenAddress, _receiver, _amount);
+            return _transferAndFulfillNFT(_agreementId, id, _did, _tokenAddress, _receiver, _amount);
 
         } else if (allAborted) {
             
-            return _transferAndFulfillNFT(_agreementId, _did, id, _tokenAddress, conditionStoreManager.getConditionCreatedBy(_lockCondition), _amount);
+            return _transferAndFulfillNFT(_agreementId, id, _did, _tokenAddress, conditionStoreManager.getConditionCreatedBy(_lockCondition), _amount);
             
             
         } else {
@@ -239,8 +240,8 @@ contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable
     private
     returns (ConditionStoreLibrary.ConditionState)
     {
-        
-        IERC1155Upgradeable(_tokenAddress).safeTransferFrom(address(this), _receiver, uint256(_did), _amount, '');
+        IERC1155Upgradeable nft = IERC1155Upgradeable(_tokenAddress);
+        nft.safeTransferFrom(address(this), _receiver, uint256(_did), _amount, '');
         emit Fulfilled(_agreementId, _tokenAddress, _did, _receiver, _id, _amount);
 
         return super.fulfill(
@@ -248,5 +249,50 @@ contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable
             ConditionStoreLibrary.ConditionState.Fulfilled
         );
     }
-    
+
+    bytes4 constant internal ERC1155_ACCEPTED = 0xf23a6e61; // bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"))
+    bytes4 constant internal ERC1155_BATCH_ACCEPTED = 0xbc197c81; // bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))
+
+    // solhint-disable-next-line
+    function onERC1155Received(
+        address, 
+        address, 
+        uint256, 
+        uint256, 
+        bytes calldata
+    ) 
+    external
+    override
+    pure
+    returns(bytes4) 
+    {
+        return ERC1155_ACCEPTED;
+    }
+
+    function onERC1155BatchReceived(
+        address, 
+        address, 
+        uint256[] calldata, 
+        uint256[] calldata, 
+        bytes calldata
+    ) 
+    external
+    override
+    pure
+    returns(bytes4) 
+    {
+        return ERC1155_BATCH_ACCEPTED;
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) 
+    external
+    override
+    pure 
+    returns (bool) 
+    {
+        return  interfaceId == 0x01ffc9a7 ||    // ERC165
+        interfaceId == 0x4e2312e0;      // ERC1155_ACCEPTED ^ ERC1155_BATCH_ACCEPTED;        
+    }
 }
