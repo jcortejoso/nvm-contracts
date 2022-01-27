@@ -5,6 +5,7 @@ const fs = require('fs')
 
 async function loadWallet({ makeWallet }) {
     const accounts = await web3.eth.getAccounts()
+    console.log('Account', accounts)
     let wallets = [
         { name: 'owner', account: accounts[0] },
         { name: 'upgrader', account: accounts[0] }

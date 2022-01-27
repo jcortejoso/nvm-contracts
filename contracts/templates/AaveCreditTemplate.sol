@@ -75,7 +75,6 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         address _transferConditionAddress
     )
     external
-    //address payable _escrowConditionAddress
     initializer
     {
         require(
