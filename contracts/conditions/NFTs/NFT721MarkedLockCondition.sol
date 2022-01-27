@@ -16,7 +16,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradea
  *
  * @dev Implementation of the NFT Lock Condition for ERC-721 based NFTs 
  */
-contract NFT721LockCondition is Condition, ReentrancyGuardUpgradeable, IERC721ReceiverUpgradeable {
+contract NFT721MarkedLockCondition is Condition, ReentrancyGuardUpgradeable, IERC721ReceiverUpgradeable {
     
     bytes32 constant public CONDITION_TYPE = keccak256('NFT721LockCondition');
     
