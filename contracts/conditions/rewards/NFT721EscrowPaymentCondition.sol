@@ -6,7 +6,7 @@ pragma solidity ^0.8.0;
 import './Reward.sol';
 import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 
 /**
@@ -19,7 +19,7 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
  *      can release reward if lock and release conditions
  *      are fulfilled.
  */
-contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
+contract NFT721EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
 
     bytes32 constant public CONDITION_TYPE = keccak256('NFTEscrowPayment');
 
@@ -210,13 +210,13 @@ contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable
             return _transferAndFulfillNFT(_agreementId, _did, id, _tokenAddress, _receiver, _amount);
 
         } else if (allAborted) {
-            
             return _transferAndFulfillNFT(_agreementId, _did, id, _tokenAddress, conditionStoreManager.getConditionCreatedBy(_lockCondition), _amount);
             
             
         } else {
             return conditionStoreManager.getConditionState(id);
         }
+
     }
 
     /**
@@ -240,7 +240,9 @@ contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable
     returns (ConditionStoreLibrary.ConditionState)
     {
         
-        IERC1155Upgradeable(_tokenAddress).safeTransferFrom(address(this), _receiver, uint256(_did), _amount, '');
+        if (_amount == 1) {
+            IERC721Upgradeable(_tokenAddress).safeTransferFrom(address(this), _receiver, uint256(_did));
+        }
         emit Fulfilled(_agreementId, _tokenAddress, _did, _receiver, _id, _amount);
 
         return super.fulfill(
