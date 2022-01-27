@@ -6,7 +6,7 @@ pragma solidity ^0.8.0;
 import './Reward.sol';
 import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 
 /**
@@ -21,16 +21,15 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
  */
 contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
 
-    using SafeERC20Upgradeable for IERC20Upgradeable;
-
-    bytes32 constant public CONDITION_TYPE = keccak256('EscrowPayment');
+    bytes32 constant public CONDITION_TYPE = keccak256('NFTEscrowPayment');
 
     event Fulfilled(
         bytes32 indexed _agreementId,
         address indexed _tokenAddress,
-        address[] _receivers,
+        bytes32 _did,
+        address _receivers,
         bytes32 _conditionId,
-        uint256[] _amounts
+        uint256 _amounts
     );
 
     event Received(
@@ -73,6 +72,7 @@ contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable
      * @param _did asset decentralized identifier               
      * @param _amounts token amounts to be locked/released
      * @param _receivers receiver's addresses
+     * @param _lockPaymentAddress lock payment contract address
      * @param _tokenAddress the ERC20 contract address to use during the payment 
      * @param _lockCondition lock condition identifier
      * @param _releaseConditions release condition identifier
@@ -80,26 +80,22 @@ contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable
      */
     function hashValues(
         bytes32 _did,
-        uint[3] memory _types,
-        uint256[][] memory _amounts,
-        address[][] memory _receivers,
-        address[] memory _tokenAddress,
-        bytes32[] memory _lockCondition,
+        uint256 _amounts,
+        address _receivers,
+        address _lockPaymentAddress,
+        address _tokenAddress,
+        bytes32 _lockCondition,
         bytes32[] memory _releaseConditions
     )
     public pure
     returns (bytes32)
     {
-        require(
-            _amounts.length == _receivers.length,
-            'Amounts and Receivers arguments have wrong length'
-        );
         return keccak256(
             abi.encode(
                 _did,
-                _types,
                 _amounts,
                 _receivers,
+                _lockPaymentAddress, 
                 _tokenAddress,
                 _lockCondition,
                 _releaseConditions
@@ -111,119 +107,34 @@ contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable
     * @notice hashValuesLockPayment generates the hash of condition inputs 
     *        with the following parameters
     * @param _did the asset decentralized identifier 
-    * @param _rewardAddress the contract address where the reward is locked       
-    * @param _tokenAddress the ERC20 contract address to use during the lock payment. 
+    * @param _lockAddress the contract address where the reward is locked       
+    * @param _nftContractAddress the ERC20 contract address to use during the lock payment. 
     *        If the address is 0x0 means we won't use a ERC20 but ETH for payment     
-    * @param _amounts token amounts to be locked/released
-    * @param _receivers receiver's addresses
+    * @param _amount token amounts to be locked/released
+    * @param _receiver receiver's addresses
     * @return bytes32 hash of all these values 
     */
     function hashValuesLockPayment(
         bytes32 _did,
-        address _rewardAddress,
-        address _tokenAddress,
-        uint256[] memory _amounts,
-        address[] memory _receivers
+        address _lockAddress,
+        address _nftContractAddress,
+        uint256 _amount,
+        address _receiver
     )
         public
         pure
         returns (bytes32)
     {
         return keccak256(abi.encode(
-            _did,
-            _rewardAddress,
-            _tokenAddress,
-            _amounts,
-            _receivers
+            _did, 
+            _lockAddress, 
+            _amount,
+            _receiver, 
+            _nftContractAddress
         ));
     }
-
-    function matchLockPayment(
-        bytes32 _agreementId,
-        bytes32 _did,
-        uint256[][] memory _amounts,
-        address[][] memory _receivers,
-        address[] memory _tokenAddress,
-        bytes32[] memory _lockConditions,
-        uint256 idx
-    )
-    internal
-    view
-    returns (bool)
-    {
-        return keccak256(
-            abi.encode(
-                _agreementId,
-                conditionStoreManager.getConditionTypeRef(_lockConditions[idx]),
-                hashValuesLockPayment(_did, address(this), _tokenAddress[idx], _amounts[idx], _receivers[idx])
-            )
-        ) == _lockConditions[idx];
-    }
-
-    function cancelPayments(
-        bytes32 _agreementId,
-        uint[3] memory _types,
-        uint256[][] memory _amounts,
-        address[] memory _tokenAddress,
-        bytes32[] memory _lockConditions,
-        bytes32 id
-    )
-    internal
-    returns (ConditionStoreLibrary.ConditionState)
-    {
-        for (uint256 i = 0; i < _types[0]; i++) {
-            // TODO: check that it was fulfilled
-            cancelPayment(_agreementId, _amounts, _tokenAddress, _lockConditions, i, id);
-        }
-
-        return super.fulfill(
-            id,
-            ConditionStoreLibrary.ConditionState.Fulfilled
-        );
-
-    }
-
-    function cancelPayment(
-        bytes32 _agreementId,
-        uint256[][] memory _amounts,
-        address[] memory _tokenAddress,
-        bytes32[] memory _lockConditions,
-        uint256 idx,
-        bytes32 id
-    )
-    internal {
-        uint256[] memory _totalAmounts = new uint256[](1);
-        _totalAmounts[0] = calculateTotalAmount(_amounts[idx]);
-        address[] memory _originalSender = new address[](1);
-        _originalSender[0] = conditionStoreManager.getConditionCreatedBy(_lockConditions[idx]);
-
-        if (_tokenAddress[idx] != address(0)) {
-            _transferAndFulfillERC20(_tokenAddress[idx], _originalSender, _totalAmounts);
-        } else {
-            _transferAndFulfillETH(_originalSender, _totalAmounts);
-        }
-        emit Fulfilled(_agreementId, _tokenAddress[idx], _originalSender, id, _totalAmounts);
-
-    }
-
-    function makePayment(
-        bytes32 _agreementId,
-        uint256[][] memory _amounts,
-        address[][] memory _receivers,
-        address[] memory _tokenAddress,
-        uint256 idx,
-        bytes32 id
-    )
-    internal {
-        if (_tokenAddress[idx] != address(0)) {
-            _transferAndFulfillERC20(_tokenAddress[idx], _receivers[idx], _amounts[idx]);
-        } else {
-            _transferAndFulfillETH(_receivers[idx], _amounts[idx]);
-        }
-        emit Fulfilled(_agreementId, _tokenAddress[idx], _receivers[idx], id, _amounts[idx]);
-    }
-
-    /*
+    
+    /**
      * @notice fulfill escrow reward condition
      * @dev fulfill method checks whether the lock and 
      *      release conditions are fulfilled in order to 
@@ -231,80 +142,44 @@ contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable
      *      respectively.
      * @param _agreementId agreement identifier
      * @param _did asset decentralized identifier          
-     * @param _amounts token amounts to be locked/released
-     * @param _receivers receiver's address
+     * @param _amount token amounts to be locked/released
+     * @param _receiver receiver's address
+     * @param _lockPaymentAddress lock payment contract address
      * @param _tokenAddress the ERC20 contract address to use during the payment
      * @param _lockCondition lock condition identifier
      * @param _releaseConditions release condition identifier
      * @return condition state (Fulfilled/Aborted)
      */
     function fulfill(
-        /*
-        uint256[] memory _nft721Amounts,
-        address[] memory _nft721Receivers,
-        address[] memory _nft721TokenAddress,
-        bytes32[] memory _nft721LockConditions,
-        uint256[] memory _nftAmounts,
-        address[] memory _nftReceivers,
-        address[] memory _nftTokenAddress,
-        bytes32[] memory _nftLockConditions,
-        */
         bytes32 _agreementId,
         bytes32 _did,
-        uint[3] memory _types,
-        uint256[][] memory _amounts,
-        address[][] memory _receivers,
-        address[] memory _tokenAddress,
-        bytes32[] memory _lockConditions,
+        uint256 _amount,
+        address _receiver,
+        address _lockPaymentAddress,
+        address _tokenAddress,
+        bytes32 _lockCondition,
         bytes32[] memory _releaseConditions
     )
     external
     nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
-        bytes32 id = generateId(
-            _agreementId,
-            hashValues(
-                _did,
-                _types,
-                _amounts,
-                _receivers,
-                _tokenAddress,
-                _lockConditions,
-                _releaseConditions
+
+        require(keccak256(
+            abi.encode(
+                _agreementId,
+                conditionStoreManager.getConditionTypeRef(_lockCondition),
+                hashValuesLockPayment(_did, _lockPaymentAddress, _tokenAddress, _amount, _receiver)
             )
-        );        
+        ) == _lockCondition,
+            'LockCondition ID does not match'
+        );
         
-        // Check that all lock conditions are fulfilled or if one of them is aborted
-        bool lockFulfilled = true;
-        bool lockAborted = false;
-        bool lockFinished = true;
-
-        for (uint i = 0; i < _lockConditions.length; i++) {
-            ConditionStoreLibrary.ConditionState cur = conditionStoreManager.getConditionState(_lockConditions[i]);
-
-            if (cur != ConditionStoreLibrary.ConditionState.Fulfilled) {
-                lockFulfilled = false;
-            }
-            if (cur != ConditionStoreLibrary.ConditionState.Fulfilled && cur != ConditionStoreLibrary.ConditionState.Aborted) {
-                lockFinished = false;
-            }
-            if (cur == ConditionStoreLibrary.ConditionState.Aborted) {
-                lockAborted = true;
-            }
-        }
-
-        if (lockAborted && lockFinished) {
-            return cancelPayments(_agreementId, _types, _amounts, _tokenAddress, _lockConditions, id);
-        }
-
-        // Check that lock conditions match this escrow
-        for (uint256 i = 0; i < _types[0]; i++) {
-            require(
-                matchLockPayment(_agreementId, _did, _amounts, _receivers, _tokenAddress, _lockConditions, i),
-                'Lock payment does not match'
-            );
-        }
+        require(
+            conditionStoreManager.getConditionState(_lockCondition) ==
+            ConditionStoreLibrary.ConditionState.Fulfilled,
+            'LockCondition needs to be Fulfilled'
+        );
 
         bool allFulfilled = true;
         bool allAborted = true;
@@ -318,77 +193,65 @@ contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable
             }
         }
         
+        bytes32 id = generateId(
+            _agreementId,
+            hashValues(
+                _did,
+                _amount,
+                _receiver,
+                _lockPaymentAddress,
+                _tokenAddress,
+                _lockCondition,
+                _releaseConditions
+            )
+        );        
+        
+        ConditionStoreLibrary.ConditionState state;
         if (allFulfilled) {
-            for (uint256 i = 0; i < _types[0]; i++) {
-                makePayment(_agreementId, _amounts, _receivers, _tokenAddress, i, id);
-            }
+            state = _transferAndFulfillNFT(_did, id, _tokenAddress, _receiver, _amount);
+            emit Fulfilled(_agreementId, _tokenAddress, _did, _receiver, id, _amount);
 
-            return super.fulfill(
-                id,
-                ConditionStoreLibrary.ConditionState.Fulfilled
-            );
         } else if (allAborted) {
-            return cancelPayments(_agreementId, _types, _amounts, _tokenAddress, _lockConditions, id);
+            
+            address _originalSender = conditionStoreManager.getConditionCreatedBy(_lockCondition);
+            
+            state = _transferAndFulfillNFT(_did, id, _tokenAddress, _originalSender, _amount);
+            
+            emit Fulfilled(_agreementId, _tokenAddress, _did, _originalSender, id, _amount);
+            
         } else {
             return conditionStoreManager.getConditionState(id);
         }
+
+        return state;
     }
 
     /**
     * @notice _transferAndFulfill transfer ERC20 tokens and 
     *       fulfill the condition
+    * @param _id condition identifier
     * @param _tokenAddress the ERC20 contract address to use during the payment    
-    * @param _receivers receiver's address
-    * @param _amounts token amount to be locked/released
+    * @param _receiver receiver's address
+    * @param _amount token amount to be locked/released
+    * @return condition state (Fulfilled/Aborted)
     */
-    function _transferAndFulfillERC20(
+    function _transferAndFulfillNFT(
+        bytes32 _id,
+        bytes32 _did,
         address _tokenAddress,
-        address[] memory _receivers,
-        uint256[] memory _amounts
+        address _receiver,
+        uint256 _amount
     )
     private
+    returns (ConditionStoreLibrary.ConditionState)
     {
         
-        IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
-        
-        for(uint i = 0; i < _receivers.length; i++)    {
-            require(
-                _receivers[i] != address(this),
-                'Escrow contract can not be a receiver'
-            );
-            token.safeTransfer(_receivers[i], _amounts[i]);
-        }
+        IERC1155Upgradeable(_tokenAddress).safeTransferFrom(address(this), _receiver, uint256(_did), _amount, '');
 
+        return super.fulfill(
+            _id,
+            ConditionStoreLibrary.ConditionState.Fulfilled
+        );
     }
-
-    /**
-    * @notice _transferAndFulfill transfer ETH and 
-    *       fulfill the condition
-    * @param _receivers receiver's address
-    * @param _amounts token amount to be locked/released
-    */
-    function _transferAndFulfillETH(
-        address[] memory _receivers,
-        uint256[] memory _amounts
-    )
-    private
-    {
-        for(uint i = 0; i < _receivers.length; i++)    {
-            require(
-                _receivers[i] != address(this),
-                'Escrow contract can not be a receiver'
-            );
-            
-            require(
-                address(this).balance >= _amounts[i],
-                'Contract balance too low'
-            );
-            
-            // solhint-disable-next-line
-            (bool sent,) = _receivers[i].call{value: _amounts[i]}('');
-            require(sent, 'Failed to send Ether');
-        }
-
-    }    
     
 }

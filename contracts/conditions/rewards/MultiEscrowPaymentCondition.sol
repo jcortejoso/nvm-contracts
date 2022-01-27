@@ -23,7 +23,7 @@ contract MultiEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeab
 
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
-    bytes32 constant public CONDITION_TYPE = keccak256('EscrowPayment');
+    bytes32 constant public CONDITION_TYPE = keccak256('MultiEscrowPayment');
 
     event Fulfilled(
         bytes32 indexed _agreementId,
