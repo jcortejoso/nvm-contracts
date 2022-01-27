@@ -78,6 +78,10 @@ contract('EscrowPaymentCondition contract', (accounts) => {
                 conditionStoreManager.address,
                 { from: deployer }
             )
+            await conditionStoreManager.grantProxyRole(
+                escrowPayment.address,
+                { from: owner }
+            )
         }
 
         return {
