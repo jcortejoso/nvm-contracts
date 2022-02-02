@@ -182,7 +182,7 @@ contract NFTEscrowPaymentCondition is Reward, INFTEscrow, Common, ReentrancyGuar
                 allFulfilled = false;
             }
             if (cur == ConditionStoreLibrary.ConditionState.Aborted) {
-                someAborted = false;
+                someAborted = true;
             }
         }
 

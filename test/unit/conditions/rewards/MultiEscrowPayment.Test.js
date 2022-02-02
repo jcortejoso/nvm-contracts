@@ -111,26 +111,41 @@ function tokenTokenWrapper(contract) {
     contract.mintWrap = async (_registry, target, amount, from) => {
         return contract.mint(target, amount, { from })
     }
+    contract.makeDID = (sender, registry) => {
+        return testUtils.generateId()
+    }
+    contract.approveWrap = (addr, amount, args) => {
+        return contract.approve(addr, amount, args)
+    }
     return contract
 }
 
 function nftTokenWrapper(contract) {
-    contract.initWrap = async (_a, _b, registry, owner) => {
+    contract.initWrap = async (owner, _b, registry) => {
         await contract.initialize('')
         await contract.addMinter(registry.address)
         await contract.setProxyApproval(registry.address, true)
-        const didSeed = testUtils.generateId()
-        const checksum = testUtils.generateId()
-        contract.did = await registry.hashDID(didSeed, artist)
-        await registry.registerMintableDID(
-            didSeed, checksum, [], url, 1000, 0, constants.activities.GENERATED, '', { from: owner }
-        )
     }
     contract.getBalance = async (addr) => {
+        if (!contract.did) {
+            return 0
+        }
         return web3.utils.toDecimal(await contract.balanceOf(addr, contract.did))
     }
-    contract.mintWrap = async (registry, amount, from) => {
-        await registry.mint(contract.did, amount, { from })
+    contract.makeDID = async (sender, registry) => {
+        const didSeed = testUtils.generateId()
+        const checksum = testUtils.generateId()
+        contract.did = await registry.hashDID(didSeed, sender)
+        await registry.registerMintableDID(
+            didSeed, checksum, [], '', 1000, 0, constants.activities.GENERATED, '', { from: sender }
+        )
+        return contract.did
+    }
+    contract.mintWrap = async (registry, target, amount, from) => {
+        await registry.mint(contract.did, amount, { from: target })
+    }
+    contract.approveWrap = (addr, amount, args) => {
+        return contract.setApprovalForAll(addr, true, args)
     }
     return contract
 }
@@ -233,7 +248,6 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
         describe('fulfill with two release conditions', () => {
             it('should fulfill if both are fulfilled', async () => {
                 const agreementId = testUtils.generateId()
-                const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [accounts[1]]
                 const amounts = [amount1]
@@ -242,6 +256,7 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                 const totalAmount = amounts[0] + amounts2[0]
                 const balanceBefore = await token.getBalance(escrowPayment.address)
 
+                const did = await token.makeDID(sender, didRegistry)
                 const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
                 const hashValuesLock2 = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts2, receivers2)
@@ -273,7 +288,7 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     escrowPayment.address)
 
                 await token.mintWrap(didRegistry, sender, totalAmount, owner)
-                await token.approve(
+                await token.approveWrap(
                     lockPaymentCondition.address,
                     totalAmount,
                     { from: sender })
@@ -304,8 +319,8 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
 
                 await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts2, receivers2)
 
-                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(lockPaymentCondition.address), 0)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore + totalAmount)
 
                 const result = await escrowPayment.fulfill(
                     agreementId,
@@ -326,25 +341,31 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                 const eventArgs = testUtils.getEventArgsFromTx(result, 'Fulfilled')
                 expect(eventArgs._agreementId).to.equal(agreementId)
                 expect(eventArgs._conditionId).to.equal(escrowConditionId)
-                expect(eventArgs._receivers[0]).to.equal(receivers[0])
-                expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
+                if (nft) {
+                    expect(eventArgs._receivers).to.equal(receivers[0])
+                    expect(eventArgs._amounts.toNumber()).to.equal(amounts[0])
+                } else {
+                    expect(eventArgs._receivers[0]).to.equal(receivers[0])
+                    expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
+                }
 
-                assert.strictEqual(await getBalance(token, escrowPayment.address), amounts2[0])
-                assert.strictEqual(await getBalance(token, receivers[0]), amounts[0])
+                assert.strictEqual(await token.getBalance(escrowPayment.address), amounts2[0])
+                assert.strictEqual(await token.getBalance(receivers[0]), amounts[0])
             })
 
             it('should cancel if conditions were aborted', async () => {
                 const agreementId = testUtils.generateId()
-                const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [accounts[1]]
                 const amounts = [amount1]
                 const receivers2 = [accounts[2]]
                 const amounts2 = [amount2]
                 const totalAmount = amounts[0] + amounts2[0]
-                const balanceBefore = await getBalance(token, escrowPayment.address)
-                const senderBefore = await getBalance(token, sender)
-                const receiverBefore = await getBalance(token, receivers[0])
+                const did = await token.makeDID(sender, didRegistry)
+
+                const balanceBefore = await token.getBalance(escrowPayment.address)
+                const senderBefore = await token.getBalance(sender)
+                const receiverBefore = await token.getBalance(receivers[0])
 
                 const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
@@ -380,13 +401,13 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     escrowConditionId,
                     escrowPayment.address)
 
-                await token.mint(sender, totalAmount, { from: owner })
-                await token.approve(
+                await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                await token.approveWrap(
                     lockPaymentCondition.address,
                     totalAmount,
                     { from: sender })
 
-                await assert.isRejected(escrowPayment.fulfill(
+                await assert.isRejected(escrowPayment.fulfillWrap(
                     agreementId,
                     did,
                     amounts,
@@ -412,8 +433,8 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
 
                 await lockPaymentCondition.abortByTimeOut(conditionLockId2)
 
-                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + amounts[0])
+                assert.strictEqual(await token.getBalance(lockPaymentCondition.address), 0)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore + amounts[0])
 
                 const result = await escrowPayment.fulfillWrap(
                     agreementId,
@@ -434,12 +455,17 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                 const eventArgs = testUtils.getEventArgsFromTx(result, 'Fulfilled')
                 expect(eventArgs._agreementId).to.equal(agreementId)
                 expect(eventArgs._conditionId).to.equal(escrowConditionId)
-                expect(eventArgs._receivers[0]).to.equal(sender)
-                expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
+                if (nft) {
+                    expect(eventArgs._receivers).to.equal(sender)
+                    expect(eventArgs._amounts.toNumber()).to.equal(amounts[0])
+                } else {
+                    expect(eventArgs._receivers[0]).to.equal(sender)
+                    expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
+                }
 
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore)
-                assert.strictEqual(await getBalance(token, receivers[0]), receiverBefore)
-                assert.strictEqual(await getBalance(token, sender), senderBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore)
+                assert.strictEqual(await token.getBalance(receivers[0]), receiverBefore)
+                assert.strictEqual(await token.getBalance(sender), senderBefore + totalAmount)
             })
         })
     })
@@ -447,5 +473,5 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
 
 testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, NeverminedToken, false, 10, 12)
 testMultiEscrow(NFTEscrowPaymentCondition, NFTMarkedLockCondition, NFT, true, 10, 12)
-testMultiEscrow(NFT721EscrowPaymentCondition, NFT721MarkedLockCondition, NFT721, true, 1, 0)
+// testMultiEscrow(NFT721EscrowPaymentCondition, NFT721MarkedLockCondition, NFT721, true, 1, 0)
 
