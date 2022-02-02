@@ -18,288 +18,293 @@ const constants = require('../../../helpers/constants.js')
 const { getBalance } = require('../../../helpers/getBalance.js')
 const testUtils = require('../../../helpers/utils.js')
 
-contract('MultiEscrowPaymentCondition contract', (accounts) => {
-    let conditionStoreManager
-    let token
-    let lockPaymentCondition
-    let escrowPayment
-    let didRegistry
+function testMultiEscrow(EscrowPaymentCondition) {
+    contract('MultiEscrowPaymentCondition contract', (accounts) => {
+        let conditionStoreManager
+        let token
+        let lockPaymentCondition
+        let escrowPayment
+        let didRegistry
 
-    const createRole = accounts[0]
-    const owner = accounts[9]
-    const deployer = accounts[8]
+        const createRole = accounts[0]
+        const owner = accounts[9]
+        const deployer = accounts[8]
 
-    before(async () => {
-        const epochLibrary = await EpochLibrary.new()
-        await ConditionStoreManager.link(epochLibrary)
-        const didRegistryLibrary = await DIDRegistryLibrary.new()
-        await DIDRegistry.link(didRegistryLibrary)
-    })
+        before(async () => {
+            const epochLibrary = await EpochLibrary.new()
+            await ConditionStoreManager.link(epochLibrary)
+            const didRegistryLibrary = await DIDRegistryLibrary.new()
+            await DIDRegistry.link(didRegistryLibrary)
+        })
 
-    beforeEach(async () => {
-        await setupTest()
-    })
+        beforeEach(async () => {
+            await setupTest()
+        })
 
-    async function setupTest({
-        conditionId = testUtils.generateId(),
-        conditionType = testUtils.generateId()
-    } = {}) {
-        if (!escrowPayment) {
-            conditionStoreManager = await ConditionStoreManager.new()
-            await conditionStoreManager.initialize(
-                owner,
-                { from: owner }
-            )
+        async function setupTest({
+            conditionId = testUtils.generateId(),
+            conditionType = testUtils.generateId()
+        } = {}) {
+            if (!escrowPayment) {
+                conditionStoreManager = await ConditionStoreManager.new()
+                await conditionStoreManager.initialize(
+                    owner,
+                    { from: owner }
+                )
 
-            await conditionStoreManager.delegateCreateRole(
+                await conditionStoreManager.delegateCreateRole(
+                    createRole,
+                    { from: owner }
+                )
+
+                didRegistry = await DIDRegistry.new()
+                await didRegistry.initialize(owner, constants.address.zero, constants.address.zero)
+
+                token = await NeverminedToken.new()
+                await token.initialize(owner, owner)
+
+                lockPaymentCondition = await LockPaymentCondition.new()
+                await lockPaymentCondition.initialize(
+                    owner,
+                    conditionStoreManager.address,
+                    didRegistry.address,
+                    { from: deployer }
+                )
+
+                escrowPayment = await EscrowPaymentCondition.new()
+                await escrowPayment.initialize(
+                    owner,
+                    conditionStoreManager.address,
+                    { from: deployer }
+                )
+            }
+
+            return {
+                escrowPayment,
+                lockPaymentCondition,
+                token,
+                conditionStoreManager,
+                conditionId,
+                conditionType,
                 createRole,
-                { from: owner }
-            )
-
-            didRegistry = await DIDRegistry.new()
-            await didRegistry.initialize(owner, constants.address.zero, constants.address.zero)
-
-            token = await NeverminedToken.new()
-            await token.initialize(owner, owner)
-
-            lockPaymentCondition = await LockPaymentCondition.new()
-            await lockPaymentCondition.initialize(
-                owner,
-                conditionStoreManager.address,
-                didRegistry.address,
-                { from: deployer }
-            )
-
-            escrowPayment = await EscrowPaymentCondition.new()
-            await escrowPayment.initialize(
-                owner,
-                conditionStoreManager.address,
-                { from: deployer }
-            )
+                owner
+            }
         }
 
-        return {
-            escrowPayment,
-            lockPaymentCondition,
-            token,
-            conditionStoreManager,
-            conditionId,
-            conditionType,
-            createRole,
-            owner
-        }
-    }
+        describe('fulfill with two release conditions', () => {
+            it('should fulfill if both are fulfilled', async () => {
+                const agreementId = testUtils.generateId()
+                const did = testUtils.generateId()
+                const sender = accounts[0]
+                const receivers = [accounts[1]]
+                const amounts = [10]
+                const receivers2 = [accounts[2]]
+                const amounts2 = [12]
+                const totalAmount = amounts[0] + amounts2[0]
+                const balanceBefore = await getBalance(token, escrowPayment.address)
 
-    describe('fulfill with two release conditions', () => {
-        it('should fulfill if both are fulfilled', async () => {
-            const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
-            const sender = accounts[0]
-            const receivers = [accounts[1]]
-            const amounts = [10]
-            const receivers2 = [accounts[2]]
-            const amounts2 = [12]
-            const totalAmount = amounts[0] + amounts2[0]
-            const balanceBefore = await getBalance(token, escrowPayment.address)
+                const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+                const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
+                const hashValuesLock2 = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts2, receivers2)
+                const conditionLockId2 = await lockPaymentCondition.generateId(agreementId, hashValuesLock2)
 
-            const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
-            const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
-            const hashValuesLock2 = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts2, receivers2)
-            const conditionLockId2 = await lockPaymentCondition.generateId(agreementId, hashValuesLock2)
+                await conditionStoreManager.createCondition(
+                    conditionLockId,
+                    lockPaymentCondition.address)
 
-            await conditionStoreManager.createCondition(
-                conditionLockId,
-                lockPaymentCondition.address)
+                await conditionStoreManager.createCondition(
+                    conditionLockId2,
+                    lockPaymentCondition.address)
 
-            await conditionStoreManager.createCondition(
-                conditionLockId2,
-                lockPaymentCondition.address)
+                const lockConditionId = conditionLockId
 
-            const lockConditionId = conditionLockId
+                const hashValues = await escrowPayment.hashValues(
+                    did,
+                    amounts,
+                    receivers,
+                    escrowPayment.address,
+                    token.address,
+                    lockConditionId,
+                    [conditionLockId, conditionLockId2])
 
-            const hashValues = await escrowPayment.hashValues(
-                did,
-                amounts,
-                receivers,
-                escrowPayment.address,
-                token.address,
-                lockConditionId,
-                [conditionLockId, conditionLockId2])
+                const escrowConditionId = await escrowPayment.generateId(agreementId, hashValues)
 
-            const escrowConditionId = await escrowPayment.generateId(agreementId, hashValues)
+                await conditionStoreManager.createCondition(
+                    escrowConditionId,
+                    escrowPayment.address)
 
-            await conditionStoreManager.createCondition(
-                escrowConditionId,
-                escrowPayment.address)
+                await token.mint(sender, totalAmount, { from: owner })
+                await token.approve(
+                    lockPaymentCondition.address,
+                    totalAmount,
+                    { from: sender })
 
-            await token.mint(sender, totalAmount, { from: owner })
-            await token.approve(
-                lockPaymentCondition.address,
-                totalAmount,
-                { from: sender })
+                await assert.isRejected(escrowPayment.fulfill(
+                    agreementId,
+                    did,
+                    amounts,
+                    receivers,
+                    escrowPayment.address,
+                    token.address,
+                    lockConditionId,
+                    [conditionLockId, conditionLockId2])
+                )
 
-            await assert.isRejected(escrowPayment.fulfill(
-                agreementId,
-                did,
-                amounts,
-                receivers,
-                escrowPayment.address,
-                token.address,
-                lockConditionId,
-                [conditionLockId, conditionLockId2])
-            )
+                await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
-            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
+                await assert.isRejected(escrowPayment.fulfill(
+                    agreementId,
+                    did,
+                    amounts,
+                    receivers,
+                    escrowPayment.address,
+                    token.address,
+                    lockConditionId,
+                    [conditionLockId, conditionLockId2])
+                )
 
-            await assert.isRejected(escrowPayment.fulfill(
-                agreementId,
-                did,
-                amounts,
-                receivers,
-                escrowPayment.address,
-                token.address,
-                lockConditionId,
-                [conditionLockId, conditionLockId2])
-            )
+                await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts2, receivers2)
 
-            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts2, receivers2)
+                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
+                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
 
-            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
+                const result = await escrowPayment.fulfill(
+                    agreementId,
+                    did,
+                    amounts,
+                    receivers,
+                    escrowPayment.address,
+                    token.address,
+                    lockConditionId,
+                    [conditionLockId, conditionLockId2])
 
-            const result = await escrowPayment.fulfill(
-                agreementId,
-                did,
-                amounts,
-                receivers,
-                escrowPayment.address,
-                token.address,
-                lockConditionId,
-                [conditionLockId, conditionLockId2])
+                assert.strictEqual(
+                    (await conditionStoreManager.getConditionState(escrowConditionId)).toNumber(),
+                    constants.condition.state.fulfilled
+                )
 
-            assert.strictEqual(
-                (await conditionStoreManager.getConditionState(escrowConditionId)).toNumber(),
-                constants.condition.state.fulfilled
-            )
+                testUtils.assertEmitted(result, 1, 'Fulfilled')
+                const eventArgs = testUtils.getEventArgsFromTx(result, 'Fulfilled')
+                expect(eventArgs._agreementId).to.equal(agreementId)
+                expect(eventArgs._conditionId).to.equal(escrowConditionId)
+                expect(eventArgs._receivers[0]).to.equal(receivers[0])
+                expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
 
-            testUtils.assertEmitted(result, 1, 'Fulfilled')
-            const eventArgs = testUtils.getEventArgsFromTx(result, 'Fulfilled')
-            expect(eventArgs._agreementId).to.equal(agreementId)
-            expect(eventArgs._conditionId).to.equal(escrowConditionId)
-            expect(eventArgs._receivers[0]).to.equal(receivers[0])
-            expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
+                assert.strictEqual(await getBalance(token, escrowPayment.address), amounts2[0])
+                assert.strictEqual(await getBalance(token, receivers[0]), amounts[0])
+            })
 
-            assert.strictEqual(await getBalance(token, escrowPayment.address), amounts2[0])
-            assert.strictEqual(await getBalance(token, receivers[0]), amounts[0])
-        })
+            it('should cancel if conditions were aborted', async () => {
+                const agreementId = testUtils.generateId()
+                const did = testUtils.generateId()
+                const sender = accounts[0]
+                const receivers = [accounts[1]]
+                const amounts = [10]
+                const receivers2 = [accounts[2]]
+                const amounts2 = [12]
+                const totalAmount = amounts[0] + amounts2[0]
+                const balanceBefore = await getBalance(token, escrowPayment.address)
+                const senderBefore = await getBalance(token, sender)
+                const receiverBefore = await getBalance(token, receivers[0])
 
-        it('should cancel if conditions were aborted', async () => {
-            const agreementId = testUtils.generateId()
-            const did = testUtils.generateId()
-            const sender = accounts[0]
-            const receivers = [accounts[1]]
-            const amounts = [10]
-            const receivers2 = [accounts[2]]
-            const amounts2 = [12]
-            const totalAmount = amounts[0] + amounts2[0]
-            const balanceBefore = await getBalance(token, escrowPayment.address)
-            const senderBefore = await getBalance(token, sender)
-            const receiverBefore = await getBalance(token, receivers[0])
+                const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+                const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
+                const hashValuesLock2 = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts2, receivers2)
+                const conditionLockId2 = await lockPaymentCondition.generateId(agreementId, hashValuesLock2)
 
-            const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
-            const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
-            const hashValuesLock2 = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts2, receivers2)
-            const conditionLockId2 = await lockPaymentCondition.generateId(agreementId, hashValuesLock2)
+                await conditionStoreManager.createCondition(
+                    conditionLockId,
+                    lockPaymentCondition.address)
 
-            await conditionStoreManager.createCondition(
-                conditionLockId,
-                lockPaymentCondition.address)
+                await conditionStoreManager.createCondition(
+                    conditionLockId2,
+                    lockPaymentCondition.address,
+                    1,
+                    2,
+                    sender
+                )
 
-            await conditionStoreManager.createCondition(
-                conditionLockId2,
-                lockPaymentCondition.address,
-                1,
-                2,
-                sender
-            )
+                const lockConditionId = conditionLockId
 
-            const lockConditionId = conditionLockId
+                const hashValues = await escrowPayment.hashValues(
+                    did,
+                    amounts,
+                    receivers,
+                    escrowPayment.address,
+                    token.address,
+                    lockConditionId,
+                    [conditionLockId, conditionLockId2])
 
-            const hashValues = await escrowPayment.hashValues(
-                did,
-                amounts,
-                receivers,
-                escrowPayment.address,
-                token.address,
-                lockConditionId,
-                [conditionLockId, conditionLockId2])
+                const escrowConditionId = await escrowPayment.generateId(agreementId, hashValues)
 
-            const escrowConditionId = await escrowPayment.generateId(agreementId, hashValues)
+                await conditionStoreManager.createCondition(
+                    escrowConditionId,
+                    escrowPayment.address)
 
-            await conditionStoreManager.createCondition(
-                escrowConditionId,
-                escrowPayment.address)
+                await token.mint(sender, totalAmount, { from: owner })
+                await token.approve(
+                    lockPaymentCondition.address,
+                    totalAmount,
+                    { from: sender })
 
-            await token.mint(sender, totalAmount, { from: owner })
-            await token.approve(
-                lockPaymentCondition.address,
-                totalAmount,
-                { from: sender })
+                await assert.isRejected(escrowPayment.fulfill(
+                    agreementId,
+                    did,
+                    amounts,
+                    receivers,
+                    escrowPayment.address,
+                    token.address,
+                    lockConditionId,
+                    [conditionLockId, conditionLockId2])
+                )
 
-            await assert.isRejected(escrowPayment.fulfill(
-                agreementId,
-                did,
-                amounts,
-                receivers,
-                escrowPayment.address,
-                token.address,
-                lockConditionId,
-                [conditionLockId, conditionLockId2])
-            )
+                await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
-            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
+                await assert.isRejected(escrowPayment.fulfill(
+                    agreementId,
+                    did,
+                    amounts,
+                    receivers,
+                    escrowPayment.address,
+                    token.address,
+                    lockConditionId,
+                    [conditionLockId, conditionLockId2])
+                )
 
-            await assert.isRejected(escrowPayment.fulfill(
-                agreementId,
-                did,
-                amounts,
-                receivers,
-                escrowPayment.address,
-                token.address,
-                lockConditionId,
-                [conditionLockId, conditionLockId2])
-            )
+                await lockPaymentCondition.abortByTimeOut(conditionLockId2)
 
-            await lockPaymentCondition.abortByTimeOut(conditionLockId2)
+                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
+                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + amounts[0])
 
-            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + amounts[0])
+                const result = await escrowPayment.fulfill(
+                    agreementId,
+                    did,
+                    amounts,
+                    receivers,
+                    escrowPayment.address,
+                    token.address,
+                    lockConditionId,
+                    [conditionLockId, conditionLockId2])
 
-            const result = await escrowPayment.fulfill(
-                agreementId,
-                did,
-                amounts,
-                receivers,
-                escrowPayment.address,
-                token.address,
-                lockConditionId,
-                [conditionLockId, conditionLockId2])
+                assert.strictEqual(
+                    (await conditionStoreManager.getConditionState(escrowConditionId)).toNumber(),
+                    constants.condition.state.fulfilled
+                )
 
-            assert.strictEqual(
-                (await conditionStoreManager.getConditionState(escrowConditionId)).toNumber(),
-                constants.condition.state.fulfilled
-            )
+                testUtils.assertEmitted(result, 1, 'Fulfilled')
+                const eventArgs = testUtils.getEventArgsFromTx(result, 'Fulfilled')
+                expect(eventArgs._agreementId).to.equal(agreementId)
+                expect(eventArgs._conditionId).to.equal(escrowConditionId)
+                expect(eventArgs._receivers[0]).to.equal(sender)
+                expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
 
-            testUtils.assertEmitted(result, 1, 'Fulfilled')
-            const eventArgs = testUtils.getEventArgsFromTx(result, 'Fulfilled')
-            expect(eventArgs._agreementId).to.equal(agreementId)
-            expect(eventArgs._conditionId).to.equal(escrowConditionId)
-            expect(eventArgs._receivers[0]).to.equal(sender)
-            expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
-
-            assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore)
-            assert.strictEqual(await getBalance(token, receivers[0]), receiverBefore)
-            assert.strictEqual(await getBalance(token, sender), senderBefore + totalAmount)
+                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore)
+                assert.strictEqual(await getBalance(token, receivers[0]), receiverBefore)
+                assert.strictEqual(await getBalance(token, sender), senderBefore + totalAmount)
+            })
         })
     })
-})
+}
+
+testMultiEscrow(EscrowPaymentCondition)
+
