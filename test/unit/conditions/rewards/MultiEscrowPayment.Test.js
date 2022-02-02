@@ -121,7 +121,7 @@ function nftTokenWrapper(contract) {
         await contract.setProxyApproval(registry.address, true)
         const didSeed = testUtils.generateId()
         const checksum = testUtils.generateId()
-        contract.did = await didRegistry.hashDID(didSeed, artist)
+        contract.did = await registry.hashDID(didSeed, artist)
         await registry.registerMintableDID(
             didSeed, checksum, [], url, 1000, 0, constants.activities.GENERATED, '', { from: owner }
         )
