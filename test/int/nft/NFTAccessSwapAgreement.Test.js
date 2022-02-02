@@ -25,8 +25,6 @@ const F = new ZqField(Scalar.fromString('218882428718392752222464057452572750885
 const snarkjs = require('snarkjs')
 const { unstringifyBigInts } = require('ffjavascript').utils
 
-const { getBalance } = require('../../helpers/getBalance.js')
-
 contract('NFT Sales with Access Proof Template integration test', (accounts) => {
     const didSeed = testUtils.generateId()
     const checksum = testUtils.generateId()
@@ -66,7 +64,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
         } = await deployManagers(
             deployer,
             owner
-        ));
+        ))
 
         token = nft;
 
