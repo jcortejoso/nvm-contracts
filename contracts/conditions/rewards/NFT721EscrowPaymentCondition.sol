@@ -9,7 +9,7 @@ import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-
+import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol';
 /**
  * @title Escrow Payment Condition
  * @author Keyko
@@ -20,7 +20,7 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
  *      can release reward if lock and release conditions
  *      are fulfilled.
  */
-contract NFT721EscrowPaymentCondition is Reward, INFTEscrow, Common, ReentrancyGuardUpgradeable {
+contract NFT721EscrowPaymentCondition is Reward, INFTEscrow, Common, IERC721ReceiverUpgradeable, ReentrancyGuardUpgradeable {
 
     bytes32 constant public CONDITION_TYPE = keccak256('NFTEscrowPayment');
 
@@ -242,4 +242,17 @@ contract NFT721EscrowPaymentCondition is Reward, INFTEscrow, Common, ReentrancyG
         );
     }
     
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) 
+    public 
+    virtual 
+    override 
+    returns (bytes4) 
+    {
+        return this.onERC721Received.selector;
+    }
 }
