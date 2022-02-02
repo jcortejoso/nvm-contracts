@@ -29,6 +29,15 @@ function tokenWrapper(contract) {
     contract.fulfillWrap = (agreementId, did, escrowPaymentAddress, tokenAddress, amounts, receivers) => {
         return contract.fulfill(agreementId, did, escrowPaymentAddress, tokenAddress, amounts, receivers)
     }
+    contract.initWrap = (owner, conditionStoreManagerAddress, _didRegistryAddress, deployer) => {
+        return contract.initialize(
+            owner,
+            conditionStoreManagerAddress,
+            didRegistryAddress,
+            { from: deployer }
+        )
+    }
+
     return contract
 }
 
@@ -39,6 +48,13 @@ function nftWrapper(contract) {
     contract.fulfillWrap = (agreementId, did, escrowPaymentAddress, tokenAddress, amounts, receivers) => {
         return lockPaymentCondition.fulfill(agreementId, did, escrowPaymentAddress, amounts[0], receivers[0], tokenAddress)
     }
+    contract.initWrap = (owner, conditionStoreManagerAddress, _didRegistryAddress, deployer) => {
+        return contract.initialize(
+            owner,
+            conditionStoreManagerAddress,
+            { from: deployer }
+        )
+    }
     return contract
 }
 
@@ -46,22 +62,7 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, nft) {
     contract('MultiEscrowPaymentCondition contract', (accounts) => {
 
         const single = nft ? (a => a[0]) : (a => a)
-
-        function tokenLockHash(lockPaymentCondition, did, escrowPaymentAddress, tokenAddress, amounts, receivers) {
-            return lockPaymentCondition.hashValues(did, escrowPaymentAddress, tokenAddress, amounts, receivers)
-        }
-        function nftLockHash(lockPaymentCondition, did, escrowPaymentAddress, tokenAddress, amounts, receivers) {
-            return lockPaymentCondition.hashValues(did, escrowPaymentAddress, amounts[0], receivers[0], tokenAddress)
-        }
-        const lockHash = nft ? nftLockHash : tokenLockHash
-
-        function tokenLockFulfill(lockPaymentCondition, agreementId, did, escrowPaymentAddress, tokenAddress, amounts, receivers) {
-            return lockPaymentCondition.fulfill(agreementId, did, escrowPaymentAddress, tokenAddress, amounts, receivers)
-        }
-        function nftLockFulfill(lockPaymentCondition, agreementId, did, escrowPaymentAddress, tokenAddress, amounts, receivers) {
-            return lockPaymentCondition.fulfill(agreementId, did, escrowPaymentAddress, amounts[0], receivers[0], tokenAddress)
-        }
-        const lockFulfill = nft ? nftLockFulfill : tokenLockFulfill
+        const lockWrapper = nft ? nftWrapper : tokenWrapper
 
         let conditionStoreManager
         let token
@@ -108,7 +109,7 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, nft) {
                 token = await NeverminedToken.new()
                 await token.initialize(owner, owner)
 
-                lockPaymentCondition = await LockPaymentCondition.new()
+                lockPaymentCondition = lockWrapper(await LockPaymentCondition.new())
                 if (nft) {
                     await lockPaymentCondition.initialize(
                         owner,
@@ -156,9 +157,9 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, nft) {
                 const totalAmount = amounts[0] + amounts2[0]
                 const balanceBefore = await getBalance(token, escrowPayment.address)
 
-                const hashValuesLock = await lockHash(lockPaymentCondition, did, escrowPayment.address, token.address, amounts, receivers)
+                const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
-                const hashValuesLock2 = await lockHash(lockPaymentCondition, did, escrowPayment.address, token.address, amounts2, receivers2)
+                const hashValuesLock2 = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts2, receivers2)
                 const conditionLockId2 = await lockPaymentCondition.generateId(agreementId, hashValuesLock2)
 
                 await conditionStoreManager.createCondition(
