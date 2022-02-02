@@ -187,17 +187,19 @@ contract MultiEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeab
         );
 
         bool allFulfilled = true;
-        bool allAborted = true;
+        bool someAborted = false;
         for (uint i = 0; i < _releaseConditions.length; i++) {
             ConditionStoreLibrary.ConditionState cur = conditionStoreManager.getConditionState(_releaseConditions[i]);
             if (cur != ConditionStoreLibrary.ConditionState.Fulfilled) {
                 allFulfilled = false;
             }
-            if (cur != ConditionStoreLibrary.ConditionState.Aborted) {
-                allAborted = false;
+            if (cur == ConditionStoreLibrary.ConditionState.Aborted) {
+                someAborted = true;
             }
         }
-        
+
+        require(someAborted || allFulfilled, 'Release conditions unresolved');
+
         bytes32 id = generateId(
             _agreementId,
             hashValues(
@@ -220,7 +222,7 @@ contract MultiEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeab
             
             emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
 
-        } else if (allAborted) {
+        } else if (someAborted) {
             
             uint256[] memory _totalAmounts = new uint256[](1);
             _totalAmounts[0] = calculateTotalAmount(_amounts);
@@ -234,8 +236,6 @@ contract MultiEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeab
             
             emit Fulfilled(_agreementId, _tokenAddress, _originalSender, id, _totalAmounts);
             
-        } else {
-            return conditionStoreManager.getConditionState(id);
         }
 
         return state;

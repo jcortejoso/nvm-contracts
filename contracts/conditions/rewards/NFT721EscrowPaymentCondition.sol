@@ -174,17 +174,19 @@ contract NFT721EscrowPaymentCondition is Reward, INFTEscrow, Common, ReentrancyG
         );
 
         bool allFulfilled = true;
-        bool allAborted = true;
+        bool someAborted = false;
         for (uint i = 0; i < _releaseConditions.length; i++) {
             ConditionStoreLibrary.ConditionState cur = conditionStoreManager.getConditionState(_releaseConditions[i]);
             if (cur != ConditionStoreLibrary.ConditionState.Fulfilled) {
                 allFulfilled = false;
             }
-            if (cur != ConditionStoreLibrary.ConditionState.Aborted) {
-                allAborted = false;
+            if (cur == ConditionStoreLibrary.ConditionState.Aborted) {
+                someAborted = true;
             }
         }
-        
+
+        require(someAborted || allFulfilled, 'Release conditions unresolved');
+
         bytes32 id = generateId(
             _agreementId,
             hashValues(
@@ -201,12 +203,9 @@ contract NFT721EscrowPaymentCondition is Reward, INFTEscrow, Common, ReentrancyG
         if (allFulfilled) {
             return _transferAndFulfillNFT(_agreementId, id, _did, _tokenAddress, _receiver, _amount);
 
-        } else if (allAborted) {
-            return _transferAndFulfillNFT(_agreementId, id, _did, _tokenAddress, conditionStoreManager.getConditionCreatedBy(_lockCondition), _amount);
-            
-            
         } else {
-            return conditionStoreManager.getConditionState(id);
+            assert(someAborted == true);
+            return _transferAndFulfillNFT(_agreementId, id, _did, _tokenAddress, conditionStoreManager.getConditionCreatedBy(_lockCondition), _amount);
         }
 
     }
