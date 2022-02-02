@@ -20,7 +20,7 @@ const { getBalance, getETHBalance } = require('../../../helpers/getBalance.js')
 const testUtils = require('../../../helpers/utils.js')
 
 function escrowTest(EscrowPaymentCondition, isMulti) {
-    let multi = isMulti ? (a => [a]) : (a => a) 
+    const multi = isMulti ? a => [a] : a => a
     contract(isMulti ? 'EscrowPaymentCondition contract (multi)' : 'EscrowPaymentCondition contract', (accounts) => {
         let conditionStoreManager
         let token

@@ -15,7 +15,7 @@ const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const EscrowPaymentCondition = artifacts.require('MultiEscrowPaymentCondition')
 
 const constants = require('../../../helpers/constants.js')
-const { getBalance, getETHBalance } = require('../../../helpers/getBalance.js')
+const { getBalance } = require('../../../helpers/getBalance.js')
 const testUtils = require('../../../helpers/utils.js')
 
 contract('MultiEscrowPaymentCondition contract', (accounts) => {
@@ -28,8 +28,6 @@ contract('MultiEscrowPaymentCondition contract', (accounts) => {
     const createRole = accounts[0]
     const owner = accounts[9]
     const deployer = accounts[8]
-    const checksum = testUtils.generateId()
-    const url = 'https://nevermined.io/did/test-attr-example.txt'
 
     before(async () => {
         const epochLibrary = await EpochLibrary.new()
@@ -193,7 +191,6 @@ contract('MultiEscrowPaymentCondition contract', (accounts) => {
 
             assert.strictEqual(await getBalance(token, escrowPayment.address), amounts2[0])
             assert.strictEqual(await getBalance(token, receivers[0]), amounts[0])
-
         })
 
         it('should cancel if conditions were aborted', async () => {
@@ -303,8 +300,6 @@ contract('MultiEscrowPaymentCondition contract', (accounts) => {
             assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore)
             assert.strictEqual(await getBalance(token, receivers[0]), receiverBefore)
             assert.strictEqual(await getBalance(token, sender), senderBefore + totalAmount)
-
         })
-
     })
 })
