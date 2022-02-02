@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 import './Reward.sol';
+import './INFTEscrow.sol';
 import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
@@ -19,18 +20,9 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
  *      can release reward if lock and release conditions
  *      are fulfilled.
  */
-contract NFT721EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
+contract NFT721EscrowPaymentCondition is Reward, INFTEscrow, Common, ReentrancyGuardUpgradeable {
 
     bytes32 constant public CONDITION_TYPE = keccak256('NFTEscrowPayment');
-
-    event Fulfilled(
-        bytes32 indexed _agreementId,
-        address indexed _tokenAddress,
-        bytes32 _did,
-        address _receivers,
-        bytes32 _conditionId,
-        uint256 _amounts
-    );
 
     event Received(
         address indexed _from, 

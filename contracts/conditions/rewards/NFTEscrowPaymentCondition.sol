@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 
 import './Reward.sol';
 import '../../Common.sol';
+import './INFTEscrow.sol';
 import '../ConditionStoreLibrary.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
@@ -20,18 +21,9 @@ import 'hardhat/console.sol';
  *      can release reward if lock and release conditions
  *      are fulfilled.
  */
-contract NFTEscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable, IERC1155ReceiverUpgradeable {
+contract NFTEscrowPaymentCondition is Reward, INFTEscrow, Common, ReentrancyGuardUpgradeable, IERC1155ReceiverUpgradeable {
 
     bytes32 constant public CONDITION_TYPE = keccak256('NFTEscrowPayment');
-
-    event Fulfilled(
-        bytes32 indexed _agreementId,
-        address indexed _tokenAddress,
-        bytes32 _did,
-        address _receivers,
-        bytes32 _conditionId,
-        uint256 _amounts
-    );
 
     event Received(
         address indexed _from, 

@@ -6,7 +6,7 @@ pragma solidity ^0.8.0;
 
 import '../Condition.sol';
 import '../../registry/DIDRegistry.sol';
-import './INFTLock.sol';
+import './INFTMarkedLock.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 
@@ -16,23 +16,13 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
  *
  * @dev Implementation of the NFT Lock Condition
  */
-contract NFTMarkedLockCondition is Condition, ReentrancyGuardUpgradeable, IERC1155ReceiverUpgradeable {
+contract NFTMarkedLockCondition is Condition, INFTMarkedLock, ReentrancyGuardUpgradeable, IERC1155ReceiverUpgradeable {
 
     bytes32 constant public CONDITION_TYPE = keccak256('NFTMarkedLockCondition');
 
     bytes4 constant internal ERC1155_ACCEPTED = 0xf23a6e61; // bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"))
     bytes4 constant internal ERC1155_BATCH_ACCEPTED = 0xbc197c81; // bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))
 
-    event Fulfilled(
-        bytes32 indexed _agreementId,
-        bytes32 indexed _did,
-        address indexed _lockAddress,
-        bytes32 _conditionId,
-        uint256 _amount,
-        address _receiver,
-        address _nftContractAddress
-    );
-    
    /**
     * @notice initialize init the  contract with the following parameters
     * @dev this function is called only once during the contract
@@ -76,6 +66,7 @@ contract NFTMarkedLockCondition is Condition, ReentrancyGuardUpgradeable, IERC11
         address _nftContractAddress
     )
         public
+        override
         pure
         returns (bytes32)
     {
@@ -111,6 +102,7 @@ contract NFTMarkedLockCondition is Condition, ReentrancyGuardUpgradeable, IERC11
         address _nftContractAddress
     )
         public
+        override
         nonReentrant
         returns (ConditionStoreLibrary.ConditionState)
     {

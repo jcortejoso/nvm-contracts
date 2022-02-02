@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 
 
 import '../Condition.sol';
-import './INFTLock.sol';
+import './INFTMarkedLock.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol';
@@ -16,20 +16,10 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradea
  *
  * @dev Implementation of the NFT Lock Condition for ERC-721 based NFTs 
  */
-contract NFT721MarkedLockCondition is Condition, ReentrancyGuardUpgradeable, IERC721ReceiverUpgradeable {
+contract NFT721MarkedLockCondition is Condition, INFTMarkedLock, ReentrancyGuardUpgradeable, IERC721ReceiverUpgradeable {
     
     bytes32 constant public CONDITION_TYPE = keccak256('NFT721LockCondition');
     
-    event Fulfilled(
-        bytes32 indexed _agreementId,
-        bytes32 indexed _did,
-        address indexed _lockAddress,
-        bytes32 _conditionId,
-        uint256 _amount,
-        address _receiver,
-        address _nftContractAddress
-    );
-
    /**
     * @notice initialize init the  contract with the following parameters
     * @dev this function is called only once during the contract
@@ -72,6 +62,7 @@ contract NFT721MarkedLockCondition is Condition, ReentrancyGuardUpgradeable, IER
         address _nftContractAddress
     )
         public
+        override
         pure
         returns (bytes32)
     {
@@ -97,6 +88,7 @@ contract NFT721MarkedLockCondition is Condition, ReentrancyGuardUpgradeable, IER
         address _nftContractAddress
     )
         external
+        override
         nonReentrant
         returns (ConditionStoreLibrary.ConditionState)
     {
