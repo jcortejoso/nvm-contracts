@@ -16,15 +16,12 @@ const { getBalance } = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils')
 const mimcdecrypt = require('../../helpers/mimcdecrypt').decrypt
-
-const poseidon = require('circomlib').poseidon
 const babyJub = require('circomlib').babyJub
-const mimcjs = require('circomlib').mimcsponge
+const poseidon = require('circomlib').poseidon
 const ZqField = require('ffjavascript').ZqField
 const Scalar = require('ffjavascript').Scalar
 const F = new ZqField(Scalar.fromString('21888242871839275222246405745257275088548364400416034343698204186575808495617'))
-const snarkjs = require('snarkjs')
-const { unstringifyBigInts } = require('ffjavascript').utils
+const { makeProof } = require('../../helpers/proofHelper')
 
 contract('Access Proof Template integration test', (accounts) => {
     const web3 = global.web3
@@ -101,64 +98,14 @@ contract('Access Proof Template integration test', (accounts) => {
     } = {}) {
         const orig1 = 222n
         const orig2 = 333n
-        const origHash = poseidon([orig1, orig2])
-
-        const did = await didRegistry.hashDID(didSeed, receivers[0])
 
         const buyerK = 123
         const providerK = 234
-        const buyerPub = babyJub.mulPointEscalar(babyJub.Base8, F.e(buyerK))
-        const providerPub = babyJub.mulPointEscalar(babyJub.Base8, F.e(providerK))
 
-        // console.log("public keys", buyer_pub, provider_pub)
+        const data = await makeProof(orig1, orig2, buyerK, providerK)
+        const { origHash, buyerPub, providerPub } = data
 
-        const k = babyJub.mulPointEscalar(buyerPub, F.e(providerK))
-        // const k2 = babyJub.mulPointEscalar(provider_pub, F.e(buyer_k))
-
-        // console.log("encryption key", k)
-        // console.log("encryption key check", k2)
-
-        const cipher = mimcjs.hash(orig1, orig2, k[0])
-        // const plain = mimcdecrypt(cipher.xL, cipher.xR, k[0])
-        // console.log('cipher', cipher, 'plain', plain)
-
-        const snarkParams = {
-            buyer_x: buyerPub[0],
-            buyer_y: buyerPub[1],
-            provider_x: providerPub[0],
-            provider_y: providerPub[1],
-            xL_in: orig1,
-            xR_in: orig2,
-            cipher_xL_in: cipher.xL,
-            cipher_xR_in: cipher.xR,
-            provider_k: providerK,
-            hash_plain: origHash
-        }
-
-        // console.log(snark_params)
-
-        const { proof } = await snarkjs.plonk.fullProve(
-            snarkParams,
-            'circuits/keytransfer.wasm',
-            'circuits/keytransfer.zkey'
-        )
-
-        const signals = [
-            buyerPub[0],
-            buyerPub[1],
-            providerPub[0],
-            providerPub[1],
-            cipher.xL,
-            cipher.xR,
-            origHash
-        ]
-
-        const proofSolidity = (await snarkjs.plonk.exportSolidityCallData(unstringifyBigInts(proof), signals))
-
-        const proofData = proofSolidity.split(',')[0]
-        // console.log("Proof: ");
-        // console.log(proof_solidity, proof_data);
-        // console.log(proof)
+        const did = await didRegistry.hashDID(didSeed, receivers[0])
 
         // generate IDs from attributes
         const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
@@ -179,13 +126,6 @@ contract('Access Proof Template integration test', (accounts) => {
             timeLocks: [timeLockAccess, 0, 0],
             timeOuts: [timeOutAccess, 0, 0],
             consumer: sender
-        }
-        const data = {
-            origHash,
-            buyerPub,
-            providerPub,
-            cipher: [cipher.xL, cipher.xR],
-            proof: proofData
         }
         return {
             agreementId,
