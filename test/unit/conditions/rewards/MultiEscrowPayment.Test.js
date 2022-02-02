@@ -206,6 +206,8 @@ contract('MultiEscrowPaymentCondition contract', (accounts) => {
             const amounts2 = [12]
             const totalAmount = amounts[0] + amounts2[0]
             const balanceBefore = await getBalance(token, escrowPayment.address)
+            const senderBefore = await getBalance(token, sender)
+            const receiverBefore = await getBalance(token, receivers[0])
 
             const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
             const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
@@ -218,7 +220,11 @@ contract('MultiEscrowPaymentCondition contract', (accounts) => {
 
             await conditionStoreManager.createCondition(
                 conditionLockId2,
-                lockPaymentCondition.address)
+                lockPaymentCondition.address,
+                1,
+                2,
+                sender
+            )
 
             const lockConditionId = conditionLockId
 
@@ -267,10 +273,10 @@ contract('MultiEscrowPaymentCondition contract', (accounts) => {
                 [conditionLockId, conditionLockId2])
             )
 
-            await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts2, receivers2)
+            await lockPaymentCondition.abortByTimeOut(conditionLockId2)
 
             assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
+            assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + amounts[0])
 
             const result = await escrowPayment.fulfill(
                 agreementId,
@@ -291,11 +297,12 @@ contract('MultiEscrowPaymentCondition contract', (accounts) => {
             const eventArgs = testUtils.getEventArgsFromTx(result, 'Fulfilled')
             expect(eventArgs._agreementId).to.equal(agreementId)
             expect(eventArgs._conditionId).to.equal(escrowConditionId)
-            expect(eventArgs._receivers[0]).to.equal(receivers[0])
+            expect(eventArgs._receivers[0]).to.equal(sender)
             expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
 
-            assert.strictEqual(await getBalance(token, escrowPayment.address), amounts2[0])
-            assert.strictEqual(await getBalance(token, receivers[0]), amounts[0])
+            assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore)
+            assert.strictEqual(await getBalance(token, receivers[0]), receiverBefore)
+            assert.strictEqual(await getBalance(token, sender), senderBefore + totalAmount)
 
         })
 
