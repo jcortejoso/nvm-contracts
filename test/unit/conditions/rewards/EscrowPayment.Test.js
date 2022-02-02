@@ -525,20 +525,32 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
                 assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
 
-                await escrowPayment.fulfill(
-                    agreementId,
-                    did,
-                    amounts,
-                    receivers,
-                    escrowPayment.address,
-                    token.address,
-                    lockConditionId,
-                    multi(releaseConditionId))
+                if (isMulti) {
+                    await assert.isRejected(escrowPayment.fulfill(
+                        agreementId,
+                        did,
+                        amounts,
+                        receivers,
+                        escrowPayment.address,
+                        token.address,
+                        lockConditionId,
+                        multi(releaseConditionId)))
+                } else {
+                    await escrowPayment.fulfill(
+                        agreementId,
+                        did,
+                        amounts,
+                        receivers,
+                        escrowPayment.address,
+                        token.address,
+                        lockConditionId,
+                        multi(releaseConditionId))
 
-                assert.strictEqual(
-                    (await conditionStoreManager.getConditionState(escrowConditionId)).toNumber(),
-                    constants.condition.state.unfulfilled
-                )
+                    assert.strictEqual(
+                        (await conditionStoreManager.getConditionState(escrowConditionId)).toNumber(),
+                        constants.condition.state.unfulfilled
+                    )
+                }
 
                 assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
             })
