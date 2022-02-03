@@ -257,6 +257,45 @@ contract('End to End NFT Scenarios', (accounts) => {
         }
     }
 
+    async function prepareDrainAgreement({
+        did,
+        agreementId,
+        _amounts = amounts,
+        _receivers = receivers,
+        _seller = artist,
+        _buyer = collector1,
+        _numberNFTs = numberNFTs
+    } = {}) {
+        const newId = testUtils.generateId()
+        const conditionIdLockPayment = await lockPaymentCondition.generateId(agreementId,
+            await lockPaymentCondition.hashValues(did, escrowCondition.address, token.address, _amounts, _receivers))
+
+        const condition1 = await transferCondition.generateId(agreementId,
+            await transferCondition.hashValues(did, _seller, _buyer, 1111111, conditionIdLockPayment))
+        const condition2 = await transferCondition.generateId(agreementId,
+            await transferCondition.hashValues(did, _seller, _buyer, 222222, conditionIdLockPayment))
+
+        const conditionIdEscrow = await escrowCondition.generateId(agreementId,
+            await escrowCondition.hashValues(did, _amounts, _receivers, escrowCondition.address, token.address, conditionIdLockPayment, conditionIdLockPayment))
+
+        drainAgreement = {
+            did: did,
+            conditionIds: [
+                condition1,
+                condition2,
+                conditionIdEscrow
+            ],
+            timeLocks: [0, 0, 0],
+            timeOuts: [0, 0, 0],
+            accessConsumer: _buyer
+        }
+        return {
+            agreementId: newId,
+            lockId: conditionIdLockPayment,
+            drainAgreement
+        }
+    }
+
     describe('As an artist I want to register a new artwork', () => {
         it('I want to register a new artwork and tokenize (via NFT). I want to get 10% of royalties', async () => {
             const { didRegistry, nft } = await setupTest()
@@ -417,6 +456,36 @@ contract('End to End NFT Scenarios', (accounts) => {
 
             // await lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, token.address, amounts2, receivers2, { from: collector2 })
 
+            /// Draining escrow
+            const { drainAgreement, agreementId: newId, lockId } = await prepareDrainAgreement({
+                did: did,
+                agreementId: agreementId,
+                _seller: artist,
+                _buyer: collector1
+            })
+            const result2 = await nftSalesTemplate.createAgreement(
+                newId, ...Object.values(drainAgreement))
+            testUtils.assertEmitted(result2, 1, 'AgreementCreated')
+
+            console.log("before", await getBalance(token, artist))
+
+            await escrowCondition.fulfill(
+                agreementId,
+                did,
+                amounts,
+                receivers,
+                escrowCondition.address,
+                token.address,
+                lockId,
+                lockId,
+                { from: artist })
+
+            const { state } = await conditionStoreManager.getCondition(drainAgreement.conditionIds[2])
+            assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
+
+            console.log("after", await getBalance(token, artist))
+
+            /*
             const { state } = await conditionStoreManager.getCondition(
                 nftSalesAgreement.conditionIds[0])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
@@ -463,6 +532,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
             assert.strictEqual(await getBalance(token, escrowCondition.address), 0)
             assert.strictEqual(await getBalance(token, receivers2[0]), amounts2[0])
+            */
         })
 
         it('As artist I want to receive royalties for the NFT I created and was sold in the secondary market', async () => {
