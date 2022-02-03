@@ -32,7 +32,7 @@ const toEth = (value) => {
     return Number(web3Utils.fromWei(value.toString(10), 'ether'))
 }
 
-contract('End to End NFT Scenarios', (accounts) => {
+contract('End to End NFT Scenarios (with Ether)', (accounts) => {
     const royalties = 10 // 10% of royalties in the secondary market
     const cappedAmount = 5
     const didSeed = testUtils.generateId()
@@ -263,8 +263,8 @@ contract('End to End NFT Scenarios', (accounts) => {
         nftPrice = Number(web3Utils.toWei(String(nftPrice), 'ether'))
         amounts = amounts.map(v => Number(web3Utils.toWei(String(v), 'ether')))
 
-        nftPrice2 = Number(web3Utils.toWei(String(nftPrice2), 'ether'))
-        amounts2 = amounts2.map(v => Number(web3Utils.toWei(String(v), 'ether')))
+        nftPrice2 = web3Utils.toWei(String(nftPrice2), 'ether')
+        amounts2 = amounts2.map(v => web3Utils.toWei(String(v), 'ether'))
     })
 
     describe('As an artist I want to register a new artwork', () => {
@@ -430,18 +430,31 @@ contract('End to End NFT Scenarios', (accounts) => {
                 _numberNFTs: numberNFTs2
             })
 
-            const result = await nftSalesTemplate.createAgreement(
-                agreementId2, ...Object.values(nftSalesAgreement))
-
-            testUtils.assertEmitted(result, 1, 'AgreementCreated')
+            const extendedAgreement = {
+                ...nftSalesAgreement,
+                _idx: 0,
+                _receiverAddress: escrowCondition.address,
+                _tokenAddress: constants.address.zero,
+                _amounts: amounts2,
+                _receivers: receivers2
+            }
 
             const collector2Before = toEth(await getETHBalanceBN(collector2))
 
+            const totalAmount = amounts.reduce((a, b) => a + BigInt(b), 0n)
+            console.log(amounts2)
+
+            const result = await nftSalesTemplate.createAgreementAndPayEscrow(
+                agreementId2, ...Object.values(extendedAgreement), {value: totalAmount.toString()})
+
+            testUtils.assertEmitted(result, 1, 'AgreementCreated')
+
             // Collector2: Lock the payment
+            /*
             await lockPaymentCondition.fulfill(
                 agreementId2, did, escrowCondition.address, constants.address.zero, amounts2.map(a => String(a)), receivers2,
                 { from: collector2, value: nftPrice2 }
-            )
+            )*/
 
             assert.closeTo(
                 toEth(await getETHBalanceBN(collector2)),
