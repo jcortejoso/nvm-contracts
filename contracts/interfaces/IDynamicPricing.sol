@@ -13,7 +13,7 @@ pragma solidity ^0.8.0;
 
     enum DynamicPricingState { NotStarted, Finished, InProgress, Aborted }
 
-    function getPricingMechanism(
+    function getPricingType(
     )
     external
     view
