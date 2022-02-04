@@ -203,7 +203,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
     {
         require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
         createAgreement(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts, _creator);
-        LockPaymentCondition(_conditionTypes[_idx]).fulfillProxy(_creator, _id, _did, _rewardAddress, _tokenAddress, _amounts, _receivers);
+        LockPaymentCondition(_conditionTypes[_idx]).fulfillProxy{value: msg.value}(_creator, _id, _did, _rewardAddress, _tokenAddress, _amounts, _receivers);
     }
 
 
