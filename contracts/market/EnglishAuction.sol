@@ -92,6 +92,7 @@ contract EnglishAuction is AbstractAuction {
     payable
     nonReentrant
     onlyNotCreator(_auctionId)
+    onlyNotAborted(_auctionId)    
     onlyAfterStart(_auctionId)
     onlyBeforeEnd(_auctionId)
     {
@@ -99,6 +100,7 @@ contract EnglishAuction is AbstractAuction {
 
         uint256 userBid = msg.value + auctionBids[_auctionId][msg.sender];
 
+        require(userBid >= auctions[_auctionId].floor, 'EnglishAuction: Only higher or equal than floor');
         require(userBid > auctions[_auctionId].price, 'EnglishAuction: Only higher bids');
 
         // solhint-disable-next-line
@@ -106,8 +108,11 @@ contract EnglishAuction is AbstractAuction {
         require(sent, 'EnglishAuction: Failed to send native token');
 
         auctions[_auctionId].whoCanClaim = msg.sender;
+        auctions[_auctionId].price = userBid;
         auctionBids[_auctionId][msg.sender] = userBid;
-
+        if (auctions[_auctionId].state != DynamicPricingState.InProgress)
+            auctions[_auctionId].state = DynamicPricingState.InProgress;
+        
         emit AuctionBidReceived(
             _auctionId,
             msg.sender,
@@ -124,21 +129,26 @@ contract EnglishAuction is AbstractAuction {
     virtual
     nonReentrant
     onlyNotCreator(_auctionId)
+    onlyNotAborted(_auctionId)
     onlyAfterStart(_auctionId)
     onlyBeforeEnd(_auctionId)
     {
         require(auctions[_auctionId].tokenAddress != address(0), 'EnglishAuction: Only ERC20');
-
+        
         uint256 userBid = _bidAmount + auctionBids[_auctionId][msg.sender];
 
+        require(userBid >= auctions[_auctionId].floor, 'EnglishAuction: Only higher or equal than floor');
         require(userBid > auctions[_auctionId].price, 'EnglishAuction: Only higher bids');
 
         IERC20Upgradeable token = ERC20Upgradeable(auctions[_auctionId].tokenAddress);
         token.safeTransferFrom(msg.sender, address(this), _bidAmount);
 
         auctions[_auctionId].whoCanClaim = msg.sender;
+        auctions[_auctionId].price = userBid;
         auctionBids[_auctionId][msg.sender] = userBid;
-
+        if (auctions[_auctionId].state != DynamicPricingState.InProgress)
+            auctions[_auctionId].state = DynamicPricingState.InProgress;
+        
         emit AuctionBidReceived(
             _auctionId,
             msg.sender,

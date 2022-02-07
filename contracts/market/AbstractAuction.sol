@@ -98,7 +98,7 @@ abstract contract AbstractAuction is
     external
     virtual
     onlyCreatorOrAdmin(_auctionId)
-    onlyBeforeEnd(_auctionId)
+    onlyBeforeStarts(_auctionId)
     onlyNotAborted(_auctionId)
     {
         emit AuctionChangedState(
@@ -162,7 +162,8 @@ abstract contract AbstractAuction is
             
         }   else { // ERC20 Withdrawal
             IERC20Upgradeable token = ERC20Upgradeable(auctions[_auctionId].tokenAddress);
-            token.safeTransferFrom(address(this), withdrawalAddress, withdrawalAmount);
+            token.safeApprove(withdrawalAddress, withdrawalAmount);
+            token.safeTransfer(withdrawalAddress, withdrawalAmount);
         }
         
         emit AuctionWithdrawal(
@@ -246,6 +247,11 @@ abstract contract AbstractAuction is
         _;
     }
 
+    modifier onlyBeforeStarts(bytes32 _auctionId) {
+        require(block.number < auctions[_auctionId].starts, 'AbstractAuction: Only before starts');
+        _;
+    }    
+    
     modifier onlyBeforeEnd(bytes32 _auctionId) {
         require(block.number < auctions[_auctionId].ends, 'AbstractAuction: Only before ends');
         _;
