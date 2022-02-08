@@ -25,7 +25,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
 
     bytes32 constant public CONDITION_TYPE = keccak256('EscrowPayment');
 
-    bytes32 constant public USED_PAYMENT_ID = keccak256('LockConditionPayment');
+    bytes32 constant public USED_PAYMENT_ID = keccak256('LockPaymentCondition');
 
     event Fulfilled(
         bytes32 indexed _agreementId,

@@ -49,12 +49,8 @@ contract('EscrowPaymentCondition contract', (accounts) => {
         if (!escrowPayment) {
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
-                owner,
-                { from: owner }
-            )
-
-            await conditionStoreManager.delegateCreateRole(
                 createRole,
+                owner,
                 { from: owner }
             )
 
@@ -100,12 +96,8 @@ contract('EscrowPaymentCondition contract', (accounts) => {
         it('needed contract addresses cannot be 0', async () => {
             const conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
-                owner,
-                { from: owner }
-            )
-
-            await conditionStoreManager.delegateCreateRole(
                 createRole,
+                owner,
                 { from: owner }
             )
 

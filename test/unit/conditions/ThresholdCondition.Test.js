@@ -40,13 +40,9 @@ contract('Threshold Condition', (accounts) => {
         if (!thresholdCondition) {
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
+                createRole,
                 owner,
                 { from: accounts[0] }
-            )
-
-            await conditionStoreManager.delegateCreateRole(
-                createRole,
-                { from: owner }
             )
 
             thresholdCondition = await ThresholdCondition.new()
@@ -141,12 +137,8 @@ contract('Threshold Condition', (accounts) => {
         it('contract should deploy', async () => {
             const conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
-                owner,
-                { from: owner }
-            )
-
-            await conditionStoreManager.delegateCreateRole(
                 createRole,
+                owner,
                 { from: owner }
             )
 

@@ -40,6 +40,7 @@ contract('ConditionStoreManager', (accounts) => {
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
                 owner,
+                owner,
                 { from: owner }
             )
 
@@ -72,7 +73,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // address should be set after correct setup
-            await conditionStoreManager.initialize(owner)
+            await conditionStoreManager.initialize(owner, owner)
 
             assert.strictEqual(
                 await conditionStoreManager.getCreateRole(),
@@ -91,7 +92,7 @@ contract('ConditionStoreManager', (accounts) => {
             const conditionStoreManager = await ConditionStoreManager.new()
 
             // act
-            await conditionStoreManager.initialize(owner)
+            await conditionStoreManager.initialize(owner, owner)
             await conditionStoreManager.delegateCreateRole(createRole, { from: owner })
 
             // assert
@@ -108,7 +109,7 @@ contract('ConditionStoreManager', (accounts) => {
 
             // setup with zero fails
             await assert.isRejected(
-                conditionStoreManager.initialize(owner),
+                conditionStoreManager.initialize(owner, owner),
                 constants.address.error.invalidAddress0x0
             )
         })
@@ -120,7 +121,7 @@ contract('ConditionStoreManager', (accounts) => {
 
             // setup with zero fails
             await assert.isRejected(
-                conditionStoreManager.initialize(owner),
+                conditionStoreManager.initialize(owner, owner),
                 constants.address.error.invalidAddress0x0
             )
         })
@@ -131,7 +132,7 @@ contract('ConditionStoreManager', (accounts) => {
             // setup with zero fails
             await assert.isRejected(
                 conditionStoreManager.initialize(),
-                constants.initialize.error.invalidNumberParamsGot0Expected1
+                constants.initialize.error.invalidNumberParamsGot0Expected2
             )
         })
 
@@ -141,7 +142,7 @@ contract('ConditionStoreManager', (accounts) => {
             // setup correctly
             const conditionStoreManager = await ConditionStoreManager.new()
 
-            await conditionStoreManager.initialize(owner)
+            await conditionStoreManager.initialize(owner, owner)
 
             assert.strictEqual(
                 await conditionStoreManager.getCreateRole(),
@@ -153,7 +154,8 @@ contract('ConditionStoreManager', (accounts) => {
             assert.notEqual(otherCreateRole, createRole)
             await assert.isRejected(
                 conditionStoreManager.initialize(
-                    otherCreateRole
+                    otherCreateRole,
+                    owner
                 )
             )
             assert.strictEqual(
