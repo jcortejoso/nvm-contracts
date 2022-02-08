@@ -216,6 +216,7 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
         bytes calldata
     ) 
     external
+    pure
     override
     returns(bytes4) 
     {
@@ -230,6 +231,7 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
         bytes calldata
     ) 
     external
+    pure
     override
     returns(bytes4) 
     {
