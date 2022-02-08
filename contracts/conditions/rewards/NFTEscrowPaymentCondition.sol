@@ -24,6 +24,7 @@ import 'hardhat/console.sol';
 contract NFTEscrowPaymentCondition is Reward, INFTEscrow, Common, ReentrancyGuardUpgradeable, IERC1155ReceiverUpgradeable {
 
     bytes32 constant public CONDITION_TYPE = keccak256('NFTEscrowPayment');
+    bytes32 constant public LOCK_CONDITION_TYPE = keccak256('NFTLockCondition');
 
     event Received(
         address indexed _from, 
@@ -119,6 +120,7 @@ contract NFTEscrowPaymentCondition is Reward, INFTEscrow, Common, ReentrancyGuar
         returns (bytes32)
     {
         return keccak256(abi.encode(
+            LOCK_CONDITION_TYPE,
             _did, 
             _lockAddress, 
             _amount,

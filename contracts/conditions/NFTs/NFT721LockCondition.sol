@@ -52,7 +52,7 @@ contract NFT721LockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable,
     * @param _lockAddress the contract address where the NFT will be locked
     * @param _amount is the amount of the locked tokens
     * @param _nftContractAddress Is the address of the NFT (ERC-721) contract to use         
-    * @return bytes32 hash of all these values 
+    * @return bytes32 hash of all these values
     */
     function hashValues(
         bytes32 _did,
@@ -61,11 +61,26 @@ contract NFT721LockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable,
         address _nftContractAddress
     )
         public
-        pure
         override
+        pure
         returns (bytes32)
     {
-        return keccak256(abi.encode(_did, _lockAddress, _amount, _nftContractAddress));
+        return hashValuesMarked(_did, _lockAddress, _amount, address(0), _nftContractAddress);
+    }
+
+    function hashValuesMarked(
+        bytes32 _did,
+        address _lockAddress,
+        uint256 _amount,
+        address _receiver,
+        address _nftContractAddress
+    )
+        public
+        override
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encode(_did, _lockAddress, _amount, _receiver, _nftContractAddress));
     }
 
     /**
@@ -78,14 +93,15 @@ contract NFT721LockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable,
      * @param _nftContractAddress Is the address of the NFT (ERC-721) contract to use     
      * @return condition state (Fulfilled/Aborted)
      */
-    function fulfill(
+    function fulfillMarked(
         bytes32 _agreementId,
         bytes32 _did,
         address _lockAddress,
         uint256 _amount,
+        address _receiver,
         address _nftContractAddress
     )
-        external
+        public
         override
         nonReentrant
         returns (ConditionStoreLibrary.ConditionState)
@@ -100,10 +116,10 @@ contract NFT721LockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable,
         if (_amount == 1) {
             erc721.safeTransferFrom(msg.sender, _lockAddress, uint256(_did));
         }
-        
+
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _lockAddress, _amount, _nftContractAddress)
+            hashValuesMarked(_did, _lockAddress, _amount, _receiver, _nftContractAddress)
         );
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
@@ -116,9 +132,24 @@ contract NFT721LockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable,
             _lockAddress,
             _id,
             _amount,
+            _receiver,
             _nftContractAddress
         );
         return state;
+    }
+
+    function fulfill(
+        bytes32 _agreementId,
+        bytes32 _did,
+        address _lockAddress,
+        uint256 _amount,
+        address _nftContractAddress
+    )
+        external
+        override
+        returns (ConditionStoreLibrary.ConditionState)
+    {
+        return fulfillMarked(_agreementId, _did, _lockAddress, _amount, address(0), _nftContractAddress);
     }
 
     /**

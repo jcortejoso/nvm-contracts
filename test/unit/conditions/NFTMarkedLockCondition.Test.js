@@ -10,7 +10,7 @@ const EpochLibrary = artifacts.require('EpochLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
-const NFTLockCondition = artifacts.require('NFTMarkedLockCondition')
+const NFTLockCondition = artifacts.require('NFTLockCondition')
 const NFT = artifacts.require('NFTUpgradeable')
 
 const constants = require('../../helpers/constants.js')
@@ -62,6 +62,7 @@ contract('NFTMarkedLockCondition', (accounts) => {
             await lockCondition.initialize(
                 owner,
                 conditionStoreManager.address,
+                nft.address,
                 { from: createRole }
             )
         }
@@ -81,14 +82,14 @@ contract('NFTMarkedLockCondition', (accounts) => {
             await didRegistry.mint(did, amount)
             await nft.setApprovalForAll(lockCondition.address, true)
 
-            const hashValues = await lockCondition.hashValues(did, lockAddress, amount, receiver, nft.address)
+            const hashValues = await lockCondition.hashValuesMarked(did, lockAddress, amount, receiver, nft.address)
             const conditionId = await lockCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
                 conditionId,
                 lockCondition.address)
 
-            const result = await lockCondition.fulfill(agreementId, did, lockAddress, amount, receiver, nft.address)
+            const result = await lockCondition.fulfillMarked(agreementId, did, lockAddress, amount, receiver, nft.address)
             const { state } = await conditionStoreManager.getCondition(conditionId)
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
             const nftBalance = await nft.balanceOf(lockCondition.address, did)
@@ -119,7 +120,7 @@ contract('NFTMarkedLockCondition', (accounts) => {
             await nft.setApprovalForAll(lockCondition.address, true)
 
             await assert.isRejected(
-                lockCondition.fulfill(agreementId, did, lockAddress, amount, receiver, nft.address),
+                lockCondition.fulfillMarked(agreementId, did, lockAddress, amount, receiver, nft.address),
                 constants.acl.error.invalidUpdateRole
             )
         })
@@ -137,7 +138,7 @@ contract('NFTMarkedLockCondition', (accounts) => {
             await didRegistry.mint(did, amount)
             await nft.setApprovalForAll(lockCondition.address, true)
 
-            const hashValues = await lockCondition.hashValues(did, lockAddress, amount, receiver, nft.address)
+            const hashValues = await lockCondition.hashValuesMarked(did, lockAddress, amount, receiver, nft.address)
             const conditionId = await lockCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
@@ -145,7 +146,7 @@ contract('NFTMarkedLockCondition', (accounts) => {
                 lockCondition.address)
 
             await assert.isRejected(
-                lockCondition.fulfill(agreementId, did, lockAddress, amount + 1, receiver, nft.address),
+                lockCondition.fulfillMarked(agreementId, did, lockAddress, amount + 1, receiver, nft.address),
                 undefined
             )
         })
@@ -163,7 +164,7 @@ contract('NFTMarkedLockCondition', (accounts) => {
             await didRegistry.mint(did, amount)
             await nft.setApprovalForAll(lockCondition.address, true)
 
-            const hashValues = await lockCondition.hashValues(did, lockAddress, amount, receiver, nft.address)
+            const hashValues = await lockCondition.hashValuesMarked(did, lockAddress, amount, receiver, nft.address)
             const conditionId = await lockCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
@@ -171,14 +172,14 @@ contract('NFTMarkedLockCondition', (accounts) => {
                 lockCondition.address
             )
 
-            await lockCondition.fulfill(agreementId, did, lockAddress, amount, receiver, nft.address)
+            await lockCondition.fulfillMarked(agreementId, did, lockAddress, amount, receiver, nft.address)
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
                 constants.condition.state.fulfilled
             )
 
             await assert.isRejected(
-                lockCondition.fulfill(agreementId, did, lockAddress, amount, receiver, nft.address),
+                lockCondition.fulfillMarked(agreementId, did, lockAddress, amount, receiver, nft.address),
                 undefined
             )
 
@@ -201,7 +202,7 @@ contract('NFTMarkedLockCondition', (accounts) => {
             await didRegistry.mint(did, amount)
             await nft.setApprovalForAll(lockCondition.address, true)
 
-            const hashValues = await lockCondition.hashValues(did, lockAddress, amount, receiver, nft.address)
+            const hashValues = await lockCondition.hashValuesMarked(did, lockAddress, amount, receiver, nft.address)
             const conditionId = await lockCondition.generateId(agreementId, hashValues)
 
             await conditionStoreManager.createCondition(
@@ -216,7 +217,7 @@ contract('NFTMarkedLockCondition', (accounts) => {
             )
 
             await assert.isRejected(
-                lockCondition.fulfill(agreementId, did, lockAddress, amount, receiver, nft.address),
+                lockCondition.fulfillMarked(agreementId, did, lockAddress, amount, receiver, nft.address),
                 constants.acl.error.invalidUpdateRole
             )
         })

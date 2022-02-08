@@ -25,12 +25,6 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
     bytes4 constant internal ERC1155_ACCEPTED = 0xf23a6e61; // bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"))
     bytes4 constant internal ERC1155_BATCH_ACCEPTED = 0xbc197c81; // bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))
 
-    bytes public lastData;
-    address public lastOperator;
-    address public lastFrom;
-    uint256 public lastId;
-    uint256 public lastValue;
-    
    /**
     * @notice initialize init the  contract with the following parameters
     * @dev this function is called only once during the contract
@@ -101,12 +95,28 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
         override
         returns (bytes32)
     {
+        return hashValuesMarked(_did, _lockAddress, _amount, address(0), _nftContractAddress);
+    }
+
+    function hashValuesMarked(
+        bytes32 _did,
+        address _lockAddress,
+        uint256 _amount,
+        address _receiver,
+        address _nftContractAddress
+    )
+        public
+        pure
+        override
+        returns (bytes32)
+    {
         return keccak256(
                 abi.encode(
                     CONDITION_TYPE,
                     _did, 
                     _lockAddress, 
                     _amount, 
+                    _receiver,
                     _nftContractAddress
                 )
         );
@@ -135,6 +145,20 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
         return fulfill(_agreementId, _did, _lockAddress, _amount, address(erc1155));
     }
     
+    function fulfill(
+        bytes32 _agreementId,
+        bytes32 _did,
+        address _lockAddress,
+        uint256 _amount,
+        address _nft
+    )
+    public
+    override
+    returns (ConditionStoreLibrary.ConditionState)
+    {
+        return fulfillMarked(_agreementId, _did, _lockAddress, _amount, address(0), _nft);
+    }
+    
     /**
      * @notice fulfill the transfer NFT condition
      * @dev Fulfill method transfer a certain amount of NFTs 
@@ -147,11 +171,12 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
      * @param _nftContractAddress Is the address of the NFT (ERC-1155) contract to use                   
      * @return condition state (Fulfilled/Aborted)
      */
-    function fulfill(
+    function fulfillMarked(
         bytes32 _agreementId,
         bytes32 _did,
         address _lockAddress,
         uint256 _amount,
+        address _receiver,
         address _nftContractAddress
     )
         public
@@ -159,11 +184,11 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
         nonReentrant
         returns (ConditionStoreLibrary.ConditionState)
     {
-        erc1155.safeTransferFrom(msg.sender, _lockAddress, uint256(_did), _amount, '');
+        IERC1155Upgradeable(_nftContractAddress).safeTransferFrom(msg.sender, _lockAddress, uint256(_did), _amount, '');
         
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _lockAddress, _amount, _nftContractAddress)
+            hashValuesMarked(_did, _lockAddress, _amount, _receiver, _nftContractAddress)
         );
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
@@ -176,6 +201,7 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
             _lockAddress,
             _id,
             _amount,
+            _receiver,
             _nftContractAddress
         );
         return state;
@@ -183,40 +209,30 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
 
     // solhint-disable-next-line
     function onERC1155Received(
-        address _operator, 
-        address _from, 
-        uint256 _id, 
-        uint256 _value, 
-        bytes calldata _data
+        address, 
+        address, 
+        uint256, 
+        uint256, 
+        bytes calldata
     ) 
     external
     override
     returns(bytes4) 
     {
-        lastOperator = _operator;
-        lastFrom = _from;
-        lastId = _id;
-        lastValue = _value;
-        lastData = _data;
         return ERC1155_ACCEPTED;
     }
 
     function onERC1155BatchReceived(
-        address _operator, 
-        address _from, 
-        uint256[] calldata _ids, 
-        uint256[] calldata _values, 
-        bytes calldata _data
+        address, 
+        address, 
+        uint256[] calldata, 
+        uint256[] calldata, 
+        bytes calldata
     ) 
     external
     override
     returns(bytes4) 
     {
-        lastOperator = _operator;
-        lastFrom = _from;
-        lastId = _ids[0];
-        lastValue = _values[0];
-        lastData = _data;
         return ERC1155_BATCH_ACCEPTED;
     }
 

@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 
 
 import './BaseEscrowTemplate.sol';
-import '../conditions/NFTs/INFTMarkedLock.sol';
+import '../conditions/NFTs/INFTLock.sol';
 import '../conditions/rewards/INFTEscrow.sol';
 import '../registry/DIDRegistry.sol';
 import '../conditions/AccessProofCondition.sol';
@@ -34,7 +34,7 @@ import '../conditions/AccessProofCondition.sol';
 contract NFTAccessSwapTemplate is BaseEscrowTemplate {
 
     DIDRegistry internal didRegistry;
-    INFTMarkedLock internal lockPaymentCondition;
+    INFTLock internal lockPaymentCondition;
     INFTEscrow internal rewardCondition;
     AccessProofCondition internal accessCondition;
 
@@ -81,7 +81,7 @@ contract NFTAccessSwapTemplate is BaseEscrowTemplate {
             agreementStoreManager.getDIDRegistryAddress()
         );
 
-        lockPaymentCondition = INFTMarkedLock(
+        lockPaymentCondition = INFTLock(
             _lockPaymentConditionAddress
         );
         

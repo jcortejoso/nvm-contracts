@@ -8,7 +8,7 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
 const NFTAccessSwapTemplate = artifacts.require('NFTAccessSwapTemplate')
-const NFTMarkedLockCondition = artifacts.require('NFTMarkedLockCondition')
+const NFTLockCondition = artifacts.require('NFTLockCondition')
 const NFTEscrowCondition = artifacts.require('NFTEscrowPaymentCondition')
 
 const constants = require('../../helpers/constants.js')
@@ -77,10 +77,11 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
             conditionStoreManager.address,
             { from: deployer }
         )
-        lockPaymentCondition = await NFTMarkedLockCondition.new()
+        lockPaymentCondition = await NFTLockCondition.new()
         await lockPaymentCondition.initialize(
             owner,
             conditionStoreManager.address,
+            nft.address,
             { from: deployer }
         )
         nftTemplate = await NFTAccessSwapTemplate.new()
@@ -113,7 +114,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
         const { origHash, buyerPub, providerPub } = data
 
         const conditionIdLockPayment = await lockPaymentCondition.generateId(agreementId,
-            await lockPaymentCondition.hashValues(did, escrowCondition.address, amount, receiver, token.address))
+            await lockPaymentCondition.hashValuesMarked(did, escrowCondition.address, amount, receiver, token.address))
 
         const conditionIdAccess = await accessProofCondition.generateId(agreementId,
             await accessProofCondition.hashValues(origHash, buyerPub, providerPub))
@@ -189,7 +190,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
             const nftBalanceCollectorBefore = await nft.balanceOf(collector1, did)
 
             await nft.setApprovalForAll(lockPaymentCondition.address, true, { from: artist })
-            await lockPaymentCondition.fulfill(agreementId, did, escrowCondition.address, amount, receiver, token.address, { from: artist })
+            await lockPaymentCondition.fulfillMarked(agreementId, did, escrowCondition.address, amount, receiver, token.address, { from: artist })
 
             const { state } = await conditionStoreManager.getCondition(nftAgreement.conditionIds[0])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
