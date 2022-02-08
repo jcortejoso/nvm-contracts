@@ -12,7 +12,6 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import 'hardhat/console.sol';
 
 /**
  * @title Lock Payment Condition
@@ -108,39 +107,6 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             _receivers
         ));
     }
-
-    /**
-     * @notice hashValues generates the hash of condition inputs 
-    *        with the following parameters
-    * @param _did the asset decentralized identifier 
-    * @param _rewardAddress the contract address where the reward is locked       
-    * @param _externalContract the address of the contract with the lock funds are locked
-    * @param _remoteId the id used to identify into the external contract         
-    * @param _amounts token amounts to be locked/released
-    * @param _receivers receiver's addresses
-    * @return bytes32 hash of all these values 
-    */
-    function hashValuesExternal(
-        bytes32 _did,
-        address _rewardAddress,
-        address _externalContract,
-        bytes32 _remoteId,
-        uint256[] memory _amounts,
-        address[] memory _receivers
-    )
-    public
-    pure
-    returns (bytes32)
-    {
-        return keccak256(abi.encode(
-                _did,
-                _rewardAddress,
-                _externalContract,
-                _remoteId,
-                _amounts,
-                _receivers
-            ));
-    }    
     
    /**
     * @notice fulfill requires valid token transfer in order 
@@ -262,16 +228,6 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             hashValues(_did, _rewardAddress, externalContract.getTokenAddress(_remoteId), _amounts, _receivers)
         );
         
-//        console.log('_did: ');console.logBytes32(_did);
-//        console.log('_rewardAddress: ');console.log(_rewardAddress);
-//        console.log('_externalContract: ');console.log(_externalContract);
-//        console.log('_remoteId: ');console.logBytes32(_remoteId);
-//        console.log(_amounts[0]);
-//        console.log(_amounts[1]);
-//        console.log(_receivers[0]);
-//        console.log(_receivers[1]);
-//        console.log('_id: ');console.logBytes32(_id);
-        
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
             ConditionStoreLibrary.ConditionState.Fulfilled
@@ -282,16 +238,6 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
                 _id,
                 KEY_ASSET_RECEIVER,
                 Common.addressToBytes32(msg.sender)
-            );
-            conditionStoreManager.updateConditionMapping(
-                _id,
-                KEY_EXTERNAL_CONTRACT,
-                Common.addressToBytes32(_externalContract)
-            );
-            conditionStoreManager.updateConditionMapping(
-                _id,
-                KEY_REMOTE_ID,
-                _remoteId
             );            
         }
 
