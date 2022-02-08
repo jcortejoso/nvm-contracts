@@ -221,12 +221,9 @@ contract('Access Template integration test', (accounts) => {
 
             // No update since access is not fulfilled yet
             // refund
-            const result = await escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
-            assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
-                constants.condition.state.unfulfilled
+            await assert.isRejected(
+                escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
             )
-            assert.strictEqual(result.logs.length, 0)
 
             // wait: for time out
             await increaseTime.mineBlocks(web3, timeOutAccess)

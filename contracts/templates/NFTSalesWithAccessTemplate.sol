@@ -7,7 +7,7 @@ pragma solidity ^0.8.0;
 import './BaseEscrowTemplate.sol';
 import '../conditions/LockPaymentCondition.sol';
 import '../conditions/NFTs/TransferNFTCondition.sol';
-import '../conditions/rewards/MultiEscrowPaymentCondition.sol';
+import '../conditions/rewards/EscrowPaymentCondition.sol';
 import '../registry/DIDRegistry.sol';
 import '../conditions/AccessProofCondition.sol';
 
@@ -37,7 +37,7 @@ contract NFTSalesWithAccessTemplate is BaseEscrowTemplate {
     DIDRegistry internal didRegistry;
     LockPaymentCondition internal lockPaymentCondition;
     ITransferNFT internal transferCondition;
-    MultiEscrowPaymentCondition internal rewardCondition;
+    EscrowPaymentCondition internal rewardCondition;
     AccessProofCondition internal accessCondition;
 
 
@@ -94,7 +94,7 @@ contract NFTSalesWithAccessTemplate is BaseEscrowTemplate {
             _transferConditionAddress
         );
 
-        rewardCondition = MultiEscrowPaymentCondition(
+        rewardCondition = EscrowPaymentCondition(
             _escrowPaymentAddress
         );
 

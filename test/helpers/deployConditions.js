@@ -2,7 +2,6 @@
 const AccessCondition = artifacts.require('AccessCondition')
 const AccessProofCondition = artifacts.require('AccessProofCondition')
 const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
-const MultiEscrowPaymentCondition = artifacts.require('MultiEscrowPaymentCondition')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const ComputeExecutionCondition = artifacts.require('ComputeExecutionCondition')
 const DisputeManager = artifacts.require('PlonkVerifier')
@@ -49,13 +48,6 @@ const deployConditions = async function(
         { from: deployer }
     )
 
-    const multiEscrowCondition = await MultiEscrowPaymentCondition.new({ from: deployer })
-    await multiEscrowCondition.initialize(
-        owner,
-        conditionStoreManager.address,
-        { from: deployer }
-    )
-
     const computeExecutionCondition = await ComputeExecutionCondition.new({ from: deployer })
     await computeExecutionCondition.methods['initialize(address,address,address)'](
         owner,
@@ -73,7 +65,6 @@ const deployConditions = async function(
         accessCondition,
         accessProofCondition,
         escrowPaymentCondition,
-        multiEscrowCondition,
         lockPaymentCondition,
         computeExecutionCondition,
         disputeManager

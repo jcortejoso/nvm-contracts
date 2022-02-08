@@ -52,12 +52,8 @@ contract('NFTMarkedLockCondition', (accounts) => {
         if (!conditionStoreManager) {
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
-                owner,
-                { from: owner }
-            )
-
-            await conditionStoreManager.delegateCreateRole(
                 createRole,
+                owner,
                 { from: owner }
             )
 

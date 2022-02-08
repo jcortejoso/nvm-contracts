@@ -14,7 +14,7 @@ const NeverminedToken = artifacts.require('NeverminedToken')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const NFTMarkedLockCondition = artifacts.require('NFTMarkedLockCondition')
 const NFT721MarkedLockCondition = artifacts.require('NFT721MarkedLockCondition')
-const EscrowPaymentCondition = artifacts.require('MultiEscrowPaymentCondition')
+const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
 const NFTEscrowPaymentCondition = artifacts.require('NFTEscrowPaymentCondition')
 const NFT721EscrowPaymentCondition = artifacts.require('NFT721EscrowPaymentCondition')
 
@@ -63,10 +63,10 @@ function nftLockWrapper(contract) {
 
 function tokenEscrowWrapper(contract) {
     contract.hashWrap = (did, amounts, receivers, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId) => {
-        return contract.hashValues(did, amounts, receivers, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId)
+        return contract.hashValuesMulti(did, amounts, receivers, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId)
     }
     contract.fulfillWrap = (agreementId, did, amounts, receivers, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId) => {
-        return contract.fulfill(
+        return contract.fulfillMulti(
             agreementId,
             did,
             amounts,
@@ -185,9 +185,8 @@ function nft721TokenWrapper(contract) {
     return contract
 }
 
-function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nft, amount1, amount2) {
-    contract('MultiEscrowPaymentCondition contract', (accounts) => {
-        const single = nft ? a => a[0] : a => a
+function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nft, amount1, amount2, label) {
+    contract(`EscrowPaymentCondition contract (multi) for ${label}`, (accounts) => {
         const lockWrapper = nft ? nftLockWrapper : tokenLockWrapper
         const escrowWrapper = nft ? nftEscrowWrapper : tokenEscrowWrapper
         const tokenWrapper = nft ? (amount2 === 0 ? nft721TokenWrapper : nftTokenWrapper) : tokenTokenWrapper
@@ -339,11 +338,11 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                 assert.strictEqual(await token.getBalance(lockPaymentCondition.address), 0)
                 assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore + totalAmount)
 
-                const result = await escrowPayment.fulfill(
+                const result = await escrowPayment.fulfillWrap(
                     agreementId,
                     did,
-                    single(amounts),
-                    single(receivers),
+                    amounts,
+                    receivers,
                     escrowPayment.address,
                     token.address,
                     lockConditionId,
@@ -488,6 +487,6 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
     })
 }
 
-testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, NeverminedToken, false, 10, 12)
-testMultiEscrow(NFTEscrowPaymentCondition, NFTMarkedLockCondition, NFT, true, 10, 12)
-testMultiEscrow(NFT721EscrowPaymentCondition, NFT721MarkedLockCondition, NFT721, true, 1, 0)
+testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, NeverminedToken, false, 10, 12, 'ERC-20')
+testMultiEscrow(NFTEscrowPaymentCondition, NFTMarkedLockCondition, NFT, true, 10, 12, 'ERC-1155')
+testMultiEscrow(NFT721EscrowPaymentCondition, NFT721MarkedLockCondition, NFT721, true, 1, 0, 'ERC-721')
