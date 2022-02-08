@@ -30,6 +30,8 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
 
     bytes32 constant public CONDITION_TYPE = keccak256('LockPaymentCondition');
     bytes32 constant public KEY_ASSET_RECEIVER = keccak256('_assetReceiverAddress');
+    bytes32 constant public KEY_EXTERNAL_CONTRACT = keccak256('_externalContractAddress');
+    bytes32 constant public KEY_REMOTE_ID = keccak256('_remoteId');
 
     bytes32 private constant PROXY_ROLE = keccak256('PROXY_ROLE');
 
@@ -253,11 +255,11 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             externalState != IDynamicPricing.DynamicPricingState.Aborted, 'Invalid external state');
         require(calculateTotalAmount(_amounts) == externalAmount, 'Amounts dont match');
 
-        require(externalContract.withdraw(_remoteId), 'Unable to withdraw');
+        require(externalContract.withdraw(_remoteId, _rewardAddress), 'Unable to withdraw');
     
         bytes32 _id = generateId(
             _agreementId,
-            hashValuesExternal(_did, _rewardAddress, _externalContract, _remoteId, _amounts, _receivers)
+            hashValues(_did, _rewardAddress, externalContract.getTokenAddress(_remoteId), _amounts, _receivers)
         );
         
 //        console.log('_did: ');console.logBytes32(_did);
@@ -281,6 +283,16 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
                 KEY_ASSET_RECEIVER,
                 Common.addressToBytes32(msg.sender)
             );
+            conditionStoreManager.updateConditionMapping(
+                _id,
+                KEY_EXTERNAL_CONTRACT,
+                Common.addressToBytes32(_externalContract)
+            );
+            conditionStoreManager.updateConditionMapping(
+                _id,
+                KEY_REMOTE_ID,
+                _remoteId
+            );            
         }
 
         emit Fulfilled(

@@ -240,7 +240,7 @@ contract('English Auction test', (accounts) => {
 
         it('bidders can not withdraw before auction ends', async () => {
             await assert.isRejected(
-                auctionContract.withdraw(auctionId,
+                auctionContract.withdraw(auctionId, bidder2,
                     { from: bidder2 }),
                 'AbstractAuction: Auction not finished yet'
             )
@@ -250,7 +250,7 @@ contract('English Auction test', (accounts) => {
             await increaseTime.mineBlocks(web3, 10)
 
             await assert.isRejected(
-                auctionContract.withdraw(auctionId,
+                auctionContract.withdraw(auctionId, bidder3,
                     { from: bidder3 }),
                 'AbstractAuction: Zero amount'
             )
@@ -259,7 +259,7 @@ contract('English Auction test', (accounts) => {
         it('bidder not winning should be able to withdraw funds', async () => {
             await increaseTime.mineBlocks(web3, 10)
 
-            const result = await auctionContract.withdraw(auctionId,
+            const result = await auctionContract.withdraw(auctionId, bidder2,
                 { from: bidder2 })
 
             testUtils.assertEmitted(

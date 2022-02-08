@@ -109,9 +109,10 @@ abstract contract AbstractAuction is
         );
         auctions[_auctionId].state = DynamicPricingState.Aborted;
     }
-
+    
     function withdraw(
-        bytes32 _auctionId
+        bytes32 _auctionId,
+        address _withdrawAddress
     )
     external
     virtual
@@ -134,8 +135,11 @@ abstract contract AbstractAuction is
 
         if (auctions[_auctionId].state == DynamicPricingState.Aborted) {
             // The action was aborted so participants should be able to get a refund
-            withdrawalAddress = msg.sender;
-            withdrawalAmount = auctionBids[_auctionId][withdrawalAddress];
+            if (_withdrawAddress != address(0))
+                withdrawalAddress = _withdrawAddress;
+            else
+                withdrawalAddress = msg.sender;
+            withdrawalAmount = auctionBids[_auctionId][msg.sender];
  
         }   else    {
             
@@ -146,13 +150,19 @@ abstract contract AbstractAuction is
                 console.log('The winner of the auction cant withdraw');
                 return false;
             } else if (hasRole(NVM_AGREEMENT_ROLE, msg.sender)) { // Approved proxy or contract can withdraw for locking into service agreements
-                withdrawalAddress = msg.sender;
+                if (_withdrawAddress != address(0))
+                    withdrawalAddress = _withdrawAddress;
+                else
+                    withdrawalAddress = msg.sender;
                 withdrawalAmount = auctionBids[_auctionId][auctions[_auctionId].whoCanClaim];
                 auctionBids[_auctionId][auctions[_auctionId].whoCanClaim] = 0;
             } else if (auctionBids[_auctionId][msg.sender] > 0)    { // A participant not winning can withdraw
-                withdrawalAddress = msg.sender;
-                withdrawalAmount = auctionBids[_auctionId][withdrawalAddress];
-                auctionBids[_auctionId][withdrawalAddress] = 0;
+                if (_withdrawAddress != address(0))
+                    withdrawalAddress = _withdrawAddress;
+                else
+                    withdrawalAddress = msg.sender;
+                withdrawalAmount = auctionBids[_auctionId][msg.sender];
+                auctionBids[_auctionId][msg.sender] = 0;
             }
         }
 
@@ -177,7 +187,7 @@ abstract contract AbstractAuction is
         );
         return true;
     }
-
+    
     function getPricingType()
     external
     pure
@@ -196,6 +206,16 @@ abstract contract AbstractAuction is
     {
         return auctions[_auctionId].price;
     }
+
+    function getTokenAddress(
+        bytes32 _auctionId
+    )
+    external
+    view
+    returns(address)
+    {
+        return auctions[_auctionId].tokenAddress;
+    }    
     
     function getStatus(
         bytes32 _auctionId

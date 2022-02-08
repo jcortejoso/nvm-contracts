@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
  * dynamic pricing functionality.
  * @author Keyko
  */
- interface IDynamicPricing {
+interface IDynamicPricing {
 
     enum DynamicPricingState { NotStarted, Finished, InProgress, Aborted }
 
@@ -25,6 +25,13 @@ pragma solidity ^0.8.0;
     view
     returns(uint256);
 
+    function getTokenAddress(
+        bytes32 did
+    )
+    external
+    view
+    returns(address);
+
     function getStatus(
         bytes32 did
     )
@@ -40,9 +47,10 @@ pragma solidity ^0.8.0;
     returns(bool);
 
     function withdraw(
-        bytes32 did
+        bytes32 did,
+        address withdrawAddress
     )
     external
     returns(bool);
-     
+
 }

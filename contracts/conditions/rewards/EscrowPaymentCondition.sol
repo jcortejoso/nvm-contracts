@@ -8,6 +8,7 @@ import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
+import '../../interfaces/IDynamicPricing.sol';
 
 /**
  * @title Escrow Payment Condition
@@ -155,39 +156,39 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             _receivers
         ));
     }
-
-    /**
-     * @notice hashValuesLockPayment generates the hash of condition inputs 
-    *        with the following parameters
-    * @param _did the asset decentralized identifier 
-    * @param _rewardAddress the contract address where the reward is locked       
-    * @param _externalContract the address of the contract with the lock funds are locked
-    * @param _remoteId the id used to identify into the external contract        
-    * @param _amounts token amounts to be locked/released
-    * @param _receivers receiver's addresses
-    * @return bytes32 hash of all these values 
-    */
-    function hashValuesLockPaymentExternal(
-        bytes32 _did,
-        address _rewardAddress,
-        address _externalContract,
-        bytes32 _remoteId,
-        uint256[] memory _amounts,
-        address[] memory _receivers
-    )
-    public
-    pure
-    returns (bytes32)
-    {
-        return keccak256(abi.encode(
-                _did,
-                _rewardAddress,
-                _externalContract,
-                _remoteId,
-                _amounts,
-                _receivers
-            ));
-    }    
+//
+//    /**
+//     * @notice hashValuesLockPayment generates the hash of condition inputs 
+//    *        with the following parameters
+//    * @param _did the asset decentralized identifier 
+//    * @param _rewardAddress the contract address where the reward is locked       
+//    * @param _externalContract the address of the contract with the lock funds are locked
+//    * @param _remoteId the id used to identify into the external contract        
+//    * @param _amounts token amounts to be locked/released
+//    * @param _receivers receiver's addresses
+//    * @return bytes32 hash of all these values 
+//    */
+//    function hashValuesLockPaymentExternal(
+//        bytes32 _did,
+//        address _rewardAddress,
+//        address _externalContract,
+//        bytes32 _remoteId,
+//        uint256[] memory _amounts,
+//        address[] memory _receivers
+//    )
+//    public
+//    pure
+//    returns (bytes32)
+//    {
+//        return keccak256(abi.encode(
+//                _did,
+//                _rewardAddress,
+//                _externalContract,
+//                _remoteId,
+//                _amounts,
+//                _receivers
+//            ));
+//    }    
     
     /**
      * @notice fulfill escrow reward condition
@@ -308,6 +309,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         _releaseConditions[0] = _releaseCondition;
         return fulfillMulti(_agreementId, _did, _amounts, _receivers, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
     }
+    
 //
 //    /**
 //     * @notice fulfill escrow reward condition

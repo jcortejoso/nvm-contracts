@@ -32,6 +32,7 @@ contract('Access with Auction integration test', (accounts) => {
     const auctionId = testUtils.generateId()
     const agreementId = testUtils.generateId()
     const escrowAmounts = [10, 4]
+    const totalAmount = escrowAmounts[0] + escrowAmounts[1]
     const receivers = [creator, manager]
     const floor = 10
     const auctionDuration = 10
@@ -51,6 +52,7 @@ contract('Access with Auction integration test', (accounts) => {
         did,
         startBlock,
         endBlock,
+        creatorBalanceBeginning,
         bidder2BalanceBeginning
 
     async function setupTest({
@@ -84,7 +86,7 @@ contract('Access with Auction integration test', (accounts) => {
         auctionContract = await EnglishAuction.new({ from: deployer })
 
         await auctionContract.methods['initialize(address)'](owner, { from: deployer })
-        await auctionContract.addNVMAgreementRole(lockPaymentCondition.address, {from: owner} )
+        await auctionContract.addNVMAgreementRole(lockPaymentCondition.address, { from: owner })
 
         accessTemplate = await AccessTemplate.new()
         await accessTemplate.methods['initialize(address,address,address,address,address,address)'](
@@ -120,21 +122,18 @@ contract('Access with Auction integration test', (accounts) => {
     }
 
     async function prepareAccessAgreement({
-        timeLockAccess = 0,
-        timeOutAccess = 0,
         didSeed = testUtils.generateId(),
         url = constants.registry.url,
         checksum = constants.bytes32.one
     } = {}) {
         did = await didRegistry.hashDID(didSeed, creator)
         // generate IDs from attributes
-//        console.log('Whats my agreement id: ', agreementId)
+        //        console.log('Whats my agreement id: ', agreementId)
         const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
-            await lockPaymentCondition.hashValuesExternal(
+            await lockPaymentCondition.hashValues(
                 did,
                 escrowPaymentCondition.address,
-                auctionContract.address,
-                auctionId,
+                token.address,
                 escrowAmounts,
                 receivers))
         const conditionIdAccess = await accessCondition.generateId(agreementId,
@@ -157,8 +156,8 @@ contract('Access with Auction integration test', (accounts) => {
                 conditionIdLock,
                 conditionIdEscrow
             ],
-            timeLocks: [timeLockAccess, 0, 0],
-            timeOuts: [timeOutAccess, 0, 0],
+            timeLocks: [0, 0, 0],
+            timeOuts: [0, 0, 0],
             consumer: creator
         }
         return {
@@ -167,8 +166,6 @@ contract('Access with Auction integration test', (accounts) => {
             agreement,
             receivers,
             escrowAmounts,
-            timeLockAccess,
-            timeOutAccess,
             checksum,
             url
         }
@@ -219,7 +216,7 @@ contract('Access with Auction integration test', (accounts) => {
             // we wait for finishing the auction
             await increaseTime.mineBlocks(web3, 10)
 
-            const withdrawResult = await auctionContract.withdraw(auctionId, { from: bidder2 })
+            const withdrawResult = await auctionContract.withdraw(auctionId, bidder2, { from: bidder2 })
 
             testUtils.assertEmitted(
                 withdrawResult,
@@ -232,8 +229,8 @@ contract('Access with Auction integration test', (accounts) => {
         })
 
         it('bidder winning the auction should be able to lock', async () => {
-            const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const auctionBalanceBefore = await getBalance(token, auctionContract.address)
+            const lockBalanceBefore = await getBalance(token, lockPaymentCondition.address)
             const escrowBalanceBefore = await getBalance(token, escrowPaymentCondition.address)
 
             await lockPaymentCondition.fulfillExternal(
@@ -252,11 +249,11 @@ contract('Access with Auction integration test', (accounts) => {
                 constants.condition.state.fulfilled)
 
             assert.strictEqual(await getBalance(token, auctionContract.address), auctionBalanceBefore - totalAmount)
-            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), escrowBalanceBefore + totalAmount)
+            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), lockBalanceBefore)
+            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), escrowBalanceBefore + totalAmount)
         })
 
         it('bidder winning the auction can not get the funds more than once', async () => {
-
             await assert.isRejected(
                 lockPaymentCondition.fulfillExternal(
                     agreementId,
@@ -275,39 +272,46 @@ contract('Access with Auction integration test', (accounts) => {
         it('at this point the auction should be finished', async () => {
             const { state, price, whoCanClaim } = await auctionContract.getStatus(auctionId)
             assert.strictEqual(1, state.toNumber()) // Finished
+            assert.strictEqual(totalAmount, price.toNumber())
             assert.strictEqual(bidder1, whoCanClaim)
         })
 
-        it('the lock was paid with using the auction winner funds and access condition can be fulfilled', async () => {
+        it('the LockPayment was fulfilled using the auction winner funds and access condition can be fulfilled', async () => {
             await accessCondition.fulfill(
                 agreementId, did, creator, { from: creator })
 
-            assert.strictEqual(
+            assert.strictEqual( // Lock Condition
                 (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
+                constants.condition.state.fulfilled)
+            assert.strictEqual( // Access Condition
+                (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
         })
 
-//        it('escrow payment can be fulfilled and funds distributed', async () => {
-//
-//            await escrowPaymentCondition.fulfill(
-//                agreementId,
-//                did,
-//                escrowAmounts,
-//                receivers,
-//                escrowPaymentCondition.address,
-//                token.address,
-//                agreement.conditionIds[1],
-//                agreement.conditionIds[0],
-//                { from: creator }
-//            )
-//            assert.strictEqual(
-//                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
-//                constants.condition.state.fulfilled
-//            )
-//            assert.strictEqual(
-//                await getBalance(token, creator), creatorBalanceBeginning + escrowAmounts[0])
-//        })
+        it('escrow payment can be fulfilled and funds distributed', async () => {
+            const escrowBalanceBefore = await getBalance(token, escrowPaymentCondition.address)
 
+            await escrowPaymentCondition.fulfill(
+                agreementId,
+                did,
+                escrowAmounts,
+                receivers,
+                escrowPaymentCondition.address,
+                token.address,
+                agreement.conditionIds[1],
+                agreement.conditionIds[0],
+                { from: creator }
+            )
+            assert.strictEqual(
+                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
+                constants.condition.state.fulfilled
+            )
 
+            assert.strictEqual(
+                await getBalance(token, escrowPaymentCondition.address), escrowBalanceBefore - totalAmount)
+
+            assert.strictEqual(
+                await getBalance(token, creator), creatorBalanceBeginning + escrowAmounts[0])
+        })
     })
 })
