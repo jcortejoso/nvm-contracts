@@ -6,11 +6,13 @@ pragma solidity ^0.8.0;
 import './Condition.sol';
 import '../registry/DIDRegistry.sol';
 import '../Common.sol';
+import './ILockPayment.sol';
+import '../interfaces/IDynamicPricing.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-import './ILockPayment.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
+import 'hardhat/console.sol';
 
 /**
  * @title Lock Payment Condition
@@ -105,13 +107,46 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         ));
     }
 
+    /**
+     * @notice hashValues generates the hash of condition inputs 
+    *        with the following parameters
+    * @param _did the asset decentralized identifier 
+    * @param _rewardAddress the contract address where the reward is locked       
+    * @param _externalContract the address of the contract with the lock funds are locked
+    * @param _remoteId the id used to identify into the external contract         
+    * @param _amounts token amounts to be locked/released
+    * @param _receivers receiver's addresses
+    * @return bytes32 hash of all these values 
+    */
+    function hashValuesExternal(
+        bytes32 _did,
+        address _rewardAddress,
+        address _externalContract,
+        bytes32 _remoteId,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    )
+    public
+    pure
+    returns (bytes32)
+    {
+        return keccak256(abi.encode(
+                _did,
+                _rewardAddress,
+                _externalContract,
+                _remoteId,
+                _amounts,
+                _receivers
+            ));
+    }    
+    
    /**
     * @notice fulfill requires valid token transfer in order 
     *           to lock the amount of tokens based on the SEA
     * @param _agreementId the agreement identifier
     * @param _did the asset decentralized identifier
     * @param _rewardAddress the contract address where the reward is locked
-    * @param _tokenAddress the ERC20 contract address to use during the lock payment. 
+    * @param _tokenAddress the ERC20 contract address to use during the lock payment.      
     * @param _amounts token amounts to be locked/released
     * @param _receivers receiver's addresses
     * @return condition state
@@ -173,7 +208,93 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         );
         return state;
     }
- 
+
+    /**
+     * @notice fulfill lock condition using the funds locked in an external contract 
+     *          (auction, bonding courve, lottery, etc) 
+    * @param _agreementId the agreement identifier
+    * @param _did the asset decentralized identifier
+    * @param _rewardAddress the contract address where the reward is locked
+    * @param _externalContract the address of the contract with the lock funds are locked
+    * @param _remoteId the id used to identify into the external contract 
+    * @param _amounts token amounts to be locked/released
+    * @param _receivers receiver's addresses
+    * @return condition state
+    */
+    function fulfillExternal(
+        bytes32 _agreementId,
+        bytes32 _did,
+        address payable _rewardAddress,
+        address _externalContract,
+        bytes32 _remoteId,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    )
+    external
+    payable
+    nonReentrant
+    returns (ConditionStoreLibrary.ConditionState)
+    {
+        require(
+            _amounts.length == _receivers.length,
+            'Amounts and Receivers arguments have wrong length'
+        );
+        require(
+            didRegistry.areRoyaltiesValid(_did, _amounts, _receivers),
+            'Royalties are not satisfied'
+        );
+
+        IDynamicPricing externalContract = IDynamicPricing(_externalContract);
+        (IDynamicPricing.DynamicPricingState externalState, uint256 externalAmount, address whoCanClaim) =
+        externalContract.getStatus(_remoteId);
+
+        require(msg.sender == whoCanClaim, 'No allowed');
+        require(externalState != IDynamicPricing.DynamicPricingState.NotStarted &&
+            externalState != IDynamicPricing.DynamicPricingState.Aborted, 'Invalid external state');
+        require(calculateTotalAmount(_amounts) == externalAmount, 'Amounts dont match');
+
+        require(externalContract.withdraw(_remoteId), 'Unable to withdraw');
+    
+        bytes32 _id = generateId(
+            _agreementId,
+            hashValuesExternal(_did, _rewardAddress, _externalContract, _remoteId, _amounts, _receivers)
+        );
+        
+//        console.log('_did: ');console.logBytes32(_did);
+//        console.log('_rewardAddress: ');console.log(_rewardAddress);
+//        console.log('_externalContract: ');console.log(_externalContract);
+//        console.log('_remoteId: ');console.logBytes32(_remoteId);
+//        console.log(_amounts[0]);
+//        console.log(_amounts[1]);
+//        console.log(_receivers[0]);
+//        console.log(_receivers[1]);
+//        console.log('_id: ');console.logBytes32(_id);
+        
+        ConditionStoreLibrary.ConditionState state = super.fulfill(
+            _id,
+            ConditionStoreLibrary.ConditionState.Fulfilled
+        );
+
+        if (state == ConditionStoreLibrary.ConditionState.Fulfilled)    {
+            conditionStoreManager.updateConditionMapping(
+                _id,
+                KEY_ASSET_RECEIVER,
+                Common.addressToBytes32(msg.sender)
+            );
+        }
+
+        emit Fulfilled(
+            _agreementId,
+            _did,
+            _id,
+            _rewardAddress,
+            _externalContract,
+            _receivers,
+            _amounts
+        );
+        return state;
+    }    
+    
     function fulfillProxy(
         address _account,
         bytes32 _agreementId,

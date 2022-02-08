@@ -9,7 +9,7 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-
+import 'hardhat/console.sol';
 
 /**
  * @title Interface that can implement different contracts implementing some kind of 
@@ -138,23 +138,26 @@ abstract contract AbstractAuction is
             withdrawalAmount = auctionBids[_auctionId][withdrawalAddress];
  
         }   else    {
+            
             // The auction finished correctly
             if (msg.sender == auctions[_auctionId].creator)   { // The creator of the auction cant withdraw
                 return false;
             } else if (msg.sender == auctions[_auctionId].whoCanClaim)    { // The winner of the auction cant withdraw
+                console.log('The winner of the auction cant withdraw');
                 return false;
-            } else if (auctionBids[_auctionId][msg.sender] > 0)    { // A participant not winning can withdraw
-                withdrawalAddress = msg.sender;
-                withdrawalAmount = auctionBids[_auctionId][withdrawalAddress];                
             } else if (hasRole(NVM_AGREEMENT_ROLE, msg.sender)) { // Approved proxy or contract can withdraw for locking into service agreements
                 withdrawalAddress = msg.sender;
+                withdrawalAmount = auctionBids[_auctionId][auctions[_auctionId].whoCanClaim];
+                auctionBids[_auctionId][auctions[_auctionId].whoCanClaim] = 0;
+            } else if (auctionBids[_auctionId][msg.sender] > 0)    { // A participant not winning can withdraw
+                withdrawalAddress = msg.sender;
                 withdrawalAmount = auctionBids[_auctionId][withdrawalAddress];
+                auctionBids[_auctionId][withdrawalAddress] = 0;
             }
         }
 
         require(withdrawalAmount > 0, 'AbstractAuction: Zero amount');
-        auctionBids[_auctionId][withdrawalAddress] = 0;
-
+        
         if (auctions[_auctionId].tokenAddress == address(0))  { // ETH Withdrawal
             // solhint-disable-next-line
             (bool sent,) = withdrawalAddress.call{value: withdrawalAmount}('');

@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
-
 /**
  * @title Interface that can implement different contracts implementing some kind of 
  * dynamic pricing functionality.
@@ -40,5 +39,10 @@ pragma solidity ^0.8.0;
     view
     returns(bool);
 
-
+    function withdraw(
+        bytes32 did
+    )
+    external
+    returns(bool);
+     
 }
