@@ -25,6 +25,8 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
 
     bytes32 constant public CONDITION_TYPE = keccak256('EscrowPayment');
 
+    bytes32 constant public USED_PAYMENT_ID = keccak256('LockPaymentCondition');
+
     event Fulfilled(
         bytes32 indexed _agreementId,
         address indexed _tokenAddress,
@@ -188,7 +190,10 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
 
         ConditionStoreLibrary.ConditionState state = conditionStoreManager
         .getConditionState(_releaseCondition);
-        
+
+        bytes32 used = conditionStoreManager.getMappingValue(_lockCondition, USED_PAYMENT_ID);
+        require(used == 0, 'Lock condition already used');
+
         bytes32 id = generateId(
             _agreementId,
             hashValues(
@@ -203,6 +208,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         );        
         
         if (state == ConditionStoreLibrary.ConditionState.Fulfilled) {
+            conditionStoreManager.updateConditionMappingProxy(_lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
             if (_tokenAddress != address(0))
                 state = _transferAndFulfillERC20(id, _tokenAddress, _receivers, _amounts);
             else
@@ -211,7 +217,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
 
         } else if (state == ConditionStoreLibrary.ConditionState.Aborted) {
-            
+            conditionStoreManager.updateConditionMappingProxy(_lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
             uint256[] memory _totalAmounts = new uint256[](1);
             _totalAmounts[0] = calculateTotalAmount(_amounts);
             address[] memory _originalSender = new address[](1);
