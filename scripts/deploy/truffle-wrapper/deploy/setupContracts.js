@@ -204,6 +204,20 @@ async function setupContracts({
             await tx.wait()
         }
 
+        if (addressBook.EscrowPaymentCondition) {
+            if (verbose) {
+                console.log(
+                    `Linking escrow to condition store manager ${addressBook.EscrowPaymentCondition}`
+                )
+            }
+
+            const tx = await ConditionStoreManagerInstance.grantProxyRole(
+                addressBook.EscrowPaymentCondition,
+                { from: roles.deployer }
+            )
+            await tx.wait()
+        }
+
         await transferOwnership({
             ContractInstance: ConditionStoreManagerInstance,
             name: 'ConditionStoreManager',

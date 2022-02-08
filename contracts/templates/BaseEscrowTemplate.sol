@@ -85,6 +85,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
         address[] memory _receivers
     )
         public
+        payable
         returns (uint size)
     {
         super.createAgreementAndPay(

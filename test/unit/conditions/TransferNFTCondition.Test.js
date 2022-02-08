@@ -88,6 +88,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
 
             await conditionStoreManager.initialize(
                 owner,
+                owner,
                 { from: owner }
             )
 
@@ -180,6 +181,7 @@ contract('TransferNFT Condition constructor', (accounts) => {
             )
 
             await conditionStoreManager.initialize(
+                owner,
                 owner,
                 { from: owner }
             )

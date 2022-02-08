@@ -96,6 +96,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
         await conditionStoreManager.initialize(
             agreementStoreManager.address,
+            owner,
             { from: deployer }
         )
 

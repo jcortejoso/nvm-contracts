@@ -76,17 +76,17 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
      * @param _lockPaymentAddress lock payment contract address
      * @param _tokenAddress the ERC20 contract address to use during the payment 
      * @param _lockCondition lock condition identifier
-     * @param _releaseCondition release condition identifier
+     * @param _releaseConditions release condition identifier
      * @return bytes32 hash of all these values 
      */
-    function hashValues(
+    function hashValuesMulti(
         bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
         address _lockPaymentAddress,
         address _tokenAddress,
         bytes32 _lockCondition,
-        bytes32 _releaseCondition
+        bytes32[] memory _releaseConditions
     )
     public pure
     returns (bytes32)
@@ -103,9 +103,26 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
                 _lockPaymentAddress, 
                 _tokenAddress,
                 _lockCondition,
-                _releaseCondition
+                _releaseConditions
             )
         );
+    }
+    
+    function hashValues(
+        bytes32 _did,
+        uint256[] memory _amounts,
+        address[] memory _receivers,
+        address _lockPaymentAddress,
+        address _tokenAddress,
+        bytes32 _lockCondition,
+        bytes32 _releaseCondition
+    )
+    public pure
+    returns (bytes32)
+    {
+        bytes32[] memory _releaseConditions = new bytes32[](1);
+        _releaseConditions[0] = _releaseCondition;
+        return hashValuesMulti(_did, _amounts, _receivers, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
     }
     
    /**
@@ -138,7 +155,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             _receivers
         ));
     }
-    
+
     /**
      * @notice fulfill escrow reward condition
      * @dev fulfill method checks whether the lock and 
@@ -152,10 +169,10 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
      * @param _lockPaymentAddress lock payment contract address
      * @param _tokenAddress the ERC20 contract address to use during the payment
      * @param _lockCondition lock condition identifier
-     * @param _releaseCondition release condition identifier
+     * @param _releaseConditions release condition identifier
      * @return condition state (Fulfilled/Aborted)
      */
-    function fulfill(
+    function fulfillMulti(
         bytes32 _agreementId,
         bytes32 _did,
         uint256[] memory _amounts,
@@ -163,9 +180,9 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         address _lockPaymentAddress,
         address _tokenAddress,
         bytes32 _lockCondition,
-        bytes32 _releaseCondition
+        bytes32[] memory _releaseConditions
     )
-    external
+    public
     nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
@@ -186,23 +203,35 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             'LockCondition needs to be Fulfilled'
         );
 
-        ConditionStoreLibrary.ConditionState state = conditionStoreManager
-        .getConditionState(_releaseCondition);
-        
+        bool allFulfilled = true;
+        bool someAborted = false;
+        for (uint i = 0; i < _releaseConditions.length; i++) {
+            ConditionStoreLibrary.ConditionState cur = conditionStoreManager.getConditionState(_releaseConditions[i]);
+            if (cur != ConditionStoreLibrary.ConditionState.Fulfilled) {
+                allFulfilled = false;
+            }
+            if (cur == ConditionStoreLibrary.ConditionState.Aborted) {
+                someAborted = true;
+            }
+        }
+
+        require(someAborted || allFulfilled, 'Release conditions unresolved');
+
         bytes32 id = generateId(
             _agreementId,
-            hashValues(
+            hashValuesMulti(
                 _did,
                 _amounts,
                 _receivers,
                 _lockPaymentAddress,
                 _tokenAddress,
                 _lockCondition,
-                _releaseCondition
+                _releaseConditions
             )
         );        
         
-        if (state == ConditionStoreLibrary.ConditionState.Fulfilled) {
+        ConditionStoreLibrary.ConditionState state;
+        if (allFulfilled) {
             if (_tokenAddress != address(0))
                 state = _transferAndFulfillERC20(id, _tokenAddress, _receivers, _amounts);
             else
@@ -210,7 +239,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             
             emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
 
-        } else if (state == ConditionStoreLibrary.ConditionState.Aborted) {
+        } else if (someAborted) {
             
             uint256[] memory _totalAmounts = new uint256[](1);
             _totalAmounts[0] = calculateTotalAmount(_amounts);
@@ -224,11 +253,27 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             
             emit Fulfilled(_agreementId, _tokenAddress, _originalSender, id, _totalAmounts);
             
-        } else {
-            return conditionStoreManager.getConditionState(id);
         }
 
         return state;
+    }
+
+    function fulfill(
+        bytes32 _agreementId,
+        bytes32 _did,
+        uint256[] memory _amounts,
+        address[] memory _receivers,
+        address _lockPaymentAddress,
+        address _tokenAddress,
+        bytes32 _lockCondition,
+        bytes32 _releaseCondition
+    )
+    external
+    returns (ConditionStoreLibrary.ConditionState)
+    {
+        bytes32[] memory _releaseConditions = new bytes32[](1);
+        _releaseConditions[0] = _releaseCondition;
+        return fulfillMulti(_agreementId, _did, _amounts, _receivers, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
     }
 
     /**

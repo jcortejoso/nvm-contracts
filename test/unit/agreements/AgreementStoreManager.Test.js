@@ -75,6 +75,7 @@ contract('AgreementStoreManager', (accounts) => {
 
             await conditionStoreManager.initialize(
                 agreementStoreManager.address,
+                owner,
                 { from: deployer }
             )
             common = await Common.new()

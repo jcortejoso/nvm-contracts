@@ -10,6 +10,7 @@ import '../libraries/EpochLibrary.sol';
 import './ConditionStoreLibrary.sol';
 
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 /**
  * @title Condition Store Manager
@@ -25,7 +26,9 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
  *      The second role is the update role, which is can update the condition state.
  *      Also, it support delegating the roles to other contract(s)/account(s).
  */
-contract ConditionStoreManager is OwnableUpgradeable, Common {
+contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, Common {
+
+    bytes32 private constant PROXY_ROLE = keccak256('PROXY_ROLE');
 
     using ConditionStoreLibrary for ConditionStoreLibrary.ConditionList;
     using EpochLibrary for EpochLibrary.EpochList;
@@ -85,6 +88,7 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
      * @param _owner refers to the owner of the contract
      */
     function initialize(
+        address _creator,
         address _owner
     )
         public
@@ -101,7 +105,8 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
 
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
-        createRole = _owner;
+        createRole = _creator;
+        _setupRole(DEFAULT_ADMIN_ROLE, _owner);
     }
 
     /**
@@ -157,6 +162,14 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
             'Invalid condition Id'
         );
         conditionList.conditions[_id].typeRef = delegatee;
+    }
+
+    function grantProxyRole(address _address) public onlyOwner {
+        grantRole(PROXY_ROLE, _address);
+    }
+
+    function revokeProxyRole(address _address) public onlyOwner {
+        revokeRole(PROXY_ROLE, _address);
     }
 
     /**
@@ -299,6 +312,21 @@ contract ConditionStoreManager is OwnableUpgradeable, Common {
     external
     onlyUpdateRole(_id)
     {
+        conditionList.updateKeyValue(
+            _id, 
+            _key, 
+            _value
+        );
+    }
+    
+    function updateConditionMappingProxy(
+        bytes32 _id,
+        bytes32 _key,
+        bytes32 _value
+    )
+    external
+    {
+        require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
         conditionList.updateKeyValue(
             _id, 
             _key, 

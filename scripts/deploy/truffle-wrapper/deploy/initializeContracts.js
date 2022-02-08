@@ -138,7 +138,7 @@ async function initializeContracts({
             contract: 'ConditionStoreManager',
             ctx,
             libraries: { EpochLibrary: epochLibrary },
-            args: [roles.deployer],
+            args: [roles.deployer, roles.deployer],
             verbose
         })
     }
