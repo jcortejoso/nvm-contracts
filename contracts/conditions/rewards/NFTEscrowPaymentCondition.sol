@@ -5,10 +5,12 @@ pragma solidity ^0.8.0;
 
 import './Reward.sol';
 import '../../Common.sol';
+import './INFTEscrow.sol';
 import '../ConditionStoreLibrary.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol';
+import 'hardhat/console.sol';
 /**
  * @title Escrow Payment Condition
  * @author Keyko
@@ -19,19 +21,10 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
  *      can release reward if lock and release conditions
  *      are fulfilled.
  */
-contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
+contract NFTEscrowPaymentCondition is Reward, INFTEscrow, Common, ReentrancyGuardUpgradeable, IERC1155ReceiverUpgradeable {
 
-    using SafeERC20Upgradeable for IERC20Upgradeable;
-
-    bytes32 constant public CONDITION_TYPE = keccak256('EscrowPayment');
-
-    event Fulfilled(
-        bytes32 indexed _agreementId,
-        address indexed _tokenAddress,
-        address[] _receivers,
-        bytes32 _conditionId,
-        uint256[] _amounts
-    );
+    bytes32 constant public CONDITION_TYPE = keccak256('NFTEscrowPayment');
+    bytes32 constant public LOCK_CONDITION_TYPE = keccak256('NFTLockCondition');
 
     event Received(
         address indexed _from, 
@@ -79,10 +72,10 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
      * @param _releaseConditions release condition identifier
      * @return bytes32 hash of all these values 
      */
-    function hashValuesMulti(
+    function hashValues(
         bytes32 _did,
-        uint256[] memory _amounts,
-        address[] memory _receivers,
+        uint256 _amounts,
+        address _receivers,
         address _lockPaymentAddress,
         address _tokenAddress,
         bytes32 _lockCondition,
@@ -91,10 +84,6 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
     public pure
     returns (bytes32)
     {
-        require(
-            _amounts.length == _receivers.length,
-            'Amounts and Receivers arguments have wrong length'
-        );
         return keccak256(
             abi.encode(
                 _did,
@@ -108,54 +97,38 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         );
     }
     
-    function hashValues(
-        bytes32 _did,
-        uint256[] memory _amounts,
-        address[] memory _receivers,
-        address _lockPaymentAddress,
-        address _tokenAddress,
-        bytes32 _lockCondition,
-        bytes32 _releaseCondition
-    )
-    public pure
-    returns (bytes32)
-    {
-        bytes32[] memory _releaseConditions = new bytes32[](1);
-        _releaseConditions[0] = _releaseCondition;
-        return hashValuesMulti(_did, _amounts, _receivers, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
-    }
-    
    /**
     * @notice hashValuesLockPayment generates the hash of condition inputs 
     *        with the following parameters
     * @param _did the asset decentralized identifier 
-    * @param _rewardAddress the contract address where the reward is locked       
-    * @param _tokenAddress the ERC20 contract address to use during the lock payment. 
+    * @param _lockAddress the contract address where the reward is locked       
+    * @param _nftContractAddress the ERC20 contract address to use during the lock payment. 
     *        If the address is 0x0 means we won't use a ERC20 but ETH for payment     
-    * @param _amounts token amounts to be locked/released
-    * @param _receivers receiver's addresses
+    * @param _amount token amounts to be locked/released
+    * @param _receiver receiver's addresses
     * @return bytes32 hash of all these values 
     */
     function hashValuesLockPayment(
         bytes32 _did,
-        address _rewardAddress,
-        address _tokenAddress,
-        uint256[] memory _amounts,
-        address[] memory _receivers
+        address _lockAddress,
+        address _nftContractAddress,
+        uint256 _amount,
+        address _receiver
     )
         public
         pure
         returns (bytes32)
     {
         return keccak256(abi.encode(
-            _did,
-            _rewardAddress,
-            _tokenAddress,
-            _amounts,
-            _receivers
+            LOCK_CONDITION_TYPE,
+            _did, 
+            _lockAddress, 
+            _amount,
+            _receiver, 
+            _nftContractAddress
         ));
     }
-
+    
     /**
      * @notice fulfill escrow reward condition
      * @dev fulfill method checks whether the lock and 
@@ -164,25 +137,25 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
      *      respectively.
      * @param _agreementId agreement identifier
      * @param _did asset decentralized identifier          
-     * @param _amounts token amounts to be locked/released
-     * @param _receivers receiver's address
+     * @param _amount token amounts to be locked/released
+     * @param _receiver receiver's address
      * @param _lockPaymentAddress lock payment contract address
      * @param _tokenAddress the ERC20 contract address to use during the payment
      * @param _lockCondition lock condition identifier
      * @param _releaseConditions release condition identifier
      * @return condition state (Fulfilled/Aborted)
      */
-    function fulfillMulti(
+    function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
-        uint256[] memory _amounts,
-        address[] memory _receivers,
+        uint256 _amount,
+        address _receiver,
         address _lockPaymentAddress,
         address _tokenAddress,
         bytes32 _lockCondition,
         bytes32[] memory _releaseConditions
     )
-    public
+    external
     nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
@@ -191,7 +164,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             abi.encode(
                 _agreementId,
                 conditionStoreManager.getConditionTypeRef(_lockCondition),
-                hashValuesLockPayment(_did, _lockPaymentAddress, _tokenAddress, _amounts, _receivers)
+                hashValuesLockPayment(_did, _lockPaymentAddress, _tokenAddress, _amount, _receiver)
             )
         ) == _lockCondition,
             'LockCondition ID does not match'
@@ -219,10 +192,10 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
 
         bytes32 id = generateId(
             _agreementId,
-            hashValuesMulti(
+            hashValues(
                 _did,
-                _amounts,
-                _receivers,
+                _amount,
+                _receiver,
                 _lockPaymentAddress,
                 _tokenAddress,
                 _lockCondition,
@@ -230,50 +203,12 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             )
         );        
         
-        ConditionStoreLibrary.ConditionState state;
         if (allFulfilled) {
-            if (_tokenAddress != address(0))
-                state = _transferAndFulfillERC20(id, _tokenAddress, _receivers, _amounts);
-            else
-                state = _transferAndFulfillETH(id, _receivers, _amounts);
-            
-            emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
-
-        } else if (someAborted) {
-            
-            uint256[] memory _totalAmounts = new uint256[](1);
-            _totalAmounts[0] = calculateTotalAmount(_amounts);
-            address[] memory _originalSender = new address[](1);
-            _originalSender[0] = conditionStoreManager.getConditionCreatedBy(_lockCondition);
-            
-            if (_tokenAddress != address(0))
-                state = _transferAndFulfillERC20(id, _tokenAddress, _originalSender, _totalAmounts);
-            else
-                state = _transferAndFulfillETH(id, _originalSender, _totalAmounts);
-            
-            emit Fulfilled(_agreementId, _tokenAddress, _originalSender, id, _totalAmounts);
-            
+            return _transferAndFulfillNFT(_agreementId, id, _did, _tokenAddress, _receiver, _amount);
+        } else {
+            assert(someAborted == true);
+            return _transferAndFulfillNFT(_agreementId, id, _did, _tokenAddress, conditionStoreManager.getConditionCreatedBy(_lockCondition), _amount);
         }
-
-        return state;
-    }
-
-    function fulfill(
-        bytes32 _agreementId,
-        bytes32 _did,
-        uint256[] memory _amounts,
-        address[] memory _receivers,
-        address _lockPaymentAddress,
-        address _tokenAddress,
-        bytes32 _lockCondition,
-        bytes32 _releaseCondition
-    )
-    external
-    returns (ConditionStoreLibrary.ConditionState)
-    {
-        bytes32[] memory _releaseConditions = new bytes32[](1);
-        _releaseConditions[0] = _releaseCondition;
-        return fulfillMulti(_agreementId, _did, _amounts, _receivers, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
     }
 
     /**
@@ -281,29 +216,24 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
     *       fulfill the condition
     * @param _id condition identifier
     * @param _tokenAddress the ERC20 contract address to use during the payment    
-    * @param _receivers receiver's address
-    * @param _amounts token amount to be locked/released
+    * @param _receiver receiver's address
+    * @param _amount token amount to be locked/released
     * @return condition state (Fulfilled/Aborted)
     */
-    function _transferAndFulfillERC20(
+    function _transferAndFulfillNFT(
+        bytes32 _agreementId,
         bytes32 _id,
+        bytes32 _did,
         address _tokenAddress,
-        address[] memory _receivers,
-        uint256[] memory _amounts
+        address _receiver,
+        uint256 _amount
     )
     private
     returns (ConditionStoreLibrary.ConditionState)
     {
-        
-        IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
-        
-        for(uint i = 0; i < _receivers.length; i++)    {
-            require(
-                _receivers[i] != address(this),
-                'Escrow contract can not be a receiver'
-            );
-            token.safeTransfer(_receivers[i], _amounts[i]);
-        }
+        IERC1155Upgradeable nft = IERC1155Upgradeable(_tokenAddress);
+        nft.safeTransferFrom(address(this), _receiver, uint256(_did), _amount, '');
+        emit Fulfilled(_agreementId, _tokenAddress, _did, _receiver, _id, _amount);
 
         return super.fulfill(
             _id,
@@ -311,42 +241,49 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         );
     }
 
-    /**
-    * @notice _transferAndFulfill transfer ETH and 
-    *       fulfill the condition
-    * @param _id condition identifier
-    * @param _receivers receiver's address
-    * @param _amounts token amount to be locked/released
-    * @return condition state (Fulfilled/Aborted)
-    */
-    function _transferAndFulfillETH(
-        bytes32 _id,
-        address[] memory _receivers,
-        uint256[] memory _amounts
-    )
-    private
-    returns (ConditionStoreLibrary.ConditionState)
-    {
-        for(uint i = 0; i < _receivers.length; i++)    {
-            require(
-                _receivers[i] != address(this),
-                'Escrow contract can not be a receiver'
-            );
-            
-            require(
-                address(this).balance >= _amounts[i],
-                'Contract balance too low'
-            );
-            
-            // solhint-disable-next-line
-            (bool sent,) = _receivers[i].call{value: _amounts[i]}('');
-            require(sent, 'Failed to send Ether');
-        }
+    bytes4 constant internal ERC1155_ACCEPTED = 0xf23a6e61; // bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"))
+    bytes4 constant internal ERC1155_BATCH_ACCEPTED = 0xbc197c81; // bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))
 
-        return super.fulfill(
-            _id,
-            ConditionStoreLibrary.ConditionState.Fulfilled
-        );
-    }    
-    
+    // solhint-disable-next-line
+    function onERC1155Received(
+        address, 
+        address, 
+        uint256, 
+        uint256, 
+        bytes calldata
+    ) 
+    external
+    override
+    pure
+    returns(bytes4) 
+    {
+        return ERC1155_ACCEPTED;
+    }
+
+    function onERC1155BatchReceived(
+        address, 
+        address, 
+        uint256[] calldata, 
+        uint256[] calldata, 
+        bytes calldata
+    ) 
+    external
+    override
+    pure
+    returns(bytes4) 
+    {
+        return ERC1155_BATCH_ACCEPTED;
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) 
+    external
+    override
+    pure 
+    returns (bool) 
+    {
+        return  interfaceId == 0x01ffc9a7 ||    // ERC165
+        interfaceId == 0x4e2312e0;      // ERC1155_ACCEPTED ^ ERC1155_BATCH_ACCEPTED;        
+    }
 }

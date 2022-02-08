@@ -14,6 +14,7 @@ interface INFTLock {
         address indexed _lockAddress,
         bytes32 _conditionId,
         uint256 _amount,
+        address _receiver,
         address _nftContractAddress
     );
 
@@ -30,6 +31,17 @@ interface INFTLock {
         bytes32 _did,
         address _lockAddress,
         uint256 _amount,
+        address _nftContractAddress
+    )
+    external
+    pure
+    returns (bytes32);
+
+    function hashValuesMarked(
+        bytes32 _did,
+        address _lockAddress,
+        uint256 _amount,
+        address _receiver,
         address _nftContractAddress
     )
     external
@@ -53,6 +65,17 @@ interface INFTLock {
         bytes32 _did,
         address _lockAddress,
         uint256 _amount,
+        address _nftContractAddress
+    )
+    external
+    returns (ConditionStoreLibrary.ConditionState);
+
+    function fulfillMarked(
+        bytes32 _agreementId,
+        bytes32 _did,
+        address _lockAddress,
+        uint256 _amount,
+        address _receiver,
         address _nftContractAddress
     )
     external
