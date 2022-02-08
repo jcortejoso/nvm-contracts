@@ -45,7 +45,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, nf
         const url = 'https://nevermined.io/did/test-attr-example.txt'
 
         before(async () => {
-            if (nft) {
+            if (!nft) {
                 const epochLibrary = await EpochLibrary.new()
                 await ConditionStoreManager.link(epochLibrary)
                 const didRegistryLibrary = await DIDRegistryLibrary.new()
@@ -839,6 +839,9 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, nf
 
         describe('only fulfill conditions once', () => {
             it('do not allow rewards to be fulfilled twice', async () => {
+                if (nft721) {
+                    return
+                }
                 const agreementId = testUtils.generateId()
                 const sender = accounts[0]
                 const attacker = [accounts[2]]
@@ -859,7 +862,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, nf
                     escrowPayment.address)
 
                 /* simulate a real environment by giving the EscrowPayment contract a bunch of tokens: */
-                await token.mintWrap(didRegistry, sender, 100, { from: owner })
+                await token.mintWrap(didRegistry, sender, 100, owner)
                 await token.transferWrap(escrowPayment.address, 100, { from: sender })
 
                 const lockConditionId = conditionLockId
@@ -1115,9 +1118,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, nf
     })
 }
 
-// escrowTest(EscrowPaymentCondition, LockPaymentCondition, NeverminedToken, false, false, wrapper.normal, 10, 12, 'ERC-20')
-// escrowTest(NFTEscrowPaymentCondition, NFTLockCondition, NFT, true, false, wrapper.nft, 10, 12, 'ERC-1155')
+escrowTest(EscrowPaymentCondition, LockPaymentCondition, NeverminedToken, false, false, wrapper.normal, 10, 12, 'ERC-20')
+escrowTest(NFTEscrowPaymentCondition, NFTLockCondition, NFT, true, false, wrapper.nft, 10, 12, 'ERC-1155')
 escrowTest(NFT721EscrowPaymentCondition, NFT721LockCondition, NFT721, true, true, wrapper.nft721, 1, 0, 'ERC-721')
 
-// escrowTest(EscrowPaymentCondition, false)
-// escrowTest(MultiEscrowPaymentCondition, true)
