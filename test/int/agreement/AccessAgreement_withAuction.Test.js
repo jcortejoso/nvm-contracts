@@ -287,26 +287,26 @@ contract('Access with Auction integration test', (accounts) => {
                 constants.condition.state.fulfilled)
         })
 
-        it('escrow payment can be fulfilled and funds distributed', async () => {
-
-            await escrowPaymentCondition.fulfill(
-                agreementId,
-                did,
-                escrowAmounts,
-                receivers,
-                escrowPaymentCondition.address,
-                token.address,
-                agreement.conditionIds[1],
-                agreement.conditionIds[0],
-                { from: creator }
-            )
-            assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
-                constants.condition.state.fulfilled
-            )
-            assert.strictEqual(
-                await getBalance(token, creator), creatorBalanceBeginning + escrowAmounts[0])
-        })
+//        it('escrow payment can be fulfilled and funds distributed', async () => {
+//
+//            await escrowPaymentCondition.fulfill(
+//                agreementId,
+//                did,
+//                escrowAmounts,
+//                receivers,
+//                escrowPaymentCondition.address,
+//                token.address,
+//                agreement.conditionIds[1],
+//                agreement.conditionIds[0],
+//                { from: creator }
+//            )
+//            assert.strictEqual(
+//                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
+//                constants.condition.state.fulfilled
+//            )
+//            assert.strictEqual(
+//                await getBalance(token, creator), creatorBalanceBeginning + escrowAmounts[0])
+//        })
 
 
     })
