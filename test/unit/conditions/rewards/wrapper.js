@@ -113,6 +113,9 @@ function tokenTokenWrapper(contract) {
     contract.approveWrap = (addr, amount, args) => {
         return contract.approve(addr, amount, args)
     }
+    contract.transferWrap = (addr, amount, {from}) => {
+        return contract.transfer(addr, amount, {from})
+    }
     return contract
 }
 
@@ -142,6 +145,9 @@ function nftTokenWrapper(contract) {
     }
     contract.approveWrap = (addr, amount, args) => {
         return contract.setApprovalForAll(addr, true, args)
+    }
+    contract.transferWrap = async (target, amount, {from}) => {
+        await contract.safeTransferFrom(from, target, contract.did, amount, '0x', { from })
     }
     return contract
 }
@@ -177,6 +183,9 @@ function nft721TokenWrapper(contract) {
     }
     contract.approveWrap = (addr, amount, args) => {
         return contract.setApprovalForAll(addr, true, args)
+    }
+    contract.transferWrap = async (target, amount, {from}) => {
+        await contract.safeTransferFrom(from, target, contract.did, { from })
     }
     return contract
 }

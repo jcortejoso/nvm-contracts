@@ -28,7 +28,7 @@ const testUtils = require('../../../helpers/utils.js')
 
 const wrapper = require('./wrapper')
 
-function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wrappers, amount1, amount2, label) {
+function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, nft721, wrappers, amount1, amount2, label) {
     const multi = a => [a]
     const { lockWrapper, escrowWrapper, tokenWrapper } = wrappers
     contract(`EscrowPaymentCondition contract for ${label}`, (accounts) => {
@@ -45,7 +45,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
         const url = 'https://nevermined.io/did/test-attr-example.txt'
 
         before(async () => {
-            if (!nft) {
+            if (nft) {
                 const epochLibrary = await EpochLibrary.new()
                 await ConditionStoreManager.link(epochLibrary)
                 const didRegistryLibrary = await DIDRegistryLibrary.new()
@@ -69,10 +69,10 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     { from: owner }
                 )
 
-                didRegistry = await DIDRegistry.new()
-                await didRegistry.initialize(owner, constants.address.zero, constants.address.zero)
-
                 token = tokenWrapper(await Token.new())
+                didRegistry = await DIDRegistry.new()
+                await didRegistry.initialize(owner, token.address, token.address)
+
                 await token.initWrap(owner, owner, didRegistry)
                 lockPaymentCondition = lockWrapper(await LockPaymentCondition.new())
                 await lockPaymentCondition.initWrap(
@@ -161,13 +161,14 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
         describe('fulfill existing condition', () => {
             it('ERC20: should fulfill if conditions exist for account address', async () => {
                 const agreementId = testUtils.generateId()
-                const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [accounts[1]]
                 const amounts = [amount1]
                 const totalAmount = amounts[0]
-                const balanceBefore = await getBalance(token, escrowPayment.address)
 
+                const did = await token.makeDID(sender, didRegistry)
+
+                const balanceBefore = await token.getBalance(escrowPayment.address)
                 const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
@@ -201,8 +202,8 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
 
                 await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
-                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(lockPaymentCondition.address), 0)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore + totalAmount)
 
                 const result = await escrowPayment.fulfillWrap(
                     agreementId,
@@ -231,14 +232,17 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
                 }
 
-                assert.strictEqual(await getBalance(token, escrowPayment.address), 0)
-                assert.strictEqual(await getBalance(token, receivers[0]), totalAmount)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), 0)
+                assert.strictEqual(await token.getBalance(receivers[0]), totalAmount)
 
-                await token.mint(sender, totalAmount, { from: owner })
-                await token.approve(escrowPayment.address, totalAmount, { from: sender })
-                await token.transfer(escrowPayment.address, totalAmount, { from: sender })
+                await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                await token.approveWrap(
+                    lockPaymentCondition.address,
+                    totalAmount,
+                    { from: sender })
+                await token.transferWrap(escrowPayment.address, totalAmount, { from: sender })
 
-                assert.strictEqual(await getBalance(token, escrowPayment.address), totalAmount)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), totalAmount)
                 await assert.isRejected(
                     escrowPayment.fulfillWrap(agreementId, did, amounts, receivers, escrowPayment.address, token.address, lockConditionId, multi(releaseConditionId)),
                     constants.condition.state.error.invalidStateTransition
@@ -415,13 +419,16 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
             })
 
             it('receiver and amount lists need to have same length', async () => {
+                if (nft) {
+                    return
+                }
                 const agreementId = testUtils.generateId()
                 const did = testUtils.generateId()
                 const receivers = [accounts[1]]
                 const amounts = [amount1]
                 const amounts2 = [amount1, amount2]
 
-                const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+                const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
                 await conditionStoreManager.createCondition(
@@ -431,7 +438,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                 const lockConditionId = conditionLockId
                 const releaseConditionId = conditionLockId
 
-                await assert.isRejected(escrowPayment.hashValues(
+                await assert.isRejected(escrowPayment.hashWrap(
                     did,
                     amounts2,
                     receivers,
@@ -444,7 +451,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
 
             it('lock condition not fulfilled', async () => {
                 const agreementId = testUtils.generateId()
-                const did = testUtils.generateId()
+                const did = await token.makeDID(accounts[0], didRegistry)
                 const receivers = [accounts[1]]
                 const amounts = [amount1]
 
@@ -487,14 +494,14 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
 
             it('release condition not fulfilled', async () => {
                 const agreementId = testUtils.generateId()
-                const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [accounts[1]]
                 const amounts = [amount1]
                 const receivers2 = [accounts[5]]
                 const amounts2 = [amount2]
                 const totalAmount = amounts[0]
-                const balanceBefore = await getBalance(token, escrowPayment.address)
+                const balanceBefore = await token.getBalance(escrowPayment.address)
+                const did = await token.makeDID(sender, didRegistry)
 
                 const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const lockConditionId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
@@ -525,16 +532,16 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     escrowConditionId,
                     escrowPayment.address)
 
-                await token.mint(sender, totalAmount, { from: owner })
-                await token.approve(
+                await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                await token.approveWrap(
                     lockPaymentCondition.address,
                     totalAmount,
                     { from: sender })
 
                 await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
-                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(lockPaymentCondition.address), 0)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore + totalAmount)
 
                 await assert.isRejected(escrowPayment.fulfillWrap(
                     agreementId,
@@ -546,19 +553,19 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     lockConditionId,
                     multi(releaseConditionId)))
 
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore + totalAmount)
             })
 
             it('ERC20: release condition aborted', async () => {
                 const agreementId = testUtils.generateId()
-                const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [accounts[1]]
                 const amounts = [amount1]
                 const receivers2 = [accounts[5]]
                 const amounts2 = [amount2]
                 const totalAmount = amounts[0]
-                const balanceBefore = await getBalance(token, escrowPayment.address)
+                const did = await token.makeDID(sender, didRegistry)
+                const balanceBefore = await token.getBalance(escrowPayment.address)
 
                 const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const lockConditionId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
@@ -593,16 +600,16 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     escrowConditionId,
                     escrowPayment.address)
 
-                await token.mint(sender, totalAmount, { from: owner })
-                await token.approve(
+                await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                await token.approveWrap(
                     lockPaymentCondition.address,
                     totalAmount,
                     { from: sender })
 
                 await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
-                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(lockPaymentCondition.address), 0)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore + totalAmount)
 
                 // abort release
                 await lockPaymentCondition.abortByTimeOut(releaseConditionId)
@@ -622,7 +629,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     constants.condition.state.fulfilled
                 )
 
-                assert.strictEqual(await getBalance(token, sender), totalAmount)
+                assert.strictEqual(await token.getBalance(sender), totalAmount)
             })
 
             it('ETH: release condition aborted', async () => {
@@ -702,12 +709,12 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
 
             it('should not fulfill in case of null addresses', async () => {
                 const agreementId = testUtils.generateId()
-                const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [constants.address.zero]
                 const amounts = [amount1]
                 const totalAmount = amounts[0]
-                const balanceBefore = await getBalance(token, escrowPayment.address)
+                const did = await token.makeDID(sender, didRegistry)
+                const balanceBefore = await token.getBalance(escrowPayment.address)
 
                 const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
@@ -737,16 +744,16 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     conditionId,
                     escrowPayment.address)
 
-                await token.mint(sender, totalAmount, { from: owner })
-                await token.approve(
+                await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                await token.approveWrap(
                     lockPaymentCondition.address,
                     totalAmount,
                     { from: sender })
 
                 await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
-                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(lockPaymentCondition.address), 0)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore + totalAmount)
 
                 await assert.isRejected(
                     escrowPayment.fulfillWrap(
@@ -759,17 +766,17 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                         lockConditionId,
                         multi(releaseConditionId)
                     ),
-                    'ERC20: transfer to the zero address'
+                    'transfer to the zero address'
                 )
             })
             it('should not fulfill if the receiver address is Escrow contract address', async () => {
                 const agreementId = testUtils.generateId()
-                const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [escrowPayment.address]
                 const amounts = [amount1]
                 const totalAmount = amounts[0]
-                const balanceBefore = await getBalance(token, escrowPayment.address)
+                const did = await token.makeDID(sender, didRegistry)
+                const balanceBefore = await token.getBalance(escrowPayment.address)
 
                 const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
@@ -799,16 +806,16 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     conditionId,
                     escrowPayment.address)
 
-                await token.mint(sender, totalAmount, { from: owner })
-                await token.approve(
+                await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                await token.approveWrap(
                     lockPaymentCondition.address,
                     totalAmount,
                     { from: sender })
 
                 await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
-                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(lockPaymentCondition.address), 0)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore + totalAmount)
 
                 await assert.isRejected(
                     escrowPayment.fulfillWrap(
@@ -829,12 +836,12 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
         describe('only fulfill conditions once', () => {
             it('do not allow rewards to be fulfilled twice', async () => {
                 const agreementId = testUtils.generateId()
-                const did = testUtils.generateId()
                 const sender = accounts[0]
                 const attacker = [accounts[2]]
                 const receivers = [escrowPayment.address]
                 const amounts = [amount1]
                 const totalAmount = amounts[0]
+                const did = await token.makeDID(sender, didRegistry)
 
                 const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
@@ -848,15 +855,16 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     escrowPayment.address)
 
                 /* simulate a real environment by giving the EscrowPayment contract a bunch of tokens: */
-                await token.mint(escrowPayment.address, 100, { from: owner })
+                await token.mintWrap(didRegistry, sender, 100, { from: owner })
+                await token.transferWrap(escrowPayment.address, 100, { from: sender })
 
                 const lockConditionId = conditionLockId
                 const releaseConditionId = conditionLockId
 
                 /* fulfill the lock condition */
 
-                await token.mint(sender, totalAmount, { from: owner })
-                await token.approve(
+                await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                await token.approveWrap(
                     lockPaymentCondition.address,
                     totalAmount,
                     { from: sender })
@@ -904,21 +912,21 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
 
                 /* make sure the EscrowPayment contract didn't get drained */
                 assert.notStrictEqual(
-                    (await token.balanceOf(escrowPayment.address)).toNumber(),
+                    await token.getBalance(escrowPayment.address),
                     0
                 )
             })
 
             it('ERC20: should bit fulfill if was already fulfilled', async () => {
                 const agreementId = testUtils.generateId()
-                const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [accounts[1]]
                 const amounts = [amount1]
                 const totalAmount = amounts[0]
+                const did = await token.makeDID(sender, didRegistry)
 
-                const balanceContractBefore = await getBalance(token, escrowPayment.address)
-                const balanceReceiverBefore = await getBalance(token, receivers[0])
+                const balanceContractBefore = await token.getBalance(escrowPayment.address)
+                const balanceReceiverBefore = await token.getBalance(receivers[0])
 
                 const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
@@ -945,16 +953,16 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     escrowConditionId,
                     escrowPayment.address)
 
-                await token.mint(sender, totalAmount, { from: owner })
-                await token.approve(
+                await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                await token.approveWrap(
                     lockPaymentCondition.address,
                     totalAmount,
                     { from: sender })
 
                 await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
-                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceContractBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(lockPaymentCondition.address), 0)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceContractBefore + totalAmount)
 
                 await escrowPayment.fulfillWrap(
                     agreementId,
@@ -971,8 +979,8 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     constants.condition.state.fulfilled
                 )
 
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceContractBefore)
-                assert.strictEqual(await getBalance(token, receivers[0]), balanceReceiverBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceContractBefore)
+                assert.strictEqual(await token.getBalance(receivers[0]), balanceReceiverBefore + totalAmount)
 
                 await assert.isRejected(escrowPayment.fulfillWrap(
                     agreementId,
@@ -985,8 +993,8 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     multi(releaseConditionId))
                 )
 
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceContractBefore)
-                assert.strictEqual(await getBalance(token, receivers[0]), balanceReceiverBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceContractBefore)
+                assert.strictEqual(await token.getBalance(receivers[0]), balanceReceiverBefore + totalAmount)
             })
             it.skip('Should not be able to reuse the condition', async () => {
                 const agreementId = testUtils.generateId()
@@ -996,7 +1004,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                 const receivers2 = [accounts[2]]
                 const amounts = [amount1]
                 const totalAmount = amounts[0]
-                const balanceBefore = await getBalance(token, escrowPayment.address)
+                const balanceBefore = await token.getBalance(escrowPayment.address)
 
                 const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
@@ -1023,16 +1031,16 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
                     escrowConditionId,
                     escrowPayment.address)
 
-                await token.mint(sender, totalAmount, { from: owner })
-                await token.approve(
+                await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                await token.approveWrap(
                     lockPaymentCondition.address,
                     totalAmount,
                     { from: sender })
 
                 await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
-                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(lockPaymentCondition.address), 0)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore + totalAmount)
 
                 const result = await escrowPayment.fulfill(
                     agreementId,
@@ -1064,16 +1072,16 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
 
                 const releaseConditionId2 = conditionLockId2
 
-                await token.mint(sender, totalAmount, { from: owner })
-                await token.approve(
+                await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                await token.approveWrap(
                     lockPaymentCondition.address,
                     totalAmount,
                     { from: sender })
 
                 await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers2)
 
-                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-                assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
+                assert.strictEqual(await token.getBalance(lockPaymentCondition.address), 0)
+                assert.strictEqual(await token.getBalance(escrowPayment.address), balanceBefore + totalAmount)
 
                 const escrowConditionId2 = await escrowPayment.generateId(agreementId, await escrowPayment.hashValues(
                     did,
@@ -1103,9 +1111,9 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wr
     })
 }
 
-escrowTest(EscrowPaymentCondition, LockPaymentCondition, NeverminedToken, false, wrapper.normal, 10, 12, 'ERC-20')
-escrowTest(NFTEscrowPaymentCondition, NFTLockCondition, NFT, true, wrapper.nft, 10, 12, 'ERC-1155')
-// escrowTest(NFT721EscrowPaymentCondition, NFT721LockCondition, NFT721, true, wrapper.nft721, 1, 0, 'ERC-721')
+// escrowTest(EscrowPaymentCondition, LockPaymentCondition, NeverminedToken, false, false, wrapper.normal, 10, 12, 'ERC-20')
+// escrowTest(NFTEscrowPaymentCondition, NFTLockCondition, NFT, true, false, wrapper.nft, 10, 12, 'ERC-1155')
+escrowTest(NFT721EscrowPaymentCondition, NFT721LockCondition, NFT721, true, true, wrapper.nft721, 1, 0, 'ERC-721')
 
 // escrowTest(EscrowPaymentCondition, false)
 // escrowTest(MultiEscrowPaymentCondition, true)
