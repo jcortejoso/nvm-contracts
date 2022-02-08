@@ -192,7 +192,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         .getConditionState(_releaseCondition);
 
         bytes32 used = conditionStoreManager.getMappingValue(_lockCondition, USED_PAYMENT_ID);
-        require(used == 0, "Lock condition already used");
+        require(used == 0, 'Lock condition already used');
 
         bytes32 id = generateId(
             _agreementId,

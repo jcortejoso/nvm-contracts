@@ -56,6 +56,11 @@ const deployConditions = async function(
         { from: deployer }
     )
 
+    await conditionStoreManager.grantProxyRole(
+        escrowPaymentCondition.address,
+        { from: owner }
+    )
+
     return {
         accessCondition,
         accessProofCondition,

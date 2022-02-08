@@ -119,6 +119,7 @@ contract('End to End NFT Scenarios', (accounts) => {
 
         await conditionStoreManager.initialize(
             agreementStoreManager.address,
+            owner,
             { from: deployer }
         )
 
@@ -184,6 +185,11 @@ contract('End to End NFT Scenarios', (accounts) => {
 
         // IMPORTANT: Here we give ERC1155 transfer grants to the TransferNFTCondition condition
         await nft.setProxyApproval(transferCondition.address, true, { from: owner })
+
+        await conditionStoreManager.grantProxyRole(
+            escrowCondition.address,
+            { from: owner }
+        )
 
         await templateStoreManager.proposeTemplate(nftSalesTemplate.address)
         await templateStoreManager.approveTemplate(nftSalesTemplate.address, { from: owner })

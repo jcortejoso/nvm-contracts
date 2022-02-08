@@ -30,14 +30,6 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
 
     bytes32 private constant PROXY_ROLE = keccak256('PROXY_ROLE');
 
-    function grantProxyRole(address _address) public onlyOwner {
-        grantRole(PROXY_ROLE, _address);
-    }
-
-    function revokeProxyRole(address _address) public onlyOwner {
-        revokeRole(PROXY_ROLE, _address);
-    }
-
     using ConditionStoreLibrary for ConditionStoreLibrary.ConditionList;
     using EpochLibrary for EpochLibrary.EpochList;
 
@@ -96,6 +88,7 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
      * @param _owner refers to the owner of the contract
      */
     function initialize(
+        address _creator,
         address _owner
     )
         public
@@ -112,7 +105,7 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
 
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
-        createRole = _owner;
+        createRole = _creator;
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
     }
 
@@ -169,6 +162,14 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
             'Invalid condition Id'
         );
         conditionList.conditions[_id].typeRef = delegatee;
+    }
+
+    function grantProxyRole(address _address) public onlyOwner {
+        grantRole(PROXY_ROLE, _address);
+    }
+
+    function revokeProxyRole(address _address) public onlyOwner {
+        revokeRole(PROXY_ROLE, _address);
     }
 
     /**

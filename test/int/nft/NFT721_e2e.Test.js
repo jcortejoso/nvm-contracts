@@ -114,6 +114,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
 
         await conditionStoreManager.initialize(
             agreementStoreManager.address,
+            owner,
             { from: deployer }
         )
 
@@ -167,6 +168,10 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         )
         await agreementStoreManager.grantProxyRole(nftSalesTemplate.address, { from: owner })
         await lockPaymentCondition.grantProxyRole(agreementStoreManager.address, { from: owner })
+        await conditionStoreManager.grantProxyRole(
+            escrowCondition.address,
+            { from: owner }
+        )
 
         // Setup NFT Access Template
         nftAccessTemplate = await NFTAccessTemplate.new()
