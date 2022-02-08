@@ -235,12 +235,16 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, nf
                 assert.strictEqual(await token.getBalance(escrowPayment.address), 0)
                 assert.strictEqual(await token.getBalance(receivers[0]), totalAmount)
 
-                await token.mintWrap(didRegistry, sender, totalAmount, owner)
-                await token.approveWrap(
-                    lockPaymentCondition.address,
-                    totalAmount,
-                    { from: sender })
-                await token.transferWrap(escrowPayment.address, totalAmount, { from: sender })
+                if (nft721) {
+                    await token.transferWrap(escrowPayment.address, totalAmount, { from: receivers[0] })
+                } else {
+                    await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                    await token.approveWrap(
+                        lockPaymentCondition.address,
+                        totalAmount,
+                        { from: sender })
+                    await token.transferWrap(escrowPayment.address, totalAmount, { from: sender })
+                }
 
                 assert.strictEqual(await token.getBalance(escrowPayment.address), totalAmount)
                 await assert.isRejected(
