@@ -68,9 +68,9 @@ contract AgreementTemplate is OwnableUpgradeable {
         uint256[] memory _amounts,
         address[] memory _receivers
     )
-        public
+        public payable
     {
-        agreementStoreManager.createAgreementAndPay(
+        agreementStoreManager.createAgreementAndPay{value: msg.value}(
             _id,
             _did,
             getConditionTypes(),

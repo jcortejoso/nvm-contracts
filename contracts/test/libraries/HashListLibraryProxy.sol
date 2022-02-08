@@ -17,6 +17,7 @@ contract HashListLibraryProxy is OwnableUpgradeable {
         address _owner
     )
         public
+        initializer
     {
         testData.setOwner(msg.sender);
         OwnableUpgradeable.__Ownable_init();

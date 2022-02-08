@@ -43,7 +43,7 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         address _conditionStoreManagerAddress
     ) 
     external 
-    initializer() 
+    initializer
     {
         
         require(         

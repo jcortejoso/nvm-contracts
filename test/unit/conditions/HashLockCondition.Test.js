@@ -36,12 +36,8 @@ contract('HashLockCondition constructor', (accounts) => {
         if (!hashLockCondition) {
             conditionStoreManager = await ConditionStoreManager.new()
             await conditionStoreManager.initialize(
-                owner,
-                { from: owner }
-            )
-
-            await conditionStoreManager.delegateCreateRole(
                 createRole,
+                owner,
                 { from: owner }
             )
 

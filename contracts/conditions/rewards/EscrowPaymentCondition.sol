@@ -76,17 +76,17 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
      * @param _lockPaymentAddress lock payment contract address
      * @param _tokenAddress the ERC20 contract address to use during the payment 
      * @param _lockCondition lock condition identifier
-     * @param _releaseCondition release condition identifier
+     * @param _releaseConditions release condition identifier
      * @return bytes32 hash of all these values 
      */
-    function hashValues(
+    function hashValuesMulti(
         bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
         address _lockPaymentAddress,
         address _tokenAddress,
         bytes32 _lockCondition,
-        bytes32 _releaseCondition
+        bytes32[] memory _releaseConditions
     )
     public pure
     returns (bytes32)
@@ -103,9 +103,26 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
                 _lockPaymentAddress, 
                 _tokenAddress,
                 _lockCondition,
-                _releaseCondition
+                _releaseConditions
             )
         );
+    }
+    
+    function hashValues(
+        bytes32 _did,
+        uint256[] memory _amounts,
+        address[] memory _receivers,
+        address _lockPaymentAddress,
+        address _tokenAddress,
+        bytes32 _lockCondition,
+        bytes32 _releaseCondition
+    )
+    public pure
+    returns (bytes32)
+    {
+        bytes32[] memory _releaseConditions = new bytes32[](1);
+        _releaseConditions[0] = _releaseCondition;
+        return hashValuesMulti(_did, _amounts, _receivers, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
     }
     
    /**
@@ -185,10 +202,10 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
      * @param _lockPaymentAddress lock payment contract address
      * @param _tokenAddress the ERC20 contract address to use during the payment
      * @param _lockCondition lock condition identifier
-     * @param _releaseCondition release condition identifier
+     * @param _releaseConditions release condition identifier
      * @return condition state (Fulfilled/Aborted)
      */
-    function fulfill(
+    function fulfillMulti(
         bytes32 _agreementId,
         bytes32 _did,
         uint256[] memory _amounts,
@@ -196,9 +213,9 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         address _lockPaymentAddress,
         address _tokenAddress,
         bytes32 _lockCondition,
-        bytes32 _releaseCondition
+        bytes32[] memory _releaseConditions
     )
-    external
+    public
     nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
@@ -219,23 +236,35 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             'LockCondition needs to be Fulfilled'
         );
 
-        ConditionStoreLibrary.ConditionState state = conditionStoreManager
-        .getConditionState(_releaseCondition);
-        
+        bool allFulfilled = true;
+        bool someAborted = false;
+        for (uint i = 0; i < _releaseConditions.length; i++) {
+            ConditionStoreLibrary.ConditionState cur = conditionStoreManager.getConditionState(_releaseConditions[i]);
+            if (cur != ConditionStoreLibrary.ConditionState.Fulfilled) {
+                allFulfilled = false;
+            }
+            if (cur == ConditionStoreLibrary.ConditionState.Aborted) {
+                someAborted = true;
+            }
+        }
+
+        require(someAborted || allFulfilled, 'Release conditions unresolved');
+
         bytes32 id = generateId(
             _agreementId,
-            hashValues(
+            hashValuesMulti(
                 _did,
                 _amounts,
                 _receivers,
                 _lockPaymentAddress,
                 _tokenAddress,
                 _lockCondition,
-                _releaseCondition
+                _releaseConditions
             )
         );        
         
-        if (state == ConditionStoreLibrary.ConditionState.Fulfilled) {
+        ConditionStoreLibrary.ConditionState state;
+        if (allFulfilled) {
             if (_tokenAddress != address(0))
                 state = _transferAndFulfillERC20(id, _tokenAddress, _receivers, _amounts);
             else
@@ -243,7 +272,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             
             emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
 
-        } else if (state == ConditionStoreLibrary.ConditionState.Aborted) {
+        } else if (someAborted) {
             
             uint256[] memory _totalAmounts = new uint256[](1);
             _totalAmounts[0] = calculateTotalAmount(_amounts);
@@ -257,108 +286,124 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             
             emit Fulfilled(_agreementId, _tokenAddress, _originalSender, id, _totalAmounts);
             
-        } else {
-            return conditionStoreManager.getConditionState(id);
         }
 
         return state;
     }
 
-    /**
-     * @notice fulfill escrow reward condition
-     * @dev fulfill method checks whether the lock and 
-     *      release conditions are fulfilled in order to 
-     *      release/refund the reward to receiver/sender 
-     *      respectively.
-     * @param _agreementId agreement identifier
-     * @param _did asset decentralized identifier          
-     * @param _amounts token amounts to be locked/released
-     * @param _receivers receiver's address
-     * @param _lockPaymentAddress lock payment contract address
-     * @param _tokenAddress the ERC20 contract address to use during the payment     
-     * @param _externalContract the address of the contract with the lock funds are locked
-     * @param _remoteId the id used to identify into the external contract 
-     * @param _lockCondition lock condition identifier
-     * @param _releaseCondition release condition identifier
-     * @return condition state (Fulfilled/Aborted)
-     */
-    function fulfillExternal(
+    function fulfill(
         bytes32 _agreementId,
         bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
         address _lockPaymentAddress,
         address _tokenAddress,
-        address _externalContract,
-        bytes32 _remoteId,
         bytes32 _lockCondition,
         bytes32 _releaseCondition
     )
     external
-    nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
-
-        require(keccak256(
-            abi.encode(
-                _agreementId,
-                conditionStoreManager.getConditionTypeRef(_lockCondition),
-                hashValuesLockPaymentExternal(_did, _lockPaymentAddress, _externalContract, _remoteId, _amounts, _receivers)
-            )
-        ) == _lockCondition,
-            'LockCondition ID does not match'
-        );
-
-        require(
-            conditionStoreManager.getConditionState(_lockCondition) ==
-            ConditionStoreLibrary.ConditionState.Fulfilled,
-            'LockCondition needs to be Fulfilled'
-        );
-
-        ConditionStoreLibrary.ConditionState state = conditionStoreManager
-        .getConditionState(_releaseCondition);
-
-        bytes32 id = generateId(
-            _agreementId,
-            hashValues(
-                _did,
-                _amounts,
-                _receivers,
-                _lockPaymentAddress,
-                _tokenAddress,
-                _lockCondition,
-                _releaseCondition
-            )
-        );
-
-        if (state == ConditionStoreLibrary.ConditionState.Fulfilled) {
-            if (_tokenAddress != address(0))
-                state = _transferAndFulfillERC20(id, _tokenAddress, _receivers, _amounts);
-            else
-                state = _transferAndFulfillETH(id, _receivers, _amounts);
-
-            emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
-
-        } else if (state == ConditionStoreLibrary.ConditionState.Aborted) {
-
-            uint256[] memory _totalAmounts = new uint256[](1);
-            _totalAmounts[0] = calculateTotalAmount(_amounts);
-            address[] memory _originalSender = new address[](1);
-            _originalSender[0] = conditionStoreManager.getConditionCreatedBy(_lockCondition);
-
-            if (_tokenAddress != address(0))
-                state = _transferAndFulfillERC20(id, _tokenAddress, _originalSender, _totalAmounts);
-            else
-                state = _transferAndFulfillETH(id, _originalSender, _totalAmounts);
-
-            emit Fulfilled(_agreementId, _tokenAddress, _originalSender, id, _totalAmounts);
-
-        } else {
-            return conditionStoreManager.getConditionState(id);
-        }
-
-        return state;
-    }    
+        bytes32[] memory _releaseConditions = new bytes32[](1);
+        _releaseConditions[0] = _releaseCondition;
+        return fulfillMulti(_agreementId, _did, _amounts, _receivers, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
+    }
+//
+//    /**
+//     * @notice fulfill escrow reward condition
+//     * @dev fulfill method checks whether the lock and 
+//     *      release conditions are fulfilled in order to 
+//     *      release/refund the reward to receiver/sender 
+//     *      respectively.
+//     * @param _agreementId agreement identifier
+//     * @param _did asset decentralized identifier          
+//     * @param _amounts token amounts to be locked/released
+//     * @param _receivers receiver's address
+//     * @param _lockPaymentAddress lock payment contract address
+//     * @param _tokenAddress the ERC20 contract address to use during the payment     
+//     * @param _externalContract the address of the contract with the lock funds are locked
+//     * @param _remoteId the id used to identify into the external contract 
+//     * @param _lockCondition lock condition identifier
+//     * @param _releaseCondition release condition identifier
+//     * @return condition state (Fulfilled/Aborted)
+//     */
+//    function fulfillExternal(
+//        bytes32 _agreementId,
+//        bytes32 _did,
+//        uint256[] memory _amounts,
+//        address[] memory _receivers,
+//        address _lockPaymentAddress,
+//        address _tokenAddress,
+//        address _externalContract,
+//        bytes32 _remoteId,
+//        bytes32 _lockCondition,
+//        bytes32 _releaseCondition
+//    )
+//    external
+//    nonReentrant
+//    returns (ConditionStoreLibrary.ConditionState)
+//    {
+//
+//        require(keccak256(
+//            abi.encode(
+//                _agreementId,
+//                conditionStoreManager.getConditionTypeRef(_lockCondition),
+//                hashValuesLockPaymentExternal(_did, _lockPaymentAddress, _externalContract, _remoteId, _amounts, _receivers)
+//            )
+//        ) == _lockCondition,
+//            'LockCondition ID does not match'
+//        );
+//
+//        require(
+//            conditionStoreManager.getConditionState(_lockCondition) ==
+//            ConditionStoreLibrary.ConditionState.Fulfilled,
+//            'LockCondition needs to be Fulfilled'
+//        );
+//
+//        ConditionStoreLibrary.ConditionState state = conditionStoreManager
+//        .getConditionState(_releaseCondition);
+//
+//        bytes32 id = generateId(
+//            _agreementId,
+//            hashValues(
+//                _did,
+//                _amounts,
+//                _receivers,
+//                _lockPaymentAddress,
+//                _tokenAddress,
+//                _lockCondition,
+//                _releaseCondition
+//            )
+//        );
+//
+//        if (state == ConditionStoreLibrary.ConditionState.Fulfilled) {
+//            if (_tokenAddress != address(0))
+//                state = _transferAndFulfillERC20(id, _tokenAddress, _receivers, _amounts);
+//            else
+//                state = _transferAndFulfillETH(id, _receivers, _amounts);
+//
+//            emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
+//
+//        } else if (state == ConditionStoreLibrary.ConditionState.Aborted) {
+//
+//            uint256[] memory _totalAmounts = new uint256[](1);
+//            _totalAmounts[0] = calculateTotalAmount(_amounts);
+//            address[] memory _originalSender = new address[](1);
+//            _originalSender[0] = conditionStoreManager.getConditionCreatedBy(_lockCondition);
+//
+//            if (_tokenAddress != address(0))
+//                state = _transferAndFulfillERC20(id, _tokenAddress, _originalSender, _totalAmounts);
+//            else
+//                state = _transferAndFulfillETH(id, _originalSender, _totalAmounts);
+//
+//            emit Fulfilled(_agreementId, _tokenAddress, _originalSender, id, _totalAmounts);
+//
+//        } else {
+//            return conditionStoreManager.getConditionState(id);
+//        }
+//
+//        return state;
+//    }    
     
     /**
     * @notice _transferAndFulfill transfer ERC20 tokens and 

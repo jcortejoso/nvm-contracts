@@ -52,12 +52,7 @@ contract('LockPaymentCondition', (accounts) => {
             await nft.addMinter(didRegistry.address)
 
             conditionStoreManager = await ConditionStoreManager.new()
-            await conditionStoreManager.initialize(owner, { from: owner })
-
-            await conditionStoreManager.delegateCreateRole(
-                createRole,
-                { from: owner }
-            )
+            await conditionStoreManager.initialize(createRole, owner, { from: owner })
 
             token = await NeverminedToken.new()
             await token.initialize(owner, owner)
@@ -82,7 +77,7 @@ contract('LockPaymentCondition', (accounts) => {
             await nft.addMinter(didRegistry.address)
 
             const conditionStoreManager = await ConditionStoreManager.new()
-            await conditionStoreManager.initialize(owner, { from: owner })
+            await conditionStoreManager.initialize(owner, owner, { from: owner })
 
             await conditionStoreManager.delegateCreateRole(
                 createRole,

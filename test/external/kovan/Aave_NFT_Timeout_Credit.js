@@ -29,7 +29,7 @@ const TestERC721 = artifacts.require('TestERC721')
 const constants = require('../../helpers/constants.js')
 const testUtils = require('../../helpers/utils.js')
 
-contract('End to End NFT Collateral Scenario', (accounts) => {
+contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
     const lender = accounts[3]
     const borrower = accounts[4]
 
@@ -96,6 +96,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
         await conditionStoreManager.initialize(
             agreementStoreManager.address,
+            owner,
             { from: deployer }
         )
 
