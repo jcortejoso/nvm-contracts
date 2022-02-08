@@ -14,13 +14,24 @@ const NeverminedToken = artifacts.require('NeverminedToken')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
 
+const NFTLockCondition = artifacts.require('NFTLockCondition')
+const NFT721LockCondition = artifacts.require('NFT721LockCondition')
+const NFTEscrowPaymentCondition = artifacts.require('NFTEscrowPaymentCondition')
+const NFT721EscrowPaymentCondition = artifacts.require('NFT721EscrowPaymentCondition')
+
+const NFT = artifacts.require('NFTUpgradeable')
+const NFT721 = artifacts.require('NFT721Upgradeable')
+
 const constants = require('../../../helpers/constants.js')
 const { getBalance, getETHBalance } = require('../../../helpers/getBalance.js')
 const testUtils = require('../../../helpers/utils.js')
 
-function escrowTest(EscrowPaymentCondition, isMulti) {
-    const multi = isMulti ? a => [a] : a => a
-    contract(isMulti ? 'EscrowPaymentCondition contract (multi)' : 'EscrowPaymentCondition contract', (accounts) => {
+const wrapper = require('./wrapper')
+
+function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, wrappers, amount1, amount2, label) {
+    const multi = a => [a]
+    const { lockWrapper, escrowWrapper, tokenWrapper } = wrappers
+    contract(`EscrowPaymentCondition contract for ${label}`, (accounts) => {
         let conditionStoreManager
         let token
         let lockPaymentCondition
@@ -34,7 +45,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
         const url = 'https://nevermined.io/did/test-attr-example.txt'
 
         before(async () => {
-            if (!isMulti) {
+            if (!nft) {
                 const epochLibrary = await EpochLibrary.new()
                 await ConditionStoreManager.link(epochLibrary)
                 const didRegistryLibrary = await DIDRegistryLibrary.new()
@@ -61,18 +72,17 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 didRegistry = await DIDRegistry.new()
                 await didRegistry.initialize(owner, constants.address.zero, constants.address.zero)
 
-                token = await NeverminedToken.new()
-                await token.initialize(owner, owner)
-
-                lockPaymentCondition = await LockPaymentCondition.new()
-                await lockPaymentCondition.initialize(
+                token = tokenWrapper(await Token.new())
+                await token.initWrap(owner, owner, didRegistry)
+                lockPaymentCondition = lockWrapper(await LockPaymentCondition.new())
+                await lockPaymentCondition.initWrap(
                     owner,
                     conditionStoreManager.address,
                     didRegistry.address,
                     { from: deployer }
                 )
 
-                escrowPayment = await EscrowPaymentCondition.new()
+                escrowPayment = escrowWrapper(await EscrowPaymentCondition.new())
                 await escrowPayment.initialize(
                     owner,
                     conditionStoreManager.address,
@@ -104,18 +114,17 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const didRegistry = await DIDRegistry.new()
                 await didRegistry.initialize(owner, constants.address.zero, constants.address.zero)
 
-                const token = await NeverminedToken.new()
-                await token.initialize(owner, owner)
-
-                const lockPaymentCondition = await LockPaymentCondition.new()
-                await lockPaymentCondition.initialize(
+                const token = tokenWrapper(await Token.new())
+                await token.initWrap(owner, owner, didRegistry)
+                const lockPaymentCondition = lockWrapper(await LockPaymentCondition.new())
+                await lockPaymentCondition.initWrap(
                     owner,
                     conditionStoreManager.address,
                     didRegistry.address,
                     { from: deployer }
                 )
 
-                const escrowPayment = await EscrowPaymentCondition.new()
+                const escrowPayment = escrowWrapper(await EscrowPaymentCondition.new())
                 await assert.isRejected(escrowPayment.initialize(
                     owner,
                     constants.address.zero,
@@ -135,7 +144,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const amounts = [10]
 
                 await assert.isRejected(
-                    escrowPayment.fulfill(
+                    escrowPayment.fulfillWrap(
                         agreementId,
                         did,
                         amounts,
@@ -155,11 +164,11 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [accounts[1]]
-                const amounts = [10]
+                const amounts = [amount1]
                 const totalAmount = amounts[0]
                 const balanceBefore = await getBalance(token, escrowPayment.address)
 
-                const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+                const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
                 await conditionStoreManager.createCondition(
@@ -169,7 +178,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const lockConditionId = conditionLockId
                 const releaseConditionId = conditionLockId
 
-                const hashValues = await escrowPayment.hashValues(
+                const hashValues = await escrowPayment.hashWrap(
                     did,
                     amounts,
                     receivers,
@@ -184,18 +193,18 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     escrowConditionId,
                     escrowPayment.address)
 
-                await token.mint(sender, totalAmount, { from: owner })
-                await token.approve(
+                await token.mintWrap(didRegistry, sender, totalAmount, owner)
+                await token.approveWrap(
                     lockPaymentCondition.address,
                     totalAmount,
                     { from: sender })
 
-                await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
+                await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
                 assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
                 assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
 
-                const result = await escrowPayment.fulfill(
+                const result = await escrowPayment.fulfillWrap(
                     agreementId,
                     did,
                     amounts,
@@ -214,8 +223,13 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const eventArgs = testUtils.getEventArgsFromTx(result, 'Fulfilled')
                 expect(eventArgs._agreementId).to.equal(agreementId)
                 expect(eventArgs._conditionId).to.equal(escrowConditionId)
-                expect(eventArgs._receivers[0]).to.equal(receivers[0])
-                expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
+                if (nft) {
+                    expect(eventArgs._receivers).to.equal(receivers[0])
+                    expect(eventArgs._amounts.toNumber()).to.equal(amounts[0])
+                } else {
+                    expect(eventArgs._receivers[0]).to.equal(receivers[0])
+                    expect(eventArgs._amounts[0].toNumber()).to.equal(amounts[0])
+                }
 
                 assert.strictEqual(await getBalance(token, escrowPayment.address), 0)
                 assert.strictEqual(await getBalance(token, receivers[0]), totalAmount)
@@ -226,12 +240,15 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
 
                 assert.strictEqual(await getBalance(token, escrowPayment.address), totalAmount)
                 await assert.isRejected(
-                    escrowPayment.fulfill(agreementId, did, amounts, receivers, escrowPayment.address, token.address, lockConditionId, multi(releaseConditionId)),
+                    escrowPayment.fulfillWrap(agreementId, did, amounts, receivers, escrowPayment.address, token.address, lockConditionId, multi(releaseConditionId)),
                     constants.condition.state.error.invalidStateTransition
                 )
             })
 
             it('ETH: should fulfill if conditions exist for account address', async () => {
+                if (nft) {
+                    return
+                }
                 const sender = accounts[0]
                 const agreementId = testUtils.generateId()
                 const didSeed = testUtils.generateId()
@@ -255,7 +272,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const lockConditionId = conditionLockId
                 const releaseConditionId = conditionLockId
 
-                const hashValues = await escrowPayment.hashValues(
+                const hashValues = await escrowPayment.hashValuesMulti(
                     did,
                     amounts,
                     receivers,
@@ -295,7 +312,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 assert(balanceSenderAfterLock >= balanceSenderBefore - totalAmount)
                 assert(balanceContractAfterLock <= balanceContractBefore + totalAmount)
 
-                const result = await escrowPayment.fulfill(
+                const result = await escrowPayment.fulfillMulti(
                     agreementId,
                     did,
                     amounts,
@@ -329,13 +346,16 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 assert(balanceContractAfterEscrow <= balanceContractBefore)
                 assert(balanceReceiverAfterEscrow >= balanceReceiverBefore + totalAmount)
                 await assert.isRejected(
-                    escrowPayment.fulfill(agreementId, did, amounts, receivers, escrowPayment.address, constants.address.zero, lockConditionId, multi(releaseConditionId)),
+                    escrowPayment.fulfillMulti(agreementId, did, amounts, receivers, escrowPayment.address, constants.address.zero, lockConditionId, multi(releaseConditionId)),
                     undefined
                 )
             })
 
             it('ETH: fail if escrow is receiver', async () => {
-                const agreementId = testUtils.generateId()
+                if (nft) {
+                    return
+                }
+               const agreementId = testUtils.generateId()
                 const didSeed = testUtils.generateId()
                 const did = await didRegistry.hashDID(didSeed, accounts[0])
                 const totalAmount = 500000000000n
@@ -365,7 +385,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     escrowPayment.address,
                     constants.address.zero,
                     lockConditionId,
-                    multi(releaseConditionId))
+                    releaseConditionId)
 
                 const escrowConditionId = await escrowPayment.generateId(agreementId, hashValues)
 
@@ -389,7 +409,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 assert(balanceContractAfterLock >= balanceContractBefore + totalAmount)
 
                 await assert.isRejected(
-                    escrowPayment.fulfill(agreementId, did, amounts, receivers, escrowPayment.address, constants.address.zero, lockConditionId, multi(releaseConditionId)),
+                    escrowPayment.fulfill(agreementId, did, amounts, receivers, escrowPayment.address, constants.address.zero, lockConditionId, releaseConditionId),
                     undefined
                 )
             })
@@ -398,8 +418,8 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const agreementId = testUtils.generateId()
                 const did = testUtils.generateId()
                 const receivers = [accounts[1]]
-                const amounts = [10]
-                const amounts2 = [10, 20]
+                const amounts = [amount1]
+                const amounts2 = [amount1, amount2]
 
                 const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
@@ -426,9 +446,9 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const agreementId = testUtils.generateId()
                 const did = testUtils.generateId()
                 const receivers = [accounts[1]]
-                const amounts = [10]
+                const amounts = [amount1]
 
-                const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+                const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
                 await conditionStoreManager.createCondition(
@@ -438,7 +458,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const lockConditionId = conditionLockId
                 const releaseConditionId = conditionLockId
 
-                const hashValues = await escrowPayment.hashValues(
+                const hashValues = await escrowPayment.hashWrap(
                     did,
                     amounts,
                     receivers,
@@ -453,7 +473,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     escrowConditionId,
                     escrowPayment.address)
 
-                await assert.isRejected(escrowPayment.fulfill(
+                await assert.isRejected(escrowPayment.fulfillWrap(
                     agreementId,
                     did,
                     amounts,
@@ -470,27 +490,27 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [accounts[1]]
-                const amounts = [10]
+                const amounts = [amount1]
                 const receivers2 = [accounts[5]]
-                const amounts2 = [20]
+                const amounts2 = [amount2]
                 const totalAmount = amounts[0]
                 const balanceBefore = await getBalance(token, escrowPayment.address)
 
-                const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+                const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const lockConditionId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
                 await conditionStoreManager.createCondition(
                     lockConditionId,
                     lockPaymentCondition.address)
 
-                const hashValuesLock2 = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts2, receivers2)
+                const hashValuesLock2 = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts2, receivers2)
                 const releaseConditionId = await lockPaymentCondition.generateId(agreementId, hashValuesLock2)
 
                 await conditionStoreManager.createCondition(
                     releaseConditionId,
                     lockPaymentCondition.address)
 
-                const hashValues = await escrowPayment.hashValues(
+                const hashValues = await escrowPayment.hashWrap(
                     did,
                     amounts,
                     receivers,
@@ -511,12 +531,12 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     totalAmount,
                     { from: sender })
 
-                await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
+                await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
                 assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
                 assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
 
-                await assert.isRejected(escrowPayment.fulfill(
+                await assert.isRejected(escrowPayment.fulfillWrap(
                     agreementId,
                     did,
                     amounts,
@@ -534,20 +554,20 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [accounts[1]]
-                const amounts = [10]
+                const amounts = [amount1]
                 const receivers2 = [accounts[5]]
-                const amounts2 = [20]
+                const amounts2 = [amount2]
                 const totalAmount = amounts[0]
                 const balanceBefore = await getBalance(token, escrowPayment.address)
 
-                const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+                const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const lockConditionId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
                 await conditionStoreManager.createCondition(
                     lockConditionId,
                     lockPaymentCondition.address)
 
-                const hashValuesLock2 = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts2, receivers2)
+                const hashValuesLock2 = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts2, receivers2)
                 const releaseConditionId = await lockPaymentCondition.generateId(agreementId, hashValuesLock2)
 
                 await conditionStoreManager.createCondition(
@@ -558,7 +578,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     sender
                 )
 
-                const hashValues = await escrowPayment.hashValues(
+                const hashValues = await escrowPayment.hashWrap(
                     did,
                     amounts,
                     receivers,
@@ -579,7 +599,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     totalAmount,
                     { from: sender })
 
-                await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
+                await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
                 assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
                 assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
@@ -587,7 +607,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 // abort release
                 await lockPaymentCondition.abortByTimeOut(releaseConditionId)
 
-                await escrowPayment.fulfill(
+                await escrowPayment.fulfillWrap(
                     agreementId,
                     did,
                     amounts,
@@ -606,6 +626,9 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
             })
 
             it('ETH: release condition aborted', async () => {
+                if (nft) {
+                    return
+                }
                 const agreementId = testUtils.generateId()
                 const did = testUtils.generateId()
                 const sender = accounts[0]
@@ -641,7 +664,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     escrowPayment.address,
                     constants.address.zero,
                     lockConditionId,
-                    multi(releaseConditionId))
+                    releaseConditionId)
 
                 const escrowConditionId = await escrowPayment.generateId(agreementId, hashValues)
 
@@ -665,7 +688,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     escrowPayment.address,
                     constants.address.zero,
                     lockConditionId,
-                    multi(releaseConditionId), { from: sender, gasPrice: 0 })
+                    releaseConditionId, { from: sender, gasPrice: 0 })
 
                 assert.strictEqual(
                     (await conditionStoreManager.getConditionState(escrowConditionId)).toNumber(),
@@ -682,11 +705,11 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [constants.address.zero]
-                const amounts = [10]
+                const amounts = [amount1]
                 const totalAmount = amounts[0]
                 const balanceBefore = await getBalance(token, escrowPayment.address)
 
-                const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+                const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
                 await conditionStoreManager.createCondition(
@@ -696,7 +719,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const lockConditionId = conditionLockId
                 const releaseConditionId = conditionLockId
 
-                const hashValues = await escrowPayment.hashValues(
+                const hashValues = await escrowPayment.hashWrap(
                     did,
                     amounts,
                     receivers,
@@ -720,13 +743,13 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     totalAmount,
                     { from: sender })
 
-                await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
+                await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
                 assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
                 assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
 
                 await assert.isRejected(
-                    escrowPayment.fulfill(
+                    escrowPayment.fulfillWrap(
                         agreementId,
                         did,
                         amounts,
@@ -744,11 +767,11 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [escrowPayment.address]
-                const amounts = [10]
+                const amounts = [amount1]
                 const totalAmount = amounts[0]
                 const balanceBefore = await getBalance(token, escrowPayment.address)
 
-                const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+                const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
                 await conditionStoreManager.createCondition(
@@ -758,7 +781,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const lockConditionId = conditionLockId
                 const releaseConditionId = conditionLockId
 
-                const hashValues = await escrowPayment.hashValues(
+                const hashValues = await escrowPayment.hashWrap(
                     did,
                     amounts,
                     receivers,
@@ -782,13 +805,13 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     totalAmount,
                     { from: sender })
 
-                await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
+                await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
                 assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
                 assert.strictEqual(await getBalance(token, escrowPayment.address), balanceBefore + totalAmount)
 
                 await assert.isRejected(
-                    escrowPayment.fulfill(
+                    escrowPayment.fulfillWrap(
                         agreementId,
                         did,
                         amounts,
@@ -810,10 +833,10 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const sender = accounts[0]
                 const attacker = [accounts[2]]
                 const receivers = [escrowPayment.address]
-                const amounts = [10]
+                const amounts = [amount1]
                 const totalAmount = amounts[0]
 
-                const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+                const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
                 await conditionStoreManager.createCondition(
@@ -838,7 +861,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     totalAmount,
                     { from: sender })
 
-                await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
+                await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
                 const escrowPaymentBalance = 110
 
@@ -850,7 +873,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                         agreementId = '0' + agreementId
                     }
                     const attackerAgreementId = '0x' + agreementId
-                    const attackerHashValues = await escrowPayment.hashValues(
+                    const attackerHashValues = await escrowPayment.hashWrap(
                         did,
                         amounts,
                         attacker,
@@ -866,7 +889,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
 
                     /* attacker tries to claim the escrow before the legitimate users: */
                     await assert.isRejected(
-                        escrowPayment.fulfill(
+                        escrowPayment.fulfillWrap(
                             attackerAgreementId,
                             did,
                             amounts,
@@ -891,13 +914,13 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const did = testUtils.generateId()
                 const sender = accounts[0]
                 const receivers = [accounts[1]]
-                const amounts = [10]
+                const amounts = [amount1]
                 const totalAmount = amounts[0]
 
                 const balanceContractBefore = await getBalance(token, escrowPayment.address)
                 const balanceReceiverBefore = await getBalance(token, receivers[0])
 
-                const hashValuesLock = await lockPaymentCondition.hashValues(did, escrowPayment.address, token.address, amounts, receivers)
+                const hashValuesLock = await lockPaymentCondition.hashWrap(did, escrowPayment.address, token.address, amounts, receivers)
                 const conditionLockId = await lockPaymentCondition.generateId(agreementId, hashValuesLock)
 
                 await conditionStoreManager.createCondition(
@@ -907,7 +930,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const lockConditionId = conditionLockId
                 const releaseConditionId = conditionLockId
 
-                const hashValues = await escrowPayment.hashValues(
+                const hashValues = await escrowPayment.hashWrap(
                     did,
                     amounts,
                     receivers,
@@ -928,12 +951,12 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                     totalAmount,
                     { from: sender })
 
-                await lockPaymentCondition.fulfill(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
+                await lockPaymentCondition.fulfillWrap(agreementId, did, escrowPayment.address, token.address, amounts, receivers)
 
                 assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
                 assert.strictEqual(await getBalance(token, escrowPayment.address), balanceContractBefore + totalAmount)
 
-                await escrowPayment.fulfill(
+                await escrowPayment.fulfillWrap(
                     agreementId,
                     did,
                     amounts,
@@ -951,7 +974,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 assert.strictEqual(await getBalance(token, escrowPayment.address), balanceContractBefore)
                 assert.strictEqual(await getBalance(token, receivers[0]), balanceReceiverBefore + totalAmount)
 
-                await assert.isRejected(escrowPayment.fulfill(
+                await assert.isRejected(escrowPayment.fulfillWrap(
                     agreementId,
                     did,
                     amounts,
@@ -971,7 +994,7 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
                 const sender = accounts[0]
                 const receivers = [accounts[1]]
                 const receivers2 = [accounts[2]]
-                const amounts = [10]
+                const amounts = [amount1]
                 const totalAmount = amounts[0]
                 const balanceBefore = await getBalance(token, escrowPayment.address)
 
@@ -1080,5 +1103,9 @@ function escrowTest(EscrowPaymentCondition, isMulti) {
     })
 }
 
-escrowTest(EscrowPaymentCondition, false)
+escrowTest(EscrowPaymentCondition, LockPaymentCondition, NeverminedToken, false, wrapper.normal, 10, 12, 'ERC-20')
+escrowTest(NFTEscrowPaymentCondition, NFTLockCondition, NFT, true, wrapper.nft, 10, 12, 'ERC-1155')
+// escrowTest(NFT721EscrowPaymentCondition, NFT721LockCondition, NFT721, true, wrapper.nft721, 1, 0, 'ERC-721')
+
+// escrowTest(EscrowPaymentCondition, false)
 // escrowTest(MultiEscrowPaymentCondition, true)
