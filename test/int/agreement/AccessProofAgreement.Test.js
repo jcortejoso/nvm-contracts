@@ -108,12 +108,15 @@ contract('Access Proof Template integration test', (accounts) => {
         const did = await didRegistry.hashDID(didSeed, receivers[0])
 
         // generate IDs from attributes
-        const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
-            await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers))
-        const conditionIdAccess = await accessProofCondition.generateId(agreementId,
-            await accessProofCondition.hashValues(origHash, buyerPub, providerPub))
-        const conditionIdEscrow = await escrowPaymentCondition.generateId(agreementId,
-            await escrowPaymentCondition.hashValues(did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, conditionIdLock, conditionIdAccess))
+        const conditionIdLock = 
+            await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers)
+        const conditionIdAccess = 
+            await accessProofCondition.hashValues(origHash, buyerPub, providerPub)
+        const fullConditionIdLock = await lockPaymentCondition.generateId(agreementId, conditionIdLock)
+        const fullConditionIdAccess = await accessProofCondition.generateId(agreementId, conditionIdAccess)
+        const conditionIdEscrow = 
+            await escrowPaymentCondition.hashValues(did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, fullConditionIdLock, fullConditionIdAccess)
+        const fullConditionIdEscrow = await escrowPaymentCondition.generateId(agreementId, conditionIdEscrow)
 
         // construct agreement
         const agreement = {
@@ -128,6 +131,11 @@ contract('Access Proof Template integration test', (accounts) => {
             consumer: sender
         }
         return {
+            conditionIds: [
+                fullConditionIdAccess,
+                fullConditionIdLock,
+                fullConditionIdEscrow
+            ],
             agreementId,
             did,
             data,
@@ -152,7 +160,7 @@ contract('Access Proof Template integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, buyerK, providerPub, origHash } = await prepareEscrowAgreementMultipleEscrow()
+            const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, buyerK, providerPub, origHash, conditionIds } = await prepareEscrowAgreementMultipleEscrow()
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
             // register DID
@@ -166,9 +174,8 @@ contract('Access Proof Template integration test', (accounts) => {
                 .to.equal(did)
 
             const conditionTypes = await accessTemplate.getConditionTypes()
-            let storedCondition
-            agreement.conditionIds.forEach(async (conditionId, i) => {
-                storedCondition = await conditionStoreManager.getCondition(conditionId)
+            conditionIds.forEach(async (conditionId, i) => {
+                const storedCondition = await conditionStoreManager.getCondition(conditionId)
                 expect(storedCondition.typeRef).to.equal(conditionTypes[i])
                 expect(storedCondition.state.toNumber()).to.equal(constants.condition.state.unfulfilled)
             })
@@ -191,7 +198,7 @@ contract('Access Proof Template integration test', (accounts) => {
             assert.strictEqual(await getBalance(token, receiver), 0)
 
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
 
             // fulfill access
@@ -199,14 +206,14 @@ contract('Access Proof Template integration test', (accounts) => {
             await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })
 
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
 
             // get reward
-            await escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
+            await escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, conditionIds[1], conditionIds[0], { from: receiver })
 
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[2])).toNumber(),
                 constants.condition.state.fulfilled
             )
 
@@ -229,7 +236,7 @@ contract('Access Proof Template integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeOutAccess } = await prepareEscrowAgreementMultipleEscrow({ timeOutAccess: 10 })
+            const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeOutAccess, conditionIds } = await prepareEscrowAgreementMultipleEscrow({ timeOutAccess: 10 })
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
 
@@ -246,12 +253,12 @@ contract('Access Proof Template integration test', (accounts) => {
             await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
             await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers, { from: sender })
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
 
             // No update since access is not fulfilled yet
             // refund
-            await assert.isRejected(escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver }))
+            await assert.isRejected(escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, conditionIds[1], conditionIds[0], { from: receiver }))
 
             // wait: for time out
             await increaseTime.mineBlocks(web3, timeOutAccess)
@@ -259,13 +266,13 @@ contract('Access Proof Template integration test', (accounts) => {
             // abort: fulfill access after timeout
             await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[0])).toNumber(),
                 constants.condition.state.aborted)
 
             // refund
-            await escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: sender })
+            await escrowPaymentCondition.fulfill(agreementId, did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, conditionIds[1], conditionIds[0], { from: sender })
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[2])).toNumber(),
                 constants.condition.state.fulfilled
             )
             assert.strictEqual(await getBalance(token, receivers[0]), 0)
@@ -281,7 +288,7 @@ contract('Access Proof Template integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeLockAccess } = await prepareEscrowAgreementMultipleEscrow({ timeLockAccess: 10 })
+            const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeLockAccess, conditionIds } = await prepareEscrowAgreementMultipleEscrow({ timeLockAccess: 10 })
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
 
@@ -297,7 +304,7 @@ contract('Access Proof Template integration test', (accounts) => {
             await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
             await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers, { from: sender })
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
             // receiver is a DID owner
 
@@ -316,7 +323,7 @@ contract('Access Proof Template integration test', (accounts) => {
             // execute: fulfill access after time lock
             await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: receiver })
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
             // expect(await accessCondition.checkPermissions(receiver, agreement.did)).to.equal(true)
 
@@ -328,12 +335,12 @@ contract('Access Proof Template integration test', (accounts) => {
                 receivers,
                 escrowPaymentCondition.address,
                 token.address,
-                agreement.conditionIds[1],
-                agreement.conditionIds[0],
+                conditionIds[1],
+                conditionIds[0],
                 { from: receiver }
             )
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[2])).toNumber(),
                 constants.condition.state.fulfilled
             )
             assert.strictEqual(await getBalance(token, sender), 0)
@@ -345,7 +352,7 @@ contract('Access Proof Template integration test', (accounts) => {
                 const { owner } = await setupTest()
 
                 // prepare: escrow agreement
-                const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url } = await prepareEscrowAgreementMultipleEscrow()
+                const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, conditionIds } = await prepareEscrowAgreementMultipleEscrow()
                 const totalAmount = escrowAmounts[0] + escrowAmounts[1]
                 const receiver = receivers[0]
 
@@ -355,20 +362,20 @@ contract('Access Proof Template integration test', (accounts) => {
                 // create agreement
                 await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
-                const { agreementId: agreementId2, agreement: agreement2, data: data2 } = await prepareEscrowAgreementMultipleEscrow(
+                const { agreementId: agreementId2, agreement: agreement2, data: data2, conditionIds: conditionIds2 } = await prepareEscrowAgreementMultipleEscrow(
                     { agreementId: constants.bytes32.two, didSeed: didSeed }
                 )
                 const agreement2Amounts = [escrowAmounts[0] * 2, escrowAmounts[1]]
-                agreement2.conditionIds[2] = await escrowPaymentCondition.generateId(
-                    agreementId2,
-                    await escrowPaymentCondition.hashValues(
-                        agreement2.did,
-                        agreement2Amounts,
-                        receivers,
-                        escrowPaymentCondition.address,
-                        token.address,
-                        agreement2.conditionIds[1],
-                        agreement2.conditionIds[0]))
+                const newEscrowId = await escrowPaymentCondition.hashValues(
+                    agreement2.did,
+                    agreement2Amounts,
+                    receivers,
+                    escrowPaymentCondition.address,
+                    token.address,
+                    conditionIds2[1],
+                    conditionIds2[0])
+                agreement2.conditionIds[2] = newEscrowId
+                conditionIds2[2] = await escrowPaymentCondition.generateId(agreementId2, newEscrowId)
 
                 // create agreement2
                 await accessTemplate.createAgreement(agreementId2, ...Object.values(agreement2))
@@ -392,13 +399,13 @@ contract('Access Proof Template integration test', (accounts) => {
                 )
 
                 assert.strictEqual(
-                    (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
+                    (await conditionStoreManager.getConditionState(conditionIds[2])).toNumber(),
                     constants.condition.state.unfulfilled
                 )
 
-                await escrowPaymentCondition.fulfill(agreementId, agreement.did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, agreement.conditionIds[1], agreement.conditionIds[0], { from: receiver })
+                await escrowPaymentCondition.fulfill(agreementId, agreement.did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, conditionIds[1], conditionIds[0], { from: receiver })
                 assert.strictEqual(
-                    (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
+                    (await conditionStoreManager.getConditionState(conditionIds[2])).toNumber(),
                     constants.condition.state.fulfilled
                 )
 
