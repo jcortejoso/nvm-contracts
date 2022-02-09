@@ -8,6 +8,7 @@ import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
+import '../../interfaces/IDynamicPricing.sol';
 
 /**
  * @title Escrow Payment Condition
@@ -278,7 +279,8 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         _releaseConditions[0] = _releaseCondition;
         return fulfillMulti(_agreementId, _did, _amounts, _receivers, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
     }
-
+    
+    
     /**
     * @notice _transferAndFulfill transfer ERC20 tokens and 
     *       fulfill the condition
