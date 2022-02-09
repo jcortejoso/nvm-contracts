@@ -44,8 +44,7 @@ contract('English Auction test', (accounts) => {
         auctionContract,
         startBlock,
         endBlock,
-        bidder2BalanceBeginning,
-        bidder2ETHBalanceBeginning
+        bidder2BalanceBeginning
 
     async function setupTest() {
         token = await NeverminedToken.new()
