@@ -9,7 +9,6 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
-import 'hardhat/console.sol';
 
 /**
  * @title Interface that can implement different contracts implementing some kind of 
@@ -92,6 +91,9 @@ abstract contract AbstractAuction is
         uint256 amount
     );
     
+    receive() external payable {
+    }    
+    
     function abortAuction(
         bytes32 _auctionId
     )
@@ -147,7 +149,6 @@ abstract contract AbstractAuction is
             if (msg.sender == auctions[_auctionId].creator)   { // The creator of the auction cant withdraw
                 return false;
             } else if (msg.sender == auctions[_auctionId].whoCanClaim)    { // The winner of the auction cant withdraw
-                console.log('The winner of the auction cant withdraw');
                 return false;
             } else if (hasRole(NVM_AGREEMENT_ROLE, msg.sender)) { // Approved proxy or contract can withdraw for locking into service agreements
                 if (_withdrawAddress != address(0))

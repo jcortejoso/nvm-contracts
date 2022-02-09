@@ -21,6 +21,7 @@ contract EnglishAuction is AbstractAuction {
     initializer()
     {
         OwnableUpgradeable.__Ownable_init();
+        ReentrancyGuardUpgradeable.__ReentrancyGuard_init();
         transferOwnership(_owner);
 
         AccessControlUpgradeable.__AccessControl_init();
@@ -102,9 +103,9 @@ contract EnglishAuction is AbstractAuction {
 
         require(userBid >= auctions[_auctionId].floor, 'EnglishAuction: Only higher or equal than floor');
         require(userBid > auctions[_auctionId].price, 'EnglishAuction: Only higher bids');
-
+        
         // solhint-disable-next-line
-        (bool sent,) = address(this).call{value: msg.value}('');
+        (bool sent, ) = payable(address(this)).call{value: msg.value}('');
         require(sent, 'EnglishAuction: Failed to send native token');
 
         auctions[_auctionId].whoCanClaim = msg.sender;
