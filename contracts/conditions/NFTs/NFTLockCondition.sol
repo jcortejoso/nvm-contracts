@@ -218,7 +218,6 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
     external
     pure
     override
-    pure
     returns(bytes4) 
     {
         return ERC1155_ACCEPTED;
@@ -234,7 +233,6 @@ contract NFTLockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable, IE
     external
     pure
     override
-    pure
     returns(bytes4) 
     {
         return ERC1155_BATCH_ACCEPTED;
