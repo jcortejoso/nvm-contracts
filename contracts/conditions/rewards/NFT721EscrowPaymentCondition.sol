@@ -187,6 +187,7 @@ contract NFT721EscrowPaymentCondition is Reward, INFTEscrow, Common, IERC721Rece
 
         require(someAborted || allFulfilled, 'Release conditions unresolved');
 
+        require(_receiver != address(this), 'Escrow contract can not be a receiver');
         bytes32 id = generateId(
             _agreementId,
             hashValues(
