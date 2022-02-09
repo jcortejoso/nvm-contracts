@@ -1,3 +1,4 @@
+/* global web3 */
 
 const testUtils = require('../../../helpers/utils.js')
 const { getBalance } = require('../../../helpers/getBalance.js')
@@ -113,8 +114,8 @@ function tokenTokenWrapper(contract) {
     contract.approveWrap = (addr, amount, args) => {
         return contract.approve(addr, amount, args)
     }
-    contract.transferWrap = (addr, amount, {from}) => {
-        return contract.transfer(addr, amount, {from})
+    contract.transferWrap = (addr, amount, { from }) => {
+        return contract.transfer(addr, amount, { from })
     }
     return contract
 }
@@ -146,7 +147,7 @@ function nftTokenWrapper(contract) {
     contract.approveWrap = (addr, amount, args) => {
         return contract.setApprovalForAll(addr, true, args)
     }
-    contract.transferWrap = async (target, amount, {from}) => {
+    contract.transferWrap = async (target, amount, { from }) => {
         await contract.safeTransferFrom(from, target, contract.did, amount, '0x', { from })
     }
     return contract
@@ -184,7 +185,7 @@ function nft721TokenWrapper(contract) {
     contract.approveWrap = (addr, amount, args) => {
         return contract.setApprovalForAll(addr, true, args)
     }
-    contract.transferWrap = async (target, amount, {from}) => {
+    contract.transferWrap = async (target, amount, { from }) => {
         await contract.safeTransferFrom(from, target, contract.did, { from })
     }
     return contract
@@ -194,16 +195,16 @@ module.exports = {
     normal: {
         lockWrapper: tokenLockWrapper,
         escrowWrapper: tokenEscrowWrapper,
-        tokenWrapper: tokenTokenWrapper,
+        tokenWrapper: tokenTokenWrapper
     },
     nft: {
         lockWrapper: nftLockWrapper,
         escrowWrapper: nftEscrowWrapper,
-        tokenWrapper: nftTokenWrapper,
+        tokenWrapper: nftTokenWrapper
     },
     nft721: {
         lockWrapper: nft721LockWrapper,
         escrowWrapper: nftEscrowWrapper,
-        tokenWrapper: nft721TokenWrapper,
-    },
+        tokenWrapper: nft721TokenWrapper
+    }
 }

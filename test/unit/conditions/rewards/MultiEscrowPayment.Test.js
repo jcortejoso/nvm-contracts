@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it, expect, web3 */
+/* global artifacts, contract, describe, it, expect */
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
@@ -85,6 +85,11 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     owner,
                     conditionStoreManager.address,
                     { from: deployer }
+                )
+
+                await conditionStoreManager.grantProxyRole(
+                    escrowPayment.address,
+                    { from: owner }
                 )
             }
 
