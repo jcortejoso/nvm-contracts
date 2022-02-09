@@ -108,8 +108,8 @@ contract('Dynamic Access Template integration test', (accounts) => {
     } = {}) {
         const did = await didRegistry.hashDID(didSeed, receiver)
         // generate IDs from attributes
-        const conditionIdAccess = await accessCondition.generateId(agreementId, await accessCondition.hashValues(did, receiver))
-        const conditionIdNft = await nftHolderCondition.generateId(agreementId, await nftHolderCondition.hashValues(did, holder, nftAmount))
+        const conditionIdAccess = await accessCondition.hashValues(did, receiver)
+        const conditionIdNft = await nftHolderCondition.hashValues(did, holder, nftAmount)
 
         // construct agreement
         const agreement = {
