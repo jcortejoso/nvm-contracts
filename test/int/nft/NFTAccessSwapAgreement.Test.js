@@ -114,7 +114,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
         const { origHash, buyerPub, providerPub } = data
 
         const conditionIdLockPayment = await lockPaymentCondition.hashValuesMarked(did, escrowCondition.address, amount, receiver, token.address)
-        const fullIdLockPayment = await lockPaymentCondition.generateId(agreementId,conditionIdLockPayment)
+        const fullIdLockPayment = await lockPaymentCondition.generateId(agreementId, conditionIdLockPayment)
 
         const conditionIdAccess = await accessProofCondition.hashValues(origHash, buyerPub, providerPub)
         const fullIdAccess = await accessProofCondition.generateId(agreementId, conditionIdAccess)

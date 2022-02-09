@@ -120,7 +120,7 @@ contract('NFT Access integration test', (accounts) => {
         return {
             conditionIds: [
                 await nftHolderCondition.generateId(agreementId, conditionIdNFT),
-                await accessCondition.generateId(agreementId, conditionIdAccess),
+                await accessCondition.generateId(agreementId, conditionIdAccess)
             ],
             agreementId,
             agreement,

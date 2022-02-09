@@ -225,7 +225,7 @@ contract('End to End NFT Scenarios (with Ether)', (accounts) => {
         return {
             conditionIds: [
                 await nftHolderCondition.generateId(agreementAccessId, conditionIdNFTHolder),
-                await accessCondition.generateId(agreementAccessId, conditionIdNFTAccess),
+                await accessCondition.generateId(agreementAccessId, conditionIdNFTAccess)
             ],
             agreementId,
             nftAccessAgreement

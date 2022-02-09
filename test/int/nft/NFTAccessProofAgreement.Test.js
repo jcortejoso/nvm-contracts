@@ -127,7 +127,7 @@ contract('NFT Access Proof Template integration test', (accounts) => {
         return {
             conditionIds: [
                 await nftHolderCondition.generateId(agreementId, conditionIdNFTHolder),
-                await accessProofCondition.generateId(agreementId, conditionIdAccess),
+                await accessProofCondition.generateId(agreementId, conditionIdAccess)
             ],
             agreementId,
             did,

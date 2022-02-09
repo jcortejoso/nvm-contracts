@@ -86,11 +86,11 @@ contract('Stake Agreement integration test', (accounts) => {
 
         const did = await didRegistry.hashDID(didSeed, accounts[0])
         const conditionIdSign = await signCondition.hashValues(sign.message, sign.publicKey)
-        const conditionIdLock = 
+        const conditionIdLock =
             await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, [stakeAmount], [staker])
         const fullConditionIdLock = await lockPaymentCondition.generateId(agreementId, conditionIdLock)
         const fullConditionIdSign = await signCondition.generateId(agreementId, conditionIdSign)
-        const conditionIdEscrow = 
+        const conditionIdEscrow =
         await escrowPaymentCondition.hashValues(did, [stakeAmount], [staker], escrowPaymentCondition.address, token.address, fullConditionIdLock, fullConditionIdSign)
         const fullConditionIdEscrow = await escrowPaymentCondition.generateId(agreementId, conditionIdEscrow)
 

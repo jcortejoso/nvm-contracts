@@ -97,7 +97,7 @@ contract('Access Template integration test', (accounts) => {
         const conditionIdAccess = await accessCondition.hashValues(did, receivers[0])
         const fullConditionIdLock = await lockPaymentCondition.generateId(agreementId, conditionIdLock)
         const fullConditionIdAccess = await accessCondition.generateId(agreementId, conditionIdAccess)
-        const conditionIdEscrow = 
+        const conditionIdEscrow =
             await escrowPaymentCondition.hashValues(did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, fullConditionIdLock, fullConditionIdAccess)
         const fullConditionIdEscrow = await escrowPaymentCondition.generateId(agreementId, conditionIdEscrow)
 
@@ -336,16 +336,16 @@ contract('Access Template integration test', (accounts) => {
                 )
                 const agreement2Amounts = [escrowAmounts[0] * 2, escrowAmounts[1]]
                 const newEscrowId = await escrowPaymentCondition.hashValues(
-                        agreement2.did,
-                        agreement2Amounts,
-                        receivers,
-                        escrowPaymentCondition.address,
-                        token.address,
-                        conditionIds2[1],
-                        conditionIds2[0])
+                    agreement2.did,
+                    agreement2Amounts,
+                    receivers,
+                    escrowPaymentCondition.address,
+                    token.address,
+                    conditionIds2[1],
+                    conditionIds2[0])
                 agreement2.conditionIds[2] = newEscrowId
                 conditionIds2[2] = await escrowPaymentCondition.generateId(agreementId2, newEscrowId)
-        
+
                 // create agreement2
                 await accessTemplate.createAgreement(agreementId2, ...Object.values(agreement2))
 

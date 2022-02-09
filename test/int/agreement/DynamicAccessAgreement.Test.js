@@ -125,7 +125,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
         return {
             conditionIds: [
                 await accessCondition.generateId(agreementId, conditionIdAccess),
-                await nftHolderCondition.generateId(agreementId, conditionIdNft),
+                await nftHolderCondition.generateId(agreementId, conditionIdNft)
             ],
             agreementId,
             didSeed,

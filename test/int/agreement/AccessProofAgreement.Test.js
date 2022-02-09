@@ -108,13 +108,13 @@ contract('Access Proof Template integration test', (accounts) => {
         const did = await didRegistry.hashDID(didSeed, receivers[0])
 
         // generate IDs from attributes
-        const conditionIdLock = 
+        const conditionIdLock =
             await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers)
-        const conditionIdAccess = 
+        const conditionIdAccess =
             await accessProofCondition.hashValues(origHash, buyerPub, providerPub)
         const fullConditionIdLock = await lockPaymentCondition.generateId(agreementId, conditionIdLock)
         const fullConditionIdAccess = await accessProofCondition.generateId(agreementId, conditionIdAccess)
-        const conditionIdEscrow = 
+        const conditionIdEscrow =
             await escrowPaymentCondition.hashValues(did, escrowAmounts, receivers, escrowPaymentCondition.address, token.address, fullConditionIdLock, fullConditionIdAccess)
         const fullConditionIdEscrow = await escrowPaymentCondition.generateId(agreementId, conditionIdEscrow)
 
