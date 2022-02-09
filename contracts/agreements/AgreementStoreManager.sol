@@ -123,6 +123,24 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
             tx.origin // solhint-disable avoid-tx-origin
         );
     }
+
+    function fullConditionId(
+        bytes32 _agreementId,
+        address _condType,
+        bytes32 _valueHash
+    )
+        public
+        pure
+        returns (bytes32)
+    {
+        return keccak256(
+            abi.encode(
+                _agreementId,
+                _condType,
+                _valueHash
+            )
+        );
+    }
     
     /**
      * @dev Create a new agreement.
@@ -167,7 +185,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         // create the conditions in condition store. Fail if conditionId already exists.
         for (uint256 i = 0; i < _conditionTypes.length; i++) {
             conditionStoreManager.createCondition(
-                _conditionIds[i],
+                fullConditionId(_id, _conditionTypes[i], _conditionIds[i]),
                 _conditionTypes[i],
                 _timeLocks[i],
                 _timeOuts[i],

@@ -61,9 +61,7 @@ contract('AccessTemplate', (accounts) => {
         ],
         timeLocks = [0, 0, 0],
         timeOuts = [0, 0, 0],
-        sender = accounts[0],
         receiver = accounts[1],
-        escrowAmount = 10,
         didSeed = testUtils.generateId()
 
     } = {}) {
@@ -130,7 +128,8 @@ contract('AccessTemplate', (accounts) => {
             let i = 0
             const conditionTypes = await accessTemplate.getConditionTypes()
             for (const conditionId of agreement.conditionIds) {
-                const storedCondition = await conditionStoreManager.getCondition(conditionId)
+                const fullId = await agreementStoreManager.fullConditionId(agreementId, conditionTypes[i], conditionId)
+                const storedCondition = await conditionStoreManager.getCondition(fullId)
                 expect(storedCondition.typeRef).to.equal(conditionTypes[i])
                 expect(storedCondition.state.toNumber()).to.equal(constants.condition.state.unfulfilled)
                 expect(storedCondition.timeLock.toNumber()).to.equal(agreement.timeLocks[i])

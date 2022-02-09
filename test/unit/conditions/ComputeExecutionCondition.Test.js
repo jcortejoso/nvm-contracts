@@ -137,7 +137,7 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             const agreement = {
                 did: did,
                 conditionTypes: [computeExecutionCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [0],
                 timeOuts: [2],
                 creator: templateId
@@ -182,12 +182,11 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
 
             const hashValues = await computeExecutionCondition.hashValues(did, computeConsumer)
-            const conditionId = await computeExecutionCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: did,
                 conditionTypes: [computeExecutionCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [0],
                 timeOuts: [2],
                 creator: templateId
@@ -222,12 +221,11 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
 
             const hashValues = await computeExecutionCondition.hashValues(did, computeConsumer)
-            const conditionId = await computeExecutionCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: did,
                 conditionTypes: [computeExecutionCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [0],
                 timeOuts: [2],
                 creator: templateId
@@ -267,12 +265,11 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
 
             const hashValues = await computeExecutionCondition.hashValues(did, computeConsumer)
-            const conditionId = await computeExecutionCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: did,
                 conditionTypes: [computeExecutionCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [timeLock],
                 timeOuts: [timeOut],
                 creator: templateId
