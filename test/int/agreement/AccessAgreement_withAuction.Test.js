@@ -88,6 +88,10 @@ contract('Access with Auction integration test', (accounts) => {
         await auctionContract.methods['initialize(address)'](owner, { from: deployer })
         await auctionContract.addNVMAgreementRole(lockPaymentCondition.address, { from: owner })
 
+        // We whitelist the auction contract
+        await lockPaymentCondition.grantExternalContractRole(
+            auctionContract.address, { from: owner })
+
         accessTemplate = await AccessTemplate.new()
         await accessTemplate.methods['initialize(address,address,address,address,address,address)'](
             owner,

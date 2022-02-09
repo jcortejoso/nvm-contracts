@@ -29,10 +29,9 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
 
     bytes32 constant public CONDITION_TYPE = keccak256('LockPaymentCondition');
     bytes32 constant public KEY_ASSET_RECEIVER = keccak256('_assetReceiverAddress');
-    bytes32 constant public KEY_EXTERNAL_CONTRACT = keccak256('_externalContractAddress');
-    bytes32 constant public KEY_REMOTE_ID = keccak256('_remoteId');
 
     bytes32 private constant PROXY_ROLE = keccak256('PROXY_ROLE');
+    bytes32 private constant ALLOWED_EXTERNAL_CONTRACT_ROLE = keccak256('ALLOWED_EXTERNAL_CONTRACT_ROLE');
 
     function grantProxyRole(address _address) public onlyOwner {
         grantRole(PROXY_ROLE, _address);
@@ -42,6 +41,14 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         revokeRole(PROXY_ROLE, _address);
     }
 
+    function grantExternalContractRole(address _address) public onlyOwner {
+        grantRole(ALLOWED_EXTERNAL_CONTRACT_ROLE, _address);
+    }
+
+    function revokeExternalContractRole(address _address) public onlyOwner {
+        revokeRole(ALLOWED_EXTERNAL_CONTRACT_ROLE, _address);
+    }    
+    
    /**
     * @notice initialize init the contract with the following parameters
     * @dev this function is called only once during the contract initialization.
@@ -200,6 +207,7 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
     )
     external
     payable
+    allowedExternalContract(_externalContract)
     nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
@@ -212,20 +220,19 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             'Royalties are not satisfied'
         );
 
-        IDynamicPricing externalContract = IDynamicPricing(_externalContract);
         (IDynamicPricing.DynamicPricingState externalState, uint256 externalAmount, address whoCanClaim) =
-        externalContract.getStatus(_remoteId);
+            IDynamicPricing(_externalContract).getStatus(_remoteId);
 
         require(msg.sender == whoCanClaim, 'No allowed');
         require(externalState != IDynamicPricing.DynamicPricingState.NotStarted &&
             externalState != IDynamicPricing.DynamicPricingState.Aborted, 'Invalid external state');
         require(calculateTotalAmount(_amounts) == externalAmount, 'Amounts dont match');
 
-        require(externalContract.withdraw(_remoteId, _rewardAddress), 'Unable to withdraw');
+        require(IDynamicPricing(_externalContract).withdraw(_remoteId, _rewardAddress), 'Unable to withdraw');
     
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, _rewardAddress, externalContract.getTokenAddress(_remoteId), _amounts, _receivers)
+            hashValues(_did, _rewardAddress, IDynamicPricing(_externalContract).getTokenAddress(_remoteId), _amounts, _receivers)
         );
         
         ConditionStoreLibrary.ConditionState state = super.fulfill(
@@ -362,4 +369,12 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         require(sent, 'Failed to send Ether');
     }
 
+    modifier allowedExternalContract(address _externalContractAddress) {
+        require(
+            hasRole(ALLOWED_EXTERNAL_CONTRACT_ROLE, _externalContractAddress), 
+                'Invalid external contract'
+        );
+        _;
+    }    
+    
 }
