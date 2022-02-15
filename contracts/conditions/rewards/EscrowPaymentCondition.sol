@@ -85,6 +85,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
+        address _returnAddress,
         address _lockPaymentAddress,
         address _tokenAddress,
         bytes32 _lockCondition,
@@ -102,6 +103,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
                 _did,
                 _amounts,
                 _receivers,
+                _returnAddress,
                 _lockPaymentAddress, 
                 _tokenAddress,
                 _lockCondition,
@@ -114,6 +116,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
+        address _returnAddress,
         address _lockPaymentAddress,
         address _tokenAddress,
         bytes32 _lockCondition,
@@ -124,7 +127,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
     {
         bytes32[] memory _releaseConditions = new bytes32[](1);
         _releaseConditions[0] = _releaseCondition;
-        return hashValuesMulti(_did, _amounts, _receivers, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
+        return hashValuesMulti(_did, _amounts, _receivers, _returnAddress, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
     }
     
    /**
@@ -179,6 +182,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
+        address _returnAddress,
         address _lockPaymentAddress,
         address _tokenAddress,
         bytes32 _lockCondition,
@@ -226,6 +230,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
                 _did,
                 _amounts,
                 _receivers,
+                _returnAddress,
                 _lockPaymentAddress,
                 _tokenAddress,
                 _lockCondition,
@@ -241,21 +246,21 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             else
                 state = _transferAndFulfillETH(id, _receivers, _amounts);
             
-            emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
+            // emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
 
         } else if (someAborted) {
             conditionStoreManager.updateConditionMappingProxy(_lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
             uint256[] memory _totalAmounts = new uint256[](1);
             _totalAmounts[0] = calculateTotalAmount(_amounts);
             address[] memory _originalSender = new address[](1);
-            _originalSender[0] = conditionStoreManager.getConditionCreatedBy(_lockCondition);
+            _originalSender[0] = _returnAddress;
             
             if (_tokenAddress != address(0))
                 state = _transferAndFulfillERC20(id, _tokenAddress, _originalSender, _totalAmounts);
             else
                 state = _transferAndFulfillETH(id, _originalSender, _totalAmounts);
             
-            emit Fulfilled(_agreementId, _tokenAddress, _originalSender, id, _totalAmounts);
+            // emit Fulfilled(_agreementId, _tokenAddress, _originalSender, id, _totalAmounts);
             
         }
 
@@ -267,6 +272,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
+        address _returnAddress,
         address _lockPaymentAddress,
         address _tokenAddress,
         bytes32 _lockCondition,
@@ -277,7 +283,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
     {
         bytes32[] memory _releaseConditions = new bytes32[](1);
         _releaseConditions[0] = _releaseCondition;
-        return fulfillMulti(_agreementId, _did, _amounts, _receivers, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
+        return fulfillMulti(_agreementId, _did, _amounts, _receivers, _returnAddress, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
     }
     
     

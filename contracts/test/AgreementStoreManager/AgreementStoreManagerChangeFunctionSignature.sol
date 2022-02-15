@@ -22,10 +22,9 @@ contract AgreementStoreManagerChangeFunctionSignature is
         address _sender
     )
         public
-        returns (uint size)
     {
         require(
-            msg.sender == _sender,
+            msg.sender == _sender && msg.sender == _creator,
             'Invalid sender address, should fail in function signature check'
         );
         require(
@@ -44,8 +43,7 @@ contract AgreementStoreManagerChangeFunctionSignature is
                 _conditionIds[i],
                 _conditionTypes[i],
                 _timeLocks[i],
-                _timeOuts[i],
-                _creator
+                _timeOuts[i]
             );
         }
         agreementList.create(
@@ -54,7 +52,5 @@ contract AgreementStoreManagerChangeFunctionSignature is
             msg.sender,
             _conditionIds
         );
-
-        return getAgreementListSize();
     }
 }

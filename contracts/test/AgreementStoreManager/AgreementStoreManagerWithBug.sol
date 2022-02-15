@@ -8,14 +8,12 @@ import '../../agreements/AgreementStoreManager.sol';
 
 
 contract AgreementStoreManagerWithBug is AgreementStoreManager {
-    function getAgreementListSize()
+    function getDIDRegistryAddress()
         public
-        view
         override
-        returns (uint size)
+        view
+        returns(address)
     {
-        if (agreementList.agreementIds.length == 0)
-            return agreementList.agreementIds.length;
-        return 0;
+        return address(0);
     }
 }

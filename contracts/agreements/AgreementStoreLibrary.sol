@@ -31,7 +31,7 @@ library AgreementStoreLibrary {
         mapping(bytes32 => Agreement) agreements;
         mapping(bytes32 => bytes32[]) didToAgreementIds;
         mapping(address => bytes32[]) templateIdToAgreementIds;
-        bytes32[] agreementIds;
+        // bytes32[] agreementIds;
     }
 
     /**
@@ -43,7 +43,6 @@ library AgreementStoreLibrary {
      * @param _did asset decentralized identifier
      * @param _templateId template identifier
      * @param _conditionIds array of condition identifiers
-     * @return size which is the index of the created agreement
      */
     function create(
         AgreementList storage _self,
@@ -53,7 +52,6 @@ library AgreementStoreLibrary {
         bytes32[] memory _conditionIds
     )
         internal
-        returns (uint size)
     {
         require(
             _self.agreements[_id].blockNumberUpdated == 0,
@@ -68,9 +66,9 @@ library AgreementStoreLibrary {
             blockNumberUpdated: block.number
         });
 
-        _self.agreementIds.push(_id);
+        // _self.agreementIds.push(_id);
         _self.didToAgreementIds[_did].push(_id);
         _self.templateIdToAgreementIds[_templateId].push(_id);
-        return _self.agreementIds.length;
+        // return _self.agreementIds.length;
     }
 }

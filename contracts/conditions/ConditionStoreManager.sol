@@ -191,8 +191,7 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
             _id,
             _typeRef,
             uint(0),
-            uint(0),
-            msg.sender
+            uint(0)
         );
     }
     
@@ -204,42 +203,14 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
      *      Uninitialized to Unfulfilled.
      * @param _id unique condition identifier
      * @param _typeRef condition contract address
-     * @param _creator address of the condition creator
-     */
-    function createCondition(
-        bytes32 _id,
-        address _typeRef,
-        address _creator
-    )
-        external
-    {
-        createCondition(
-            _id,
-            _typeRef,
-            uint(0),
-            uint(0),
-            _creator
-        );
-    }
-
-    /**
-     * @dev createCondition only called by create role address 
-     *      the condition should use a valid condition contract 
-     *      address, valid time lock and timeout. Moreover, it 
-     *      enforce the condition state transition from 
-     *      Uninitialized to Unfulfilled.
-     * @param _id unique condition identifier
-     * @param _typeRef condition contract address
      * @param _timeLock start of the time window
      * @param _timeOut end of the time window
-     * @param _creator address of the condition creator     
      */
     function createCondition(
         bytes32 _id,
         address _typeRef,
         uint _timeLock,
-        uint _timeOut,
-        address _creator
+        uint _timeOut
     )
         public
         onlyCreateRole
@@ -247,7 +218,7 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
     {
         epochList.create(_id, _timeLock, _timeOut);
 
-        conditionList.create(_id, _typeRef, _creator);
+        conditionList.create(_id, _typeRef);
 
         emit ConditionCreated(
             _id,
@@ -333,9 +304,6 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
      * @return timeLock the time lock
      * @return timeOut time out
      * @return blockNumber block number
-     * @return createdBy address
-     * @return lastUpdatedBy address
-     * @return blockNumberUpdated block number updated
      */
     function getCondition(bytes32 _id)
         external
@@ -345,10 +313,7 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
             ConditionStoreLibrary.ConditionState state,
             uint timeLock,
             uint timeOut,
-            uint blockNumber,
-            address createdBy,
-            address lastUpdatedBy,
-            uint blockNumberUpdated
+            uint blockNumber
         )
     {
         typeRef = conditionList.conditions[_id].typeRef;
@@ -356,7 +321,7 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
         timeLock = epochList.epochs[_id].timeLock;
         timeOut = epochList.epochs[_id].timeOut;
         blockNumber = epochList.epochs[_id].blockNumber;
-        createdBy = conditionList.conditions[_id].createdBy;
+        // createdBy = conditionList.conditions[_id].createdBy;
         // lastUpdatedBy = conditionList.conditions[_id].lastUpdatedBy;
         // blockNumberUpdated = conditionList.conditions[_id].blockNumberUpdated;
     }
@@ -390,7 +355,6 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
     /**
      * @dev getConditionCreatedBy  
      * @return condition createdBy address
-     */
     function getConditionCreatedBy(bytes32 _id)
     external
     view
@@ -399,6 +363,7 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
     {
         return conditionList.conditions[_id].createdBy;
     }
+     */
 
     /**
      * @dev getConditionState  

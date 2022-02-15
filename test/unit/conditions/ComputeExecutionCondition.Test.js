@@ -139,8 +139,8 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
                 conditionTypes: [computeExecutionCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2],
-                creator: templateId
+                timeOuts: [2]
+
             }
 
             await agreementStoreManager.createAgreement(
@@ -189,8 +189,8 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
                 conditionTypes: [computeExecutionCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2],
-                creator: templateId
+                timeOuts: [2]
+
             }
 
             await agreementStoreManager.createAgreement(
@@ -229,8 +229,8 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
                 conditionTypes: [computeExecutionCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2],
-                creator: templateId
+                timeOuts: [2]
+
             }
 
             await agreementStoreManager.createAgreement(
@@ -274,8 +274,8 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
                 conditionTypes: [computeExecutionCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
-                timeOuts: [timeOut],
-                creator: templateId
+                timeOuts: [timeOut]
+
             }
 
             await agreementStoreManager.createAgreement(

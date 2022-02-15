@@ -89,40 +89,6 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
 
     }
-
-    /**
-     * @dev Create a new agreement and associate the agreement created to the address originating the transaction.
-     *      The agreement will create conditions of conditionType with conditionId.
-     *      Only "approved" templates can access this function.
-     * @param _id is the ID of the new agreement. Must be unique.
-     * @param _did is the bytes32 DID of the asset. The DID must be registered beforehand.
-     * @param _conditionTypes is a list of addresses that point to Condition contracts.
-     * @param _conditionIds is a list of bytes32 content-addressed Condition IDs
-     * @param _timeLocks is a list of uint time lock values associated to each Condition
-     * @param _timeOuts is a list of uint time out values associated to each Condition
-     * @return size the size of the agreement list after the create action.
-     */
-    function createAgreement(
-        bytes32 _id,
-        bytes32 _did,
-        address[] memory _conditionTypes,
-        bytes32[] memory _conditionIds,
-        uint[] memory _timeLocks,
-        uint[] memory _timeOuts
-    )
-    public
-    returns (uint size)
-    {
-        return createAgreement(
-            _id,
-            _did,
-            _conditionTypes,
-            _conditionIds,
-            _timeLocks,
-            _timeOuts,
-            tx.origin // solhint-disable avoid-tx-origin
-        );
-    }
     
     /**
      * @dev Create a new agreement.
@@ -134,8 +100,6 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
      * @param _conditionIds is a list of bytes32 content-addressed Condition IDs
      * @param _timeLocks is a list of uint time lock values associated to each Condition
      * @param _timeOuts is a list of uint time out values associated to each Condition
-     * @param _creator address of the account associated as agreement and conditions creator
-     * @return size the size of the agreement list after the create action.
      */
     function createAgreement(
         bytes32 _id,
@@ -143,11 +107,9 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         address[] memory _conditionTypes,
         bytes32[] memory _conditionIds,
         uint[] memory _timeLocks,
-        uint[] memory _timeOuts,
-        address _creator
+        uint[] memory _timeOuts
     )
         public
-        returns (uint size)
     {
         require(
             templateStoreManager.isTemplateApproved(msg.sender) == true,
@@ -170,8 +132,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
                 _conditionIds[i],
                 _conditionTypes[i],
                 _timeLocks[i],
-                _timeOuts[i],
-                _creator
+                _timeOuts[i]
             );
         }
         agreementList.create(
@@ -182,7 +143,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         );
 
         // same as above
-        return getAgreementListSize();
+        // return getAgreementListSize();
     }
 
     function createAgreementAndPay(
@@ -202,7 +163,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         public payable
     {
         require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
-        createAgreement(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts, _creator);
+        createAgreement(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts);
         LockPaymentCondition(_conditionTypes[_idx]).fulfillProxy{value: msg.value}(_creator, _id, _did, _rewardAddress, _tokenAddress, _amounts, _receivers);
     }
 
@@ -286,7 +247,6 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
 
     /**
      * @return size the length of the agreement list.
-     */
     function getAgreementListSize()
         public
         view
@@ -295,6 +255,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
     {
         return agreementList.agreementIds.length;
     }
+     */
 
     /**
      * @param _did is the bytes32 DID of the asset.
@@ -327,6 +288,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
      */
     function getDIDRegistryAddress()
         public
+        virtual
         view
         returns(address)
     {

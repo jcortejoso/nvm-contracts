@@ -34,7 +34,6 @@ contract AgreementTemplate is OwnableUpgradeable {
      *          same condition that has the same index
      * @param _timeOuts list of time outs, each time out will be assigned to the 
      *          same condition that has the same index
-     * @return size the index of the created agreement
      */
     function createAgreement(
         bytes32 _id,
@@ -44,9 +43,8 @@ contract AgreementTemplate is OwnableUpgradeable {
         uint[] memory _timeOuts
     )
         public
-        returns (uint size)
     {
-        return agreementStoreManager.createAgreement(
+        agreementStoreManager.createAgreement(
             _id,
             _did,
             getConditionTypes(),

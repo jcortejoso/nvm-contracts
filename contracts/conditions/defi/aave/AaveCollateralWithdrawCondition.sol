@@ -113,7 +113,7 @@ contract AaveCollateralWithdrawCondition is
 
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
             .getCondition(vault.repayConditionId());
 
         require(

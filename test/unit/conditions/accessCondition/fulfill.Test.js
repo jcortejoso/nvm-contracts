@@ -93,8 +93,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2],
-                creator: templateId
+                timeOuts: [2]
+
             }
 
             await agreementStoreManager.createAgreement(
@@ -144,8 +144,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2],
-                creator: templateId
+                timeOuts: [2]
+
             }
 
             await agreementStoreManager.createAgreement(
@@ -185,8 +185,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2],
-                creator: templateId
+                timeOuts: [2]
+
             }
 
             await agreementStoreManager.createAgreement(
@@ -233,8 +233,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
-                timeOuts: [timeOut],
-                creator: templateId
+                timeOuts: [timeOut]
+
             }
 
             await agreementStoreManager.createAgreement(
@@ -282,8 +282,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
-                timeOuts: [timeOut],
-                creator: templateId
+                timeOuts: [timeOut]
+
             }
 
             await agreementStoreManager.createAgreement(
@@ -329,8 +329,8 @@ contract('AccessCondition constructor', (accounts) => {
                 conditionTypes: [accessCondition.address],
                 conditionIds: [conditionId],
                 timeLocks: [timeLock],
-                timeOuts: [timeOut],
-                creator: templateId
+                timeOuts: [timeOut]
+
             }
 
             expect(await accessCondition.checkPermissions(grantee, documentId))

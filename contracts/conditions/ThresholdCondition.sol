@@ -133,7 +133,7 @@ contract ThresholdCondition is Condition {
         
         for(uint i = 0; i < _inputConditions.length; i++)
         { 
-            (,inputConditionState,,,,,,) = conditionStoreManager.
+            (,inputConditionState,,,) = conditionStoreManager.
             getCondition(_inputConditions[i]);
             
             if(inputConditionState == Fulfilled)

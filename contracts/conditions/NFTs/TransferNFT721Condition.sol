@@ -124,7 +124,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
 
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
         .getCondition(_lockPaymentCondition);
 
         require(
@@ -189,7 +189,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
 
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
         .getCondition(_lockPaymentCondition);
 
         require(
