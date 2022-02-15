@@ -192,19 +192,18 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
             uint256 blockNumberUpdated
         )
     {
-        did = agreementList.agreements[_id].did;
+        // did = agreementList.agreements[_id].did;
         didOwner = didRegistry.getDIDOwner(did);
         templateId = agreementList.agreements[_id].templateId;
         conditionIds = agreementList.agreements[_id].conditionIds;
-        lastUpdatedBy = agreementList.agreements[_id].lastUpdatedBy;
-        blockNumberUpdated = agreementList.agreements[_id].blockNumberUpdated;
+        // lastUpdatedBy = agreementList.agreements[_id].lastUpdatedBy;
+        // blockNumberUpdated = agreementList.agreements[_id].blockNumberUpdated;
     }
 
     /**
      * @dev get the DID owner for this agreement with _id.
      * @param _id is the ID of the agreement.
      * @return didOwner the DID owner associated with agreement.did from the DID registry.
-     */
     function getAgreementDIDOwner(bytes32 _id)
         external
         view
@@ -213,13 +212,13 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         bytes32 did = agreementList.agreements[_id].did;
         return didRegistry.getDIDOwner(did);
     }
+     */
 
     /**
      * @dev check the DID owner for this agreement with _id.
      * @param _id is the ID of the agreement.
      * @param _owner is the DID owner
      * @return the DID owner associated with agreement.did from the DID registry.
-     */
     function isAgreementDIDOwner(bytes32 _id, address _owner)
         external
         view
@@ -228,6 +227,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         bytes32 did = agreementList.agreements[_id].did;
         return (_owner == didRegistry.getDIDOwner(did));
     }
+     */
 
     /**
      * @dev isAgreementDIDProvider for a given agreement Id 
@@ -235,7 +235,6 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
      * @param _id is the ID of the agreement
      * @param _provider is the DID provider
      * @return true if a DID provider is associated with the agreement ID
-     */
     function isAgreementDIDProvider(bytes32 _id, address _provider)
         external
         view
@@ -244,6 +243,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         bytes32 did = agreementList.agreements[_id].did;
         return didRegistry.isDIDProvider(did, _provider);
     }
+     */
 
     /**
      * @return size the length of the agreement list.

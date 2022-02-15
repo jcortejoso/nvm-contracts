@@ -20,11 +20,11 @@ pragma solidity ^0.8.0;
 library AgreementStoreLibrary {
 
     struct Agreement {
-        bytes32 did;
+        // bytes32 did;
         address templateId;
         bytes32[] conditionIds;
-        address lastUpdatedBy;
-        uint256 blockNumberUpdated;
+        // address lastUpdatedBy;
+        // uint256 blockNumberUpdated;
     }
 
     struct AgreementList {
@@ -54,21 +54,21 @@ library AgreementStoreLibrary {
         internal
     {
         require(
-            _self.agreements[_id].blockNumberUpdated == 0,
+            _self.agreements[_id].templateId == address(0),
             'Id already exists'
         );
 
         _self.agreements[_id] = Agreement({
-            did: _did,
+            // did: _did,
             templateId: _templateId,
-            conditionIds: _conditionIds,
-            lastUpdatedBy: msg.sender,
-            blockNumberUpdated: block.number
+            conditionIds: _conditionIds
+            // lastUpdatedBy: msg.sender,
+            // blockNumberUpdated: block.number
         });
 
         // _self.agreementIds.push(_id);
-        _self.didToAgreementIds[_did].push(_id);
-        _self.templateIdToAgreementIds[_templateId].push(_id);
+        // _self.didToAgreementIds[_did].push(_id);
+        // _self.templateIdToAgreementIds[_templateId].push(_id);
         // return _self.agreementIds.length;
     }
 }
