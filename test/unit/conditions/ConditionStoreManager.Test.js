@@ -170,7 +170,6 @@ contract('ConditionStoreManager', (accounts) => {
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
                 constants.condition.state.uninitialized)
-            assert.strictEqual((await conditionStoreManager.getConditionListSize()).toNumber(), 0)
 
             // conditionId should exist after create
             // await conditionStoreManager.createCondition(conditionId, conditionType, { from: createRole })
@@ -182,7 +181,6 @@ contract('ConditionStoreManager', (accounts) => {
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
                 constants.condition.state.unfulfilled)
-            assert.strictEqual((await conditionStoreManager.getConditionListSize()).toNumber(), 1)
         })
 
         it('createRole should create with zero timeout and timelock', async () => {
@@ -320,10 +318,12 @@ contract('ConditionStoreManager', (accounts) => {
             assert.strictEqual(state.toNumber(), constants.condition.state.unfulfilled)
             assert.strictEqual(timeLock.toNumber(), 0)
             assert.strictEqual(timeOut.toNumber(), 0)
+            /*
             expect(lastUpdatedBy)
                 .to.equal(accounts[0])
             expect(blockNumberUpdated.toNumber())
                 .to.equal(blockNumber.toNumber() + 1)
+            */
         })
 
         it('no create should get uninitialized Condition', async () => {

@@ -25,14 +25,13 @@ library ConditionStoreLibrary {
         address typeRef;
         ConditionState state;
         address createdBy;
-        address lastUpdatedBy;
-        uint256 blockNumberUpdated;
+        // address lastUpdatedBy;
+        // uint256 blockNumberUpdated;
     }
 
     struct ConditionList {
         mapping(bytes32 => Condition) conditions;
         mapping(bytes32 => mapping(bytes32 => bytes32)) map; 
-        bytes32[] conditionIds;
     }
     
     
@@ -45,7 +44,6 @@ library ConditionStoreLibrary {
     * @param _id valid condition identifier
     * @param _typeRef condition contract address
     * @param _creator address of the condition creator
-    * @return size is the condition index
     */
     function create(
         ConditionList storage _self,
@@ -54,24 +52,23 @@ library ConditionStoreLibrary {
         address _creator
     )
         internal
-        returns (uint size)
     {
         require(
-            _self.conditions[_id].blockNumberUpdated == 0,
+            _self.conditions[_id].typeRef == address(0),
             'Id already exists'
         );
 
         _self.conditions[_id] = Condition({
             typeRef: _typeRef,
             state: ConditionState.Unfulfilled,
-            createdBy: _creator,
-            lastUpdatedBy: msg.sender,
-            blockNumberUpdated: block.number
+            createdBy: _creator
+            // lastUpdatedBy: msg.sender,
+            // blockNumberUpdated: block.number
         });
 
-        _self.conditionIds.push(_id);
+        // _self.conditionIds.push(_id);
 
-        return _self.conditionIds.length;
+        // return _self.conditionIds.length;
     }
 
     /**
@@ -97,8 +94,8 @@ library ConditionStoreLibrary {
         );
 
         _self.conditions[_id].state = _newState;
-        _self.conditions[_id].lastUpdatedBy = msg.sender;
-        _self.conditions[_id].blockNumberUpdated = block.number;
+        // _self.conditions[_id].lastUpdatedBy = msg.sender;
+        // _self.conditions[_id].blockNumberUpdated = block.number;
 
     }
     

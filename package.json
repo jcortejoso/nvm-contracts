@@ -134,6 +134,7 @@
   },
   "dependencies": {
     "@gnosis.pm/safe-core-sdk": "^1.0.0",
-    "@gnosis.pm/safe-deployments": "^1.4.0"
+    "@gnosis.pm/safe-deployments": "^1.4.0",
+    "hardhat-gas-reporter": "^1.0.7"
   }
 }

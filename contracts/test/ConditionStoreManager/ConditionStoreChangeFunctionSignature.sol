@@ -15,7 +15,6 @@ contract ConditionStoreChangeFunctionSignature is ConditionStoreManager {
         address _creator
     )
         public
-        returns (uint size)
     {
         // change function signature
         require(
@@ -23,7 +22,7 @@ contract ConditionStoreChangeFunctionSignature is ConditionStoreManager {
             'Invalid _sender address change signature test should fail'
         );
 
-        return createCondition(
+        createCondition(
             _id,
             _typeRef,
             uint(0),

@@ -585,6 +585,17 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         return didRegisterList.isProvider(_did, _provider);
     }
 
+    function isDIDProviderOrOwner(
+        bytes32 _did,
+        address _provider
+    )
+    public
+    view
+    returns (bool)
+    {
+        return didRegisterList.isProvider(_did, _provider) || _provider == getDIDOwner(_did);
+    }
+
     /**
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @return owner the did owner

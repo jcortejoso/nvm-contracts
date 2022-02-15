@@ -31,11 +31,12 @@ contract('AccessCondition constructor', (accounts) => {
             await didRegistry.initialize(accounts[0], constants.address.zero, constants.address.zero)
             const accessCondition = await AccessCondition.new()
             const nftAccessCondition = await NFTAccessCondition.new()
+            await agreementStoreManager.initialize(accounts[0], conditionStoreManager.address, accounts[1], didRegistry.address)
 
             await accessCondition.methods['initialize(address,address,address)'](
                 accounts[0],
                 conditionStoreManager.address,
-                didRegistry.address,
+                agreementStoreManager.address,
                 { from: accounts[0] }
             )
 
