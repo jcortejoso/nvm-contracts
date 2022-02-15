@@ -14,6 +14,10 @@ import '../templates/TemplateStoreManager.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
+interface Template {
+    function getConditionTypes() external view returns (address[] memory);
+}
+
 /**
  * @title Agreement Store Manager
  * @author Keyko & Ocean Protocol
@@ -195,7 +199,13 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         // did = agreementList.agreements[_id].did;
         didOwner = didRegistry.getDIDOwner(did);
         templateId = agreementList.agreements[_id].templateId;
-        conditionIds = agreementList.agreements[_id].conditionIds;
+        /*
+        address[] memory types = Template(templateId).getConditionTypes();
+        conditionIds = new bytes32[](types.length);
+        for (uint i = 0; i < types.length; i++) {
+            conditionIds = agreementList.agreements[_id].conditionIds[i];
+        }*/
+        // conditionIds = agreementList.agreements[_id].conditionIds;
         // lastUpdatedBy = agreementList.agreements[_id].lastUpdatedBy;
         // blockNumberUpdated = agreementList.agreements[_id].blockNumberUpdated;
     }

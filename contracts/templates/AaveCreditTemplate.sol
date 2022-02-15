@@ -129,19 +129,17 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         address _vaultAddress
     )
     public
-    returns (uint256 size)
     {
         vaultAddress[_id] = address(_vaultAddress);
 
-        return
-            super.createAgreement(
-                _id,
-                _did,
-                _conditionIds,
-                _timeLocks,
-                _timeOuts,
-                msg.sender // borrower
-            );
+        super.createAgreement(
+            _id,
+            _did,
+            _conditionIds,
+            _timeLocks,
+            _timeOuts,
+            msg.sender // borrower
+        );
     }
     
     function createAgreement(
@@ -158,7 +156,6 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         address _lender
     ) 
     public 
-    returns (uint256 size) 
     {
         AaveCreditVault _vault = new AaveCreditVault(
             _lendingPool,
@@ -174,15 +171,14 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
         vaultAddress[_id] = address(_vault);
         emit VaultCreated(address(_vault), msg.sender, _lender, msg.sender);
         
-        return
-            super.createAgreement(
-                _id,
-                _did,
-                _conditionIds,
-                _timeLocks,
-                _timeOuts,
-                msg.sender // borrower
-            );
+        super.createAgreement(
+            _id,
+            _did,
+            _conditionIds,
+            _timeLocks,
+            _timeOuts,
+            msg.sender // borrower
+        );
     }
     
     function deployVault(

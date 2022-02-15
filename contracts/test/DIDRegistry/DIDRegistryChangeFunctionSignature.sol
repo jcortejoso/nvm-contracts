@@ -17,7 +17,6 @@ contract DIDRegistryChangeFunctionSignature is DIDRegistry {
         string memory _url
     )
         public
-        returns (uint size)
     {
         bytes32 _did = hashDID(_didSeed, msg.sender);
         require(
@@ -48,6 +47,6 @@ contract DIDRegistryChangeFunctionSignature is DIDRegistry {
             block.number
         );
         
-        return getDIDRegistrySize();
+        // return getDIDRegistrySize();
     }
 }

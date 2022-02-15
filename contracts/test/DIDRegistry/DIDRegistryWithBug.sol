@@ -24,7 +24,6 @@ contract DIDRegistryWithBug is DIDRegistry {
     )
     public
     override
-    returns (uint size)
     {
         bytes32 _did = hashDID(_didSeed, msg.sender);
         require(
@@ -58,7 +57,6 @@ contract DIDRegistryWithBug is DIDRegistry {
             block.number
         );
         
-        return getDIDRegistrySize();
     }
   
 }

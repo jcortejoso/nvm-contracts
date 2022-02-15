@@ -22,7 +22,7 @@ library AgreementStoreLibrary {
     struct Agreement {
         // bytes32 did;
         address templateId;
-        bytes32[] conditionIds;
+        mapping (uint => bytes32) conditionIds;
         // address lastUpdatedBy;
         // uint256 blockNumberUpdated;
     }
@@ -58,13 +58,18 @@ library AgreementStoreLibrary {
             'Id already exists'
         );
 
-        _self.agreements[_id] = Agreement({
+        _self.agreements[_id].templateId = _templateId;
+        /*
+        for (uint i = 0; i < _conditionIds.length; i++) {
+            _self.agreements[_id].conditionIds[i] = _conditionIds[i];
+        }*/
+         /*Agreement({
             // did: _did,
             templateId: _templateId,
             conditionIds: _conditionIds
             // lastUpdatedBy: msg.sender,
             // blockNumberUpdated: block.number
-        });
+        });*/
 
         // _self.agreementIds.push(_id);
         // _self.didToAgreementIds[_did].push(_id);

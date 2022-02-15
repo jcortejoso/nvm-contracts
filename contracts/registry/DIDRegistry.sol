@@ -61,7 +61,6 @@ contract DIDRegistry is DIDFactory {
      * @param _mint if true it mints the ERC-1155 NFTs attached to the asset
      * @param _activityId refers to activity
      * @param _nftMetadata refers to the url providing the NFT Metadata     
-     * @return size refers to the size of the registry after the register action.
      */
     function registerMintableDID(
         bytes32 _didSeed,
@@ -76,9 +75,8 @@ contract DIDRegistry is DIDFactory {
     )
     public
     onlyValidAttributes(_nftMetadata)
-    returns (uint size)
     {
-        uint result = registerDID(_didSeed, _checksum, _providers, _url, _activityId, '');
+        registerDID(_didSeed, _checksum, _providers, _url, _activityId, '');
         enableAndMintDidNft(
             hashDID(_didSeed, msg.sender),
             _cap,
@@ -86,7 +84,6 @@ contract DIDRegistry is DIDFactory {
             _mint,
             _nftMetadata
         );
-        return result;
     }
 
     /**
@@ -103,7 +100,6 @@ contract DIDRegistry is DIDFactory {
      * @param _mint if true it mints the ERC-1155 NFTs attached to the asset
      * @param _activityId refers to activity
      * @param _nftMetadata refers to the url providing the NFT Metadata     
-     * @return size refers to the size of the registry after the register action.
      */
     function registerMintableDID721(
         bytes32 _didSeed,
@@ -117,16 +113,14 @@ contract DIDRegistry is DIDFactory {
     )
     public
     onlyValidAttributes(_nftMetadata)
-    returns (uint size)
     {
-        uint result = registerDID(_didSeed, _checksum, _providers, _url, _activityId, '');
+        registerDID(_didSeed, _checksum, _providers, _url, _activityId, '');
         enableAndMintDidNft721(
             hashDID(_didSeed, msg.sender),
             _royalties,
             _mint,
             _nftMetadata
         );
-        return result;
     }
 
 
@@ -145,7 +139,6 @@ contract DIDRegistry is DIDFactory {
      * @param _royalties refers to the royalties to reward to the DID creator in the secondary market
      * @param _activityId refers to activity
      * @param _nftMetadata refers to the url providing the NFT Metadata     
-     * @return size refers to the size of the registry after the register action.
      */
     function registerMintableDID(
         bytes32 _didSeed,
@@ -159,9 +152,8 @@ contract DIDRegistry is DIDFactory {
     )
     public
     onlyValidAttributes(_nftMetadata)
-    returns (uint size)
     {
-        return registerMintableDID(
+        registerMintableDID(
             _didSeed, _checksum, _providers, _url, _cap, _royalties, false, _activityId, _nftMetadata);
     }
 

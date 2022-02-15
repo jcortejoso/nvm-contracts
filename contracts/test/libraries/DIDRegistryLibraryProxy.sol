@@ -40,9 +40,8 @@ contract DIDRegistryLibraryProxy {
         string calldata _url
     )
     public
-    returns (uint size)
     {
-        return didRegisterList.update(_did, _checksum, _url);
+        didRegisterList.update(_did, _checksum, _url);
     }
 
     function initializeNftConfig(

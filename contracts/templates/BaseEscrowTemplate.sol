@@ -24,6 +24,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
     struct AgreementDataModel {
         address accessConsumer;
         address accessProvider;
+        bytes32 did;
     }
 
     struct AgreementData {
@@ -46,7 +47,6 @@ contract BaseEscrowTemplate is AgreementTemplate {
     * @param _timeOuts the ending point of the time window ,time lock is 
     *       in block number not seconds
     * @param _accessConsumer consumer address
-    * @return size the agreement index
     */
     function createAgreement(
         bytes32 _id,
@@ -57,7 +57,6 @@ contract BaseEscrowTemplate is AgreementTemplate {
         address _accessConsumer
     )
         public
-        returns (uint size)
     {
         super.createAgreement(
             _id,
@@ -68,7 +67,6 @@ contract BaseEscrowTemplate is AgreementTemplate {
         );
         _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer);
 
-        return agreementData.agreementIds.length;
     }
 
     function createAgreementAndPayEscrow(
@@ -86,7 +84,6 @@ contract BaseEscrowTemplate is AgreementTemplate {
     )
         public
         payable
-        returns (uint size)
     {
         super.createAgreementAndPay(
             _id,
@@ -101,8 +98,6 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _receivers
         );
         _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer);
-
-        return agreementData.agreementIds.length;
     }
 
     function _initAgreement(
@@ -115,8 +110,14 @@ contract BaseEscrowTemplate is AgreementTemplate {
         internal
     {
 
+        // storing some additional information for the template
+        agreementData.agreementDataItems[_id]
+            .accessConsumer = _accessConsumer;
+        agreementData.agreementDataItems[_id].did = _did;
+        /*
         address owner = address(0);
         address[] memory providers;
+        
         
         DIDRegistry didRegistryInstance = DIDRegistry(
             agreementStoreManager.getDIDRegistryAddress()
@@ -124,9 +125,6 @@ contract BaseEscrowTemplate is AgreementTemplate {
         
         (owner, , , , , providers,,,) = didRegistryInstance.getDIDRegister(_did);
 
-        // storing some additional information for the template
-        agreementData.agreementDataItems[_id]
-            .accessConsumer = _accessConsumer;
 
         if (providers.length > 0) {
             agreementData.agreementDataItems[_id]
@@ -134,9 +132,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
         } else {
             agreementData.agreementDataItems[_id]
                 .accessProvider = owner;
-        }
-
-        agreementData.agreementIds.push(_id);
+        }*/
 
         emit AgreementCreated(
             _id,
@@ -163,7 +159,22 @@ contract BaseEscrowTemplate is AgreementTemplate {
             address accessProvider
         )
     {
+        address owner = address(0);
+        address[] memory providers;
+        
+        
+        DIDRegistry didRegistryInstance = DIDRegistry(
+            agreementStoreManager.getDIDRegistryAddress()
+        );
+        
+        (owner, , , , , providers,,,) = didRegistryInstance.getDIDRegister(agreementData.agreementDataItems[_id].did);
+
+        if (providers.length > 0) {
+            accessProvider = providers[0];
+        } else {
+            accessProvider = owner;
+        }
         accessConsumer = agreementData.agreementDataItems[_id].accessConsumer;
-        accessProvider = agreementData.agreementDataItems[_id].accessProvider;
+        // accessProvider = agreementData.agreementDataItems[_id].accessProvider;
     }
 }

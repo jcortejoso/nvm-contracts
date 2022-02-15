@@ -45,7 +45,7 @@ contract AgreementTemplate is OwnableUpgradeable {
         public
     {
         agreementStoreManager.createAgreement(
-            _id,
+            keccak256(abi.encode(_id, msg.sender)),
             _did,
             getConditionTypes(),
             _conditionIds,
@@ -69,7 +69,7 @@ contract AgreementTemplate is OwnableUpgradeable {
         public payable
     {
         agreementStoreManager.createAgreementAndPay{value: msg.value}(
-            _id,
+            keccak256(abi.encode(_id, msg.sender)),
             _did,
             getConditionTypes(),
             _conditionIds,
