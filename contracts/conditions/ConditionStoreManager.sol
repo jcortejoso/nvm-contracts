@@ -195,6 +195,20 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
         );
     }
     
+    function createCondition2(
+        bytes32 _id,
+        address _typeRef
+    )
+    external
+    {
+        createCondition(
+            _id,
+            _typeRef,
+            uint(0),
+            uint(0)
+        );
+    }
+    
     /**
      * @dev createCondition only called by create role address 
      *      the condition should use a valid condition contract 

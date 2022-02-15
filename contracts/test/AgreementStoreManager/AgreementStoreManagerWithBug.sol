@@ -11,7 +11,7 @@ contract AgreementStoreManagerWithBug is AgreementStoreManager {
     function getDIDRegistryAddress()
         public
         override
-        view
+        pure
         returns(address)
     {
         return address(0);

@@ -191,28 +191,55 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
     public
     nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
+        {
+        return fulfillKludge(Args(_agreementId,
+        _did,
+         _amounts,
+         _receivers,
+         _returnAddress,
+         _lockPaymentAddress,
+         _tokenAddress,
+         _lockCondition,
+         _releaseConditions));
+    }
+
+    struct Args {
+        bytes32 _agreementId;
+        bytes32 _did;
+        uint256[] _amounts;
+        address[] _receivers;
+        address _returnAddress;
+        address _lockPaymentAddress;
+        address _tokenAddress;
+        bytes32 _lockCondition;
+        bytes32[] _releaseConditions;
+    }
+
+    function fulfillKludge(Args memory a)
+    internal
+    returns (ConditionStoreLibrary.ConditionState)
     {
 
         require(keccak256(
             abi.encode(
-                _agreementId,
-                conditionStoreManager.getConditionTypeRef(_lockCondition),
-                hashValuesLockPayment(_did, _lockPaymentAddress, _tokenAddress, _amounts, _receivers)
+                a._agreementId,
+                conditionStoreManager.getConditionTypeRef(a._lockCondition),
+                hashValuesLockPayment(a._did, a._lockPaymentAddress, a._tokenAddress, a._amounts, a._receivers)
             )
-        ) == _lockCondition,
+        ) == a._lockCondition,
             'LockCondition ID does not match'
         );
         
         require(
-            conditionStoreManager.getConditionState(_lockCondition) ==
+            conditionStoreManager.getConditionState(a._lockCondition) ==
             ConditionStoreLibrary.ConditionState.Fulfilled,
             'LockCondition needs to be Fulfilled'
         );
 
         bool allFulfilled = true;
         bool someAborted = false;
-        for (uint i = 0; i < _releaseConditions.length; i++) {
-            ConditionStoreLibrary.ConditionState cur = conditionStoreManager.getConditionState(_releaseConditions[i]);
+        for (uint i = 0; i < a._releaseConditions.length; i++) {
+            ConditionStoreLibrary.ConditionState cur = conditionStoreManager.getConditionState(a._releaseConditions[i]);
             if (cur != ConditionStoreLibrary.ConditionState.Fulfilled) {
                 allFulfilled = false;
             }
@@ -223,44 +250,44 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
 
         require(someAborted || allFulfilled, 'Release conditions unresolved');
 
-        require(conditionStoreManager.getMappingValue(_lockCondition, USED_PAYMENT_ID) == 0, 'Lock condition already used');
+        require(conditionStoreManager.getMappingValue(a._lockCondition, USED_PAYMENT_ID) == 0, 'Lock condition already used');
         bytes32 id = generateId(
-            _agreementId,
+            a._agreementId,
             hashValuesMulti(
-                _did,
-                _amounts,
-                _receivers,
-                _returnAddress,
-                _lockPaymentAddress,
-                _tokenAddress,
-                _lockCondition,
-                _releaseConditions
+                a._did,
+                a._amounts,
+                a._receivers,
+                a._returnAddress,
+                a._lockPaymentAddress,
+                a._tokenAddress,
+                a._lockCondition,
+                a._releaseConditions
             )
         );        
         
         ConditionStoreLibrary.ConditionState state;
         if (allFulfilled) {
-            conditionStoreManager.updateConditionMappingProxy(_lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
-            if (_tokenAddress != address(0))
-                state = _transferAndFulfillERC20(id, _tokenAddress, _receivers, _amounts);
+            conditionStoreManager.updateConditionMappingProxy(a._lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
+            if (a._tokenAddress != address(0))
+                state = _transferAndFulfillERC20(id, a._tokenAddress, a._receivers, a._amounts);
             else
-                state = _transferAndFulfillETH(id, _receivers, _amounts);
+                state = _transferAndFulfillETH(id, a._receivers, a._amounts);
             
-            // emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
+            emit Fulfilled(a._agreementId, a._tokenAddress, a._receivers, id, a._amounts);
 
         } else if (someAborted) {
-            conditionStoreManager.updateConditionMappingProxy(_lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
+            conditionStoreManager.updateConditionMappingProxy(a._lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
             uint256[] memory _totalAmounts = new uint256[](1);
-            _totalAmounts[0] = calculateTotalAmount(_amounts);
+            _totalAmounts[0] = calculateTotalAmount(a._amounts);
             address[] memory _originalSender = new address[](1);
-            _originalSender[0] = _returnAddress;
+            _originalSender[0] = a._returnAddress;
             
-            if (_tokenAddress != address(0))
-                state = _transferAndFulfillERC20(id, _tokenAddress, _originalSender, _totalAmounts);
+            if (a._tokenAddress != address(0))
+                state = _transferAndFulfillERC20(id, a._tokenAddress, _originalSender, _totalAmounts);
             else
                 state = _transferAndFulfillETH(id, _originalSender, _totalAmounts);
             
-            // emit Fulfilled(_agreementId, _tokenAddress, _originalSender, id, _totalAmounts);
+            emit Fulfilled(a._agreementId, a._tokenAddress, _originalSender, id, _totalAmounts);
             
         }
 
