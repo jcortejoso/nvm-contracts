@@ -18,3 +18,4 @@ git checkout $BRANCH
 yarn
 
 npx hardhat run ./scripts/deploy/truffle-wrapper/upgradeContractsWrapper.js --network external || exit 1
+npx hardhat run ./scripts/deploy/truffle-wrapper/upgradePlonkVerifier.js --network external || exit 1
