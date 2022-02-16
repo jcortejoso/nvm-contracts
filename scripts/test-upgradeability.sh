@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
 rm -f .openzeppelin/unknown-31337.json
 git checkout master
 yarn
