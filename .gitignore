@@ -10,6 +10,7 @@ test/verification/manticore/results/*
 artifacts/*.hardhat.json
 artifacts/*.development.json
 artifacts/*.spree.json
+artifacts/*.external.json
 
 # Build / Travis
 build/
