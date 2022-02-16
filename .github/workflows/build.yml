@@ -76,6 +76,7 @@ jobs:
       - name: Pre-install
         run: |
           export
+          yarn install --frozen-lockfile
       - name: Compile and Lint
         run: |
           sh ./scripts/build.sh
