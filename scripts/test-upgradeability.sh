@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export BASE=master
+export BASE=v1.3.6
 export BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 rm -f .openzeppelin/unknown-31337.json
