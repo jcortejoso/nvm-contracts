@@ -7,7 +7,7 @@ git checkout master
 yarn
 yarn compile
 
-npx hardhat node --port 18545
+npx hardhat node --port 18545 &
 
 npx hardhat run ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js --network external
 
