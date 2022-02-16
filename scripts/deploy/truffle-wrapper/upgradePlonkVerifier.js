@@ -1,15 +1,13 @@
-const { argv } = require('yargs')
+const { web3, ethers } = require('hardhat')
 const { readArtifact, exportLibraryArtifact } = require('./artifacts')
 const { loadWallet } = require('./wallets')
 
 async function main() {
-    const parameters = argv._
     const verbose = true
-    const testnet = process.env.TESTNET === 'true'
 
-    let c = 'PlonkVerifier'
+    const c = 'PlonkVerifier'
 
-    const { roles, contractNetworks } = await loadWallet({})
+    const { roles } = await loadWallet({})
 
     const afact = readArtifact(c)
     const factory = await ethers.getContractFactory(c, { libraries: afact.libraries })
