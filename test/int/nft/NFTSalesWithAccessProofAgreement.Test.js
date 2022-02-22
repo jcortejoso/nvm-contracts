@@ -137,7 +137,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
             await accessProofCondition.hashValues(origHash, buyerPub, providerPub))
 
         const conditionIdEscrow = await escrowCondition.generateId(agreementId,
-            await escrowCondition.hashValuesMulti(did, amounts, receivers, escrowCondition.address, token.address, conditionIdLockPayment,
+            await escrowCondition.hashValuesMulti(did, amounts, receivers, collector1, escrowCondition.address, token.address, conditionIdLockPayment,
                 [conditionIdTransferNFT, conditionIdAccess]))
 
         nftSalesAgreement = {
@@ -254,6 +254,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
                 did,
                 amounts,
                 receivers,
+                collector1,
                 escrowCondition.address,
                 token.address,
                 nftSalesAgreement.conditionIds[0],

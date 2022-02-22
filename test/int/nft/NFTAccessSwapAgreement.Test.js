@@ -120,7 +120,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
             await accessProofCondition.hashValues(origHash, buyerPub, providerPub))
 
         const conditionIdEscrow = await escrowCondition.generateId(agreementId,
-            await escrowCondition.hashValues(did, amount, receiver, escrowCondition.address, token.address, conditionIdLockPayment,
+            await escrowCondition.hashValues(did, amount, receiver, collector1, escrowCondition.address, token.address, conditionIdLockPayment,
                 [conditionIdAccess]))
 
         nftAgreement = {
@@ -178,12 +178,11 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
                 .to.equal(did)
 
             const conditionTypes = await nftTemplate.getConditionTypes()
-            let storedCondition
-            agreement.conditionIds.forEach(async (conditionId, i) => {
-                storedCondition = await conditionStoreManager.getCondition(conditionId)
+            await Promise.all(agreement.conditionIds.map(async (conditionId, i) => {
+                const storedCondition = await conditionStoreManager.getCondition(conditionId)
                 expect(storedCondition.typeRef).to.equal(conditionTypes[i])
                 expect(storedCondition.state.toNumber()).to.equal(constants.condition.state.unfulfilled)
-            })
+            }))
 
             // lock payment
             const nftBalanceArtistBefore = await nft.balanceOf(artist, did)
@@ -208,6 +207,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
                 did,
                 amount,
                 receiver,
+                collector1,
                 escrowCondition.address,
                 token.address,
                 nftAgreement.conditionIds[0],
