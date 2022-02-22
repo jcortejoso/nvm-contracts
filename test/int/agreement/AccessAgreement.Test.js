@@ -80,7 +80,7 @@ contract('Access Template integration test', (accounts) => {
     }
 
     async function prepareEscrowAgreementMultipleEscrow({
-        agreementId = testUtils.generateId(),
+        initAgreementId = testUtils.generateId(),
         sender = accounts[0],
         receivers = [accounts[2], accounts[3]],
         escrowAmounts = [11, 4],
@@ -91,6 +91,7 @@ contract('Access Template integration test', (accounts) => {
         checksum = constants.bytes32.one
     } = {}) {
         const did = await didRegistry.hashDID(didSeed, receivers[0])
+        const agreementId = await agreementStoreManager.agreementId(initAgreementId, sender)
         // generate IDs from attributes
         const conditionIdLock =
             await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers)
@@ -103,7 +104,8 @@ contract('Access Template integration test', (accounts) => {
 
         // construct agreement
         const agreement = {
-            did: did,
+            initAgreementId,
+            did,
             conditionIds: [
                 conditionIdAccess,
                 conditionIdLock,
@@ -114,6 +116,7 @@ contract('Access Template integration test', (accounts) => {
             consumer: sender
         }
         return {
+            initAgreementId,
             conditionIds: [
                 fullConditionIdAccess,
                 fullConditionIdLock,
@@ -138,14 +141,14 @@ contract('Access Template integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, conditionIds } = await prepareEscrowAgreementMultipleEscrow()
+            const { agreementId, initAgreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, conditionIds } = await prepareEscrowAgreementMultipleEscrow()
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
             // create agreement
-            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await accessTemplate.createAgreement(...Object.values(agreement))
 
             // check state of agreement and conditions
             // expect((await agreementStoreManager.getAgreement(agreementId)).did).to.equal(did)
@@ -204,7 +207,7 @@ contract('Access Template integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeOutAccess, conditionIds } = await prepareEscrowAgreementMultipleEscrow({ timeOutAccess: 10 })
+            const { agreementId, initAgreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeOutAccess, conditionIds } = await prepareEscrowAgreementMultipleEscrow({ timeOutAccess: 10 })
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
 
@@ -212,7 +215,7 @@ contract('Access Template integration test', (accounts) => {
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
             // create agreement
-            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await accessTemplate.createAgreement(...Object.values(agreement))
 
             // fill up wallet
             await token.mint(sender, totalAmount, { from: owner })
@@ -267,7 +270,7 @@ contract('Access Template integration test', (accounts) => {
             await token.mint(sender, totalAmount, { from: owner })
 
             // create agreement
-            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await accessTemplate.createAgreement(...Object.values(agreement))
 
             // fulfill lock reward
             await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
@@ -321,7 +324,7 @@ contract('Access Template integration test', (accounts) => {
                 const { owner } = await setupTest()
 
                 // prepare: escrow agreement
-                const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, conditionIds } = await prepareEscrowAgreementMultipleEscrow()
+                const { initAgreementId, agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, conditionIds } = await prepareEscrowAgreementMultipleEscrow()
                 const totalAmount = escrowAmounts[0] + escrowAmounts[1]
                 const receiver = receivers[0]
 
@@ -329,10 +332,10 @@ contract('Access Template integration test', (accounts) => {
                 await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
                 // create agreement
-                await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+                await accessTemplate.createAgreement(...Object.values(agreement))
 
-                const { agreementId: agreementId2, agreement: agreement2, conditionIds: conditionIds2 } = await prepareEscrowAgreementMultipleEscrow(
-                    { agreementId: constants.bytes32.two, didSeed: didSeed }
+                const { agreementId: agreementId2, initAgreementId: initAgreementId2, agreement: agreement2, conditionIds: conditionIds2 } = await prepareEscrowAgreementMultipleEscrow(
+                    { initAgreementId: constants.bytes32.two, didSeed: didSeed }
                 )
                 const agreement2Amounts = [escrowAmounts[0] * 2, escrowAmounts[1]]
                 const newEscrowId = await escrowPaymentCondition.hashValues(
@@ -348,7 +351,7 @@ contract('Access Template integration test', (accounts) => {
                 conditionIds2[2] = await escrowPaymentCondition.generateId(agreementId2, newEscrowId)
 
                 // create agreement2
-                await accessTemplate.createAgreement(agreementId2, ...Object.values(agreement2))
+                await accessTemplate.createAgreement(...Object.values(agreement2))
 
                 // fill up wallet
                 await token.mint(sender, totalAmount * 2, { from: owner })
@@ -373,7 +376,7 @@ contract('Access Template integration test', (accounts) => {
                     constants.condition.state.unfulfilled
                 )
 
-                await escrowPaymentCondition.fulfill(agreementId, agreement.did, escrowAmounts, sender, receivers, escrowPaymentCondition.address, token.address, conditionIds[1], conditionIds[0], { from: receiver })
+                await escrowPaymentCondition.fulfill(agreementId, agreement.did, escrowAmounts, receivers, sender, escrowPaymentCondition.address, token.address, conditionIds[1], conditionIds[0], { from: receiver })
                 assert.strictEqual(
                     (await conditionStoreManager.getConditionState(conditionIds[2])).toNumber(),
                     constants.condition.state.fulfilled

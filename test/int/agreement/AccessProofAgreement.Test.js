@@ -86,7 +86,7 @@ contract('Access Proof Template integration test', (accounts) => {
     }
 
     async function prepareEscrowAgreementMultipleEscrow({
-        agreementId = testUtils.generateId(),
+        initAgreementId = testUtils.generateId(),
         sender = accounts[0],
         receivers = [accounts[2], accounts[3]],
         escrowAmounts = [11, 4],
@@ -107,6 +107,8 @@ contract('Access Proof Template integration test', (accounts) => {
 
         const did = await didRegistry.hashDID(didSeed, receivers[0])
 
+        const agreementId = await agreementStoreManager.agreementId(initAgreementId, accounts[0])
+
         // generate IDs from attributes
         const conditionIdLock =
             await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers)
@@ -120,7 +122,8 @@ contract('Access Proof Template integration test', (accounts) => {
 
         // construct agreement
         const agreement = {
-            did: did,
+            initAgreementId,
+            did,
             conditionIds: [
                 conditionIdAccess,
                 conditionIdLock,

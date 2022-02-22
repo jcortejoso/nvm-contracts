@@ -6,6 +6,7 @@ const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
+const testUtils = require('../../helpers/utils')
 
 const DynamicAccessTemplate = artifacts.require('DynamicAccessTemplate')
 const AccessCondition = artifacts.require('AccessCondition')
@@ -96,7 +97,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
     }
 
     async function prepareAgreement({
-        agreementId = constants.bytes32.one,
+        initAgreementId = testUtils.generateId(),
         holder = accounts[0],
         receiver = accounts[1],
         nftAmount = 1,
@@ -106,6 +107,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
         url = constants.registry.url,
         checksum = constants.bytes32.one
     } = {}) {
+        const agreementId = await agreementStoreManager.agreementId(initAgreementId, holder)
         const did = await didRegistry.hashDID(didSeed, receiver)
         // generate IDs from attributes
         const conditionIdAccess = await accessCondition.hashValues(did, receiver)
@@ -113,7 +115,8 @@ contract('Dynamic Access Template integration test', (accounts) => {
 
         // construct agreement
         const agreement = {
-            did: did,
+            initAgreementId,
+            did,
             conditionIds: [
                 conditionIdAccess,
                 conditionIdNft
@@ -159,7 +162,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
 
             // Conditions need to be added to the template
             await assert.isRejected(
-                dynamicAccessTemplate.createAgreement(agreementId, ...Object.values(agreement)),
+                dynamicAccessTemplate.createAgreement(...Object.values(agreement)),
                 'Arguments have wrong length'
             )
 
@@ -169,7 +172,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
             assert.strictEqual(2, templateConditionTypes.length)
 
             // create agreement
-            await dynamicAccessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await dynamicAccessTemplate.createAgreement(...Object.values(agreement))
 
             // check state of agreement and conditions
             const _did = await didRegistry.hashDID(constants.did[0], receiver)

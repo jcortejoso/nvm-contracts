@@ -91,7 +91,7 @@ contract('NFT Access integration test', (accounts) => {
     }
 
     async function prepareNFTAccessAgreement({
-        agreementId = testUtils.generateId(),
+        initAgreementId = testUtils.generateId(),
         sender = accounts[0],
         receiver = accounts[1],
         nftAmount = 1,
@@ -102,13 +102,15 @@ contract('NFT Access integration test', (accounts) => {
         checksum = constants.bytes32.one
     } = {}) {
         const did = await didRegistry.hashDID(didSeed, sender)
+        const agreementId = await agreementStoreManager.agreementId(initAgreementId, sender)
         // generate IDs from attributes
         const conditionIdNFT = await nftHolderCondition.hashValues(did, receiver, nftAmount)
         const conditionIdAccess = await accessCondition.hashValues(did, receiver)
 
         // construct agreement
         const agreement = {
-            did: did,
+            initAgreementId,
+            did,
             conditionIds: [
                 conditionIdNFT,
                 conditionIdAccess
@@ -148,7 +150,7 @@ contract('NFT Access integration test', (accounts) => {
                 didSeed, checksum, [], url, 10, 0, constants.activities.GENERATED, '', { from: sender })
 
             // create agreement
-            await nftAccessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await nftAccessTemplate.createAgreement(...Object.values(agreement))
 
             // mint and transfer the nft
             await didRegistry.mint(agreement.did, nftAmount, { from: sender })

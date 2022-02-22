@@ -226,13 +226,15 @@ contract('End to End NFT721 Scenarios', (accounts) => {
 
     async function prepareNFTSaleAgreement({
         did,
-        agreementId = testUtils.generateId(),
+        initAgreementId = testUtils.generateId(),
         _amounts = amounts,
         _receivers = receivers,
         _seller = artist,
         _buyer = collector1,
-        _numberNFTs = numberNFTs
+        _numberNFTs = numberNFTs,
+        _from = accounts[0]
     } = {}) {
+        const agreementId = await agreementStoreManager.agreementId(initAgreementId, _from)
         const conditionIdLockPayment = await lockPaymentCondition.hashValues(did, escrowCondition.address, token.address, _amounts, _receivers)
         const fullIdLockPayment = await lockPaymentCondition.generateId(agreementId, conditionIdLockPayment)
         const conditionIdTransferNFT = await transferCondition.hashValues(did, _seller, _buyer, _numberNFTs, fullIdLockPayment, nft.address)
@@ -242,7 +244,8 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         const fullIdEscrow = await escrowCondition.generateId(agreementId, conditionIdEscrow)
 
         const nftSalesAgreement = {
-            did: did,
+            initAgreementId,
+            did,
             conditionIds: [
                 conditionIdLockPayment,
                 conditionIdTransferNFT,

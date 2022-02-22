@@ -30,7 +30,8 @@ contract('Access with Auction integration test', (accounts) => {
     const bidder3 = accounts[6]
 
     const auctionId = testUtils.generateId()
-    const agreementId = testUtils.generateId()
+    const initAgreementId = testUtils.generateId()
+    let agreementId
     const escrowAmounts = [10, 4]
     const totalAmount = escrowAmounts[0] + escrowAmounts[1]
     const receivers = [creator, manager]
@@ -131,6 +132,7 @@ contract('Access with Auction integration test', (accounts) => {
         checksum = constants.bytes32.one
     } = {}) {
         did = await didRegistry.hashDID(didSeed, creator)
+        agreementId = await agreementStoreManager.agreementId(initAgreementId, accounts[0])
         // generate IDs from attributes
         //        console.log('Whats my agreement id: ', agreementId)
         const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
@@ -188,7 +190,7 @@ contract('Access with Auction integration test', (accounts) => {
                 didSeed, checksum, [], url, 10, 0, constants.activities.GENERATED, '', { from: creator })
 
             // create agreement
-            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await accessTemplate.createAgreement(initAgreementId, ...Object.values(agreement))
         })
 
         it('the auction takes place', async () => {

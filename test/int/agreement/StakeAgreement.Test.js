@@ -72,7 +72,7 @@ contract('Stake Agreement integration test', (accounts) => {
     }
 
     async function prepareStakeAgreement({
-        agreementId = constants.bytes32.one,
+        initAgreementId = constants.bytes32.one,
         staker = accounts[0],
         stakeAmount = 1000,
         stakePeriod = 5,
@@ -83,7 +83,7 @@ contract('Stake Agreement integration test', (accounts) => {
         checksum = constants.bytes32.one
     } = {}) {
         // generate IDs from attributes
-
+        const agreementId = await agreementStoreManager.agreementId(initAgreementId, sender)
         const did = await didRegistry.hashDID(didSeed, accounts[0])
         const conditionIdSign = await signCondition.hashValues(sign.message, sign.publicKey)
         const conditionIdLock =
@@ -96,7 +96,8 @@ contract('Stake Agreement integration test', (accounts) => {
 
         // construct agreement
         const agreement = {
-            did: did,
+            initAgreementId,
+            did,
             conditionTypes: [
                 signCondition.address,
                 lockPaymentCondition.address,
@@ -147,7 +148,7 @@ contract('Stake Agreement integration test', (accounts) => {
             await didRegistry.registerAttribute(didSeed, checksum, [], url)
 
             // create agreement: as approved account - not for production ;)
-            await agreementStoreManager.createAgreement(agreementId, ...Object.values(agreement))
+            await agreementStoreManager.createAgreement(...Object.values(agreement))
 
             // stake: fulfill lock reward
             await token.approve(lockPaymentCondition.address, stakeAmount, { from: alice })
