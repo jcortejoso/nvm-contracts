@@ -31,7 +31,8 @@ library ConditionStoreLibrary {
 
     struct ConditionList {
         mapping(bytes32 => Condition) conditions;
-        mapping(bytes32 => mapping(bytes32 => bytes32)) map; 
+        mapping(bytes32 => mapping(bytes32 => bytes32)) map;
+        // bytes32[] conditionIds;
     }
     
     

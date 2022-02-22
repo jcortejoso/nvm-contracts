@@ -250,7 +250,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
 
         require(someAborted || allFulfilled, 'Release conditions unresolved');
 
-        require(conditionStoreManager.getMappingValue(a._lockCondition, USED_PAYMENT_ID) == 0, 'Lock condition already used');
+        // require(conditionStoreManager.getMappingValue(a._lockCondition, USED_PAYMENT_ID) == 0, 'Lock condition already used');
         bytes32 id = generateId(
             a._agreementId,
             hashValuesMulti(
@@ -267,7 +267,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         
         ConditionStoreLibrary.ConditionState state;
         if (allFulfilled) {
-            conditionStoreManager.updateConditionMappingProxy(a._lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
+            // conditionStoreManager.updateConditionMappingProxy(a._lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
             if (a._tokenAddress != address(0))
                 state = _transferAndFulfillERC20(id, a._tokenAddress, a._receivers, a._amounts);
             else
@@ -276,7 +276,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             emit Fulfilled(a._agreementId, a._tokenAddress, a._receivers, id, a._amounts);
 
         } else if (someAborted) {
-            conditionStoreManager.updateConditionMappingProxy(a._lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
+            // conditionStoreManager.updateConditionMappingProxy(a._lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
             uint256[] memory _totalAmounts = new uint256[](1);
             _totalAmounts[0] = calculateTotalAmount(a._amounts);
             address[] memory _originalSender = new address[](1);

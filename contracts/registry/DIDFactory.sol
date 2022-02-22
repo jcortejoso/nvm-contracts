@@ -246,7 +246,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
             block.number
         );
         
-        // _wasGeneratedBy(_did, _did, msg.sender, _activityId, _attributes);
+        _wasGeneratedBy(_did, _did, msg.sender, _activityId, _attributes);
 
     }
 

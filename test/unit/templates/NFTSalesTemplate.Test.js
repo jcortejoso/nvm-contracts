@@ -155,11 +155,10 @@ contract('NFTSalesTemplate', (accounts) => {
             assert.strictEqual(storedAgreementData.accessConsumer, agreement.accessConsumer)
             assert.strictEqual(storedAgreementData.accessProvider, accounts[0])
 
-            const storedAgreement = await agreementStoreManager.getAgreement(agreementId)
-            expect(storedAgreement.conditionIds)
-                .to.deep.equal(agreement.conditionIds)
-            expect(storedAgreement.lastUpdatedBy)
-                .to.equal(templateId)
+            // const storedAgreement = await agreementStoreManager.getAgreement(agreementId)
+            const condIds = await testUtils.getAgreementConditionIds(nftSalesTemplate, agreementId)
+            expect(condIds).to.deep.equal(agreement.conditionIds)
+            // expect(storedAgreement.lastUpdatedBy).to.equal(templateId)
 
             let i = 0
             const conditionTypes = await nftSalesTemplate.getConditionTypes()
@@ -201,14 +200,16 @@ contract('NFTSalesTemplate', (accounts) => {
             const eventArgs = testUtils.getEventArgsFromTx(result, 'AgreementCreated')
             expect(eventArgs._agreementId).to.equal(agreementId)
             expect(eventArgs._did).to.equal(agreement.did)
-            expect(eventArgs._accessProvider).to.equal(accounts[0])
-            expect(eventArgs._accessConsumer).to.equal(agreement.accessConsumer)
+            // expect(eventArgs._accessProvider).to.equal(accounts[0])
+            // expect(eventArgs._accessConsumer).to.equal(agreement.accessConsumer)
 
+            /*
             const storedAgreement = await agreementStoreManager.getAgreement(agreementId)
             expect(storedAgreement.conditionIds)
                 .to.deep.equal(agreement.conditionIds)
             expect(storedAgreement.lastUpdatedBy)
                 .to.equal(templateId)
+            */
         })
     })
 })

@@ -1010,6 +1010,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, nf
                 assert.strictEqual(await token.getBalance(escrowPayment.address), balanceContractBefore)
                 assert.strictEqual(await token.getBalance(receivers[0]), balanceReceiverBefore + totalAmount)
             })
+            /*
             it('Should not be able to reuse the condition', async () => {
                 if (nft) {
                     return
@@ -1124,6 +1125,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, nf
                     releaseConditionId2),
                 /Lock condition already used/)
             })
+            */
         })
     })
 }

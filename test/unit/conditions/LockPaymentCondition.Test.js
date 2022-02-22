@@ -160,6 +160,7 @@ contract('LockPaymentCondition', (accounts) => {
             assert.strictEqual(balanceSenderAfter, balanceSenderBefore - 10)
             assert.strictEqual(balanceReceiverAfter, balanceReceiverBefore + 10)
 
+            /*
             const mappingValue = await conditionStoreManager.getMappingValue(
                 conditionId,
                 testUtils.sha3('_assetReceiverAddress')
@@ -167,6 +168,7 @@ contract('LockPaymentCondition', (accounts) => {
 
             const addressInMapping = await conditionStoreManager.bytes32ToAddress(mappingValue)
             assert.strictEqual(accounts[0], addressInMapping)
+            */
         })
 
         it('ETH: should fulfill if conditions exist and everything is okay', async () => {

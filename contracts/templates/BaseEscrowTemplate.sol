@@ -18,7 +18,8 @@ contract BaseEscrowTemplate is AgreementTemplate {
         address indexed _accessConsumer,
         address indexed _accessProvider,
         uint[]  _timeLocks,
-        uint[]  _timeOuts
+        uint[]  _timeOuts,
+        bytes32[] _conditionIds
     );
 
     struct AgreementDataModel {
@@ -65,8 +66,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _timeLocks,
             _timeOuts
         );
-        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer);
-
+        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
     }
 
     function createAgreementAndPayEscrow(
@@ -97,7 +97,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _amounts,
             _receivers
         );
-        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer);
+        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
     }
 
     function _initAgreement(
@@ -105,7 +105,8 @@ contract BaseEscrowTemplate is AgreementTemplate {
         bytes32 _did,
         uint[] memory _timeLocks,
         uint[] memory _timeOuts,
-        address _accessConsumer
+        address _accessConsumer,
+        bytes32[] memory _conditionIds
     )
         internal
     {
@@ -140,7 +141,8 @@ contract BaseEscrowTemplate is AgreementTemplate {
             agreementData.agreementDataItems[_id].accessConsumer,
             agreementData.agreementDataItems[_id].accessProvider,
             _timeLocks,
-            _timeOuts
+            _timeOuts,
+            _conditionIds
         );
 
     }

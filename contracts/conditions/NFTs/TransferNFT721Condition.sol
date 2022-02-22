@@ -133,12 +133,13 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         );
 
         // Check that nft receiver is the same enabled in the lock payment condition
+        /*
         require(
             conditionStoreManager.bytes32ToAddress(
                 conditionStoreManager.getMappingValue(_lockPaymentCondition, keccak256('_assetReceiverAddress'))
             ) == _nftReceiver,
             'Invalid receiver'
-        );
+        );*/
         
         IERC721Upgradeable token = IERC721Upgradeable(_contract);
         address nftOwner = token.ownerOf(uint256(_did));

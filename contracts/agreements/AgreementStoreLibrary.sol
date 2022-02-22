@@ -22,9 +22,10 @@ library AgreementStoreLibrary {
     struct Agreement {
         // bytes32 did;
         address templateId;
-        mapping (uint => bytes32) conditionIds;
+        // bytes32[] conditionIds___;
         // address lastUpdatedBy;
         // uint256 blockNumberUpdated;
+        mapping (uint => bytes32) conditionIds;
     }
 
     struct AgreementList {
