@@ -244,6 +244,7 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             ConditionStoreLibrary.ConditionState.Fulfilled
         );
 
+/*
         if (state == ConditionStoreLibrary.ConditionState.Fulfilled)    {
             conditionStoreManager.updateConditionMapping(
                 _id,
@@ -251,7 +252,7 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
                 Common.addressToBytes32(msg.sender)
             );            
         }
-
+*/
         emit Fulfilled(
             _agreementId,
             _did,

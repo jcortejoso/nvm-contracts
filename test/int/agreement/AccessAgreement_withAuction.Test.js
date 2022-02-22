@@ -45,6 +45,7 @@ contract('Access with Auction integration test', (accounts) => {
         agreementStoreManager,
         conditionStoreManager,
         templateStoreManager,
+        conditionIds,
         accessTemplate,
         accessCondition,
         lockPaymentCondition,
@@ -135,25 +136,31 @@ contract('Access with Auction integration test', (accounts) => {
         agreementId = await agreementStoreManager.agreementId(initAgreementId, accounts[0])
         // generate IDs from attributes
         //        console.log('Whats my agreement id: ', agreementId)
-        const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
-            await lockPaymentCondition.hashValues(
+        const conditionIdLock = await lockPaymentCondition.hashValues(
                 did,
                 escrowPaymentCondition.address,
                 token.address,
                 escrowAmounts,
-                receivers))
-        const conditionIdAccess = await accessCondition.generateId(agreementId,
-            await accessCondition.hashValues(did, receivers[0]))
-        const conditionIdEscrow = await escrowPaymentCondition.generateId(agreementId,
-            await escrowPaymentCondition.hashValues(
+                receivers)
+        const fullConditionIdLock = await lockPaymentCondition.generateId(agreementId, conditionIdLock)
+        const conditionIdAccess = await accessCondition.hashValues(did, receivers[0])
+        const fullConditionIdAccess = await accessCondition.generateId(agreementId, conditionIdAccess)
+        const conditionIdEscrow =  await escrowPaymentCondition.hashValues(
                 did,
                 escrowAmounts,
                 receivers,
                 bidder1,
                 escrowPaymentCondition.address,
                 token.address,
-                conditionIdLock,
-                conditionIdAccess))
+                fullConditionIdLock,
+                fullConditionIdAccess)
+        const fullConditionIdEscrow = await escrowPaymentCondition.generateId(agreementId, conditionIdEscrow)
+
+        conditionIds = [
+            fullConditionIdAccess,
+            fullConditionIdLock,
+            fullConditionIdEscrow
+        ]
 
         // construct agreement
         agreement = {
@@ -252,7 +259,7 @@ contract('Access with Auction integration test', (accounts) => {
             )
 
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
 
             assert.strictEqual(await getBalance(token, auctionContract.address), auctionBalanceBefore - totalAmount)
@@ -288,10 +295,10 @@ contract('Access with Auction integration test', (accounts) => {
                 agreementId, did, creator, { from: creator })
 
             assert.strictEqual( // Lock Condition
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
             assert.strictEqual( // Access Condition
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
         })
 
@@ -306,12 +313,12 @@ contract('Access with Auction integration test', (accounts) => {
                 bidder1,
                 escrowPaymentCondition.address,
                 token.address,
-                agreement.conditionIds[1],
-                agreement.conditionIds[0],
+                conditionIds[1],
+                conditionIds[0],
                 { from: creator }
             )
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[2])).toNumber(),
                 constants.condition.state.fulfilled
             )
 

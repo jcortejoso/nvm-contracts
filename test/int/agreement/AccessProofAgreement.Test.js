@@ -170,7 +170,7 @@ contract('Access Proof Template integration test', (accounts) => {
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
             // create agreement
-            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await accessTemplate.createAgreement(...Object.values(agreement))
 
             // check state of agreement and conditions
             // expect((await agreementStoreManager.getAgreement(agreementId)).did).to.equal(did)
@@ -246,7 +246,7 @@ contract('Access Proof Template integration test', (accounts) => {
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
             // create agreement
-            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await accessTemplate.createAgreement(...Object.values(agreement))
 
             // fill up wallet
             await token.mint(sender, totalAmount, { from: owner })
@@ -300,7 +300,7 @@ contract('Access Proof Template integration test', (accounts) => {
             await token.mint(sender, totalAmount, { from: owner })
 
             // create agreement
-            await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await accessTemplate.createAgreement(...Object.values(agreement))
 
             // fulfill lock reward
             await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
@@ -363,11 +363,9 @@ contract('Access Proof Template integration test', (accounts) => {
                 await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
                 // create agreement
-                await accessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+                await accessTemplate.createAgreement(...Object.values(agreement))
 
-                const { agreementId: agreementId2, agreement: agreement2, data: data2, conditionIds: conditionIds2 } = await prepareEscrowAgreementMultipleEscrow(
-                    { agreementId: constants.bytes32.two, didSeed: didSeed }
-                )
+                const { agreementId: agreementId2, agreement: agreement2, data: data2, conditionIds: conditionIds2 } = await prepareEscrowAgreementMultipleEscrow({ didSeed: didSeed })
                 const agreement2Amounts = [escrowAmounts[0] * 2, escrowAmounts[1]]
                 const newEscrowId = await escrowPaymentCondition.hashValues(
                     agreement2.did,
@@ -382,7 +380,7 @@ contract('Access Proof Template integration test', (accounts) => {
                 conditionIds2[2] = await escrowPaymentCondition.generateId(agreementId2, newEscrowId)
 
                 // create agreement2
-                await accessTemplate.createAgreement(agreementId2, ...Object.values(agreement2))
+                await accessTemplate.createAgreement(...Object.values(agreement2))
 
                 // fill up wallet
                 await token.mint(sender, totalAmount * 2, { from: owner })
