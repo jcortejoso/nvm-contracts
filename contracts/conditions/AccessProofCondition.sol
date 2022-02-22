@@ -79,6 +79,12 @@ contract AccessProofCondition is Condition {
         );
     }
 
+    function changeDisputeManager(address _disputeManagerAddress) external onlyOwner {
+        disputeManager = IDisputeManager(
+            _disputeManagerAddress
+        );
+    }
+
    /**
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters
