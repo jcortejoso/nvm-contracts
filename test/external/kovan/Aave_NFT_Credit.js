@@ -192,26 +192,21 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         url = constants.registry.url
     } = {}) {
         // generate IDs from attributes
-        const conditionIdLock = await nftLockCondition.generateId(
-            agreementId,
-            await nftLockCondition.hashValues(did, vaultAddress, 1, nftTokenAddress))
+        const conditionIdLock = await nftLockCondition.hashValues(did, vaultAddress, 1, nftTokenAddress)
+        const fullIdLock = await nftLockCondition.generateId(agreementId, conditionIdLock)
 
-        const conditionIdDeposit = await aaveCollateralDeposit.generateId(
-            agreementId,
-            await aaveCollateralDeposit.hashValues(did, vaultAddress, collateralAsset,
-                collateralAmount, delegatedAsset, delegatedAmount, INTEREST_RATE_MODE))
+        const conditionIdDeposit = await aaveCollateralDeposit.hashValues(did, vaultAddress, collateralAsset, collateralAmount, delegatedAsset, delegatedAmount, INTEREST_RATE_MODE)
+        const fullIdDeposit = await aaveCollateralDeposit.generateId(agreementId, conditionIdDeposit)
 
-        const conditionIdBorrow = await aaveBorrowCredit.generateId(
-            agreementId,
+        const conditionIdBorrow =
             await aaveBorrowCredit.hashValues(
                 did,
                 vaultAddress,
                 delegatedAsset,
                 delegatedAmount,
-                INTEREST_RATE_MODE))
-
-        const conditionIdRepay = await aaveRepayCredit.generateId(
-            agreementId,
+                INTEREST_RATE_MODE)
+        const fullIdBorrow = await aaveBorrowCredit.generateId(agreementId, conditionIdBorrow)
+        const conditionIdRepay =
             await aaveRepayCredit.hashValues(
                 did,
                 vaultAddress,
@@ -219,21 +214,16 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 delegatedAmount,
                 INTEREST_RATE_MODE
             )
-        )
-
-        const conditionIdWithdraw = await aaveWithdrawnCollateral.generateId(
-            agreementId,
+        const fullIdRepay = await aaveRepayCredit.generateId(agreementId, conditionIdRepay)
+        const conditionIdWithdraw =
             await aaveWithdrawnCollateral.hashValues(
                 did,
                 vaultAddress,
                 collateralAsset
             )
-        )
-
-        const conditionIdTransfer = await transferNftCondition.generateId(
-            agreementId,
-            await transferNftCondition.hashValues(
-                did, vaultAddress, nftTokenAddress))
+        const fullIdWithdraw = await aaveWithdrawnCollateral.generateId(agreementId, conditionIdWithdraw)
+        const conditionIdTransfer = await transferNftCondition.hashValues(did, vaultAddress, nftTokenAddress)
+        const fullIdTransfer = await transferNftCondition.generateId(agreementId, conditionIdTransfer)
 
         // construct agreement
         const agreement = {
@@ -251,6 +241,14 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             lender: _lender
         }
         return {
+            conditionIds: [
+                fullIdLock,
+                fullIdDeposit,
+                fullIdBorrow,
+                fullIdRepay,
+                fullIdWithdraw,
+                fullIdTransfer
+            ],
             agreementId,
             did,
             agreement,
@@ -265,6 +263,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
     describe('Create a credit NFT collateral agreement', function() {
         this.timeout(100000)
+        let conditionIds
         it('Create a credit agreement', async () => {
             await network.provider.request({
                 method: 'hardhat_impersonateAccount',
@@ -292,10 +291,12 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 agreementId: _agreementId,
                 agreement: _agreement,
                 checksum,
-                url
+                url,
+                conditionIds: _ids
             } = await prepareCreditTemplate({ did: did })
             agreementId = _agreementId
             agreement = _agreement
+            conditionIds = _ids
 
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: owner })
             await erc721.mint(did)
@@ -324,7 +325,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             await nftLockCondition.fulfill(
                 agreementId, did, vaultAddress, 1, nftTokenAddress
             )
-            const { state: stateNftLock } = await conditionStoreManager.getCondition(agreement.conditionIds[0])
+            const { state: stateNftLock } = await conditionStoreManager.getCondition(conditionIds[0])
             assert.strictEqual(stateNftLock.toNumber(), constants.condition.state.fulfilled)
             assert.strictEqual(vaultAddress, await erc721.ownerOf(did))
 
@@ -362,7 +363,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 }
             )
             const { state: stateDeposit } = await conditionStoreManager.getCondition(
-                agreement.conditionIds[1])
+                conditionIds[1])
             assert.strictEqual(stateDeposit.toNumber(), constants.condition.state.fulfilled)
 
             // Vault instance
@@ -398,7 +399,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 }
             )
             const { state: stateCredit } = await conditionStoreManager.getCondition(
-                agreement.conditionIds[2])
+                conditionIds[2])
             assert.strictEqual(stateCredit.toNumber(), constants.condition.state.fulfilled)
 
             const after = await dai.balanceOf(borrower)
@@ -416,7 +417,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 )
             )
             const { state: stateTransfer } = await conditionStoreManager.getCondition(
-                agreement.conditionIds[4])
+                conditionIds[4])
             assert.strictEqual(stateTransfer.toNumber(), constants.condition.state.unfulfilled)
         })
 
@@ -447,7 +448,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 { from: borrower }
             )
             const { state: stateRepay } = await conditionStoreManager.getCondition(
-                agreement.conditionIds[3])
+                conditionIds[3])
             assert.strictEqual(stateRepay.toNumber(), constants.condition.state.fulfilled)
 
             const vaultBalancesAfter = await vault.getActualCreditDebt()
@@ -471,7 +472,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 { from: lender }
             )
             const { state: stateRepay } = await conditionStoreManager.getCondition(
-                agreement.conditionIds[3])
+                conditionIds[3])
             assert.strictEqual(stateRepay.toNumber(), constants.condition.state.fulfilled)
 
             const daiAfter = await dai.balanceOf(lender)
@@ -503,7 +504,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             //            console.log('[AFTER] Owner of NFT: ' + await erc721.ownerOf(did))
 
             const { state: stateTransfer } = await conditionStoreManager.getCondition(
-                agreement.conditionIds[5])
+                conditionIds[5])
             assert.strictEqual(stateTransfer.toNumber(), constants.condition.state.fulfilled)
         })
     })

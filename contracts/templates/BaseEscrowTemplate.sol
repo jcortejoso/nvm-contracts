@@ -66,7 +66,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _timeLocks,
             _timeOuts
         );
-        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
+        _initAgreement(keccak256(abi.encode(_id, msg.sender)), _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
     }
 
     function createAgreementAndPayEscrow(
@@ -97,7 +97,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _amounts,
             _receivers
         );
-        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
+        _initAgreement(keccak256(abi.encode(_id, msg.sender)), _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
     }
 
     function _initAgreement(

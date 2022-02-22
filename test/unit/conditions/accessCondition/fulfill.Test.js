@@ -91,7 +91,7 @@ contract('AccessCondition constructor', (accounts) => {
             const agreement = {
                 did: did,
                 conditionTypes: [accessCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [0],
                 timeOuts: [2]
 
@@ -137,12 +137,11 @@ contract('AccessCondition constructor', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
 
             const hashValues = await accessCondition.hashValues(documentId, grantee)
-            const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: did,
                 conditionTypes: [accessCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [0],
                 timeOuts: [2]
 
@@ -178,12 +177,11 @@ contract('AccessCondition constructor', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
 
             const hashValues = await accessCondition.hashValues(documentId, grantee)
-            const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: did,
                 conditionTypes: [accessCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [0],
                 timeOuts: [2]
 
@@ -231,7 +229,7 @@ contract('AccessCondition constructor', (accounts) => {
             const agreement = {
                 did: did,
                 conditionTypes: [accessCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [timeLock],
                 timeOuts: [timeOut]
 
@@ -275,12 +273,11 @@ contract('AccessCondition constructor', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
 
             const hashValues = await accessCondition.hashValues(documentId, grantee)
-            const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: did,
                 conditionTypes: [accessCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [timeLock],
                 timeOuts: [timeOut]
 
@@ -322,12 +319,11 @@ contract('AccessCondition constructor', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
 
             const hashValues = await accessCondition.hashValues(documentId, grantee)
-            const conditionId = await accessCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: did,
                 conditionTypes: [accessCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [timeLock],
                 timeOuts: [timeOut]
 

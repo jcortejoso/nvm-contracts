@@ -85,11 +85,14 @@ contract('Stake Agreement integration test', (accounts) => {
         // generate IDs from attributes
 
         const did = await didRegistry.hashDID(didSeed, accounts[0])
-        const conditionIdSign = await signCondition.generateId(agreementId, await signCondition.hashValues(sign.message, sign.publicKey))
-        const conditionIdLock = await lockPaymentCondition.generateId(agreementId,
-            await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, [stakeAmount], [staker]))
-        const conditionIdEscrow = await escrowPaymentCondition.generateId(agreementId,
-            await escrowPaymentCondition.hashValues(did, [stakeAmount], [staker], sender, escrowPaymentCondition.address, token.address, conditionIdLock, conditionIdSign))
+        const conditionIdSign = await signCondition.hashValues(sign.message, sign.publicKey)
+        const conditionIdLock =
+            await lockPaymentCondition.hashValues(did, escrowPaymentCondition.address, token.address, [stakeAmount], [staker])
+        const fullConditionIdLock = await lockPaymentCondition.generateId(agreementId, conditionIdLock)
+        const fullConditionIdSign = await signCondition.generateId(agreementId, conditionIdSign)
+        const conditionIdEscrow =
+        await escrowPaymentCondition.hashValues(did, [stakeAmount], [staker], accounts[0], escrowPaymentCondition.address, token.address, fullConditionIdLock, fullConditionIdSign)
+        const fullConditionIdEscrow = await escrowPaymentCondition.generateId(agreementId, conditionIdEscrow)
 
         // construct agreement
         const agreement = {
@@ -108,6 +111,11 @@ contract('Stake Agreement integration test', (accounts) => {
             timeOuts: [0, 0, 0]
         }
         return {
+            conditionIds: [
+                fullConditionIdSign,
+                fullConditionIdLock,
+                fullConditionIdEscrow
+            ],
             agreementId,
             did,
             didSeed,
@@ -130,7 +138,7 @@ contract('Stake Agreement integration test', (accounts) => {
             await approveTemplateAccount(owner, alice)
 
             // prepare: stake agreement
-            const { agreementId, did, didSeed, stakeAmount, staker, stakePeriod, sign, checksum, url, agreement } = await prepareStakeAgreement()
+            const { agreementId, did, didSeed, stakeAmount, staker, stakePeriod, sign, checksum, url, agreement, conditionIds } = await prepareStakeAgreement()
 
             // fill up wallet
             await token.mint(alice, stakeAmount, { from: owner })
@@ -158,7 +166,7 @@ contract('Stake Agreement integration test', (accounts) => {
 
             // unstake: waited and fulfill after stake period
             await signCondition.fulfill(agreementId, sign.message, sign.publicKey, sign.signature)
-            await escrowPaymentCondition.fulfill(agreementId, did, [stakeAmount], [alice], accounts[0], escrowPaymentCondition.address, token.address, agreement.conditionIds[1], agreement.conditionIds[0])
+            await escrowPaymentCondition.fulfill(agreementId, did, [stakeAmount], [alice], accounts[0], escrowPaymentCondition.address, token.address, conditionIds[1], conditionIds[0])
             assert.strictEqual(await getBalance(token, alice), stakeAmount)
             assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
         })

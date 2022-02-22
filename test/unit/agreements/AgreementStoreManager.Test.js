@@ -191,57 +191,16 @@ contract('AgreementStoreManager', (accounts) => {
                 { from: templateId }
             )
 
-            let storedCondition
-            agreement.conditionIds.forEach(async (conditionId, i) => {
-                storedCondition = await conditionStoreManager.getCondition(conditionId)
+            await Promise.all(agreement.conditionIds.map(async (conditionId, i) => {
+                const fullId = await agreementStoreManager.fullConditionId(agreementId, agreement.conditionTypes[i], conditionId)
+                const storedCondition = await conditionStoreManager.getCondition(fullId)
                 expect(storedCondition.typeRef).to.equal(agreement.conditionTypes[i])
                 expect(storedCondition.state.toNumber()).to.equal(constants.condition.state.unfulfilled)
                 expect(storedCondition.timeLock.toNumber()).to.equal(agreement.timeLocks[i])
                 expect(storedCondition.timeOut.toNumber()).to.equal(agreement.timeOuts[i])
-            })
+            }))
 
             // expect((await agreementStoreManager.getAgreementListSize()).toNumber()).to.equal(1)
-        })
-
-        it('should not create agreement with existing conditions', async () => {
-            const did = await registerNewDID()
-
-            const conditionTypes = [common.address, common.address]
-            const conditionIds = [testUtils.generateId(), testUtils.generateId()]
-            const agreement = {
-                did: did,
-                conditionTypes,
-                conditionIds,
-                timeLocks: [0, 1],
-                timeOuts: [2, 3]
-
-            }
-            const agreementId = testUtils.generateId()
-
-            await agreementStoreManager.createAgreement(
-                agreementId,
-                ...Object.values(agreement),
-                { from: templateId }
-            )
-
-            const otherAgreement = {
-                did: did,
-                conditionTypes,
-                conditionIds,
-                timeLocks: [3, 4],
-                timeOuts: [100, 110]
-
-            }
-            const otherAgreementId = testUtils.generateId()
-
-            await assert.isRejected(
-                agreementStoreManager.createAgreement(
-                    otherAgreementId,
-                    ...Object.values(otherAgreement),
-                    { from: templateId }
-                ),
-                constants.error.idAlreadyExists
-            )
         })
 
         it('should not create agreement with bad arguments', async () => {

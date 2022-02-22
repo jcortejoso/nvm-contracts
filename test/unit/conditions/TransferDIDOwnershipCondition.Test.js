@@ -151,7 +151,7 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             const agreement = {
                 did: did,
                 conditionTypes: [transferCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [0],
                 timeOuts: [2]
 
@@ -208,12 +208,11 @@ contract('TransferDIDOwnership Condition constructor', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
 
             const hashValues = await transferCondition.hashValues(did, receiver)
-            const conditionId = await transferCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: did,
                 conditionTypes: [transferCondition.address],
-                conditionIds: [conditionId],
+                conditionIds: [hashValues],
                 timeLocks: [0],
                 timeOuts: [2]
 

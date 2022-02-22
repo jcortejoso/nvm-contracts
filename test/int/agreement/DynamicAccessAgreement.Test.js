@@ -108,8 +108,8 @@ contract('Dynamic Access Template integration test', (accounts) => {
     } = {}) {
         const did = await didRegistry.hashDID(didSeed, receiver)
         // generate IDs from attributes
-        const conditionIdAccess = await accessCondition.generateId(agreementId, await accessCondition.hashValues(did, receiver))
-        const conditionIdNft = await nftHolderCondition.generateId(agreementId, await nftHolderCondition.hashValues(did, holder, nftAmount))
+        const conditionIdAccess = await accessCondition.hashValues(did, receiver)
+        const conditionIdNft = await nftHolderCondition.hashValues(did, holder, nftAmount)
 
         // construct agreement
         const agreement = {
@@ -123,6 +123,10 @@ contract('Dynamic Access Template integration test', (accounts) => {
             consumer: receiver
         }
         return {
+            conditionIds: [
+                await accessCondition.generateId(agreementId, conditionIdAccess),
+                await nftHolderCondition.generateId(agreementId, conditionIdNft)
+            ],
             agreementId,
             didSeed,
             agreement,
@@ -141,7 +145,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
             const { owner } = await setupTest()
 
             // prepare: escrow agreement
-            const { agreementId, didSeed, agreement, holder, receiver, nftAmount, checksum, url } = await prepareAgreement()
+            const { agreementId, didSeed, agreement, holder, receiver, nftAmount, checksum, url, conditionIds } = await prepareAgreement()
 
             // register DID
             //            await didRegistry.registerAttribute(agreement.did, checksum, [], url, { from: receiver })
@@ -172,7 +176,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
             // expect((await agreementStoreManager.getAgreement(agreementId)).did).to.equal(_did)
 
             const conditionTypes = await dynamicAccessTemplate.getConditionTypes()
-            await Promise.all(agreement.conditionIds.map(async (conditionId, i) => {
+            await Promise.all(conditionIds.map(async (conditionId, i) => {
                 const storedCondition = await conditionStoreManager.getCondition(conditionId)
                 expect(storedCondition.typeRef).to.equal(conditionTypes[i])
                 expect(storedCondition.state.toNumber()).to.equal(constants.condition.state.unfulfilled)
@@ -182,14 +186,14 @@ contract('Dynamic Access Template integration test', (accounts) => {
             await nftHolderCondition.fulfill(agreementId, agreement.did, holder, nftAmount)
 
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
 
             // fulfill access
             await accessCondition.fulfill(agreementId, agreement.did, receiver, { from: receiver })
 
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
         })
     })
