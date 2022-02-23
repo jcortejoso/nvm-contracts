@@ -280,7 +280,19 @@ abstract contract AbstractAuction is
         require(block.number < auctions[_auctionId].ends, 'AbstractAuction: Only before ends');
         _;
     }
-    
+
+    modifier onlyNotAbortedOrFinished(bytes32 _auctionId) {
+        require(auctions[_auctionId].state != DynamicPricingState.Aborted &&
+            auctions[_auctionId].state != DynamicPricingState.Finished, 'AbstractAuction: Only not aborted or finished');
+        _;
+    }
+
+    modifier onlyAbortedOrFinished(bytes32 _auctionId) {
+        require(auctions[_auctionId].state == DynamicPricingState.Aborted ||
+            auctions[_auctionId].state == DynamicPricingState.Finished, 'AbstractAuction: Only aborted or finished');
+        _;
+    }
+
     modifier onlyNotAborted(bytes32 _auctionId) {
         require(auctions[_auctionId].state != DynamicPricingState.Aborted , 'AbstractAuction: Only not aborted');
         _;
