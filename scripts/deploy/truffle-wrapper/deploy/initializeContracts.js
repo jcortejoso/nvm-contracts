@@ -147,6 +147,10 @@ async function initializeContracts({
         proxies.PlonkVerifier = await deployLibrary('PlonkVerifier', addresses, cache)
     }
 
+    if (contracts.indexOf('AaveCreditVault') > -1) {
+        proxies.AaveCreditVault = await deployLibrary('AaveCreditVault', addresses, cache)
+    }
+
     if (contracts.indexOf('TemplateStoreManager') > -1) {
         addressBook.TemplateStoreManager = await zosCreate({
             contract: 'TemplateStoreManager',
@@ -639,7 +643,8 @@ async function initializeContracts({
                     getAddress('AaveBorrowCondition'),
                     getAddress('AaveRepayCondition'),
                     getAddress('AaveCollateralWithdrawCondition'),
-                    getAddress('DistributeNFTCollateralCondition')
+                    getAddress('DistributeNFTCollateralCondition'),
+                    getAddress('AaveCreditVault')
                 ],
                 verbose
             })

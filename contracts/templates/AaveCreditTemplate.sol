@@ -236,4 +236,8 @@ contract AaveCreditTemplate is BaseEscrowTemplate, CloneFactory {
     {
         nvmFee = _newFee;
     }
+
+    function changeCreditVaultLibrary(address _vaultLibrary) public onlyOwner {
+        vaultLibrary = _vaultLibrary;
+    }
 }
