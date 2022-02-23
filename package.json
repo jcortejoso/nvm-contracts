@@ -127,14 +127,14 @@
     "solidity-coverage": "^0.7.16",
     "solidity-docgen": "^0.5.11",
     "web3": "^1.6.0",
-    "yargs": "~15.3.1"
+    "yargs": "~15.3.1",
+    "hardhat-gas-reporter": "^1.0.7"
   },
   "resolutions": {
     "web3-eth-accounts/scrypt.js": "0.3.0"
   },
   "dependencies": {
     "@gnosis.pm/safe-core-sdk": "^1.0.0",
-    "@gnosis.pm/safe-deployments": "^1.4.0",
-    "hardhat-gas-reporter": "^1.0.7"
+    "@gnosis.pm/safe-deployments": "^1.4.0"
   }
 }

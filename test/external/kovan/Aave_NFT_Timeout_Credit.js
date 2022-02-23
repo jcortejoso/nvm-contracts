@@ -149,9 +149,10 @@ contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
             { from: owner }
         )
 
+        const aaveCreditVault = await AaveCreditVault.new()
         // Setup NFT Collaterall Template
         aaveCreditTemplate = await AaveCreditTemplate.new()
-        await aaveCreditTemplate.methods['initialize(address,address,address,address,address,address,address,address)'](
+        await aaveCreditTemplate.initialize(
             owner,
             agreementStoreManager.address,
             nftLockCondition.address,
@@ -160,6 +161,7 @@ contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
             aaveRepayCredit.address,
             aaveWithdrawnCollateral.address,
             transferNftCondition.address,
+            aaveCreditVault.address,
             { from: deployer }
         )
 
