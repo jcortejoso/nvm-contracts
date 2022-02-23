@@ -421,8 +421,6 @@ contract('End to End NFT Scenarios', (accounts) => {
 
             testUtils.assertEmitted(result, 1, 'AgreementCreated')
 
-            // await lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, token.address, amounts2, receivers2, { from: collector2 })
-
             const { state } = await conditionStoreManager.getCondition(
                 nftSalesAgreement.conditionIds[0])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
@@ -503,7 +501,8 @@ contract('End to End NFT Scenarios', (accounts) => {
             await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
 
             await assert.isRejected(
-                lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, token.address, amountsNoRoyalties, receiversNoRoyalties, { from: collector2 })
+                lockPaymentCondition.fulfill(agreementIdNoRoyalties, did, escrowCondition.address, token.address, amountsNoRoyalties, receiversNoRoyalties, { from: collector2 }),
+                /Royalties are not satisfied/
             )
         })
     })
