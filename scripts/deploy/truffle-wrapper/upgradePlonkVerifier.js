@@ -3,7 +3,6 @@ const { readArtifact, exportLibraryArtifact } = require('./artifacts')
 const { loadWallet } = require('./wallets')
 
 async function deployLibrary(c, verbose) {
-
     const afact = readArtifact(c)
     const factory = await ethers.getContractFactory(c, { libraries: afact.libraries })
     if (verbose) {
@@ -46,7 +45,6 @@ async function main() {
         const tx = await cond.changeCreditVaultLibrary(vaultAddress, { from: roles.owner })
         await tx.wait()
     }
-
 }
 
 main()
