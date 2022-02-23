@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 import '@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol';
-import 'hardhat/console.sol';
 
 /**
  * @title DID Registry Library
@@ -49,7 +48,7 @@ library DIDRegistryLibrary {
     // List of DID's registered in the system
     struct DIDRegisterList {
         mapping(bytes32 => DIDRegister) didRegisters;
-        // bytes32[] didRegisterIds;
+        bytes32[] didRegisterIdsUNUSED;
     }
 
     /**
@@ -159,13 +158,11 @@ library DIDRegistryLibrary {
         // If (did.creator == did.owner) - It means the DID is still a first sale so no royalties needed
         // returns true;
         if (_self.didRegisters[_did].owner == _self.didRegisters[_did].creator) {
-            console.log('owner == creator');
             return true;
         }
         
         // If there are no royalties everything is good
         if (_self.didRegisters[_did].royalties == 0) {
-            console.log('no royalties');
             return true;
         }
 
@@ -191,13 +188,9 @@ library DIDRegistryLibrary {
         if (!found) // The creator royalties are not part of the rewards
             return false;
         
-        console.log('found royalties');
-
-        
         // If the amount to receive by the creator is lower than royalties the calculation is not valid
         // return false;
         uint256 _requiredRoyalties = ((_totalAmount.mul(_self.didRegisters[_did].royalties)) / 100);
-        console.log(_requiredRoyalties);
 
         // Check if royalties are enough
         // Are we paying enough royalties in the secondary market to the original creator?

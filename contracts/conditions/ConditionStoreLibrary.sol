@@ -24,15 +24,15 @@ library ConditionStoreLibrary {
     struct Condition {
         address typeRef;
         ConditionState state;
-        // address createdBy;
-        // address lastUpdatedBy;
-        // uint256 blockNumberUpdated;
+        address createdByUNUSED;
+        address lastUpdatedByUNUSED;
+        uint256 blockNumberUpdatedUNUSED;
     }
 
     struct ConditionList {
         mapping(bytes32 => Condition) conditions;
         mapping(bytes32 => mapping(bytes32 => bytes32)) map;
-        // bytes32[] conditionIds;
+        bytes32[] conditionIdsUNUSED;
     }
     
     
@@ -57,17 +57,21 @@ library ConditionStoreLibrary {
             'Id already exists'
         );
 
-        _self.conditions[_id] = Condition({
+        _self.conditions[_id].typeRef = _typeRef;
+        _self.conditions[_id].state = ConditionState.Unfulfilled;
+        /* TODO: cleanup
+        Condition({
             typeRef: _typeRef,
             state: ConditionState.Unfulfilled
-            // createdBy: _creator
-            // lastUpdatedBy: msg.sender,
-            // blockNumberUpdated: block.number
+            createdBy: _creator
+            lastUpdatedBy: msg.sender,
+            blockNumberUpdated: block.number
         });
 
-        // _self.conditionIds.push(_id);
+        _self.conditionIds.push(_id);
 
-        // return _self.conditionIds.length;
+        return _self.conditionIds.length;
+        */
     }
 
     /**
