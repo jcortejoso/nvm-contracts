@@ -20,11 +20,11 @@ pragma solidity ^0.8.0;
 library AgreementStoreLibrary {
 
     struct Agreement {
-        bytes32 didUNUSED;
+        bytes32 did/* UNUSED */;
         address templateId;
-        bytes32[] conditionIdsUNUSED;
-        address lastUpdatedByUNUSED;
-        uint256 blockNumberUpdatedUNUSED;
+        bytes32[] conditionIds/* UNUSED */;
+        address lastUpdatedBy/* UNUSED */;
+        uint256 blockNumberUpdated/* UNUSED */;
         mapping (uint => bytes32) conditionIds;
     }
 
@@ -32,7 +32,7 @@ library AgreementStoreLibrary {
         mapping(bytes32 => Agreement) agreements;
         mapping(bytes32 => bytes32[]) didToAgreementIds;
         mapping(address => bytes32[]) templateIdToAgreementIds;
-        bytes32[] agreementIdsUNUSED;
+        bytes32[] agreementIds/* UNUSED */;
     }
 
     /**

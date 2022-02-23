@@ -24,15 +24,15 @@ library ConditionStoreLibrary {
     struct Condition {
         address typeRef;
         ConditionState state;
-        address createdByUNUSED;
-        address lastUpdatedByUNUSED;
-        uint256 blockNumberUpdatedUNUSED;
+        address createdBy/* UNUSED */;
+        address lastUpdatedBy/* UNUSED */;
+        uint256 blockNumberUpdated/* UNUSED */;
     }
 
     struct ConditionList {
         mapping(bytes32 => Condition) conditions;
         mapping(bytes32 => mapping(bytes32 => bytes32)) map;
-        bytes32[] conditionIdsUNUSED;
+        bytes32[] conditionIds/* UNUSED */;
     }
     
     
