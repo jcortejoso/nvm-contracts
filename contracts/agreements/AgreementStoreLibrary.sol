@@ -25,7 +25,6 @@ library AgreementStoreLibrary {
         bytes32[] conditionIds/* UNUSED */;
         address lastUpdatedBy/* UNUSED */;
         uint256 blockNumberUpdated/* UNUSED */;
-        mapping (uint => bytes32) conditionIds;
     }
 
     struct AgreementList {
