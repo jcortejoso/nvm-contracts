@@ -15,13 +15,13 @@ const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils')
 const SignCondition = artifacts.require('SignCondition')
 
+// this template doesn't exist
 contract.skip('Stake Agreement integration test', (accounts) => {
     const web3 = global.web3
     let token,
         didRegistry,
         agreementStoreManager,
         conditionStoreManager,
-        templateStoreManager,
         signCondition,
         lockPaymentCondition,
         escrowPaymentCondition
@@ -34,8 +34,7 @@ contract.skip('Stake Agreement integration test', (accounts) => {
             token,
             didRegistry,
             agreementStoreManager,
-            conditionStoreManager,
-            templateStoreManager
+            conditionStoreManager
         } = await deployManagers(
             deployer,
             owner
@@ -60,19 +59,10 @@ contract.skip('Stake Agreement integration test', (accounts) => {
             { from: deployer }
         )
 
-        const templateId = nftAccessTemplate.address
-        await templateStoreManager.proposeTemplate(templateId)
-        await templateStoreManager.approveTemplate(templateId, { from: owner })
-
         return {
             deployer,
             owner
         }
-    }
-
-    async function approveTemplateAccount(owner, templateAccount) {
-        await templateStoreManager.proposeTemplate(templateAccount)
-        await templateStoreManager.approveTemplate(templateAccount, { from: owner })
     }
 
     async function prepareStakeAgreement({
@@ -154,7 +144,7 @@ contract.skip('Stake Agreement integration test', (accounts) => {
             await didRegistry.registerAttribute(didSeed, checksum, [], url)
 
             // create agreement: as approved account - not for production ;)
-            // await agreementStoreManager.createAgreement(...Object.values(agreement), {from: accounts[0]})
+            await agreementStoreManager.createAgreement(...Object.values(agreement), { from: accounts[0] })
 
             // stake: fulfill lock reward
             await token.approve(lockPaymentCondition.address, stakeAmount, { from: alice })

@@ -184,7 +184,7 @@ contract('DIDRegistry', (accounts) => {
             assert.strictEqual(
                 getDIDRegisterIds[getDIDRegisterIds.length - 1],
                 did
-            )*/
+            ) */
         })
     })
 

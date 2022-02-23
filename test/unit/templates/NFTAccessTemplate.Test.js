@@ -170,7 +170,6 @@ contract('NFTAccessTemplate', (accounts) => {
             expect(eventArgs._did).to.equal(agreement.did)
             // expect(eventArgs._accessProvider).to.equal(accounts[0])
             // expect(eventArgs._accessConsumer).to.equal(agreement.accessConsumer)
-
         })
 
         it.skip('create agreement should set asset provider as accessProvider instead of owner', async () => {

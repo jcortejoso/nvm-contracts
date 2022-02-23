@@ -448,7 +448,7 @@ contract('End to End NFT Scenarios (with Ether)', (accounts) => {
                 _seller: collector1,
                 _buyer: collector2,
                 _numberNFTs: numberNFTs2,
-                _from: collector2,
+                _from: collector2
             })
 
             const extendedAgreement = {
@@ -550,15 +550,14 @@ contract('End to End NFT Scenarios (with Ether)', (accounts) => {
                 _numberNFTs: numberNFTs2
             })
 
-            const result = await nftSalesTemplate.createAgreement(
-                agreementIdNoRoyalties, ...Object.values(nftSalesAgreement))
+            const result = await nftSalesTemplate.createAgreement(...Object.values(nftSalesAgreement))
 
             testUtils.assertEmitted(result, 1, 'AgreementCreated')
 
             // Collector2: Lock the payment
             await assert.isRejected(
                 lockPaymentCondition.fulfill(
-                    agreementId2, did, escrowCondition.address, constants.address.zero, amountsNoRoyalties, receiversNoRoyalties,
+                    agreementIdNoRoyalties, did, escrowCondition.address, constants.address.zero, amountsNoRoyalties, receiversNoRoyalties,
                     { from: collector2 }
                 )
             )

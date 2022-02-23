@@ -175,7 +175,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
             await dynamicAccessTemplate.createAgreement(...Object.values(agreement))
 
             // check state of agreement and conditions
-            const _did = await didRegistry.hashDID(constants.did[0], receiver)
+            // const _did = await didRegistry.hashDID(constants.did[0], receiver)
             // expect((await agreementStoreManager.getAgreement(agreementId)).did).to.equal(_did)
 
             const conditionTypes = await dynamicAccessTemplate.getConditionTypes()

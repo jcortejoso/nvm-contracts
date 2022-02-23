@@ -484,6 +484,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                 assert.strictEqual(await getBalance(token, artist), amounts[0] + amounts2[1])
             })
 
+            //
             it.skip('A sale without proper royalties can not happen', async () => {
                 const agreementIdNoRoyalties = testUtils.generateId()
                 const amountsNoRoyalties = [99, 1]
@@ -511,7 +512,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                 await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
 
                 await assert.isRejected(
-                    lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, token.address, amountsNoRoyalties, receiversNoRoyalties, { from: collector2 })
+                    lockPaymentCondition.fulfill(agreementIdNoRoyalties, did, escrowCondition.address, token.address, amountsNoRoyalties, receiversNoRoyalties, { from: collector2 })
                 )
             })
         })

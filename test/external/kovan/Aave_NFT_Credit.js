@@ -181,10 +181,11 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
     }
 
     async function prepareCreditTemplate({
-        agreementId = testUtils.generateId(),
+        initAgreementId = testUtils.generateId(),
         sender = accounts[0],
         _borrower = borrower,
         _lender = lender,
+        from = borrower,
         timeLockAccess = 0,
         timeOutAccess = 0,
         did = testUtils.generateId(),
@@ -192,6 +193,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         url = constants.registry.url
     } = {}) {
         // generate IDs from attributes
+        const agreementId = await agreementStoreManager.agreementId(initAgreementId, from)
         const conditionIdLock = await nftLockCondition.hashValues(did, vaultAddress, 1, nftTokenAddress)
         const fullIdLock = await nftLockCondition.generateId(agreementId, conditionIdLock)
 
@@ -227,7 +229,8 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
         // construct agreement
         const agreement = {
-            did: did,
+            initAgreementId,
+            did,
             conditionIds: [
                 conditionIdLock,
                 conditionIdDeposit,
@@ -249,6 +252,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 fullIdWithdraw,
                 fullIdTransfer
             ],
+            initAgreementId,
             agreementId,
             did,
             agreement,
@@ -289,11 +293,12 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
             const {
                 agreementId: _agreementId,
+                initAgreementId,
                 agreement: _agreement,
                 checksum,
                 url,
                 conditionIds: _ids
-            } = await prepareCreditTemplate({ did: did })
+            } = await prepareCreditTemplate({ did: did, from: borrower })
             agreementId = _agreementId
             agreement = _agreement
             conditionIds = _ids
@@ -304,7 +309,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
             // Create agreement
             await aaveCreditTemplate.methods['createVaultAgreement(bytes32,bytes32,bytes32[],uint256[],uint256[],address)'](
-                agreementId,
+                initAgreementId,
                 agreement.did,
                 agreement.conditionIds,
                 agreement.timeLocks,

@@ -130,7 +130,7 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
     )
     public
     {
-        vaultAddress[_id] = address(_vaultAddress);
+        vaultAddress[keccak256(abi.encode(_id, msg.sender))] = address(_vaultAddress);
 
         super.createAgreement(
             _id,
@@ -168,9 +168,9 @@ contract AaveCreditTemplate is BaseEscrowTemplate {
             _lender,
             conditionTypes
         );
-        vaultAddress[_id] = address(_vault);
+        vaultAddress[keccak256(abi.encode(_id, msg.sender))] = address(_vault);
         emit VaultCreated(address(_vault), msg.sender, _lender, msg.sender);
-        
+
         super.createAgreement(
             _id,
             _did,

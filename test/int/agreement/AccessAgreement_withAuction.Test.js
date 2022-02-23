@@ -137,23 +137,23 @@ contract('Access with Auction integration test', (accounts) => {
         // generate IDs from attributes
         //        console.log('Whats my agreement id: ', agreementId)
         const conditionIdLock = await lockPaymentCondition.hashValues(
-                did,
-                escrowPaymentCondition.address,
-                token.address,
-                escrowAmounts,
-                receivers)
+            did,
+            escrowPaymentCondition.address,
+            token.address,
+            escrowAmounts,
+            receivers)
         const fullConditionIdLock = await lockPaymentCondition.generateId(agreementId, conditionIdLock)
         const conditionIdAccess = await accessCondition.hashValues(did, receivers[0])
         const fullConditionIdAccess = await accessCondition.generateId(agreementId, conditionIdAccess)
-        const conditionIdEscrow =  await escrowPaymentCondition.hashValues(
-                did,
-                escrowAmounts,
-                receivers,
-                bidder1,
-                escrowPaymentCondition.address,
-                token.address,
-                fullConditionIdLock,
-                fullConditionIdAccess)
+        const conditionIdEscrow = await escrowPaymentCondition.hashValues(
+            did,
+            escrowAmounts,
+            receivers,
+            bidder1,
+            escrowPaymentCondition.address,
+            token.address,
+            fullConditionIdLock,
+            fullConditionIdAccess)
         const fullConditionIdEscrow = await escrowPaymentCondition.generateId(agreementId, conditionIdEscrow)
 
         conditionIds = [

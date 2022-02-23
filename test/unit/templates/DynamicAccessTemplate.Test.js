@@ -154,7 +154,7 @@ contract('DynamicAccessTemplate', (accounts) => {
             const result = await dynamicAccessTemplate.createAgreement(agreementId, ...Object.values(agreement))
             testUtils.assertEmitted(result, 1, 'AgreementCreated')
             const realAgreementId = await agreementStoreManager.agreementId(agreementId, accounts[0])
-    
+
             const eventArgs = testUtils.getEventArgsFromTx(result, 'AgreementCreated')
             expect(eventArgs._agreementId).to.equal(realAgreementId)
             expect(eventArgs._did).to.equal(agreement.did)

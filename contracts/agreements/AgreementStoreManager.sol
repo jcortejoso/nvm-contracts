@@ -204,6 +204,13 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         LockPaymentCondition(_conditionTypes[_idx]).fulfillProxy{value: msg.value}(_creator, _id, _did, _rewardAddress, _tokenAddress, _amounts, _receivers);
     }
 
+    function getAgreementTemplate(bytes32 _id)
+        external
+        view
+        returns (address)
+    {
+        return agreementList.agreements[_id].templateId;
+    }
 
     /**
      * @dev Get agreement with _id.
@@ -216,7 +223,6 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
      * @return conditionIds
      * @return lastUpdatedBy
      * @return blockNumberUpdated
-     */
     function getAgreement(bytes32 _id)
         external
         view
@@ -232,16 +238,16 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         // did = agreementList.agreements[_id].did;
         didOwner = didRegistry.getDIDOwner(did);
         templateId = agreementList.agreements[_id].templateId;
-        /*
         address[] memory types = Template(templateId).getConditionTypes();
         conditionIds = new bytes32[](types.length);
         for (uint i = 0; i < types.length; i++) {
             conditionIds = agreementList.agreements[_id].conditionIds[i];
-        }*/
+        }
         // conditionIds = agreementList.agreements[_id].conditionIds;
         // lastUpdatedBy = agreementList.agreements[_id].lastUpdatedBy;
         // blockNumberUpdated = agreementList.agreements[_id].blockNumberUpdated;
     }
+     */
 
     /**
      * @dev get the DID owner for this agreement with _id.

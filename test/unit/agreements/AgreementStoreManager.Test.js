@@ -23,7 +23,7 @@ contract('AgreementStoreManager', (accounts) => {
     const did = constants.did[0]
     const checksum = testUtils.generateId()
     const value = constants.registry.url
-    const createRole = accounts[0]
+    // const createRole = accounts[0]
     const deployer = accounts[8]
     const owner = accounts[9]
     const providers = [accounts[8], accounts[9]]
@@ -323,7 +323,7 @@ contract('AgreementStoreManager', (accounts) => {
             assert.strictEqual(
                 await agreementStoreManager.isAgreementDIDOwner(agreementId, createRole),
                 true
-            )*/
+            ) */
             const otherAgreement = {
                 did: did,
                 conditionTypes: [common.address],
@@ -382,7 +382,7 @@ contract('AgreementStoreManager', (accounts) => {
             assert.strictEqual(
                 await agreementStoreManager.isAgreementDIDOwner(constants.bytes32.one, common.address),
                 false
-            )*/
+            ) */
         })
         /*
         it('should able to get the Agreement DID Owner', async () => {
@@ -407,7 +407,7 @@ contract('AgreementStoreManager', (accounts) => {
                 await agreementStoreManager.getAgreementDIDOwner(agreementId),
                 createRole
             )
-        })*/
+        }) */
         it('should not create agreement if DID not registered', async () => {
             const agreement = {
                 did: did,
@@ -442,7 +442,7 @@ contract('AgreementStoreManager', (accounts) => {
 
             }
 
-            const blockNumber = await common.getCurrentBlockNumber()
+            // const blockNumber = await common.getCurrentBlockNumber()
             const agreementId = testUtils.generateId()
 
             await agreementStoreManager.createAgreement(
@@ -452,11 +452,10 @@ contract('AgreementStoreManager', (accounts) => {
             )
 
             // TODO - containSubset
-            const storedAgreement = await agreementStoreManager.getAgreement(agreementId)
+            const storedAgreementTemplateId = await agreementStoreManager.getAgreementTemplate(agreementId)
             // expect(storedAgreement.did).to.equal(agreement.did)
             // expect(storedAgreement.didOwner).to.equal(accounts[0])
-            expect(storedAgreement.templateId)
-                .to.equal(templateId)
+            expect(storedAgreementTemplateId).to.equal(templateId)
             /*
             expect(storedAgreement.conditionIds)
                 .to.deep.equal(agreement.conditionIds)

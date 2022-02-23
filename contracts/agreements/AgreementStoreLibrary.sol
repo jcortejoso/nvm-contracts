@@ -41,16 +41,14 @@ library AgreementStoreLibrary {
      *      instance, including the template, conditions and DID.
      * @param _self is AgreementList storage pointer
      * @param _id agreement identifier
-     * @param _did asset decentralized identifier
      * @param _templateId template identifier
-     * @param _conditionIds array of condition identifiers
      */
     function create(
         AgreementList storage _self,
         bytes32 _id,
-        bytes32 _did,
+        bytes32 /* _did */,
         address _templateId,
-        bytes32[] memory _conditionIds
+        bytes32[] memory /* _conditionIds */
     )
         internal
     {
