@@ -242,6 +242,28 @@ async function initializeContracts({
                 verbose
             })
         }
+        if (contracts.indexOf('NFT721EscrowPaymentCondition') > -1) {
+            addressBook.NFT721EscrowPaymentCondition = await zosCreate({
+                contract: 'NFT721EscrowPaymentCondition',
+                ctx,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager')
+                ],
+                verbose
+            })
+        }
+        if (contracts.indexOf('NFTEscrowPaymentCondition') > -1) {
+            addressBook.NFTEscrowPaymentCondition = await zosCreate({
+                contract: 'NFTEscrowPaymentCondition',
+                ctx,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('ConditionStoreManager')
+                ],
+                verbose
+            })
+        }
         if (contracts.indexOf('AaveBorrowCondition') > -1) {
             addressBook.AaveBorrowCondition = await zosCreate({
                 contract: 'AaveBorrowCondition',
@@ -500,6 +522,126 @@ async function initializeContracts({
                     getAddress('AccessProofCondition'),
                     getAddress('LockPaymentCondition'),
                     getAddress('EscrowPaymentCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('AccessProofCondition') &&
+        getAddress('NFTHolderCondition')) {
+        if (contracts.indexOf('NFTAccessProofTemplate') > -1) {
+            addressBook.NFTAccessProofTemplate = await zosCreate({
+                contract: 'NFTAccessProofTemplate',
+                ctx,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('NFTHolderCondition'),
+                    getAddress('AccessProofCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('AccessProofCondition') &&
+        getAddress('NFTLockCondition') &&
+        getAddress('NFTEscrowPaymentCondition')) {
+            if (contracts.indexOf('NFTAccessSwapTemplate') > -1) {
+            addressBook.NFTAccessSwapTemplate = await zosCreate({
+                contract: 'NFTAccessSwapTemplate',
+                ctx,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('NFTLockCondition'),
+                    getAddress('NFTEscrowPaymentCondition'),
+                    getAddress('AccessProofCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('AccessProofCondition') &&
+        getAddress('LockPaymentCondition') &&
+        getAddress('TransferNFTCondition') &&
+        getAddress('EscrowPaymentCondition')) {
+            if (contracts.indexOf('NFTSalesWithAccessTemplate') > -1) {
+            addressBook.NFTSalesWithAccessTemplate = await zosCreate({
+                contract: 'NFTSalesWithAccessTemplate',
+                ctx,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('LockPaymentCondition'),
+                    getAddress('TransferNFTCondition'),
+                    getAddress('EscrowPaymentCondition'),
+                    getAddress('AccessProofCondition'),
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('AccessProofCondition') &&
+        getAddress('NFT721HolderCondition')) {
+        if (contracts.indexOf('NFT721AccessProofTemplate') > -1) {
+            addressBook.NFT721AccessProofTemplate = await zosCreate({
+                contract: 'NFT721AccessProofTemplate',
+                ctx,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('NFT721HolderCondition'),
+                    getAddress('AccessProofCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('AccessProofCondition') &&
+        getAddress('NFT721LockCondition') &&
+        getAddress('NFT721EscrowPaymentCondition')) {
+            if (contracts.indexOf('NFT721AccessSwapTemplate') > -1) {
+            addressBook.NFT721AccessSwapTemplate = await zosCreate({
+                contract: 'NFT721AccessSwapTemplate',
+                ctx,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('NFT721LockCondition'),
+                    getAddress('NFT721EscrowPaymentCondition'),
+                    getAddress('AccessProofCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('AgreementStoreManager') &&
+        getAddress('AccessProofCondition') &&
+        getAddress('LockPaymentCondition') &&
+        getAddress('TransferNFT721Condition') &&
+        getAddress('EscrowPaymentCondition')) {
+            if (contracts.indexOf('NFT721SalesWithAccessTemplate') > -1) {
+            addressBook.NFT721SalesWithAccessTemplate = await zosCreate({
+                contract: 'NFT721SalesWithAccessTemplate',
+                ctx,
+                args: [
+                    roles.ownerWallet,
+                    getAddress('AgreementStoreManager'),
+                    getAddress('LockPaymentCondition'),
+                    getAddress('TransferNFT721Condition'),
+                    getAddress('EscrowPaymentCondition'),
+                    getAddress('AccessProofCondition'),
                 ],
                 verbose
             })
