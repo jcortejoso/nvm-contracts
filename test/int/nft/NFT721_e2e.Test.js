@@ -501,7 +501,8 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                 await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
 
                 await assert.isRejected(
-                    lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, token.address, amountsNoRoyalties, receiversNoRoyalties, { from: collector2 })
+                    lockPaymentCondition.fulfill(agreementIdNoRoyalties, did, escrowCondition.address, token.address, amountsNoRoyalties, receiversNoRoyalties, { from: collector2 }),
+                    /Royalties are not satisfied/
                 )
             })
         })
