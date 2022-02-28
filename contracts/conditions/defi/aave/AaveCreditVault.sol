@@ -225,7 +225,7 @@ contract AaveCreditVault is
         repayConditionId = _repayConditionId;
     }
     
-    function setLockConditionId(
+    function setRepayConditionId(
         bytes32 _repayConditionId
     )
     public
