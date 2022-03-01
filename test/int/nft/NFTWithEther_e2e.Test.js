@@ -559,7 +559,8 @@ contract('End to End NFT Scenarios (with Ether)', (accounts) => {
                 lockPaymentCondition.fulfill(
                     agreementIdNoRoyalties, did, escrowCondition.address, constants.address.zero, amountsNoRoyalties, receiversNoRoyalties,
                     { from: collector2 }
-                )
+                ),
+                /Royalties are not satisfied/
             )
         })
     })

@@ -224,9 +224,6 @@ contract('Mintable DIDRegistry', (accounts) => {
             await didRegistryLibraryProxy.update(did, checksum, value, { from: owner })
             await didRegistryLibraryProxy.initializeNftConfig(did, 3, 10, { from: owner })
 
-            assert.isOk( // MUST BE TRUE. It's the creator selling the DID
-                await didRegistryLibraryProxy.areRoyaltiesValid(did, [5], [other]))
-
             await didRegistryLibraryProxy.updateDIDOwner(did, other, { from: owner })
 
             const storedDIDRegister = await didRegistryLibraryProxy.getDIDInfo(did)
