@@ -46,7 +46,7 @@ const utils = {
     getAgreementConditionIds: async (template, agreementId) => {
         const evs = await template.getPastEvents('AgreementCreated', { fromBlock: 0, filter: { agreementId } })
         // console.log(evs[0].returnValues._conditionIds)
-        return evs.length > 0 ? evs[0].returnValues._conditionIds : []
+        return evs.length > 0 ? evs[0].returnValues._conditionIdSeeds : []
     },
 
     toEthSignedMessageHash: (messageHex) => {
