@@ -296,8 +296,8 @@ contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
             agreement = _agreement
 
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: borrower })
-            await erc721.mint(did, { from: borrower})
-            await erc721.approve(nftLockCondition.address, did, { from: borrower})
+            await erc721.mint(did, { from: borrower })
+            await erc721.approve(nftLockCondition.address, did, { from: borrower })
 
             // Create agreement
             await aaveCreditTemplate.methods['createVaultAgreement(bytes32,bytes32,bytes32[],uint256[],uint256[],address)'](
@@ -320,7 +320,7 @@ contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
         it('The borrower locks the NFT', async () => {
             // The borrower locks the NFT in the vault
             await nftLockCondition.fulfill(
-                agreementId, did, vaultAddress, 1, nftTokenAddress, { from: borrower}
+                agreementId, did, vaultAddress, 1, nftTokenAddress, { from: borrower }
             )
             const { state: stateNftLock } = await conditionStoreManager.getCondition(agreement.conditionIds[0])
             assert.strictEqual(stateNftLock.toNumber(), constants.condition.state.fulfilled)
