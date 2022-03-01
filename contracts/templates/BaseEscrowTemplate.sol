@@ -19,6 +19,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
         address indexed _accessProvider,
         uint[]  _timeLocks,
         uint[]  _timeOuts,
+        bytes32[] _conditionIdSeeds,
         bytes32[] _conditionIds,
         bytes32 _idSeed,
         address _creator
@@ -101,6 +102,20 @@ contract BaseEscrowTemplate is AgreementTemplate {
         _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
     }
 
+    function _makeIds(
+        bytes32 _idSeed,
+        bytes32[] memory _conditionIds
+    )
+    internal view returns (bytes32[] memory)
+    {
+        bytes32 _id = keccak256(abi.encode(_idSeed, msg.sender));
+        bytes32[] memory ids = new bytes32[](_conditionIds.length);
+        for (uint i = 0; i < ids.length; i++) {
+            ids[i] = keccak256(abi.encode(_id, conditionTypes[i], _conditionIds[i]));
+        }
+        return ids;
+    }
+
     function _initAgreement(
         bytes32 _idSeed,
         bytes32 _did,
@@ -114,8 +129,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
 
         bytes32 _id = keccak256(abi.encode(_idSeed, msg.sender));
         // storing some additional information for the template
-        agreementData.agreementDataItems[_id]
-            .accessConsumer = _accessConsumer;
+        agreementData.agreementDataItems[_id].accessConsumer = _accessConsumer;
         agreementData.agreementDataItems[_id].did = _did;
         /*
         address owner = address(0);
@@ -145,6 +159,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _timeLocks,
             _timeOuts,
             _conditionIds,
+            _makeIds(_idSeed, _conditionIds),
             _idSeed,
             msg.sender
         );
