@@ -19,7 +19,9 @@ contract BaseEscrowTemplate is AgreementTemplate {
         address indexed _accessProvider,
         uint[]  _timeLocks,
         uint[]  _timeOuts,
-        bytes32[] _conditionIds
+        bytes32[] _conditionIds,
+        bytes32 _idSeed,
+        address _creator
     );
 
     struct AgreementDataModel {
@@ -32,7 +34,6 @@ contract BaseEscrowTemplate is AgreementTemplate {
         mapping(bytes32 => AgreementDataModel) agreementDataItems;
         bytes32[] agreementIds;
     }
-    
 
    /**
     * @notice createAgreement creates agreements through agreement template
@@ -66,7 +67,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _timeLocks,
             _timeOuts
         );
-        _initAgreement(keccak256(abi.encode(_id, msg.sender)), _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
+        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
     }
 
     function createAgreementAndPayEscrow(
@@ -97,11 +98,11 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _amounts,
             _receivers
         );
-        _initAgreement(keccak256(abi.encode(_id, msg.sender)), _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
+        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
     }
 
     function _initAgreement(
-        bytes32 _id,
+        bytes32 _idSeed,
         bytes32 _did,
         uint[] memory _timeLocks,
         uint[] memory _timeOuts,
@@ -111,6 +112,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
         internal
     {
 
+        bytes32 _id = keccak256(abi.encode(_idSeed, msg.sender));
         // storing some additional information for the template
         agreementData.agreementDataItems[_id]
             .accessConsumer = _accessConsumer;
@@ -142,7 +144,9 @@ contract BaseEscrowTemplate is AgreementTemplate {
             agreementData.agreementDataItems[_id].accessProvider,
             _timeLocks,
             _timeOuts,
-            _conditionIds
+            _conditionIds,
+            _idSeed,
+            msg.sender
         );
 
     }
