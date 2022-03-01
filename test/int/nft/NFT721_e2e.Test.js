@@ -501,8 +501,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                     _numberNFTs: numberNFTs2
                 })
 
-                const result = await nftSalesTemplate.createAgreement(
-                    agreementIdNoRoyalties, ...Object.values(nftSalesAgreement))
+                const result = await nftSalesTemplate.createAgreement(...Object.values(nftSalesAgreement))
 
                 testUtils.assertEmitted(result, 1, 'AgreementCreated')
 
