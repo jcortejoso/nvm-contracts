@@ -6,7 +6,6 @@ pragma solidity ^0.8.0;
 
 import '../Condition.sol';
 import './INFTLock.sol';
-import '../defi/aave/AaveCreditVault.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol';
@@ -108,11 +107,6 @@ contract NFT721LockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable,
         returns (ConditionStoreLibrary.ConditionState)
     {
         IERC721Upgradeable erc721 = IERC721Upgradeable(_nftContractAddress);
-
-        AaveCreditVault vault = AaveCreditVault(_lockAddress);
-        require(vault.isBorrower(msg.sender),
-            'Invalid sender, required to be the borrower and owner of the NFT.'
-        );
 
         require(
             _amount == 0 || (_amount == 1 && erc721.ownerOf(uint256(_did)) == msg.sender),
