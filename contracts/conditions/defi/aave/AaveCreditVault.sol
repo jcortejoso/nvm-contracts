@@ -35,8 +35,8 @@ contract AaveCreditVault is
     address public borrower;
     address public lender;
     bytes32 public repayConditionId;
+    uint256 public nftId;
     address private nftAddress;
-    uint256 private nftId;
     
     bytes32 public constant BORROWER_ROLE = keccak256('BORROWER_ROLE');
     bytes32 public constant LENDER_ROLE = keccak256('LENDER_ROLE');

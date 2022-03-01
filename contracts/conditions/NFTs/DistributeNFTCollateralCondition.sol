@@ -127,7 +127,7 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
         IERC721Upgradeable token = IERC721Upgradeable(_nftContractAddress);
         require(
             (_vaultAddress == token.ownerOf(uint256(_did))),
-            'The credit vault is not owner if this NFT or does not have sufficient balance.'
+            'The credit vault is not owner of this NFT or does not have sufficient balance.'
         );
 
         bytes32 _id = generateId(
