@@ -102,13 +102,11 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         )
 
         nftLockCondition = await NFTLockCondition.new()
-        // console.log(`nftLockCondition owner = ${await nftLockCondition.owner()}, ${account0}`)
         await nftLockCondition.initialize(
             owner,
             conditionStoreManager.address,
             { from: owner }
         )
-        // console.log(`nftLockCondition NEW owner = ${await nftLockCondition.owner()}, ${owner}`)
 
         transferNftCondition = await TransferNFTCondition.new()
 
@@ -275,7 +273,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
 
             const { didRegistry, aaveCreditTemplate } = await setupTest()
 
-            // console.log(`account0=${account0}, owner=${owner}, borrower=${borrower}, lender=${lender}, deployer=${deployer}, `)
             const result = await aaveCreditTemplate.deployVault(
                 lendingPoolAddress,
                 dataProviderAddress,
@@ -288,7 +285,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             )
             const eventArgs = testUtils.getEventArgsFromTx(result, 'VaultCreated')
             vaultAddress = eventArgs._vaultAddress
-            // console.log(`deployedVault: ${vaultAddress}, borrower=${borrower}, lender=${lender}`)
             did = await didRegistry.hashDID(didSeed, borrower)
 
             const {
@@ -303,13 +299,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: borrower })
             await erc721.mint(did, { from: borrower })
             await erc721.approve(nftLockCondition.address, did, { from: borrower })
-            // console.log(`didRegistered: ${did}, didSeed=${didSeed}, nftOwner=${borrower}, nftAddress=${nftTokenAddress}, nftLockCondition=${nftLockCondition.address}`)
-            // const ownerBalance = await erc721.balanceOf(owner)
-            // const borrowerBalance = await erc721.balanceOf(borrower)
-            //
-            // const vault = await AaveCreditVault.at(vaultAddress)
-            // console.log(`>>>>>>>>>>>>>>>>>. borrower=${await vault.borrower()}, lender=${await vault.lender()},
-            //     ownerBalance=${ownerBalance}, borrowerBalance=${borrowerBalance}`)
 
             // Create agreement
             await aaveCreditTemplate.methods['createVaultAgreement(bytes32,bytes32,bytes32[],uint256[],uint256[],address)'](
@@ -515,7 +504,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 nftTokenAddress,
                 { from: borrower }
             )
-            //            console.log('[AFTER] Owner of NFT: ' + await erc721.ownerOf(did))
 
             const { state: stateTransfer } = await conditionStoreManager.getCondition(
                 agreement.conditionIds[5])
