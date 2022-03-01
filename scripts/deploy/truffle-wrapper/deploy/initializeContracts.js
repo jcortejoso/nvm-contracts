@@ -550,7 +550,7 @@ async function initializeContracts({
         getAddress('AccessProofCondition') &&
         getAddress('NFTLockCondition') &&
         getAddress('NFTEscrowPaymentCondition')) {
-            if (contracts.indexOf('NFTAccessSwapTemplate') > -1) {
+        if (contracts.indexOf('NFTAccessSwapTemplate') > -1) {
             addressBook.NFTAccessSwapTemplate = await zosCreate({
                 contract: 'NFTAccessSwapTemplate',
                 ctx,
@@ -571,7 +571,7 @@ async function initializeContracts({
         getAddress('LockPaymentCondition') &&
         getAddress('TransferNFTCondition') &&
         getAddress('EscrowPaymentCondition')) {
-            if (contracts.indexOf('NFTSalesWithAccessTemplate') > -1) {
+        if (contracts.indexOf('NFTSalesWithAccessTemplate') > -1) {
             addressBook.NFTSalesWithAccessTemplate = await zosCreate({
                 contract: 'NFTSalesWithAccessTemplate',
                 ctx,
@@ -581,7 +581,7 @@ async function initializeContracts({
                     getAddress('LockPaymentCondition'),
                     getAddress('TransferNFTCondition'),
                     getAddress('EscrowPaymentCondition'),
-                    getAddress('AccessProofCondition'),
+                    getAddress('AccessProofCondition')
                 ],
                 verbose
             })
@@ -610,7 +610,7 @@ async function initializeContracts({
         getAddress('AccessProofCondition') &&
         getAddress('NFT721LockCondition') &&
         getAddress('NFT721EscrowPaymentCondition')) {
-            if (contracts.indexOf('NFT721AccessSwapTemplate') > -1) {
+        if (contracts.indexOf('NFT721AccessSwapTemplate') > -1) {
             addressBook.NFT721AccessSwapTemplate = await zosCreate({
                 contract: 'NFT721AccessSwapTemplate',
                 ctx,
@@ -631,7 +631,7 @@ async function initializeContracts({
         getAddress('LockPaymentCondition') &&
         getAddress('TransferNFT721Condition') &&
         getAddress('EscrowPaymentCondition')) {
-            if (contracts.indexOf('NFT721SalesWithAccessTemplate') > -1) {
+        if (contracts.indexOf('NFT721SalesWithAccessTemplate') > -1) {
             addressBook.NFT721SalesWithAccessTemplate = await zosCreate({
                 contract: 'NFT721SalesWithAccessTemplate',
                 ctx,
@@ -641,7 +641,7 @@ async function initializeContracts({
                     getAddress('LockPaymentCondition'),
                     getAddress('TransferNFT721Condition'),
                     getAddress('EscrowPaymentCondition'),
-                    getAddress('AccessProofCondition'),
+                    getAddress('AccessProofCondition')
                 ],
                 verbose
             })
