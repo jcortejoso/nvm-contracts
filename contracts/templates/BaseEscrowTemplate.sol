@@ -131,25 +131,6 @@ contract BaseEscrowTemplate is AgreementTemplate {
         // storing some additional information for the template
         agreementData.agreementDataItems[_id].accessConsumer = _accessConsumer;
         agreementData.agreementDataItems[_id].did = _did;
-        /*
-        address owner = address(0);
-        address[] memory providers;
-        
-        
-        DIDRegistry didRegistryInstance = DIDRegistry(
-            agreementStoreManager.getDIDRegistryAddress()
-        );
-        
-        (owner, , , , , providers,,,) = didRegistryInstance.getDIDRegister(_did);
-
-
-        if (providers.length > 0) {
-            agreementData.agreementDataItems[_id]
-                .accessProvider = providers[0];
-        } else {
-            agreementData.agreementDataItems[_id]
-                .accessProvider = owner;
-        }*/
 
         emit AgreementCreated(
             _id,
@@ -196,6 +177,5 @@ contract BaseEscrowTemplate is AgreementTemplate {
             accessProvider = owner;
         }
         accessConsumer = agreementData.agreementDataItems[_id].accessConsumer;
-        // accessProvider = agreementData.agreementDataItems[_id].accessProvider;
     }
 }

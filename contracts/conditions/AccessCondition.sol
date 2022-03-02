@@ -50,8 +50,7 @@ ISecretStore, ISecretStorePermission {
     )
     {
         require(
-            didRegistry.isDIDProviderOrOwner(_documentId, msg.sender) /* || 
-            msg.sender == didRegistry.getDIDOwner(_documentId) */,
+            didRegistry.isDIDProviderOrOwner(_documentId, msg.sender),
             'Invalid DID owner/provider'
         );
         _;

@@ -23,7 +23,6 @@ contract('AgreementStoreManager', (accounts) => {
     const did = constants.did[0]
     const checksum = testUtils.generateId()
     const value = constants.registry.url
-    // const createRole = accounts[0]
     const deployer = accounts[8]
     const owner = accounts[9]
     const providers = [accounts[8], accounts[9]]
@@ -362,52 +361,7 @@ contract('AgreementStoreManager', (accounts) => {
                 { from: templateId }
             )
 
-            // assert
-            /*
-            assert.strictEqual(
-                await agreementStoreManager.isAgreementDIDOwner(agreementId, createRole),
-                true
-            )
-
-            assert.strictEqual(
-                await agreementStoreManager.isAgreementDIDOwner(agreementId, common.address),
-                false
-            )
-
-            assert.strictEqual(
-                await agreementStoreManager.isAgreementDIDOwner(constants.bytes32.one, createRole),
-                false
-            )
-
-            assert.strictEqual(
-                await agreementStoreManager.isAgreementDIDOwner(constants.bytes32.one, common.address),
-                false
-            ) */
         })
-        /*
-        it('should able to get the Agreement DID Owner', async () => {
-            const did = await registerNewDID()
-            const agreement = {
-                did: did,
-                conditionTypes: [common.address],
-                conditionIds: [testUtils.generateId()],
-                timeLocks: [0],
-                timeOuts: [2]
-
-            }
-            const agreementId = testUtils.generateId()
-
-            await agreementStoreManager.createAgreement(
-                agreementId,
-                ...Object.values(agreement),
-                { from: templateId }
-            )
-
-            assert.strictEqual(
-                await agreementStoreManager.getAgreementDIDOwner(agreementId),
-                createRole
-            )
-        }) */
         it('should not create agreement if DID not registered', async () => {
             const agreement = {
                 did: did,
@@ -453,17 +407,7 @@ contract('AgreementStoreManager', (accounts) => {
 
             // TODO - containSubset
             const storedAgreementTemplateId = await agreementStoreManager.getAgreementTemplate(agreementId)
-            // expect(storedAgreement.did).to.equal(agreement.did)
-            // expect(storedAgreement.didOwner).to.equal(accounts[0])
             expect(storedAgreementTemplateId).to.equal(templateId)
-            /*
-            expect(storedAgreement.conditionIds)
-                .to.deep.equal(agreement.conditionIds)
-            expect(storedAgreement.lastUpdatedBy)
-                .to.equal(templateId)
-            expect(storedAgreement.blockNumberUpdated.toNumber())
-                .to.equal(blockNumber.toNumber() + 1)
-            */
         })
 
         it('should get multiple agreements for same did & template', async () => {
@@ -501,14 +445,6 @@ contract('AgreementStoreManager', (accounts) => {
                 { from: templateId }
             )
 
-            /*
-            assert.lengthOf(
-                await agreementStoreManager.getAgreementIdsForDID(did),
-                2)
-            assert.isAtLeast(
-                (await agreementStoreManager.getAgreementIdsForTemplateId(templateId)).length,
-                2)
-            */
         })
     })
 

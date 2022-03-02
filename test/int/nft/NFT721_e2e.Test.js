@@ -34,8 +34,6 @@ contract('End to End NFT721 Scenarios', (accounts) => {
     const didSeed = testUtils.generateId()
     let did
     let agreementId
-    // const agreementId = testUtils.generateId()
-    // const agreementId2 = testUtils.generateId()
     const checksum = testUtils.generateId()
     const url = 'https://raw.githubusercontent.com/nevermined-io/assets/main/images/logo/banner_logo.png'
 
@@ -311,15 +309,6 @@ contract('End to End NFT721 Scenarios', (accounts) => {
             it('The artist can check the payment and transfer the NFT to the collector', async () => {
                 await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
 
-                /*
-                const mappingValue = await conditionStoreManager.getMappingValue(
-                    conditionIds[0],
-                    testUtils.sha3('_assetReceiverAddress')
-                )
-                const addressInMapping = await conditionStoreManager.bytes32ToAddress(mappingValue)
-                assert.strictEqual(collector1, addressInMapping)
-                */
-
                 await transferCondition.fulfill(
                     agreementId,
                     did,
@@ -418,7 +407,6 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                 await token.approve(lockPaymentCondition.address, nftPrice2, { from: collector2 })
                 await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
 
-                // const result = await nftSalesTemplate.createAgreement(agreementId2, ...Object.values(nftSalesAgreement))
                 const extendedAgreement = {
                     ...nftSalesAgreement,
                     _idx: 0,
@@ -431,8 +419,6 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                 const result = await nftSalesTemplate.createAgreementAndPayEscrow(...Object.values(extendedAgreement), { from: collector2 })
 
                 testUtils.assertEmitted(result, 1, 'AgreementCreated')
-
-                // await lockPaymentCondition.fulfill(agreementId2, did, escrowCondition.address, token.address, amounts2, receivers2, { from: collector2 })
 
                 const { state } = await conditionStoreManager.getCondition(conditionIds[0])
                 assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)

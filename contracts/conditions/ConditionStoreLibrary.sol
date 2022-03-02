@@ -59,19 +59,6 @@ library ConditionStoreLibrary {
 
         _self.conditions[_id].typeRef = _typeRef;
         _self.conditions[_id].state = ConditionState.Unfulfilled;
-        /* TODO: cleanup
-        Condition({
-            typeRef: _typeRef,
-            state: ConditionState.Unfulfilled
-            createdBy: _creator
-            lastUpdatedBy: msg.sender,
-            blockNumberUpdated: block.number
-        });
-
-        _self.conditionIds.push(_id);
-
-        return _self.conditionIds.length;
-        */
     }
 
     /**
@@ -97,9 +84,6 @@ library ConditionStoreLibrary {
         );
 
         _self.conditions[_id].state = _newState;
-        // _self.conditions[_id].lastUpdatedBy = msg.sender;
-        // _self.conditions[_id].blockNumberUpdated = block.number;
-
     }
     
     function updateKeyValue(

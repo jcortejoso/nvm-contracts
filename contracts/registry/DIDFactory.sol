@@ -655,28 +655,6 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     }
 
     /**
-     * @return size the length of the DID registry.
-    function getDIDRegistrySize()
-    public
-    view
-    returns (uint size)
-    {
-        return didRegisterList.didRegisterIds.length;
-    }
-     */
-
-    /**
-     * @return the list of items in the DID registry.
-    function getDIDRegisterIds()
-    public
-    view
-    returns (bytes32[] memory)
-    {
-        return didRegisterList.didRegisterIds;
-    }
-     */
-
-    /**
      * @dev _grantPermission grants access permission to grantee 
      * @param _did refers to decentralized identifier (a bytes32 length ID)
      * @param _grantee address 

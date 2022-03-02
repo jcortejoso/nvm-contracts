@@ -61,10 +61,6 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
 
     modifier onlyUpdateRole(bytes32 _id)
     {
-        /*require(
-            conditionList.conditions[_id].typeRef != address(0),
-            'No such condition'
-        );*/
         require(
             conditionList.conditions[_id].typeRef == msg.sender,
             'Invalid UpdateRole'
@@ -339,9 +335,6 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
         timeLock = epochList.epochs[_id].timeLock;
         timeOut = epochList.epochs[_id].timeOut;
         blockNumber = epochList.epochs[_id].blockNumber;
-        // createdBy = conditionList.conditions[_id].createdBy;
-        // lastUpdatedBy = conditionList.conditions[_id].lastUpdatedBy;
-        // blockNumberUpdated = conditionList.conditions[_id].blockNumberUpdated;
     }
 
     /**
@@ -369,19 +362,6 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
     {
         return conditionList.conditions[_id].typeRef;
     }    
-
-    /**
-     * @dev getConditionCreatedBy  
-     * @return condition createdBy address
-    function getConditionCreatedBy(bytes32 _id)
-    external
-    view
-    virtual
-    returns (address)
-    {
-        return conditionList.conditions[_id].createdBy;
-    }
-     */
 
     /**
      * @dev getConditionState  

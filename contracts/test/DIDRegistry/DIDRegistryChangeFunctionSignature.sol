@@ -46,7 +46,5 @@ contract DIDRegistryChangeFunctionSignature is DIDRegistry {
             msg.sender,
             block.number
         );
-        
-        // return getDIDRegistrySize();
     }
 }
