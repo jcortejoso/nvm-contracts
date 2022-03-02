@@ -360,7 +360,6 @@ contract('AgreementStoreManager', (accounts) => {
                 ...Object.values(agreement),
                 { from: templateId }
             )
-
         })
         it('should not create agreement if DID not registered', async () => {
             const agreement = {
@@ -444,7 +443,6 @@ contract('AgreementStoreManager', (accounts) => {
                 ...Object.values(otherAgreement),
                 { from: templateId }
             )
-
         })
     })
 

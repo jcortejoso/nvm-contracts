@@ -159,7 +159,6 @@ contract('LockPaymentCondition', (accounts) => {
 
             assert.strictEqual(balanceSenderAfter, balanceSenderBefore - 10)
             assert.strictEqual(balanceReceiverAfter, balanceReceiverBefore + 10)
-
         })
 
         it('ETH: should fulfill if conditions exist and everything is okay', async () => {
