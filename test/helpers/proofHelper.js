@@ -6,7 +6,6 @@ const F = new ZqField(Scalar.fromString('218882428718392752222464057452572750885
 const snarkjs = require('snarkjs')
 const { unstringifyBigInts } = require('ffjavascript').utils
 
-/*
 function conv(x) {
     let acc = 1n;
     let res = 0n;
@@ -15,7 +14,7 @@ function conv(x) {
         acc = acc * 256n
     }
     return res
-}*/
+}
 
 /*
 function conv(x) {
@@ -28,9 +27,11 @@ function conv(x) {
     return res
 }*/
 
+/*
 function conv(x) {
+    console.log(x)
     return BigInt('0x' + Buffer.from(x).toString('hex')).toString(10)
-}
+}*/
 
 exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
     const poseidon = await circomlib.buildPoseidon()
@@ -46,6 +47,9 @@ exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
     const cipher = mimcjs.hash(orig1, orig2, k[0])
 
     let test = 1200
+    // let test = "257868341169386841563078230973762121963007919115260420451524318147418585697"
+    // let test = 257868341169386841563078230973762121963007919115260420451524318147418585697n
+    // let test = conv(buyerPub[0])
 
     const snarkParams = {
         // private
@@ -88,6 +92,7 @@ exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
     console.log('sol proof', proofSolidity)
     const proofData = proofSolidity.split(',')[0]
 
+    // buyerPub[0] = test.toString(10)
     buyerPub[0] = test
 
     return {
