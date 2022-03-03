@@ -70,9 +70,9 @@ exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
 
     const snarkParams = {
         // private
-        // xL_in: orig1,
-        // xR_in: orig2,
-        // provider_k: providerK,
+        xL_in: orig1,
+        xR_in: orig2,
+        provider_k: providerK,
         // public
         // buyer_x: conv(buyerPub[0]),
         buyer_x: test,

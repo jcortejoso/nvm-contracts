@@ -125,4 +125,4 @@ template Main2() {
 	hash_plain_out <== hash_plain;
 }
 
-component main = Main2();
+component main = Main();
