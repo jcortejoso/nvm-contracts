@@ -1,8 +1,11 @@
 const circomlib = require('circomlibjs')
 
-const ZqField = require('ffjavascript').ZqField
-const Scalar = require('ffjavascript').Scalar
-const F = new ZqField(Scalar.fromString('21888242871839275222246405745257275088548364400416034343698204186575808495617'))
+// const ZqField = require('ffjavascript').ZqField
+// const Scalar = require('ffjavascript').Scalar
+// const F = new ZqField(Scalar.fromString('21888242871839275222246405745257275088548364400416034343698204186575808495617'))
+
+let F
+
 const snarkjs = require('snarkjs')
 const { unstringifyBigInts } = require('ffjavascript').utils
 
@@ -16,8 +19,7 @@ function conv(x) {
     return res
 }
 
-/*
-function conv(x) {
+function conv2(x) {
     let acc = 1n;
     let res = 0n;
     for (let el of x) {
@@ -27,21 +29,39 @@ function conv(x) {
     return res
 }
 
+/*
+console.log(F)
+console.log(Scalar)
+console.log(ZqField)
+*/
+function conv(x) {
+    let res = F.toObject(x)
+    // console.log(res)
+    return res
+}
+
+/*
 function conv(x) {
     return BigInt('0x' + Buffer.from(x).toString('hex')).toString(10)
 }
 */
 
 exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
-    const poseidon = await circomlib.buildPoseidon()
+    const poseidon = await circomlib.buildPoseidonReference()
     const babyJub = await circomlib.buildBabyjub()
     const mimcjs = await circomlib.buildMimcSponge()
+    F = poseidon.F
 
-    const origHash = poseidon([orig1, orig2])
-    const buyerPub = babyJub.mulPointEscalar(babyJub.Base8, F.e(buyerK))
-    const providerPub = babyJub.mulPointEscalar(babyJub.Base8, F.e(providerK))
+    console.log('pos f', poseidon.F.toObject)
 
-    const k = babyJub.mulPointEscalar(buyerPub, F.e(providerK))
+    const origHash = poseidon([F.e(orig1), F.e(orig2)])
+
+    console.log('hash', origHash, conv(origHash), conv2(origHash))
+
+    const buyerPub = babyJub.mulPointEscalar(babyJub.Base8, buyerK)
+    const providerPub = babyJub.mulPointEscalar(babyJub.Base8, providerK)
+
+    const k = babyJub.mulPointEscalar(buyerPub, providerK)
 
     const cipher = mimcjs.hash(orig1, orig2, k[0])
 
@@ -50,8 +70,8 @@ exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
 
     const snarkParams = {
         // private
-        xL_in: orig1,
-        xR_in: orig2,
+        // xL_in: orig1,
+        // xR_in: orig2,
         // provider_k: providerK,
         // public
         // buyer_x: conv(buyerPub[0]),
