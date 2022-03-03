@@ -111,9 +111,9 @@ contract AaveCollateralWithdrawCondition is
         AaveCreditVault vault = AaveCreditVault(_vaultAddress);
         require(vault.isLender(msg.sender), 'Only lender');
 
-        address repayConditionTypeRef;
+        address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState repayConditionState;
-        (repayConditionTypeRef,repayConditionState,,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,repayConditionState,,,) = conditionStoreManager
             .getCondition(vault.repayConditionId());
 
         require(

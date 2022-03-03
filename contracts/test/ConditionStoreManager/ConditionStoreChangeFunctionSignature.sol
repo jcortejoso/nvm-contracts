@@ -11,11 +11,9 @@ contract ConditionStoreChangeFunctionSignature is ConditionStoreManager {
     function createCondition(
         bytes32 _id,
         address _typeRef,
-        address _sender,
-        address _creator
+        address _sender
     )
         public
-        returns (uint size)
     {
         // change function signature
         require(
@@ -23,12 +21,11 @@ contract ConditionStoreChangeFunctionSignature is ConditionStoreManager {
             'Invalid _sender address change signature test should fail'
         );
 
-        return createCondition(
+        createCondition(
             _id,
             _typeRef,
             uint(0),
-            uint(0),
-            _creator
+            uint(0)
         );
     }
 }

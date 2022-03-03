@@ -34,8 +34,7 @@ contract NFTAccessCondition is Condition, INFTAccess {
     )
     {
         require(
-            didRegistry.isDIDProvider(_documentId, msg.sender) || 
-            msg.sender == didRegistry.getDIDOwner(_documentId),
+            didRegistry.isDIDProviderOrOwner(_documentId, msg.sender),
             'Invalid DID owner/provider'
         );
         _;

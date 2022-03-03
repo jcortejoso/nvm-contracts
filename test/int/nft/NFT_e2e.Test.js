@@ -33,9 +33,11 @@ contract('End to End NFT Scenarios', (accounts) => {
     const cappedAmount = 5
     const didSeed = testUtils.generateId()
     let did
-    const agreementId = testUtils.generateId()
+    let agreementId
+    /*
     const agreementAccessId = testUtils.generateId()
     const agreementId2 = testUtils.generateId()
+    */
     const checksum = testUtils.generateId()
     const url = 'https://raw.githubusercontent.com/nevermined-io/assets/main/images/logo/banner_logo.png'
 
@@ -73,8 +75,6 @@ contract('End to End NFT Scenarios', (accounts) => {
         templateStoreManager,
         nftSalesTemplate,
         nftAccessTemplate,
-        nftSalesAgreement,
-        nftAccessAgreement,
         lockPaymentCondition,
         transferCondition,
         escrowCondition,
@@ -203,17 +203,17 @@ contract('End to End NFT Scenarios', (accounts) => {
 
     async function prepareNFTAccessAgreement({
         did,
-        agreementAccessId = testUtils.generateId(),
+        initAgreementId = testUtils.generateId(),
         receiver = collector1
     } = {}) {
         // construct agreement
-        const conditionIdNFTHolder = await nftHolderCondition.generateId(agreementAccessId,
-            await nftHolderCondition.hashValues(did, receiver, 1))
-        const conditionIdNFTAccess = await accessCondition.generateId(agreementAccessId,
-            await accessCondition.hashValues(did, receiver))
+        const conditionIdNFTHolder = await nftHolderCondition.hashValues(did, receiver, 1)
+        const conditionIdNFTAccess = await accessCondition.hashValues(did, receiver)
+        const agreementId = await agreementStoreManager.agreementId(initAgreementId, accounts[0])
 
-        nftAccessAgreement = {
-            did: did,
+        const nftAccessAgreement = {
+            initAgreementId,
+            did,
             conditionIds: [
                 conditionIdNFTHolder,
                 conditionIdNFTAccess
@@ -223,6 +223,10 @@ contract('End to End NFT Scenarios', (accounts) => {
             accessConsumer: receiver
         }
         return {
+            conditionIds: [
+                await nftHolderCondition.generateId(agreementId, conditionIdNFTHolder),
+                await accessCondition.generateId(agreementId, conditionIdNFTAccess)
+            ],
             agreementId,
             nftAccessAgreement
         }
@@ -230,24 +234,26 @@ contract('End to End NFT Scenarios', (accounts) => {
 
     async function prepareNFTSaleAgreement({
         did,
-        agreementId = testUtils.generateId(),
+        initAgreementId = testUtils.generateId(),
         _amounts = amounts,
         _receivers = receivers,
         _seller = artist,
         _buyer = collector1,
-        _numberNFTs = numberNFTs
+        _numberNFTs = numberNFTs,
+        _from = accounts[0]
     } = {}) {
-        const conditionIdLockPayment = await lockPaymentCondition.generateId(agreementId,
-            await lockPaymentCondition.hashValues(did, escrowCondition.address, token.address, _amounts, _receivers))
+        const agreementId = await agreementStoreManager.agreementId(initAgreementId, _from)
+        const conditionIdLockPayment = await lockPaymentCondition.hashValues(did, escrowCondition.address, token.address, _amounts, _receivers)
+        const fullIdLockPayment = await lockPaymentCondition.generateId(agreementId, conditionIdLockPayment)
+        const conditionIdTransferNFT = await transferCondition.hashValues(did, _seller, _buyer, _numberNFTs, fullIdLockPayment)
+        const fullIdTransferNFT = await transferCondition.generateId(agreementId, conditionIdTransferNFT)
 
-        const conditionIdTransferNFT = await transferCondition.generateId(agreementId,
-            await transferCondition.hashValues(did, _seller, _buyer, _numberNFTs, conditionIdLockPayment))
+        const conditionIdEscrow = await escrowCondition.hashValues(did, _amounts, _receivers, _buyer, escrowCondition.address, token.address, fullIdLockPayment, fullIdTransferNFT)
+        const fullIdEscrow = await escrowCondition.generateId(agreementId, conditionIdEscrow)
 
-        const conditionIdEscrow = await escrowCondition.generateId(agreementId,
-            await escrowCondition.hashValues(did, _amounts, _receivers, escrowCondition.address, token.address, conditionIdLockPayment, conditionIdTransferNFT))
-
-        nftSalesAgreement = {
-            did: did,
+        const nftSalesAgreement = {
+            initAgreementId,
+            did,
             conditionIds: [
                 conditionIdLockPayment,
                 conditionIdTransferNFT,
@@ -258,6 +264,11 @@ contract('End to End NFT Scenarios', (accounts) => {
             accessConsumer: _buyer
         }
         return {
+            conditionIds: [
+                fullIdLockPayment,
+                fullIdTransferNFT,
+                fullIdEscrow
+            ],
             agreementId,
             nftSalesAgreement
         }
@@ -280,17 +291,18 @@ contract('End to End NFT Scenarios', (accounts) => {
     })
 
     describe('As collector I want to buy some art', () => {
+        let conditionIds
         it('I am setting an agreement for buying a NFT', async () => {
-            await prepareNFTSaleAgreement({
+            const data = await prepareNFTSaleAgreement({
                 did: did,
-                agreementId: agreementId,
                 _seller: artist,
                 _buyer: collector1
             })
+            agreementId = data.agreementId
+            conditionIds = data.conditionIds
 
             // The Collector creates an agreement on-chain for purchasing a specific NFT attached to a DID
-            const result = await nftSalesTemplate.createAgreement(
-                agreementId, ...Object.values(nftSalesAgreement))
+            const result = await nftSalesTemplate.createAgreement(...Object.values(data.nftSalesAgreement))
 
             testUtils.assertEmitted(result, 1, 'AgreementCreated')
         })
@@ -302,7 +314,7 @@ contract('End to End NFT Scenarios', (accounts) => {
 
             await lockPaymentCondition.fulfill(agreementId, did, escrowCondition.address, token.address, amounts, receivers, { from: collector1 })
 
-            const { state } = await conditionStoreManager.getCondition(nftSalesAgreement.conditionIds[0])
+            const { state } = await conditionStoreManager.getCondition(conditionIds[0])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
             const collector1Balance = await getBalance(token, collector1)
             assert.strictEqual(collector1Balance, 0)
@@ -318,12 +330,11 @@ contract('End to End NFT Scenarios', (accounts) => {
                 did,
                 collector1,
                 numberNFTs,
-                nftSalesAgreement.conditionIds[0],
+                conditionIds[0],
                 { from: artist })
             await nft.setApprovalForAll(transferCondition.address, false, { from: artist })
 
-            const { state } = await conditionStoreManager.getCondition(
-                nftSalesAgreement.conditionIds[1])
+            const { state } = await conditionStoreManager.getCondition(conditionIds[1])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
 
             const nftBalanceArtistAfter = await nft.balanceOf(artist, did)
@@ -339,13 +350,14 @@ contract('End to End NFT Scenarios', (accounts) => {
                 did,
                 amounts,
                 receivers,
+                collector1,
                 escrowCondition.address,
                 token.address,
-                nftSalesAgreement.conditionIds[0],
-                nftSalesAgreement.conditionIds[1],
+                conditionIds[0],
+                conditionIds[1],
                 { from: artist })
 
-            const { state } = await conditionStoreManager.getCondition(nftSalesAgreement.conditionIds[2])
+            const { state } = await conditionStoreManager.getCondition(conditionIds[2])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
 
             assert.strictEqual(await getBalance(token, collector1), 0)
@@ -360,31 +372,30 @@ contract('End to End NFT Scenarios', (accounts) => {
         it('As collector I want get access to a exclusive service provided by the artist', async () => {
             const nftAmount = 1
             // Collector1: Create NFT access agreement
-            await prepareNFTAccessAgreement({ did: did, agreementAccessId: agreementAccessId })
+            const { nftAccessAgreement, conditionIds, agreementId } = await prepareNFTAccessAgreement({ did: did })
 
             // The Collector creates an agreement on-chain for purchasing a specific NFT attached to a DID
-            const result = await nftAccessTemplate.createAgreement(
-                agreementAccessId, ...Object.values(nftAccessAgreement))
+            const result = await nftAccessTemplate.createAgreement(...Object.values(nftAccessAgreement))
 
             testUtils.assertEmitted(result, 1, 'AgreementCreated')
 
             // Collector1: I demonstrate I have the NFT
             await nftHolderCondition.fulfill(
-                agreementAccessId, nftAccessAgreement.did, collector1, nftAmount, { from: someone })
+                agreementId, nftAccessAgreement.did, collector1, nftAmount, { from: someone })
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(nftAccessAgreement.conditionIds[0])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
 
             // Artist: I give access to the collector1 to the content
             await accessCondition.methods['fulfill(bytes32,bytes32,address)'](
-                agreementAccessId,
+                agreementId,
                 nftAccessAgreement.did,
                 collector1,
                 { from: artist }
             )
 
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(nftAccessAgreement.conditionIds[1])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
         })
     })
@@ -392,14 +403,14 @@ contract('End to End NFT Scenarios', (accounts) => {
     describe('As collector1 I want to sell my NFT to a different collector2 for a higher price', () => {
         it('As collector2 I setup an agreement for buying an NFT to collector1', async () => {
             // Collector2: Create NFT sales agreement
-            const { nftSalesAgreement } = await prepareNFTSaleAgreement({
+            const { nftSalesAgreement, conditionIds, agreementId: agreementId2 } = await prepareNFTSaleAgreement({
                 did: did,
-                agreementId: agreementId2,
                 _amounts: amounts2,
                 _receivers: receivers2,
                 _seller: collector1,
                 _buyer: collector2,
-                _numberNFTs: numberNFTs2
+                _numberNFTs: numberNFTs2,
+                _from: collector2
             })
 
             // Collector2: Lock the payment
@@ -417,12 +428,11 @@ contract('End to End NFT Scenarios', (accounts) => {
             }
 
             const result = await nftSalesTemplate.createAgreementAndPayEscrow(
-                agreementId2, ...Object.values(extendedAgreement), { from: collector2 })
+                ...Object.values(extendedAgreement), { from: collector2 })
 
             testUtils.assertEmitted(result, 1, 'AgreementCreated')
 
-            const { state } = await conditionStoreManager.getCondition(
-                nftSalesAgreement.conditionIds[0])
+            const { state } = await conditionStoreManager.getCondition(conditionIds[0])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
             const collector1Balance = await getBalance(token, collector2)
             assert.strictEqual(collector1Balance, 0)
@@ -434,12 +444,11 @@ contract('End to End NFT Scenarios', (accounts) => {
                 did,
                 collector2,
                 numberNFTs2,
-                nftSalesAgreement.conditionIds[0],
+                conditionIds[0],
                 { from: collector1 })
             await nft.setApprovalForAll(transferCondition.address, true, { from: collector1 })
 
-            let condition = await conditionStoreManager.getCondition(
-                nftSalesAgreement.conditionIds[1])
+            let condition = await conditionStoreManager.getCondition(conditionIds[1])
             assert.strictEqual(condition[1].toNumber(), constants.condition.state.fulfilled)
 
             const nftBalance1 = await nft.balanceOf(collector1, did)
@@ -454,13 +463,14 @@ contract('End to End NFT Scenarios', (accounts) => {
                 did,
                 amounts2,
                 receivers2,
+                collector2,
                 escrowCondition.address,
                 token.address,
-                nftSalesAgreement.conditionIds[0],
-                nftSalesAgreement.conditionIds[1],
+                conditionIds[0],
+                conditionIds[1],
                 { from: collector1 })
 
-            condition = await conditionStoreManager.getCondition(nftSalesAgreement.conditionIds[2])
+            condition = await conditionStoreManager.getCondition(conditionIds[2])
             assert.strictEqual(condition[1].toNumber(), constants.condition.state.fulfilled)
 
             assert.strictEqual(await getBalance(token, collector2), 0)
@@ -475,14 +485,12 @@ contract('End to End NFT Scenarios', (accounts) => {
         })
 
         it('A sale without proper royalties can not happen', async () => {
-            const agreementIdNoRoyalties = testUtils.generateId()
             const amountsNoRoyalties = [99, 1]
             const receiversNoRoyalties = [collector1, artist]
 
             // Collector2: Create NFT sales agreement
-            const { nftSalesAgreement } = await prepareNFTSaleAgreement({
+            const { nftSalesAgreement, agreementId: agreementIdNoRoyalties } = await prepareNFTSaleAgreement({
                 did: did,
-                agreementId: agreementIdNoRoyalties,
                 _amounts: amountsNoRoyalties,
                 _receivers: receiversNoRoyalties,
                 _seller: collector1,
@@ -490,8 +498,7 @@ contract('End to End NFT Scenarios', (accounts) => {
                 _numberNFTs: numberNFTs2
             })
 
-            const result = await nftSalesTemplate.createAgreement(
-                agreementIdNoRoyalties, ...Object.values(nftSalesAgreement))
+            const result = await nftSalesTemplate.createAgreement(...Object.values(nftSalesAgreement))
 
             testUtils.assertEmitted(result, 1, 'AgreementCreated')
 
@@ -508,6 +515,8 @@ contract('End to End NFT Scenarios', (accounts) => {
     })
 
     describe('As market I want to be able to transfer nfts and release rewards on behalf of the artist', () => {
+        let nftSalesAgreement
+        let conditionIds
         it('Artist registers a new artwork and tokenize (via NFT)', async () => {
             const { didRegistry, nft } = await setupTest()
 
@@ -523,16 +532,18 @@ contract('End to End NFT Scenarios', (accounts) => {
         })
 
         it('Collector sets an agreement for buying a NFT', async () => {
-            await prepareNFTSaleAgreement({
+            const data = await prepareNFTSaleAgreement({
                 did: did,
                 agreementId: agreementId,
                 _seller: artist,
                 _buyer: collector1
             })
+            nftSalesAgreement = data.nftSalesAgreement
+            conditionIds = data.conditionIds
+            agreementId = data.agreementId
 
             // The Collector creates an agreement on-chain for purchasing a specific NFT attached to a DID
-            const result = await nftSalesTemplate.createAgreement(
-                agreementId, ...Object.values(nftSalesAgreement))
+            const result = await nftSalesTemplate.createAgreement(...Object.values(nftSalesAgreement))
 
             testUtils.assertEmitted(result, 1, 'AgreementCreated')
         })
@@ -544,7 +555,7 @@ contract('End to End NFT Scenarios', (accounts) => {
 
             await lockPaymentCondition.fulfill(agreementId, did, escrowCondition.address, token.address, amounts, receivers, { from: collector1 })
 
-            const { state } = await conditionStoreManager.getCondition(nftSalesAgreement.conditionIds[0])
+            const { state } = await conditionStoreManager.getCondition(conditionIds[0])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
             const collector1Balance = await getBalance(token, collector1)
             assert.strictEqual(collector1Balance, 0)
@@ -561,12 +572,11 @@ contract('End to End NFT Scenarios', (accounts) => {
                 artist,
                 collector1,
                 numberNFTs,
-                nftSalesAgreement.conditionIds[0],
+                conditionIds[0],
                 { from: market }
             )
 
-            const { state } = await conditionStoreManager.getCondition(
-                nftSalesAgreement.conditionIds[1])
+            const { state } = await conditionStoreManager.getCondition(conditionIds[1])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
 
             const nftBalanceArtistAfter = await nft.balanceOf(artist, did)
@@ -582,13 +592,14 @@ contract('End to End NFT Scenarios', (accounts) => {
                 did,
                 amounts,
                 receivers,
+                collector1,
                 escrowCondition.address,
                 token.address,
-                nftSalesAgreement.conditionIds[0],
-                nftSalesAgreement.conditionIds[1],
+                conditionIds[0],
+                conditionIds[1],
                 { from: market })
 
-            const { state } = await conditionStoreManager.getCondition(nftSalesAgreement.conditionIds[2])
+            const { state } = await conditionStoreManager.getCondition(conditionIds[2])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
 
             assert.strictEqual(await getBalance(token, collector1), 0)

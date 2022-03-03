@@ -121,7 +121,7 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
         );
         
         ConditionStoreLibrary.ConditionState repayConditionState;
-        (,repayConditionState,,,,,,) = conditionStoreManager
+        (,repayConditionState,,,) = conditionStoreManager
             .getCondition(vault.repayConditionId());
 
         IERC721Upgradeable token = IERC721Upgradeable(_nftContractAddress);

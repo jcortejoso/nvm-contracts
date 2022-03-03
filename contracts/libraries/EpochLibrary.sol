@@ -31,7 +31,7 @@ library EpochLibrary {
 
     struct EpochList {
         mapping(bytes32 => Epoch) epochs;
-        bytes32[] epochIds;
+        bytes32[] epochIds; // UNUSED
     }
 
    /**
@@ -72,7 +72,7 @@ library EpochLibrary {
             blockNumber : block.number
         });
 
-        _self.epochIds.push(_id);
+        // _self.epochIds.push(_id);
 
     }
 

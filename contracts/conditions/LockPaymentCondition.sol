@@ -159,19 +159,12 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             _agreementId,
             hashValues(_did, _rewardAddress, _tokenAddress, _amounts, _receivers)
         );
+        
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
             ConditionStoreLibrary.ConditionState.Fulfilled
         );
 
-        if (state == ConditionStoreLibrary.ConditionState.Fulfilled)    {
-            conditionStoreManager.updateConditionMapping(
-                _id,
-                KEY_ASSET_RECEIVER,
-                Common.addressToBytes32(msg.sender)
-            );
-        }
-        
         emit Fulfilled(
             _agreementId, 
             _did,
@@ -239,14 +232,6 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             _id,
             ConditionStoreLibrary.ConditionState.Fulfilled
         );
-
-        if (state == ConditionStoreLibrary.ConditionState.Fulfilled)    {
-            conditionStoreManager.updateConditionMapping(
-                _id,
-                KEY_ASSET_RECEIVER,
-                Common.addressToBytes32(msg.sender)
-            );            
-        }
 
         emit Fulfilled(
             _agreementId,
