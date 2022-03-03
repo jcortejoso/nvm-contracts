@@ -83,6 +83,9 @@ template Main() {
 }
 
 template Main2() {
+	signal input xL_in; // plain text part 1
+	signal input xR_in; // plain text part 2
+
 	signal input buyer_x;
 	signal input buyer_y;
 	signal input provider_x;
@@ -99,9 +102,23 @@ template Main2() {
 	signal output cipher_xR_in_out; // cipher text part 2
 	signal output hash_plain_out; // hash of plain text
 
-//	buyer_x === 25786834116938684156307823097376212196300791911526042045152431814741858569744;
-	buyer_x === 1200;
+	component hashplain = Poseidon(2);
 
+	encrypt.xL_in <== xL_in;
+	encrypt.xR_in <== xR_in;
+	encrypt.k <== mulAny.out[0];
+
+	hashplain.inputs[0] <== xL_in;
+	hashplain.inputs[1] <== xR_in;
+
+	// check that hashes are correct
+	encrypt.xL_out - cipher_xL_in === 0;
+	encrypt.xR_out - cipher_xR_in === 0;
+	hashplain.out === hash_plain;
+
+//	buyer_x === 25786834116938684156307823097376212196300791911526042045152431814741858569744;
+//	buyer_x === 1200;
+	buyer_x === 7602312640322751626048140136926751930308221064460068936839153902909591388729;
 	buyer_x_out <== buyer_x;
 	buyer_y_out <== buyer_y;
 	provider_x_out <== provider_x;
