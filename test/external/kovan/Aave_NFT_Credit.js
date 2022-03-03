@@ -357,7 +357,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         })
 
         it('Lender deposits ETH as collateral in Aave and approves borrower to borrow DAI', async () => {
-            const { state: stateNftLock } = await conditionStoreManager.getCondition(agreement.conditionIds[0])
+            const { state: stateNftLock } = await conditionStoreManager.getCondition(conditionIds[0])
             assert.strictEqual(stateNftLock.toNumber(), constants.condition.state.fulfilled)
 
             // Fullfill the deposit collateral condition
