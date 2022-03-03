@@ -444,13 +444,6 @@ contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
 
         it('Delegator withdraw collateral and fees', async () => {
             // Fullfill the AaveCollateralWithdraw condition
-            await aaveWithdrawnCollateral.fulfill(
-                agreementId,
-                did,
-                vaultAddress,
-                collateralAsset,
-                { from: lender }
-            )
             await assert.isRejected(
                 aaveWithdrawnCollateral.fulfill(
                     agreementId,
@@ -458,7 +451,8 @@ contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
                     vaultAddress,
                     collateralAsset,
                     { from: lender }
-                )
+                ),
+                /Repay Condition needs to be Fulfilled/
             )
             const { state: stateWithdraw } = await conditionStoreManager.getCondition(conditionIds[4])
             assert.strictEqual(stateWithdraw.toNumber(), constants.condition.state.unfulfilled)
