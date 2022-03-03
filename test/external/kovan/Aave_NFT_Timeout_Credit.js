@@ -461,7 +461,7 @@ contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
                 )
             )
             const { state: stateWithdraw } = await conditionStoreManager.getCondition(conditionIds[4])
-            assert.strictEqual(stateWithdraw.toNumber(), constants.condition.state.aborted)
+            assert.strictEqual(stateWithdraw.toNumber(), constants.condition.state.unfulfilled)
         })
 
         it('Borrower/Delegatee paid the credit so will get back the NFT', async () => {
