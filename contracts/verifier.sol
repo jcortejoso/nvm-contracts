@@ -21,6 +21,8 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
+import 'hardhat/console.sol';
+
 contract PlonkVerifier {
     
     uint32 constant n =   8;
@@ -117,6 +119,10 @@ contract PlonkVerifier {
 
 
     function verifyProof(bytes memory proof, uint[] memory pubSignals) public view returns (bool) {
+        for (uint i = 0; i < pubSignals.length; i++) {
+            console.log('signal');
+            console.log(pubSignals[i]);
+        }
         assembly {
             /////////
             // Computes the inverse using the extended euclidean algorithm

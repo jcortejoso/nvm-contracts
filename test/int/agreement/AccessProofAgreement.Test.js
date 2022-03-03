@@ -103,6 +103,9 @@ contract('Access Proof Template integration test', (accounts) => {
         const providerK = 234
 
         const data = await makeProof(orig1, orig2, buyerK, providerK)
+
+        console.log(data)
+
         const { origHash, buyerPub, providerPub } = data
 
         const did = await didRegistry.hashDID(didSeed, receivers[0])
