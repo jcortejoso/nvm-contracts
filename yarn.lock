@@ -6115,7 +6115,7 @@ fetch-ponyfill@^4.0.0:
   dependencies:
     node-fetch "~1.7.1"
 
-ffjavascript@0.2.48, ffjavascript@^0.2.38, ffjavascript@^0.2.48:
+ffjavascript@0.2.48, ffjavascript@^0.2.48:
   version "0.2.48"
   resolved "https://registry.yarnpkg.com/ffjavascript/-/ffjavascript-0.2.48.tgz#0ca408471d7b18bfc096a9631aa3ef3549c8c82b"
   integrity sha512-uNrWP+odLofNmmO+iCCPi/Xt/sJh1ku3pVKmKWVWCLFfdCP69hvRrogKUIGnsdiINcWn0lGxcEh5oEjStMFXQQ==
@@ -6125,7 +6125,7 @@ ffjavascript@0.2.48, ffjavascript@^0.2.38, ffjavascript@^0.2.48:
     wasmcurves "0.1.0"
     web-worker "^1.2.0"
 
-ffjavascript@^0.2.45:
+ffjavascript@^0.2.45, ffjavascript@^0.2.50:
   version "0.2.50"
   resolved "https://registry.yarnpkg.com/ffjavascript/-/ffjavascript-0.2.50.tgz#26a11624b0f6736f44299cc9f39d8692152f7199"
   integrity sha512-fQyzkLj3XShhJx9KjIjgWuYS6e6quJQqKF+anPPDuIC/aA+isb+w+8Rf9ih6MSlQYYUu2T8Rh9y8jbuVscESbw==

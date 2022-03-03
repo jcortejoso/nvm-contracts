@@ -114,7 +114,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "eth-gas-reporter": "^0.2.22",
     "ethers": "^5.5.3",
-    "ffjavascript": "^0.2.38",
+    "ffjavascript": "^0.2.50",
     "findit": "^2.0.0",
     "glob": "^7.2.0",
     "hardhat": "^2.8.3",

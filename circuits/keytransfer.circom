@@ -82,4 +82,30 @@ template Main() {
 	hash_plain_out <== hash_plain;
 }
 
-component main = Main();
+template Main2() {
+	signal input buyer_x;
+	signal input buyer_y;
+	signal input provider_x;
+	signal input provider_y;
+	signal input cipher_xL_in; // cipher text part 1
+	signal input cipher_xR_in; // cipher text part 2
+	signal input hash_plain; // hash of plain text
+
+	signal output buyer_x_out;
+	signal output buyer_y_out;
+	signal output provider_x_out;
+	signal output provider_y_out;
+	signal output cipher_xL_in_out; // cipher text part 1
+	signal output cipher_xR_in_out; // cipher text part 2
+	signal output hash_plain_out; // hash of plain text
+
+	buyer_x_out <== buyer_x;
+	buyer_y_out <== buyer_y;
+	provider_x_out <== provider_x;
+	provider_y_out <== provider_y;
+	cipher_xL_in_out <== cipher_xL_in;
+	cipher_xR_in_out <== cipher_xR_in;
+	hash_plain_out <== hash_plain;
+}
+
+component main = Main2();

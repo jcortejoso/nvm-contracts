@@ -1,13 +1,37 @@
-const poseidon = require('circomlib').poseidon
-const babyJub = require('circomlib').babyJub
-const mimcjs = require('circomlib').mimcsponge
+const circomlib = require('circomlibjs')
+
 const ZqField = require('ffjavascript').ZqField
 const Scalar = require('ffjavascript').Scalar
 const F = new ZqField(Scalar.fromString('21888242871839275222246405745257275088548364400416034343698204186575808495617'))
 const snarkjs = require('snarkjs')
 const { unstringifyBigInts } = require('ffjavascript').utils
 
+/*
+function conv(x) {
+    let acc = 1n;
+    let res = 0n;
+    for (let el of x) {
+        res = res + BigInt(el)*acc
+        acc = acc * 256n
+    }
+    return res
+}*/
+
+function conv(x) {
+    let acc = 1n;
+    let res = 0n;
+    for (let el of x) {
+        res = res * 256n
+        res = res + BigInt(el)
+    }
+    return res
+}
+
 exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
+    const poseidon = await circomlib.buildPoseidon()
+    const babyJub = await circomlib.buildBabyjub()
+    const mimcjs = await circomlib.buildMimcSponge()
+
     const origHash = poseidon([orig1, orig2])
     const buyerPub = babyJub.mulPointEscalar(babyJub.Base8, F.e(buyerK))
     const providerPub = babyJub.mulPointEscalar(babyJub.Base8, F.e(providerK))
@@ -17,19 +41,23 @@ exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
     const cipher = mimcjs.hash(orig1, orig2, k[0])
 
     const snarkParams = {
-        buyer_x: buyerPub[0],
-        buyer_y: buyerPub[1],
-        provider_x: providerPub[0],
-        provider_y: providerPub[1],
+        // private
+        /*
         xL_in: orig1,
         xR_in: orig2,
-        cipher_xL_in: cipher.xL,
-        cipher_xR_in: cipher.xR,
         provider_k: providerK,
-        hash_plain: origHash
+        */
+        // public
+        buyer_x: conv(buyerPub[0]),
+        buyer_y: conv(buyerPub[1]),
+        provider_x: conv(providerPub[0]),
+        provider_y: conv(providerPub[1]),
+        cipher_xL_in: conv(cipher.xL),
+        cipher_xR_in: conv(cipher.xR),
+        hash_plain: conv(origHash)
     }
 
-    // console.log(snark_params)
+    console.log(snarkParams)
 
     const { proof } = await snarkjs.plonk.fullProve(
         snarkParams,
