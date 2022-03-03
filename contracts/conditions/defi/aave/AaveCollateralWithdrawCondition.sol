@@ -112,13 +112,13 @@ contract AaveCollateralWithdrawCondition is
         require(vault.isLender(msg.sender), 'Only lender');
 
         address lockConditionTypeRef;
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
+        ConditionStoreLibrary.ConditionState repayConditionState;
+        (lockConditionTypeRef,repayConditionState,,,) = conditionStoreManager
             .getCondition(vault.repayConditionId());
 
         require(
-            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
-            'Lock Condition needs to be Fulfilled'
+            repayConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
+            'Repay Condition needs to be Fulfilled'
         );        
         
         vault.withdrawCollateral(_collateralAsset, vault.lender());

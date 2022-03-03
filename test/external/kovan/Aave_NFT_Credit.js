@@ -44,6 +44,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
     const agreementFee = '15'
     const INTEREST_RATE_MODE = 1
 
+    // const account0 = accounts[0]
     const owner = accounts[6]
     const deployer = accounts[7]
     const treasuryAddress = accounts[5]
@@ -102,7 +103,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         )
 
         nftLockCondition = await NFTLockCondition.new()
-
         await nftLockCondition.initialize(
             owner,
             conditionStoreManager.address,
@@ -292,8 +292,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             )
             const eventArgs = testUtils.getEventArgsFromTx(result, 'VaultCreated')
             vaultAddress = eventArgs._vaultAddress
-
-            did = await didRegistry.hashDID(didSeed, owner)
+            did = await didRegistry.hashDID(didSeed, borrower)
 
             const {
                 agreementId: _agreementId,
@@ -307,9 +306,9 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             agreement = _agreement
             conditionIds = _ids
 
-            await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: owner })
-            await erc721.mint(did)
-            await erc721.approve(nftLockCondition.address, did)
+            await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: borrower })
+            await erc721.mint(did, { from: borrower })
+            await erc721.approve(nftLockCondition.address, did, { from: borrower })
 
             // Create agreement
             await aaveCreditTemplate.methods['createVaultAgreement(bytes32,bytes32,bytes32[],uint256[],uint256[],address)'](
@@ -332,7 +331,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
         it('The borrower locks the NFT', async () => {
             // The borrower locks the NFT in the vault
             await nftLockCondition.fulfill(
-                agreementId, did, vaultAddress, 1, nftTokenAddress
+                agreementId, did, vaultAddress, 1, nftTokenAddress, { from: borrower }
             )
             const { state: stateNftLock } = await conditionStoreManager.getCondition(conditionIds[0])
             assert.strictEqual(stateNftLock.toNumber(), constants.condition.state.fulfilled)
@@ -342,20 +341,25 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
             await assert.isRejected(aaveCreditTemplate.updateNVMFee(10, { from: borrower }))
         })
 
-        it('A second NFT cant be locked into the Vault', async () => {
+        it('A second NFT cannot be locked into the Vault', async () => {
+            assert.strictEqual(vaultAddress, await erc721.ownerOf(did))
+
             const newErc721 = await TestERC721.new()
             await newErc721.initialize({ from: owner })
             const _tokenId = testUtils.generateId()
-            await newErc721.mint(_tokenId, { from: owner })
-            await newErc721.approve(vaultAddress, _tokenId, { from: owner })
+            await newErc721.mint(_tokenId, { from: borrower })
+            await newErc721.approve(vaultAddress, _tokenId, { from: borrower })
 
             await assert.isRejected(
-                newErc721.safeTransferFrom(owner, vaultAddress, _tokenId, { from: owner }),
-                'NFT already locked'
+                newErc721.safeTransferFrom(borrower, vaultAddress, _tokenId, { from: borrower }),
+                'NFT already locked', null, 'second NFT transfered to vault, but should not have.'
             )
         })
 
         it('Lender deposits ETH as collateral in Aave and approves borrower to borrow DAI', async () => {
+            const { state: stateNftLock } = await conditionStoreManager.getCondition(agreement.conditionIds[0])
+            assert.strictEqual(stateNftLock.toNumber(), constants.condition.state.fulfilled)
+
             // Fullfill the deposit collateral condition
             await aaveCollateralDeposit.fulfill(
                 agreementId,
@@ -426,7 +430,7 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 )
             )
             const { state: stateTransfer } = await conditionStoreManager.getCondition(
-                conditionIds[4])
+                conditionIds[5])
             assert.strictEqual(stateTransfer.toNumber(), constants.condition.state.unfulfilled)
         })
 
@@ -480,9 +484,9 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 collateralAsset,
                 { from: lender }
             )
-            const { state: stateRepay } = await conditionStoreManager.getCondition(
-                conditionIds[3])
-            assert.strictEqual(stateRepay.toNumber(), constants.condition.state.fulfilled)
+            const { state: stateWithdraw } = await conditionStoreManager.getCondition(
+                conditionIds[4])
+            assert.strictEqual(stateWithdraw.toNumber(), constants.condition.state.fulfilled)
 
             const daiAfter = await dai.balanceOf(lender)
             const ethBalanceAfter = await weth.balanceOf(lender)
@@ -510,7 +514,6 @@ contract('End to End NFT Collateral Scenario', (accounts) => {
                 nftTokenAddress,
                 { from: borrower }
             )
-            //            console.log('[AFTER] Owner of NFT: ' + await erc721.ownerOf(did))
 
             const { state: stateTransfer } = await conditionStoreManager.getCondition(
                 conditionIds[5])

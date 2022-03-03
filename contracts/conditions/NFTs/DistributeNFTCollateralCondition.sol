@@ -117,17 +117,17 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
 
         AaveCreditVault vault = AaveCreditVault(_vaultAddress);
         require(vault.isBorrower(msg.sender) || vault.isLender(msg.sender),
-            'Invalid users'
+            'Invalid sender, only borrower or lender can request Nft transfer under this agreement.'
         );
         
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (,lockConditionState,,,) = conditionStoreManager
+        ConditionStoreLibrary.ConditionState repayConditionState;
+        (,repayConditionState,,,) = conditionStoreManager
             .getCondition(vault.repayConditionId());
 
         IERC721Upgradeable token = IERC721Upgradeable(_nftContractAddress);
         require(
             (_vaultAddress == token.ownerOf(uint256(_did))),
-            'Not enough balance'
+            'The credit vault is not owner of this NFT or does not have sufficient balance.'
         );
 
         bytes32 _id = generateId(
@@ -135,10 +135,10 @@ contract DistributeNFTCollateralCondition is Condition, ReentrancyGuardUpgradeab
             hashValues(_did, _vaultAddress, _nftContractAddress)
         );
 
-        if (lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled) {
+        if (repayConditionState == ConditionStoreLibrary.ConditionState.Fulfilled) {
             vault.transferNFT(uint256(_did), vault.borrower());
             emit Fulfilled(_agreementId, _did, vault.borrower(), _id, _nftContractAddress);
-        } else if (lockConditionState == ConditionStoreLibrary.ConditionState.Aborted) {
+        } else if (repayConditionState == ConditionStoreLibrary.ConditionState.Aborted) {
             vault.transferNFT(uint256(_did), vault.lender());
             emit Fulfilled(_agreementId, _did, vault.lender(), _id, _nftContractAddress);
         }   else {
