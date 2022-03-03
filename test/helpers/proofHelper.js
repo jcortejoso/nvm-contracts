@@ -17,6 +17,7 @@ function conv(x) {
     return res
 }*/
 
+/*
 function conv(x) {
     let acc = 1n;
     let res = 0n;
@@ -25,6 +26,10 @@ function conv(x) {
         res = res + BigInt(el)
     }
     return res
+}*/
+
+function conv(x) {
+    return BigInt('0x' + Buffer.from(x).toString('hex')).toString(10)
 }
 
 exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
@@ -40,6 +45,8 @@ exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
 
     const cipher = mimcjs.hash(orig1, orig2, k[0])
 
+    let test = 1200
+
     const snarkParams = {
         // private
         /*
@@ -48,7 +55,8 @@ exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
         provider_k: providerK,
         */
         // public
-        buyer_x: conv(buyerPub[0]),
+        // buyer_x: conv(buyerPub[0]),
+        buyer_x: test,
         buyer_y: conv(buyerPub[1]),
         provider_x: conv(providerPub[0]),
         provider_y: conv(providerPub[1]),
@@ -66,7 +74,8 @@ exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
     )
 
     const signals = [
-        buyerPub[0],
+//        buyerPub[0],
+        test,
         buyerPub[1],
         providerPub[0],
         providerPub[1],
@@ -76,7 +85,10 @@ exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
     ]
 
     const proofSolidity = (await snarkjs.plonk.exportSolidityCallData(unstringifyBigInts(proof), signals))
+    console.log('sol proof', proofSolidity)
     const proofData = proofSolidity.split(',')[0]
+
+    buyerPub[0] = test
 
     return {
         origHash,

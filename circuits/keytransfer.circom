@@ -99,6 +99,9 @@ template Main2() {
 	signal output cipher_xR_in_out; // cipher text part 2
 	signal output hash_plain_out; // hash of plain text
 
+//	buyer_x === 25786834116938684156307823097376212196300791911526042045152431814741858569744;
+	buyer_x === 1200;
+
 	buyer_x_out <== buyer_x;
 	buyer_y_out <== buyer_y;
 	provider_x_out <== provider_x;
