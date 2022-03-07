@@ -42,6 +42,7 @@ function conv(x) {
 
 /*
 function conv(x) {
+    console.log(x)
     return BigInt('0x' + Buffer.from(x).toString('hex')).toString(10)
 }
 */
@@ -107,6 +108,7 @@ exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
     console.log('sol proof', proofSolidity)
     const proofData = proofSolidity.split(',')[0]
 
+    // buyerPub[0] = test.toString(10)
     buyerPub[0] = test
 
     return {

@@ -82,47 +82,4 @@ template Main() {
 	hash_plain_out <== hash_plain;
 }
 
-template Main2() {
-//	signal input xL_in; // plain text part 1
-//	signal input xR_in; // plain text part 2
-
-	signal input buyer_x;
-	signal input buyer_y;
-	signal input provider_x;
-	signal input provider_y;
-	signal input cipher_xL_in; // cipher text part 1
-	signal input cipher_xR_in; // cipher text part 2
-	signal input hash_plain; // hash of plain text
-
-	signal output buyer_x_out;
-	signal output buyer_y_out;
-	signal output provider_x_out;
-	signal output provider_y_out;
-	signal output cipher_xL_in_out; // cipher text part 1
-	signal output cipher_xR_in_out; // cipher text part 2
-	signal output hash_plain_out; // hash of plain text
-
-	component hashplain = Poseidon(2);
-	hashplain.inputs[0] <== 222;
-	hashplain.inputs[1] <== 333;
-//	hashplain.inputs[0] <== xL_in;
-//	hashplain.inputs[1] <== xR_in;
-
-	// check that hashes are correct
-	// hashplain.out === hash_plain;
-	hashplain.out === 11718920491435017699258660740606967420831405108707240304344209250760134178561;
-	// hashplain.out === 7853200120776062878684798364095072458815029376092732009249414926327459813530;
-
-//	buyer_x === 25786834116938684156307823097376212196300791911526042045152431814741858569744;
-//	buyer_x === 1200;
-//	buyer_x === 7602312640322751626048140136926751930308221064460068936839153902909591388729;
-	buyer_x_out <== buyer_x;
-	buyer_y_out <== buyer_y;
-	provider_x_out <== provider_x;
-	provider_y_out <== provider_y;
-	cipher_xL_in_out <== cipher_xL_in;
-	cipher_xR_in_out <== cipher_xR_in;
-	hash_plain_out <== hash_plain;
-}
-
 component main = Main();
