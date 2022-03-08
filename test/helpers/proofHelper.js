@@ -9,9 +9,9 @@ exports.makeProof = async function(orig1, orig2, buyerK, providerK) {
     const mimcjs = await circomlib.buildMimcSponge()
     const F = poseidon.F
     function conv(x) {
-        let res = F.toObject(x)
+        const res = F.toObject(x)
         return res
-    }    
+    }
     const origHash = poseidon([F.e(orig1), F.e(orig2)])
 
     const buyerPub = babyJub.mulPointEscalar(babyJub.Base8, buyerK)
