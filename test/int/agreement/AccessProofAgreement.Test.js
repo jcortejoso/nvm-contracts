@@ -16,12 +16,8 @@ const { getBalance } = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils')
 const mimcdecrypt = require('../../helpers/mimcdecrypt').decrypt
-const babyJub = require('circomlibjs').babyJub
-const poseidon = require('circomlibjs').poseidon
-const ZqField = require('ffjavascript').ZqField
-const Scalar = require('ffjavascript').Scalar
-const F = new ZqField(Scalar.fromString('21888242871839275222246405745257275088548364400416034343698204186575808495617'))
 const { makeProof } = require('../../helpers/proofHelper')
+const circomlib = require('circomlibjs')
 
 contract('Access Proof Template integration test', (accounts) => {
     const web3 = global.web3
@@ -103,8 +99,6 @@ contract('Access Proof Template integration test', (accounts) => {
         const providerK = 234
 
         const data = await makeProof(orig1, orig2, buyerK, providerK)
-
-        console.log(data)
 
         const { origHash, buyerPub, providerPub } = data
 
@@ -230,11 +224,16 @@ contract('Access Proof Template integration test', (accounts) => {
 
             // make sure decryption works
             const ev = await accessProofCondition.getPastEvents('Fulfilled', { fromBlock: 0, toBlock: 'latest', filter: { _agreementId: agreementId } })
-            const [cipherL, cipherR] = ev[0].returnValues._cipher
-            const k2 = babyJub.mulPointEscalar(providerPub, F.e(buyerK))
 
-            const plain = mimcdecrypt(cipherL, cipherR, k2[0])
-            assert.strictEqual(origHash, poseidon([plain.xL, plain.xR]))
+            const poseidon = await circomlib.buildPoseidonReference()
+            const babyJub = await circomlib.buildBabyjub()
+            const F = poseidon.F
+            const [cipherL, cipherR] = ev[0].returnValues._cipher
+            console.log([F.e(providerPub[0]), F.e(providerPub[1])], F.e(buyerK), buyerK)
+            const k2 = babyJub.mulPointEscalar([F.e(providerPub[0]), F.e(providerPub[1])], buyerK)
+
+            const plain = mimcdecrypt(cipherL, cipherR, F.toObject(k2[0]))
+            assert.strictEqual(origHash, F.toObject(poseidon([plain.xL, plain.xR])))
         })
 
         it('should create escrow agreement and abort after timeout', async () => {
