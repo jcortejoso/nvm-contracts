@@ -30,6 +30,7 @@
     "deploy:aurora": "export NETWORK=aurora&&yarn deploy --network aurora",
     "deploy:spree": "export NETWORK=spree&&export TESTNET=true&&yarn deploy --network spree",
     "deploy:polygon-localnet": "export NETWORK=polygon-localnet&&export TESTNET=true&&yarn deploy --network polygon-localnet",
+    "deploy:geth-localnet": "export NETWORK=geth-localnet&&export TESTNET=true&&yarn deploy --network geth-localnet",
     "deploy:rinkeby": "export NETWORK=rinkeby&&export TESTNET=true&&yarn deploy --network rinkeby",
     "deploy:alfajores": "export NETWORK=celo-alfajores&&export TESTNET=true&&yarn deploy --network celo-alfajores",
     "deploy:baklava": "export NETWORK=celo-baklava&&export TESTNET=true&&yarn deploy --network celo-baklava",
