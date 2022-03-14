@@ -443,7 +443,7 @@ async function initializeContracts({
     }
 
     if (getAddress('ConditionStoreManager') &&
-        getAddress('LockPaymentCondition')) {
+        getAddress('NFT721LockCondition')) {
         if (contracts.indexOf('DistributeNFTCollateralCondition') > -1) {
             addressBook.DistributeNFTCollateralCondition = await zosCreate({
                 contract: 'DistributeNFTCollateralCondition',
@@ -451,7 +451,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
-                    getAddress('LockPaymentCondition')
+                    getAddress('NFT721LockCondition')
                 ],
                 verbose
             })
@@ -621,7 +621,7 @@ async function initializeContracts({
     }
 
     if (getAddress('AgreementStoreManager') &&
-        getAddress('NFTLockCondition') &&
+        getAddress('NFT721LockCondition') &&
         getAddress('AaveCollateralDepositCondition') &&
         getAddress('AaveBorrowCondition') &&
         getAddress('AaveRepayCondition') &&
@@ -634,7 +634,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('AgreementStoreManager'),
-                    getAddress('NFTLockCondition'),
+                    getAddress('NFT721LockCondition'),
                     getAddress('AaveCollateralDepositCondition'),
                     getAddress('AaveBorrowCondition'),
                     getAddress('AaveRepayCondition'),
