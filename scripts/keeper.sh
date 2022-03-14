@@ -10,8 +10,6 @@ then
     # remove ready flag if we deploy contracts
     rm -f /nevermined-contracts/artifacts/ready
 
-    yarn clean
-    yarn compile
     export NETWORK="${NETWORK_NAME:-development}"
     yarn deploy:${NETWORK}
 

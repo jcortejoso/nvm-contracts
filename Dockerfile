@@ -16,5 +16,7 @@ COPY . /nevermined-contracts
 WORKDIR /nevermined-contracts
 
 RUN yarn
+RUN yarn clean
+RUN yarn compile
 
 ENTRYPOINT ["/nevermined-contracts/scripts/keeper.sh"]
