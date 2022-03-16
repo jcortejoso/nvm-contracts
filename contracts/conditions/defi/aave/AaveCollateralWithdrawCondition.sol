@@ -1,5 +1,5 @@
 pragma solidity ^0.8.0;
-// Copyright 2022 Nevermined AG.
+// Copyright 2020 Keyko GmbH.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -111,9 +111,9 @@ contract AaveCollateralWithdrawCondition is
         AaveCreditVault vault = AaveCreditVault(_vaultAddress);
         require(vault.isLender(msg.sender), 'Only lender');
 
-        address lockConditionTypeRef;
+        address repayConditionTypeRef;
         ConditionStoreLibrary.ConditionState repayConditionState;
-        (lockConditionTypeRef,repayConditionState,,,) = conditionStoreManager
+        (repayConditionTypeRef,repayConditionState,,,,,,) = conditionStoreManager
             .getCondition(vault.repayConditionId());
 
         require(

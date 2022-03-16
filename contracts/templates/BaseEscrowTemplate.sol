@@ -1,5 +1,5 @@
 pragma solidity ^0.8.0;
-// Copyright 2022 Nevermined AG.
+// Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
@@ -18,23 +18,19 @@ contract BaseEscrowTemplate is AgreementTemplate {
         address indexed _accessConsumer,
         address indexed _accessProvider,
         uint[]  _timeLocks,
-        uint[]  _timeOuts,
-        bytes32[] _conditionIdSeeds,
-        bytes32[] _conditionIds,
-        bytes32 _idSeed,
-        address _creator
+        uint[]  _timeOuts
     );
 
     struct AgreementDataModel {
         address accessConsumer;
         address accessProvider;
-        bytes32 did;
     }
 
     struct AgreementData {
         mapping(bytes32 => AgreementDataModel) agreementDataItems;
         bytes32[] agreementIds;
     }
+    
 
    /**
     * @notice createAgreement creates agreements through agreement template
@@ -50,6 +46,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
     * @param _timeOuts the ending point of the time window ,time lock is 
     *       in block number not seconds
     * @param _accessConsumer consumer address
+    * @return size the agreement index
     */
     function createAgreement(
         bytes32 _id,
@@ -60,6 +57,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
         address _accessConsumer
     )
         public
+        returns (uint size)
     {
         super.createAgreement(
             _id,
@@ -68,7 +66,9 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _timeLocks,
             _timeOuts
         );
-        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
+        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer);
+
+        return agreementData.agreementIds.length;
     }
 
     function createAgreementAndPayEscrow(
@@ -86,6 +86,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
     )
         public
         payable
+        returns (uint size)
     {
         super.createAgreementAndPay(
             _id,
@@ -99,38 +100,43 @@ contract BaseEscrowTemplate is AgreementTemplate {
             _amounts,
             _receivers
         );
-        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
-    }
+        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer);
 
-    function _makeIds(
-        bytes32 _idSeed,
-        bytes32[] memory _conditionIds
-    )
-    internal view returns (bytes32[] memory)
-    {
-        bytes32 _id = keccak256(abi.encode(_idSeed, msg.sender));
-        bytes32[] memory ids = new bytes32[](_conditionIds.length);
-        for (uint i = 0; i < ids.length; i++) {
-            ids[i] = keccak256(abi.encode(_id, conditionTypes[i], _conditionIds[i]));
-        }
-        return ids;
+        return agreementData.agreementIds.length;
     }
 
     function _initAgreement(
-        bytes32 _idSeed,
+        bytes32 _id,
         bytes32 _did,
         uint[] memory _timeLocks,
         uint[] memory _timeOuts,
-        address _accessConsumer,
-        bytes32[] memory _conditionIds
+        address _accessConsumer
     )
         internal
     {
 
-        bytes32 _id = keccak256(abi.encode(_idSeed, msg.sender));
+        address owner = address(0);
+        address[] memory providers;
+        
+        DIDRegistry didRegistryInstance = DIDRegistry(
+            agreementStoreManager.getDIDRegistryAddress()
+        );
+        
+        (owner, , , , , providers,,,) = didRegistryInstance.getDIDRegister(_did);
+
         // storing some additional information for the template
-        agreementData.agreementDataItems[_id].accessConsumer = _accessConsumer;
-        agreementData.agreementDataItems[_id].did = _did;
+        agreementData.agreementDataItems[_id]
+            .accessConsumer = _accessConsumer;
+
+        if (providers.length > 0) {
+            agreementData.agreementDataItems[_id]
+                .accessProvider = providers[0];
+        } else {
+            agreementData.agreementDataItems[_id]
+                .accessProvider = owner;
+        }
+
+        agreementData.agreementIds.push(_id);
 
         emit AgreementCreated(
             _id,
@@ -138,11 +144,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
             agreementData.agreementDataItems[_id].accessConsumer,
             agreementData.agreementDataItems[_id].accessProvider,
             _timeLocks,
-            _timeOuts,
-            _conditionIds,
-            _makeIds(_idSeed, _conditionIds),
-            _idSeed,
-            msg.sender
+            _timeOuts
         );
 
     }
@@ -161,21 +163,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
             address accessProvider
         )
     {
-        address owner = address(0);
-        address[] memory providers;
-        
-        
-        DIDRegistry didRegistryInstance = DIDRegistry(
-            agreementStoreManager.getDIDRegistryAddress()
-        );
-        
-        (owner, , , , , providers,,,) = didRegistryInstance.getDIDRegister(agreementData.agreementDataItems[_id].did);
-
-        if (providers.length > 0) {
-            accessProvider = providers[0];
-        } else {
-            accessProvider = owner;
-        }
         accessConsumer = agreementData.agreementDataItems[_id].accessConsumer;
+        accessProvider = agreementData.agreementDataItems[_id].accessProvider;
     }
 }

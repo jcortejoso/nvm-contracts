@@ -89,12 +89,7 @@ async function exportLibraryArtifact(c, address) {
 }
 
 function readArtifact(c) {
-    try {
-        return JSON.parse(fs.readFileSync(`artifacts/${c}.${network}.json`))
-    } catch (err) {
-        console.log(`Warning: cannot read ${c}`)
-        return {}
-    }
+    return JSON.parse(fs.readFileSync(`artifacts/${c}.${network}.json`))
 }
 
 async function writeArtifact(c, contract, libraries) {

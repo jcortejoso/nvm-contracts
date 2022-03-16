@@ -348,11 +348,10 @@ contract('TransferNFT721 Condition constructor', (accounts) => {
             )
 
             // Invalid reward address
-            /*
             await assert.isRejected(
                 transferCondition.fulfill(agreementId, did, other, numberNFTs, conditionIdPayment, nft.address, { from: seller }),
                 /Invalid receiver/
-            ) */
+            )
 
             // Invalid conditionId
             await assert.isRejected(

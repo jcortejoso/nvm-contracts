@@ -1,5 +1,5 @@
 pragma solidity ^0.8.0;
-// Copyright 2022 Nevermined AG.
+// Copyright 2020 Keyko GmbH.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
@@ -34,6 +34,7 @@ contract AgreementTemplate is OwnableUpgradeable {
      *          same condition that has the same index
      * @param _timeOuts list of time outs, each time out will be assigned to the 
      *          same condition that has the same index
+     * @return size the index of the created agreement
      */
     function createAgreement(
         bytes32 _id,
@@ -43,9 +44,10 @@ contract AgreementTemplate is OwnableUpgradeable {
         uint[] memory _timeOuts
     )
         public
+        returns (uint size)
     {
-        agreementStoreManager.createAgreement(
-            keccak256(abi.encode(_id, msg.sender)),
+        return agreementStoreManager.createAgreement(
+            _id,
             _did,
             getConditionTypes(),
             _conditionIds,
@@ -69,7 +71,7 @@ contract AgreementTemplate is OwnableUpgradeable {
         public payable
     {
         agreementStoreManager.createAgreementAndPay{value: msg.value}(
-            keccak256(abi.encode(_id, msg.sender)),
+            _id,
             _did,
             getConditionTypes(),
             _conditionIds,

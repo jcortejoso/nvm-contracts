@@ -136,7 +136,6 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     did,
                     amounts,
                     receivers,
-                    sender,
                     escrowPayment.address,
                     token.address,
                     lockConditionId,
@@ -159,7 +158,6 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     did,
                     amounts,
                     receivers,
-                    sender,
                     escrowPayment.address,
                     token.address,
                     lockConditionId,
@@ -173,7 +171,6 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     did,
                     amounts,
                     receivers,
-                    sender,
                     escrowPayment.address,
                     token.address,
                     lockConditionId,
@@ -190,7 +187,6 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     did,
                     amounts,
                     receivers,
-                    sender,
                     escrowPayment.address,
                     token.address,
                     lockConditionId,
@@ -244,7 +240,8 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     conditionLockId2,
                     lockPaymentCondition.address,
                     1,
-                    2
+                    2,
+                    sender
                 )
 
                 const lockConditionId = conditionLockId
@@ -253,7 +250,6 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     did,
                     amounts,
                     receivers,
-                    sender,
                     escrowPayment.address,
                     token.address,
                     lockConditionId,
@@ -276,7 +272,6 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     did,
                     amounts,
                     receivers,
-                    sender,
                     escrowPayment.address,
                     token.address,
                     lockConditionId,
@@ -290,7 +285,6 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     did,
                     amounts,
                     receivers,
-                    sender,
                     escrowPayment.address,
                     token.address,
                     lockConditionId,
@@ -307,7 +301,6 @@ function testMultiEscrow(EscrowPaymentCondition, LockPaymentCondition, Token, nf
                     did,
                     amounts,
                     receivers,
-                    sender,
                     escrowPayment.address,
                     token.address,
                     lockConditionId,

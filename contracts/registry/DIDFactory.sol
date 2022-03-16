@@ -1,5 +1,5 @@
 pragma solidity ^0.8.0;
-// Copyright 2022 Nevermined AG.
+// Copyright 2020 Keyko GmbH.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -179,6 +179,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      * @param _didSeed refers to decentralized identifier seed (a bytes32 length ID). 
      * @param _checksum includes a one-way HASH calculated using the DDO content.
      * @param _url refers to the attribute value, limited to 2048 bytes.
+     * @return size refers to the size of the registry after the register action.
      */
     function registerAttribute(
         bytes32 _didSeed,
@@ -188,8 +189,9 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     )
     public
     virtual
+    returns (uint size)
     {
-        registerDID(_didSeed, _checksum, _providers, _url, '', '');
+        return registerDID(_didSeed, _checksum, _providers, _url, '', '');
     }
 
 
@@ -207,6 +209,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
      * @param _providers list of DID providers addresses
      * @param _activityId refers to activity
      * @param _attributes refers to the provenance attributes     
+     * @return size refers to the size of the registry after the register action.
      */
     function registerDID(
         bytes32 _didSeed,
@@ -219,6 +222,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     public
     virtual
     onlyValidAttributes(_attributes)
+    returns (uint size)
     {
         bytes32 _did = hashDID(_didSeed, msg.sender);
         require(
@@ -227,7 +231,7 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
             'Only DID Owners'
         );
 
-        didRegisterList.update(_did, _checksum, _url);
+        uint updatedSize = didRegisterList.update(_did, _checksum, _url);
 
         // push providers to storage
         for (uint256 i = 0; i < _providers.length; i++) {
@@ -246,8 +250,10 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
             block.number
         );
         
-        _wasGeneratedBy(_did, _did, msg.sender, _activityId, _attributes);
-
+        _wasGeneratedBy(
+            _did, _did, msg.sender, _activityId, _attributes);
+        
+        return updatedSize;
     }
 
     /**
@@ -298,7 +304,8 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     onlyDIDOwner(_did)
     returns (bool)
     {
-        return _wasGeneratedBy(_provId, _did, _agentId, _activityId, _attributes);
+        return _wasGeneratedBy(
+            _provId, _did, _agentId, _activityId, _attributes);
     }
 
     
@@ -578,17 +585,6 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         return didRegisterList.isProvider(_did, _provider);
     }
 
-    function isDIDProviderOrOwner(
-        bytes32 _did,
-        address _provider
-    )
-    public
-    view
-    returns (bool)
-    {
-        return didRegisterList.isProvider(_did, _provider) || _provider == getDIDOwner(_did);
-    }
-
     /**
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @return owner the did owner
@@ -652,6 +648,28 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     returns (address didOwner)
     {
         return didRegisterList.didRegisters[_did].owner;
+    }
+
+    /**
+     * @return size the length of the DID registry.
+     */
+    function getDIDRegistrySize()
+    public
+    view
+    returns (uint size)
+    {
+        return didRegisterList.didRegisterIds.length;
+    }
+
+    /**
+     * @return the list of items in the DID registry.
+     */
+    function getDIDRegisterIds()
+    public
+    view
+    returns (bytes32[] memory)
+    {
+        return didRegisterList.didRegisterIds;
     }
 
     /**

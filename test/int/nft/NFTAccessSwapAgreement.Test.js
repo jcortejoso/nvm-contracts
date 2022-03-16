@@ -99,7 +99,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
     }
 
     async function prepareAgreement({
-        initAgreementId = testUtils.generateId(),
+        agreementId = testUtils.generateId(),
         receiver,
         amount,
         timeLockAccess = 0,
@@ -113,18 +113,18 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
         const data = await makeProof(orig1, orig2, buyerK, providerK)
         const { origHash, buyerPub, providerPub } = data
 
-        const agreementId = await agreementStoreManager.agreementId(initAgreementId, accounts[0])
-        const conditionIdLockPayment = await lockPaymentCondition.hashValuesMarked(did, escrowCondition.address, amount, receiver, token.address)
-        const fullIdLockPayment = await lockPaymentCondition.generateId(agreementId, conditionIdLockPayment)
+        const conditionIdLockPayment = await lockPaymentCondition.generateId(agreementId,
+            await lockPaymentCondition.hashValuesMarked(did, escrowCondition.address, amount, receiver, token.address))
 
-        const conditionIdAccess = await accessProofCondition.hashValues(origHash, buyerPub, providerPub)
-        const fullIdAccess = await accessProofCondition.generateId(agreementId, conditionIdAccess)
+        const conditionIdAccess = await accessProofCondition.generateId(agreementId,
+            await accessProofCondition.hashValues(origHash, buyerPub, providerPub))
 
-        const conditionIdEscrow = await escrowCondition.hashValues(did, amount, receiver, collector1, escrowCondition.address, token.address, fullIdLockPayment, [fullIdAccess])
-        const fullIdEscrow = await escrowCondition.generateId(agreementId, conditionIdEscrow)
+        const conditionIdEscrow = await escrowCondition.generateId(agreementId,
+            await escrowCondition.hashValues(did, amount, receiver, escrowCondition.address, token.address, conditionIdLockPayment,
+                [conditionIdAccess]))
+
         nftAgreement = {
-            initAgreementId,
-            did,
+            did: did,
             conditionIds: [
                 conditionIdLockPayment,
                 conditionIdEscrow,
@@ -135,11 +135,6 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
         }
 
         return {
-            conditionIds: [
-                fullIdLockPayment,
-                fullIdEscrow,
-                fullIdAccess
-            ],
             agreementId,
             did,
             data,
@@ -173,20 +168,22 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
     describe('create and fulfill access agreement', function() {
         this.timeout(100000)
         it('should create access agreement', async () => {
-            const { agreementId, data, agreement, conditionIds } = await prepareAgreement({ receiver, amount })
+            const { agreementId, data, agreement } = await prepareAgreement({ receiver, amount })
 
             // create agreement
-            await nftTemplate.createAgreement(...Object.values(agreement))
+            await nftTemplate.createAgreement(agreementId, ...Object.values(agreement))
 
             // check state of agreement and conditions
-            // expect((await agreementStoreManager.getAgreement(agreementId)).did).to.equal(did)
+            expect((await agreementStoreManager.getAgreement(agreementId)).did)
+                .to.equal(did)
 
             const conditionTypes = await nftTemplate.getConditionTypes()
-            await Promise.all(conditionIds.map(async (conditionId, i) => {
-                const storedCondition = await conditionStoreManager.getCondition(conditionId)
+            let storedCondition
+            agreement.conditionIds.forEach(async (conditionId, i) => {
+                storedCondition = await conditionStoreManager.getCondition(conditionId)
                 expect(storedCondition.typeRef).to.equal(conditionTypes[i])
                 expect(storedCondition.state.toNumber()).to.equal(constants.condition.state.unfulfilled)
-            }))
+            })
 
             // lock payment
             const nftBalanceArtistBefore = await nft.balanceOf(artist, did)
@@ -195,14 +192,14 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
             await nft.setApprovalForAll(lockPaymentCondition.address, true, { from: artist })
             await lockPaymentCondition.fulfillMarked(agreementId, did, escrowCondition.address, amount, receiver, token.address, { from: artist })
 
-            const { state } = await conditionStoreManager.getCondition(conditionIds[0])
+            const { state } = await conditionStoreManager.getCondition(nftAgreement.conditionIds[0])
             assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
 
             // fulfill access
             await accessProofCondition.fulfill(agreementId, ...Object.values(data), { from: collector1 })
 
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(conditionIds[2])).toNumber(),
+                (await conditionStoreManager.getConditionState(agreement.conditionIds[2])).toNumber(),
                 constants.condition.state.fulfilled)
 
             // escrow
@@ -211,14 +208,13 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
                 did,
                 amount,
                 receiver,
-                collector1,
                 escrowCondition.address,
                 token.address,
-                conditionIds[0],
-                [conditionIds[2]],
+                nftAgreement.conditionIds[0],
+                [nftAgreement.conditionIds[2]],
                 { from: collector1 })
 
-            const { state: state3 } = await conditionStoreManager.getCondition(conditionIds[1])
+            const { state: state3 } = await conditionStoreManager.getCondition(nftAgreement.conditionIds[1])
             assert.strictEqual(state3.toNumber(), constants.condition.state.fulfilled)
 
             const nftBalanceArtistAfter = await nft.balanceOf(artist, did)
