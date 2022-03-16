@@ -1,6 +1,7 @@
-// SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
+// Copyright 2022 Nevermined AG.
+// SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+// Code is Apache-2.0 and docs are CC-BY-4.0
 
 import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '../NFTBase.sol';
@@ -11,9 +12,6 @@ import '../NFTBase.sol';
  */
 contract NFT721Upgradeable is ERC721Upgradeable, NFTBase {
 
-    /**
-     * @dev See {_setURI}.
-     */
     // solhint-disable-next-line
     function initialize() public initializer {
         __Context_init_unchained();
@@ -35,7 +33,7 @@ contract NFT721Upgradeable is ERC721Upgradeable, NFTBase {
         AccessControlUpgradeable._setupRole(MINTER_ROLE, account);
     }    
     
-    function mint(address to, uint256 id) public {
+    function mint(address to, uint256 id) virtual public {
         require(hasRole(MINTER_ROLE, msg.sender), 'only minter can mint');
         _mint(to, id);
     }
