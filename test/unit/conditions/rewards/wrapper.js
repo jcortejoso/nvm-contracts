@@ -59,16 +59,15 @@ function nft721LockWrapper(contract) {
 }
 
 function tokenEscrowWrapper(contract) {
-    contract.hashWrap = (did, amounts, receivers, reta, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId) => {
-        return contract.hashValuesMulti(did, amounts, receivers, reta, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId)
+    contract.hashWrap = (did, amounts, receivers, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId) => {
+        return contract.hashValuesMulti(did, amounts, receivers, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId)
     }
-    contract.fulfillWrap = (agreementId, did, amounts, receivers, returnAdddress, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId) => {
+    contract.fulfillWrap = (agreementId, did, amounts, receivers, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId) => {
         return contract.fulfillMulti(
             agreementId,
             did,
             amounts,
             receivers,
-            returnAdddress,
             escrowPaymentAddress,
             tokenAddress,
             lockConditionId,
@@ -80,16 +79,15 @@ function tokenEscrowWrapper(contract) {
 }
 
 function nftEscrowWrapper(contract) {
-    contract.hashWrap = (did, amounts, receivers, returnAdddress, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId) => {
-        return contract.hashValues(did, amounts[0], receivers[0], returnAdddress, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId)
+    contract.hashWrap = (did, amounts, receivers, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId) => {
+        return contract.hashValues(did, amounts[0], receivers[0], escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId)
     }
-    contract.fulfillWrap = (agreementId, did, amounts, receivers, returnAdddress, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId) => {
+    contract.fulfillWrap = (agreementId, did, amounts, receivers, escrowPaymentAddress, tokenAddress, lockConditionId, releaseConditionId) => {
         return contract.fulfill(
             agreementId,
             did,
             amounts[0],
             receivers[0],
-            returnAdddress,
             escrowPaymentAddress,
             tokenAddress,
             lockConditionId,

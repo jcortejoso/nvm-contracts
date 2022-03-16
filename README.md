@@ -539,7 +539,7 @@ It keeps the same Apache v2 License and adds some improvements. See [NOTICE file
 ## License
 
 ```text
-Copyright 2022 Nevermined AG
+Copyright 2020 Keyko GmbH
 This product includes software developed at
 BigchainDB GmbH and Ocean Protocol (https://www.oceanprotocol.com/)
 

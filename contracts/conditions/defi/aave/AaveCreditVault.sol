@@ -1,5 +1,5 @@
 pragma solidity ^0.8.0;
-// Copyright 2022 Nevermined AG.
+// Copyright 2020 Keyko GmbH.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -51,7 +51,6 @@ contract AaveCreditVault is
     * @param _agreementFee Agreement fee that lender will receive on agreement maturity
     * @param _treasuryAddress Address of nevermined contract to store fees
     */
-    /*
     constructor(
         address _lendingPool,
         address _dataProvider,
@@ -63,36 +62,6 @@ contract AaveCreditVault is
         address _lender,
         address[] memory _conditions
     ) initializer {
-        lendingPool = ILendingPool(_lendingPool);
-        dataProvider = IProtocolDataProvider(_dataProvider);
-        weth = IWETHGateway(_weth);
-        addressProvider = lendingPool.getAddressesProvider();
-        priceOracle = IPriceOracleGetter(addressProvider.getPriceOracle());
-        nvmFee = _nvmFee;
-        agreementFee = _agreementFee;
-        treasuryAddress = _treasuryAddress;
-        borrower = _borrower;
-        lender = _lender;
-        AccessControlUpgradeable.__AccessControl_init();
-        AccessControlUpgradeable._setupRole(BORROWER_ROLE, _borrower);
-        AccessControlUpgradeable._setupRole(LENDER_ROLE, _lender);
-        
-        for(uint256 i = 0; i < _conditions.length; i++){
-            AccessControlUpgradeable._setupRole(CONDITION_ROLE, _conditions[i]);
-        }        
-    }*/
-    
-    function initialize(
-        address _lendingPool,
-        address _dataProvider,
-        address _weth,
-        uint256 _nvmFee,
-        uint256 _agreementFee,
-        address _treasuryAddress,
-        address _borrower,
-        address _lender,
-        address[] memory _conditions
-    ) public initializer {
         lendingPool = ILendingPool(_lendingPool);
         dataProvider = IProtocolDataProvider(_dataProvider);
         weth = IWETHGateway(_weth);

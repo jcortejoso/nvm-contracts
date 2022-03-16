@@ -43,12 +43,6 @@ const utils = {
         return signature.slice(0, 130) + vHex
     },
 
-    getAgreementConditionIds: async (template, agreementId) => {
-        const evs = await template.getPastEvents('AgreementCreated', { fromBlock: 0, filter: { agreementId } })
-        // console.log(evs[0].returnValues._conditionIds)
-        return evs.length > 0 ? evs[0].returnValues._conditionIdSeeds : []
-    },
-
     toEthSignedMessageHash: (messageHex) => {
         const messageBuffer = Buffer.from(messageHex.substring(2), 'hex')
         const prefix = Buffer.from(`\u0019Ethereum Signed Message:\n${messageBuffer.length}`)

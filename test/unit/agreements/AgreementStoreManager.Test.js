@@ -23,6 +23,7 @@ contract('AgreementStoreManager', (accounts) => {
     const did = constants.did[0]
     const checksum = testUtils.generateId()
     const value = constants.registry.url
+    const createRole = accounts[0]
     const deployer = accounts[8]
     const owner = accounts[9]
     const providers = [accounts[8], accounts[9]]
@@ -180,7 +181,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [constants.bytes32.zero, constants.bytes32.one],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
+                timeOuts: [2, 3],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -190,16 +192,57 @@ contract('AgreementStoreManager', (accounts) => {
                 { from: templateId }
             )
 
-            await Promise.all(agreement.conditionIds.map(async (conditionId, i) => {
-                const fullId = await agreementStoreManager.fullConditionId(agreementId, agreement.conditionTypes[i], conditionId)
-                const storedCondition = await conditionStoreManager.getCondition(fullId)
+            let storedCondition
+            agreement.conditionIds.forEach(async (conditionId, i) => {
+                storedCondition = await conditionStoreManager.getCondition(conditionId)
                 expect(storedCondition.typeRef).to.equal(agreement.conditionTypes[i])
                 expect(storedCondition.state.toNumber()).to.equal(constants.condition.state.unfulfilled)
                 expect(storedCondition.timeLock.toNumber()).to.equal(agreement.timeLocks[i])
                 expect(storedCondition.timeOut.toNumber()).to.equal(agreement.timeOuts[i])
-            }))
+            })
 
-            // expect((await agreementStoreManager.getAgreementListSize()).toNumber()).to.equal(1)
+            expect((await agreementStoreManager.getAgreementListSize()).toNumber()).to.equal(1)
+        })
+
+        it('should not create agreement with existing conditions', async () => {
+            const did = await registerNewDID()
+
+            const conditionTypes = [common.address, common.address]
+            const conditionIds = [testUtils.generateId(), testUtils.generateId()]
+            const agreement = {
+                did: did,
+                conditionTypes,
+                conditionIds,
+                timeLocks: [0, 1],
+                timeOuts: [2, 3],
+                creator: templateId
+            }
+            const agreementId = testUtils.generateId()
+
+            await agreementStoreManager.createAgreement(
+                agreementId,
+                ...Object.values(agreement),
+                { from: templateId }
+            )
+
+            const otherAgreement = {
+                did: did,
+                conditionTypes,
+                conditionIds,
+                timeLocks: [3, 4],
+                timeOuts: [100, 110],
+                creator: templateId
+            }
+            const otherAgreementId = testUtils.generateId()
+
+            await assert.isRejected(
+                agreementStoreManager.createAgreement(
+                    otherAgreementId,
+                    ...Object.values(otherAgreement),
+                    { from: templateId }
+                ),
+                constants.error.idAlreadyExists
+            )
         })
 
         it('should not create agreement with bad arguments', async () => {
@@ -210,8 +253,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [constants.bytes32.zero, constants.bytes32.one],
                 timeLocks: [0],
-                timeOuts: [2, 3]
-
+                timeOuts: [2, 3],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -234,8 +277,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
-
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -258,8 +301,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [constants.bytes32.zero],
                 timeLocks: [0],
-                timeOuts: [2]
-
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -284,8 +327,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [constants.bytes32.zero],
                 timeLocks: [0],
-                timeOuts: [2]
-
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -307,8 +350,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
-
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -318,18 +361,17 @@ contract('AgreementStoreManager', (accounts) => {
                 { from: templateId }
             )
 
-            /*
             assert.strictEqual(
                 await agreementStoreManager.isAgreementDIDOwner(agreementId, createRole),
                 true
-            ) */
+            )
             const otherAgreement = {
                 did: did,
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [2],
-                timeOuts: [3]
-
+                timeOuts: [3],
+                creator: templateId
             }
 
             await assert.isRejected(
@@ -350,8 +392,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
-
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -360,6 +402,50 @@ contract('AgreementStoreManager', (accounts) => {
                 ...Object.values(agreement),
                 { from: templateId }
             )
+
+            // assert
+            assert.strictEqual(
+                await agreementStoreManager.isAgreementDIDOwner(agreementId, createRole),
+                true
+            )
+
+            assert.strictEqual(
+                await agreementStoreManager.isAgreementDIDOwner(agreementId, common.address),
+                false
+            )
+
+            assert.strictEqual(
+                await agreementStoreManager.isAgreementDIDOwner(constants.bytes32.one, createRole),
+                false
+            )
+
+            assert.strictEqual(
+                await agreementStoreManager.isAgreementDIDOwner(constants.bytes32.one, common.address),
+                false
+            )
+        })
+        it('should able to get the Agreement DID Owner', async () => {
+            const did = await registerNewDID()
+            const agreement = {
+                did: did,
+                conditionTypes: [common.address],
+                conditionIds: [testUtils.generateId()],
+                timeLocks: [0],
+                timeOuts: [2],
+                creator: templateId
+            }
+            const agreementId = testUtils.generateId()
+
+            await agreementStoreManager.createAgreement(
+                agreementId,
+                ...Object.values(agreement),
+                { from: templateId }
+            )
+
+            assert.strictEqual(
+                await agreementStoreManager.getAgreementDIDOwner(agreementId),
+                createRole
+            )
         })
         it('should not create agreement if DID not registered', async () => {
             const agreement = {
@@ -367,8 +453,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [accounts[3]],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
-
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -391,11 +477,11 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [testUtils.generateId(), testUtils.generateId()],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
-
+                timeOuts: [2, 3],
+                creator: templateId
             }
 
-            // const blockNumber = await common.getCurrentBlockNumber()
+            const blockNumber = await common.getCurrentBlockNumber()
             const agreementId = testUtils.generateId()
 
             await agreementStoreManager.createAgreement(
@@ -405,8 +491,19 @@ contract('AgreementStoreManager', (accounts) => {
             )
 
             // TODO - containSubset
-            const storedAgreementTemplateId = await agreementStoreManager.getAgreementTemplate(agreementId)
-            expect(storedAgreementTemplateId).to.equal(templateId)
+            const storedAgreement = await agreementStoreManager.getAgreement(agreementId)
+            expect(storedAgreement.did)
+                .to.equal(agreement.did)
+            expect(storedAgreement.didOwner)
+                .to.equal(accounts[0])
+            expect(storedAgreement.templateId)
+                .to.equal(templateId)
+            expect(storedAgreement.conditionIds)
+                .to.deep.equal(agreement.conditionIds)
+            expect(storedAgreement.lastUpdatedBy)
+                .to.equal(templateId)
+            expect(storedAgreement.blockNumberUpdated.toNumber())
+                .to.equal(blockNumber.toNumber() + 1)
         })
 
         it('should get multiple agreements for same did & template', async () => {
@@ -417,8 +514,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [0],
-                timeOuts: [2]
-
+                timeOuts: [2],
+                creator: templateId
             }
             const agreementId = testUtils.generateId()
 
@@ -433,8 +530,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address],
                 conditionIds: [testUtils.generateId()],
                 timeLocks: [2],
-                timeOuts: [3]
-
+                timeOuts: [3],
+                creator: templateId
             }
             const otherAgreementId = testUtils.generateId()
 
@@ -443,10 +540,17 @@ contract('AgreementStoreManager', (accounts) => {
                 ...Object.values(otherAgreement),
                 { from: templateId }
             )
+
+            assert.lengthOf(
+                await agreementStoreManager.getAgreementIdsForDID(did),
+                2)
+            assert.isAtLeast(
+                (await agreementStoreManager.getAgreementIdsForTemplateId(templateId)).length,
+                2)
         })
     })
 
-    describe.skip('is agreement DID provider', () => {
+    describe('is agreement DID provider', () => {
         it('should return true if agreement DID provider', async () => {
             const did = await registerNewDID()
 
@@ -455,8 +559,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [testUtils.generateId(), testUtils.generateId()],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
-
+                timeOuts: [2, 3],
+                creator: templateId
             }
 
             const agreementId = testUtils.generateId()
@@ -466,6 +570,7 @@ contract('AgreementStoreManager', (accounts) => {
                 ...Object.values(agreement),
                 { from: templateId }
             )
+
             assert.strictEqual(
                 await agreementStoreManager.isAgreementDIDProvider(
                     agreementId,
@@ -483,8 +588,8 @@ contract('AgreementStoreManager', (accounts) => {
                 conditionTypes: [common.address, common.address],
                 conditionIds: [testUtils.generateId(), testUtils.generateId()],
                 timeLocks: [0, 1],
-                timeOuts: [2, 3]
-
+                timeOuts: [2, 3],
+                creator: templateId
             }
 
             const agreementId = testUtils.generateId()

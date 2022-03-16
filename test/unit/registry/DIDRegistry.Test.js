@@ -178,13 +178,12 @@ contract('DIDRegistry', (accounts) => {
                 blockNumber.toNumber() + 1
             )
 
-            /*
             const getDIDRegisterIds = await didRegistry.getDIDRegisterIds()
             assert.isAtLeast(getDIDRegisterIds.length, 1)
             assert.strictEqual(
                 getDIDRegisterIds[getDIDRegisterIds.length - 1],
                 did
-            ) */
+            )
         })
     })
 
