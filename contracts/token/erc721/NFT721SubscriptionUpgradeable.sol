@@ -7,10 +7,10 @@ import '@openzeppelin/contracts-upgradeable/utils/introspection/ERC165StorageUpg
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 contract NFT721SubscriptionUpgradeable is NFT721Upgradeable {
-    
+
     function mint(address to, uint256 id, uint256 expirationBlock) public {
         require(hasRole(MINTER_ROLE, msg.sender), 'only minter can mint');
-        _mint(to, id);
+        _safeMint(to, id);
         _expiration[to] = expirationBlock;
     }
 

@@ -13,7 +13,11 @@ import '../NFTBase.sol';
 contract NFT721Upgradeable is ERC721Upgradeable, NFTBase {
 
     // solhint-disable-next-line
-    function initialize() public initializer {
+    function initialize() 
+    public 
+    virtual 
+    initializer 
+    {
         __Context_init_unchained();
         __ERC165_init_unchained();
         __ERC721_init_unchained('', '');
@@ -25,25 +29,57 @@ contract NFT721Upgradeable is ERC721Upgradeable, NFTBase {
     /**
      * @dev See {IERC1155-isApprovedForAll}.
      */
-    function isApprovedForAll(address account, address operator) public view virtual override returns (bool) {
+    function isApprovedForAll(
+        address account, 
+        address operator
+    ) 
+    public 
+    view 
+    virtual 
+    override 
+    returns (bool) 
+    {
         return super.isApprovedForAll(account, operator) || _proxyApprovals[operator];
     }
     
-    function addMinter(address account) public onlyOwner {
+    function addMinter(
+        address account
+    ) 
+    public 
+    onlyOwner 
+    {
         AccessControlUpgradeable._setupRole(MINTER_ROLE, account);
     }    
     
-    function mint(address to, uint256 id) virtual public {
+    function mint(
+        address to, 
+        uint256 id
+    ) 
+    public 
+    virtual 
+    {
         require(hasRole(MINTER_ROLE, msg.sender), 'only minter can mint');
         _mint(to, id);
     }
 
-    function burn(uint256 id) public {
+    function burn(
+        uint256 id
+    ) 
+    public 
+    {
         require(hasRole(MINTER_ROLE, msg.sender), 'only minter can burn');
         _burn(id);
     }
     
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+    function tokenURI(
+        uint256 tokenId
+    ) 
+    public 
+    virtual 
+    view 
+    override 
+    returns (string memory) 
+    {
         return _metadata[tokenId].nftURI;
     }
 
