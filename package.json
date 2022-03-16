@@ -1,6 +1,6 @@
 {
   "name": "@nevermined-io/contracts",
-  "version": "1.3.7",
+  "version": "1.99.0",
   "description": "Nevermined implementation of Nevermined in Solidity",
   "bugs": {
     "url": "https://github.com/nevermined-io/contracts/issues"
@@ -127,7 +127,8 @@
     "solidity-coverage": "^0.7.16",
     "solidity-docgen": "^0.5.11",
     "web3": "^1.6.0",
-    "yargs": "~15.3.1"
+    "yargs": "~15.3.1",
+    "hardhat-gas-reporter": "^1.0.7"
   },
   "resolutions": {
     "web3-eth-accounts/scrypt.js": "0.3.0"

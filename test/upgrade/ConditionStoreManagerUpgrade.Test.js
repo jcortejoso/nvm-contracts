@@ -133,7 +133,6 @@ contract('ConditionStoreManager', (accounts) => {
                 conditionId,
                 conditionType,
                 conditionCreater,
-                conditionCreater,
                 { from: conditionCreater }
             )
 
@@ -220,7 +219,6 @@ contract('ConditionStoreManager', (accounts) => {
             await ConditionStoreChangeInStorageAndLogicInstance.createCondition(
                 conditionId,
                 conditionType,
-                conditionCreater,
                 conditionCreater,
                 { from: conditionCreater }
             )

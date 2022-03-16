@@ -1,5 +1,5 @@
 pragma solidity ^0.8.0;
-// Copyright 2020 Keyko GmbH.
+// Copyright 2022 Nevermined AG.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -124,7 +124,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
 
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
         .getCondition(_lockPaymentCondition);
 
         require(
@@ -133,12 +133,13 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         );
 
         // Check that nft receiver is the same enabled in the lock payment condition
+        /*
         require(
             conditionStoreManager.bytes32ToAddress(
                 conditionStoreManager.getMappingValue(_lockPaymentCondition, keccak256('_assetReceiverAddress'))
             ) == _nftReceiver,
             'Invalid receiver'
-        );
+        );*/
         
         IERC721Upgradeable token = IERC721Upgradeable(_contract);
         address nftOwner = token.ownerOf(uint256(_did));
@@ -189,7 +190,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
 
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
         .getCondition(_lockPaymentCondition);
 
         require(

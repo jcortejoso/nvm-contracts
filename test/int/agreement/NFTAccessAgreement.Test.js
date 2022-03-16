@@ -91,7 +91,7 @@ contract('NFT Access integration test', (accounts) => {
     }
 
     async function prepareNFTAccessAgreement({
-        agreementId = testUtils.generateId(),
+        initAgreementId = testUtils.generateId(),
         sender = accounts[0],
         receiver = accounts[1],
         nftAmount = 1,
@@ -102,15 +102,15 @@ contract('NFT Access integration test', (accounts) => {
         checksum = constants.bytes32.one
     } = {}) {
         const did = await didRegistry.hashDID(didSeed, sender)
+        const agreementId = await agreementStoreManager.agreementId(initAgreementId, sender)
         // generate IDs from attributes
-        const conditionIdNFT = await nftHolderCondition.generateId(agreementId,
-            await nftHolderCondition.hashValues(did, receiver, nftAmount))
-        const conditionIdAccess = await accessCondition.generateId(agreementId,
-            await accessCondition.hashValues(did, receiver))
+        const conditionIdNFT = await nftHolderCondition.hashValues(did, receiver, nftAmount)
+        const conditionIdAccess = await accessCondition.hashValues(did, receiver)
 
         // construct agreement
         const agreement = {
-            did: did,
+            initAgreementId,
+            did,
             conditionIds: [
                 conditionIdNFT,
                 conditionIdAccess
@@ -120,6 +120,10 @@ contract('NFT Access integration test', (accounts) => {
             consumer: receiver
         }
         return {
+            conditionIds: [
+                await nftHolderCondition.generateId(agreementId, conditionIdNFT),
+                await accessCondition.generateId(agreementId, conditionIdAccess)
+            ],
             agreementId,
             agreement,
             sender,
@@ -139,14 +143,14 @@ contract('NFT Access integration test', (accounts) => {
             await setupTest()
 
             // prepare: nft agreement
-            const { agreementId, didSeed, agreement, sender, receiver, nftAmount, checksum, url } = await prepareNFTAccessAgreement({ timeOutAccess: 10 })
+            const { agreementId, didSeed, agreement, sender, receiver, nftAmount, checksum, url, conditionIds } = await prepareNFTAccessAgreement({ timeOutAccess: 10 })
 
             // register DID
             await didRegistry.registerMintableDID(
                 didSeed, checksum, [], url, 10, 0, constants.activities.GENERATED, '', { from: sender })
 
             // create agreement
-            await nftAccessTemplate.createAgreement(agreementId, ...Object.values(agreement))
+            await nftAccessTemplate.createAgreement(...Object.values(agreement))
 
             // mint and transfer the nft
             await didRegistry.mint(agreement.did, nftAmount, { from: sender })
@@ -156,12 +160,12 @@ contract('NFT Access integration test', (accounts) => {
             // fulfill nft holder condition
             await nftHolderCondition.fulfill(agreementId, agreement.did, receiver, nftAmount)
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[0])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[0])).toNumber(),
                 constants.condition.state.fulfilled)
 
             // No update since access is not fulfilled yet
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[1])).toNumber(),
                 constants.condition.state.unfulfilled
             )
 
@@ -173,7 +177,7 @@ contract('NFT Access integration test', (accounts) => {
                 { from: sender }
             )
             assert.strictEqual(
-                (await conditionStoreManager.getConditionState(agreement.conditionIds[1])).toNumber(),
+                (await conditionStoreManager.getConditionState(conditionIds[1])).toNumber(),
                 constants.condition.state.fulfilled)
 
             const balanceSender = await nft.balanceOf(sender, agreement.did)

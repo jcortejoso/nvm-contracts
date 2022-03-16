@@ -1,5 +1,5 @@
 pragma solidity ^0.8.0;
-// Copyright 2020 Keyko GmbH.
+// Copyright 2022 Nevermined AG.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -176,7 +176,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
 
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
         .getCondition(_lockPaymentCondition);
 
         require(
@@ -240,7 +240,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
 
         address lockConditionTypeRef;
         ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
+        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
         .getCondition(_lockPaymentCondition);
 
         require(
@@ -271,88 +271,6 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
 
         return state;
     }    
-
     
-   /*
-    * @notice fulfill the transfer NFT condition
-    * @dev only DID owner or DID provider can call this
-    *       method. Fulfill method transfer a certain amount of NFTs 
-    *       to the _receiver address. 
-    *       When true then fulfill the condition
-    * @param _agreementId agreement identifier
-    * @param _did refers to the DID in which secret store will issue the decryption keys
-    * @param _nftReceiver is the address of the account to receive the NFT
-    * @param _nftAmount amount of NFTs to transfer  
-    * @param _nftLockCondition lock payment condition identifier
-    * @return condition state (Fulfilled/Aborted)
-    */
-    /*
-    function fulfillWithNFTLock(
-        bytes32 _agreementId,
-        bytes32 _did,
-        address _nftReceiver,
-        uint256 _nftAmount,
-        bytes32 _nftLockCondition
-    )
-        public
-        returns (ConditionStoreLibrary.ConditionState)
-    {
-        
-        bytes32 _id = generateId(
-            _agreementId,
-            hashValues(_did, _nftReceiver, _nftAmount, _nftLockCondition)
-        );
-
-        address lockConditionTypeRef;
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,,,,) = conditionStoreManager
-            .getCondition(_nftLockCondition);
-
-        require(
-            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
-            'LockCondition needs to be Fulfilled'
-        );
-        bytes32 generatedLockConditionId = keccak256(
-            abi.encode(
-                _agreementId,
-                lockConditionTypeRef,
-                keccak256(
-                    abi.encode(
-                        _did,
-                        _nftReceiver,
-                        _nftAmount
-                    )
-                )
-            )
-        );
-        
-        require(
-            generatedLockConditionId == _nftLockCondition,
-            'LockCondition ID does not match'
-        );
-
-        require(
-            registry.balanceOf(lockConditionTypeRef, uint256(_did)) >= _nftAmount,
-            'Not enough balance'
-        );        
-        
-        registry.safeTransferFrom(lockConditionTypeRef, _nftReceiver, uint256(_did), _nftAmount, '');
-
-        ConditionStoreLibrary.ConditionState state = super.fulfill(
-            _id,
-            ConditionStoreLibrary.ConditionState.Fulfilled
-        );
-        
-        emit Fulfilled(
-            _agreementId,
-            _did,
-            _nftReceiver, 
-            _nftAmount,
-            _id
-        );
-
-        return state;
-    }
-*/    
 }
 
