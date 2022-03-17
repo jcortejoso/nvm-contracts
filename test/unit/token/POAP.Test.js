@@ -82,6 +82,11 @@ contract('POAP', (accounts) => {
             assert.strictEqual(tokenIds.length, 2)
             assert.strictEqual(eventIds.length, 2)
 
+            const poaps = eventIds
+                .map(v => new BigNumber(v).toNumber())
+                .filter((v, i, a) => a.indexOf(v) === i)
+
+            assert.strictEqual(poaps.length, 1)
             assert.strictEqual(new BigNumber(tokenIds[0]).toNumber(), 0)
             assert.strictEqual(new BigNumber(tokenIds[1]).toNumber(), 1)
             assert.strictEqual(new BigNumber(eventIds[0]).toNumber(), BigNumber(eventId).toNumber())
