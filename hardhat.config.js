@@ -164,10 +164,10 @@ module.exports = {
         'celo-baklava': {
             url: url || 'https://baklava-forno.celo-testnet.org',
             accounts,
-            chainId: 62320,
+            chainId: 62320
         },
         // celo mainnet
-        'celo': {
+        celo: {
             url: url || 'https://forno.celo.org',
             accounts,
             chainId: 42220,
