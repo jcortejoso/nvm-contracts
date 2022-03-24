@@ -29,6 +29,14 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet }) 
     const { roles, contractNetworks } = await loadWallet({})
 
     for (const c of contracts) {
+        if (c === 'PlonkVerifier') {
+            console.log('Update PlonkVerifier with specific script')
+            continue
+        }
+        if (c === 'AaveCreditVault') {
+            console.log('AaveCreditVault not deployed')
+            continue
+        }
         const afact = readArtifact(c)
         const C = await ethers.getContractFactory(table[c] || c, { libraries: afact.libraries })
         if (verbose) {

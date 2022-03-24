@@ -166,12 +166,6 @@ library DIDRegistryLibrary {
     view
     returns (bool)
     {
-        // If (did.creator == did.owner) - It means the DID is still a first sale so no royalties needed
-        // returns true;
-        if (_self.didRegisters[_did].owner == _self.didRegisters[_did].creator) {
-            return true;
-        }
-        
         // If there are no royalties everything is good
         if (_self.didRegisters[_did].royalties == 0) {
             return true;
@@ -195,10 +189,12 @@ library DIDRegistryLibrary {
                 break;
             }
         }
-        
-        if (!found) // The creator royalties are not part of the rewards
+
+        // The creator royalties are not part of the rewards
+        if (!found) {
             return false;
-        
+        }
+
         // If the amount to receive by the creator is lower than royalties the calculation is not valid
         // return false;
         uint256 _requiredRoyalties = ((_totalAmount.mul(_self.didRegisters[_did].royalties)) / 100);

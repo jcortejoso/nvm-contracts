@@ -110,7 +110,7 @@ contract NFT721LockCondition is Condition, INFTLock, ReentrancyGuardUpgradeable,
 
         require(
             _amount == 0 || (_amount == 1 && erc721.ownerOf(uint256(_did)) == msg.sender),
-            'Not enough balance'
+            'Sender does not have enough balance or is not the NFT owner.'
         );
 
         if (_amount == 1) {

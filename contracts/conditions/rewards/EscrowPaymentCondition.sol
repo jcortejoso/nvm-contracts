@@ -8,6 +8,7 @@ import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
+import '../../interfaces/IDynamicPricing.sol';
 
 /**
  * @title Escrow Payment Condition
@@ -24,6 +25,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     bytes32 constant public CONDITION_TYPE = keccak256('EscrowPayment');
+    bytes32 constant public USED_PAYMENT_ID = keccak256('UsedPayment');
 
     event Fulfilled(
         bytes32 indexed _agreementId,
@@ -217,6 +219,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
 
         require(someAborted || allFulfilled, 'Release conditions unresolved');
 
+        require(conditionStoreManager.getMappingValue(_lockCondition, USED_PAYMENT_ID) == 0, 'Lock condition already used');
         bytes32 id = generateId(
             _agreementId,
             hashValuesMulti(
@@ -232,6 +235,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         
         ConditionStoreLibrary.ConditionState state;
         if (allFulfilled) {
+            conditionStoreManager.updateConditionMappingProxy(_lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
             if (_tokenAddress != address(0))
                 state = _transferAndFulfillERC20(id, _tokenAddress, _receivers, _amounts);
             else
@@ -240,7 +244,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             emit Fulfilled(_agreementId, _tokenAddress, _receivers, id, _amounts);
 
         } else if (someAborted) {
-            
+            conditionStoreManager.updateConditionMappingProxy(_lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
             uint256[] memory _totalAmounts = new uint256[](1);
             _totalAmounts[0] = calculateTotalAmount(_amounts);
             address[] memory _originalSender = new address[](1);
@@ -275,7 +279,8 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         _releaseConditions[0] = _releaseCondition;
         return fulfillMulti(_agreementId, _did, _amounts, _receivers, _lockPaymentAddress, _tokenAddress, _lockCondition, _releaseConditions);
     }
-
+    
+    
     /**
     * @notice _transferAndFulfill transfer ERC20 tokens and 
     *       fulfill the condition

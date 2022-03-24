@@ -117,7 +117,7 @@ contract('LockPaymentCondition', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
 
             const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
             const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
@@ -182,7 +182,7 @@ contract('LockPaymentCondition', (accounts) => {
 
             // register DID
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amounts[0], 10, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
 
             const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, constants.address.zero, amounts, receivers)
             const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
@@ -252,7 +252,7 @@ contract('LockPaymentCondition', (accounts) => {
             const receivers = [accounts[1]]
 
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
 
             await token.mint(sender, 10, { from: owner })
             await token.approve(lockPaymentCondition.address, 10, { from: sender })
@@ -274,7 +274,7 @@ contract('LockPaymentCondition', (accounts) => {
             const receivers = [accounts[1]]
 
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
 
             await token.mint(sender, 5, { from: owner })
             await token.approve(lockPaymentCondition.address, 5, { from: sender })
@@ -303,7 +303,7 @@ contract('LockPaymentCondition', (accounts) => {
             const receivers = [accounts[1]]
 
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
 
             await token.mint(sender, 500, { from: owner })
             await token.approve(lockPaymentCondition.address, 500, { from: sender })
@@ -332,7 +332,7 @@ contract('LockPaymentCondition', (accounts) => {
             const receivers = [accounts[1]]
 
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
 
             await token.mint(sender, 10, { from: owner })
             await token.approve(lockPaymentCondition.address, 10, { from: sender })
@@ -375,7 +375,7 @@ contract('LockPaymentCondition', (accounts) => {
             const receivers = [accounts[1]]
 
             await didRegistry.registerMintableDID(
-                didSeed, checksum, [], url, amounts[0], 20, constants.activities.GENERATED, '')
+                didSeed, checksum, [], url, amounts[0], 0, constants.activities.GENERATED, '')
 
             const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
             const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
@@ -424,7 +424,7 @@ contract('LockPaymentCondition', (accounts) => {
 
             await assert.isRejected(
                 lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers),
-                undefined
+                /Royalties are not satisfied/
             )
         })
 
