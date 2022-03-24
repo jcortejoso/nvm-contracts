@@ -154,7 +154,7 @@ module.exports = {
             chainId: 62320,
         },
         // celo mainnet
-        'celo-mainnet': {
+        'celo': {
             url: url || 'https://forno.celo.org',
             accounts,
             chainId: 42220,
