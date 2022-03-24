@@ -130,7 +130,7 @@ contract AaveRepayCondition is Condition, Common {
             token.transferFrom(msg.sender, _vaultAddress, totalDebt);
             vault.repay(_assetToRepay, _interestRateMode, _id);
         } else if (state == ConditionStoreLibrary.ConditionState.Aborted)    {
-            vault.setLockConditionId(_id);
+            vault.setRepayConditionId(_id);
         }
         return state;
     }

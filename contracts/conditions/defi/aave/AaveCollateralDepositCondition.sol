@@ -127,7 +127,11 @@ contract AaveCollateralDepositCondition is Condition, Common, ReentrancyGuardUpg
         //Deposits the collateral in the Aave Lending pool contract
 
         AaveCreditVault vault = AaveCreditVault(_vaultAddress);
-
+        require(
+            vault.nftId() == uint256(_did),
+            'The nft token locked in the vault does not match this did.'
+        );
+    
         if (msg.value == 0) {
             IERC20Upgradeable token = ERC20Upgradeable(_collateralAsset);
             token.transferFrom(
