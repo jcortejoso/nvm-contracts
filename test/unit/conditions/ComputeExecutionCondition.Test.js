@@ -137,10 +137,10 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             const agreement = {
                 did: did,
                 conditionTypes: [computeExecutionCondition.address],
-                conditionIds: [hashValues],
+                conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2]
-
+                timeOuts: [2],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(
@@ -182,14 +182,15 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
 
             const hashValues = await computeExecutionCondition.hashValues(did, computeConsumer)
+            const conditionId = await computeExecutionCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: did,
                 conditionTypes: [computeExecutionCondition.address],
-                conditionIds: [hashValues],
+                conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2]
-
+                timeOuts: [2],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(
@@ -221,14 +222,15 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
 
             const hashValues = await computeExecutionCondition.hashValues(did, computeConsumer)
+            const conditionId = await computeExecutionCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: did,
                 conditionTypes: [computeExecutionCondition.address],
-                conditionIds: [hashValues],
+                conditionIds: [conditionId],
                 timeLocks: [0],
-                timeOuts: [2]
-
+                timeOuts: [2],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(
@@ -265,14 +267,15 @@ contract('ComputeExecutionCondition constructor', (accounts) => {
             await templateStoreManager.approveTemplate(templateId)
 
             const hashValues = await computeExecutionCondition.hashValues(did, computeConsumer)
+            const conditionId = await computeExecutionCondition.generateId(agreementId, hashValues)
 
             const agreement = {
                 did: did,
                 conditionTypes: [computeExecutionCondition.address],
-                conditionIds: [hashValues],
+                conditionIds: [conditionId],
                 timeLocks: [timeLock],
-                timeOuts: [timeOut]
-
+                timeOuts: [timeOut],
+                creator: templateId
             }
 
             await agreementStoreManager.createAgreement(

@@ -19,7 +19,7 @@ IFS=$'\n\t'
 for file in contracts/**/*.sol
 do
     echo -e "Adding headers to $file"
-    sed -i '2s;^;// Copyright 2022 Nevermined AG.\
+    sed -i '2s;^;// Copyright 2020 Keyko GmbH.\
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol\
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)\
 // Code is Apache-2.0 and docs are CC-BY-4.0\

@@ -157,54 +157,6 @@ async function setupContracts({
         await setupTemplate({
             verbose,
             TemplateStoreManagerInstance,
-            templateName: 'NFTSalesWithAccessTemplate',
-            addressBook,
-            roles
-        })
-
-        await setupTemplate({
-            verbose,
-            TemplateStoreManagerInstance,
-            templateName: 'NFTAccessProofTemplate',
-            addressBook,
-            roles
-        })
-
-        await setupTemplate({
-            verbose,
-            TemplateStoreManagerInstance,
-            templateName: 'NFTAccessSwapTemplate',
-            addressBook,
-            roles
-        })
-
-        await setupTemplate({
-            verbose,
-            TemplateStoreManagerInstance,
-            templateName: 'NFT721SalesWithAccessTemplate',
-            addressBook,
-            roles
-        })
-
-        await setupTemplate({
-            verbose,
-            TemplateStoreManagerInstance,
-            templateName: 'NFT721AccessProofTemplate',
-            addressBook,
-            roles
-        })
-
-        await setupTemplate({
-            verbose,
-            TemplateStoreManagerInstance,
-            templateName: 'NFT721AccessSwapTemplate',
-            addressBook,
-            roles
-        })
-
-        await setupTemplate({
-            verbose,
-            TemplateStoreManagerInstance,
             templateName: 'NFT721SalesTemplate',
             addressBook,
             roles
@@ -307,7 +259,7 @@ async function setupContracts({
             'AccessTemplate',
             'DIDSalesTemplate',
             'DynamicAccessTemplate',
-            'EscrowComputeTemplate'
+            'EscrowComputeExecutionTemplate'
         ]
         for (const a of agreements) {
             if (addressBook[a] && addressBook.AgreementStoreManager) {

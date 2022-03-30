@@ -4,7 +4,6 @@
 require('@openzeppelin/hardhat-upgrades')
 require('@nomiclabs/hardhat-truffle5')
 require('hardhat-dependency-compiler')
-require('hardhat-gas-reporter')
 const utils = require('web3-utils')
 
 const MNEMONIC = process.env.MNEMONIC || 'taxi music thumb unique chat sand crew more leg another off lamp'
@@ -165,8 +164,14 @@ module.exports = {
         'celo-baklava': {
             url: url || 'https://baklava-forno.celo-testnet.org',
             accounts,
-            chainId: 62320,
-            from: '0x4747eAb1698a5c72DC3fD07A3074B2E1795D7294'
+            chainId: 62320
+        },
+        // celo mainnet
+        celo: {
+            url: url || 'https://forno.celo.org',
+            accounts,
+            chainId: 42220,
+            from: '0xBb0EB77DC8967D61d82B059C7bDB9974425494C1'
         },
         // Polygon Networks: https://docs.matic.network/docs/develop/network-details/network/
         // Polygon: mumbai testnet

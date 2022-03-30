@@ -1,5 +1,5 @@
 pragma solidity ^0.8.0;
-// Copyright 2022 Nevermined AG.
+// Copyright 2020 Keyko GmbH.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -31,11 +31,9 @@ abstract contract NFTBase is IERC2981Upgradeable, OwnableUpgradeable, AccessCont
     
     // Mapping of Royalties per tokenId (DID)
     mapping(uint256 => RoyaltyInfo) internal _royalties;
-    // Mapping of NFT Metadata object per tokenId (DID)
+
     mapping(uint256 => NFTMetadata) internal _metadata;
-    // Mapping of expiration block number per user (subscription NFT holder)
-    mapping(address => uint256) internal _expiration;
-    
+
     /** 
      * Event for recording proxy approvals.
      */
