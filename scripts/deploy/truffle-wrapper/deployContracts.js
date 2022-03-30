@@ -62,6 +62,9 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
     if (cache.PlonkVerifier) {
         addressBook.PlonkVerifier = proxies.PlonkVerifier
     }
+    if (cache.AaveCreditVault) {
+        addressBook.AaveCreditVault = proxies.AaveCreditVault
+    }
     const libraries = {
         DIDRegistry: { DIDRegistryLibrary: didRegistryLibraryAddress },
         ConditionStoreManager: { EpochLibrary: epochLibraryAddress }

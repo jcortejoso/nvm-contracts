@@ -1,5 +1,5 @@
 pragma solidity ^0.8.0;
-// Copyright 2020 Keyko GmbH.
+// Copyright 2022 Nevermined AG.
 // This product includes software developed at BigchainDB GmbH and Ocean Protocol
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
@@ -180,21 +180,32 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
      *      Uninitialized to Unfulfilled.
      * @param _id unique condition identifier
      * @param _typeRef condition contract address
-     * @return size the index of the created condition 
      */
     function createCondition(
         bytes32 _id,
         address _typeRef
     )
     external
-    returns (uint size)
     {
-        return createCondition(
+        createCondition(
             _id,
             _typeRef,
             uint(0),
+            uint(0)
+        );
+    }
+    
+    function createCondition2(
+        bytes32 _id,
+        address _typeRef
+    )
+    external
+    {
+        createCondition(
+            _id,
+            _typeRef,
             uint(0),
-            msg.sender
+            uint(0)
         );
     }
     
@@ -206,62 +217,28 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
      *      Uninitialized to Unfulfilled.
      * @param _id unique condition identifier
      * @param _typeRef condition contract address
-     * @param _creator address of the condition creator    
-     * @return size the index of the created condition 
-     */
-    function createCondition(
-        bytes32 _id,
-        address _typeRef,
-        address _creator
-    )
-        external
-        returns (uint size)
-    {
-        return createCondition(
-            _id,
-            _typeRef,
-            uint(0),
-            uint(0),
-            _creator
-        );
-    }
-
-    /**
-     * @dev createCondition only called by create role address 
-     *      the condition should use a valid condition contract 
-     *      address, valid time lock and timeout. Moreover, it 
-     *      enforce the condition state transition from 
-     *      Uninitialized to Unfulfilled.
-     * @param _id unique condition identifier
-     * @param _typeRef condition contract address
      * @param _timeLock start of the time window
      * @param _timeOut end of the time window
-     * @param _creator address of the condition creator     
-     * @return size the index of the created condition 
      */
     function createCondition(
         bytes32 _id,
         address _typeRef,
         uint _timeLock,
-        uint _timeOut,
-        address _creator
+        uint _timeOut
     )
         public
         onlyCreateRole
         onlyValidType(_typeRef)
-        returns (uint size)
     {
         epochList.create(_id, _timeLock, _timeOut);
 
-        uint listSize = conditionList.create(_id, _typeRef, _creator);
+        conditionList.create(_id, _typeRef);
 
         emit ConditionCreated(
             _id,
             _typeRef,
             msg.sender
         );
-
-        return listSize;
     }
 
     /**
@@ -335,27 +312,12 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
     }
     
     /**
-     * @dev getConditionListSize 
-     * @return size the length of the condition list 
-     */
-    function getConditionListSize()
-        external
-        view
-        returns (uint size)
-    {
-        return conditionList.conditionIds.length;
-    }
-
-    /**
      * @dev getCondition  
      * @return typeRef the type reference
      * @return state condition state
      * @return timeLock the time lock
      * @return timeOut time out
      * @return blockNumber block number
-     * @return createdBy address
-     * @return lastUpdatedBy address
-     * @return blockNumberUpdated block number updated
      */
     function getCondition(bytes32 _id)
         external
@@ -365,10 +327,7 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
             ConditionStoreLibrary.ConditionState state,
             uint timeLock,
             uint timeOut,
-            uint blockNumber,
-            address createdBy,
-            address lastUpdatedBy,
-            uint blockNumberUpdated
+            uint blockNumber
         )
     {
         typeRef = conditionList.conditions[_id].typeRef;
@@ -376,9 +335,6 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
         timeLock = epochList.epochs[_id].timeLock;
         timeOut = epochList.epochs[_id].timeOut;
         blockNumber = epochList.epochs[_id].blockNumber;
-        createdBy = conditionList.conditions[_id].createdBy;
-        lastUpdatedBy = conditionList.conditions[_id].lastUpdatedBy;
-        blockNumberUpdated = conditionList.conditions[_id].blockNumberUpdated;
     }
 
     /**
@@ -406,19 +362,6 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
     {
         return conditionList.conditions[_id].typeRef;
     }    
-
-    /**
-     * @dev getConditionCreatedBy  
-     * @return condition createdBy address
-     */
-    function getConditionCreatedBy(bytes32 _id)
-    external
-    view
-    virtual
-    returns (address)
-    {
-        return conditionList.conditions[_id].createdBy;
-    }
 
     /**
      * @dev getConditionState  

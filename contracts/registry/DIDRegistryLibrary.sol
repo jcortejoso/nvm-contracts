@@ -1,5 +1,5 @@
 pragma solidity ^0.8.0;
-// Copyright 2020 Keyko GmbH.
+// Copyright 2022 Nevermined AG.
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -48,7 +48,7 @@ library DIDRegistryLibrary {
     // List of DID's registered in the system
     struct DIDRegisterList {
         mapping(bytes32 => DIDRegister) didRegisters;
-        bytes32[] didRegisterIds;
+        bytes32[] didRegisterIds; // UNUSED
     }
 
     /**
@@ -66,34 +66,23 @@ library DIDRegistryLibrary {
         string calldata _url
     )
     external
-    returns (uint size)
     {
         address didOwner = _self.didRegisters[_did].owner;
         address creator = _self.didRegisters[_did].creator;
         
         if (didOwner == address(0)) {
             didOwner = msg.sender;
-            _self.didRegisterIds.push(_did);
+            // _self.didRegisterIds.push(_did);
             creator = didOwner;
         }
 
-        _self.didRegisters[_did] = DIDRegister({
-            owner: didOwner,
-            creator: creator,
-            lastChecksum: _checksum,
-            url: _url,
-            lastUpdatedBy: msg.sender,
-            blockNumberUpdated: block.number,
-            providers: new address[](0),
-            delegates: new address[](0),
-            nftSupply: 0,
-            mintCap: 0,
-            royalties: 0,
-            nftInitialized: false,
-            nft721Initialized: false
-        });
-
-        return _self.didRegisterIds.length;
+        _self.didRegisters[_did].owner = didOwner;
+        _self.didRegisters[_did].creator = creator;
+        _self.didRegisters[_did].lastChecksum = _checksum;
+        _self.didRegisters[_did].url = _url;
+        _self.didRegisters[_did].lastUpdatedBy = msg.sender;
+        _self.didRegisters[_did].owner = didOwner;
+        _self.didRegisters[_did].blockNumberUpdated = block.number;
     }
 
     /**

@@ -2699,7 +2699,7 @@ array-union@^2.1.0:
   resolved "https://registry.yarnpkg.com/array-union/-/array-union-2.1.0.tgz#b798420adbeb1de828d84acd8a2e23d3efe85e8d"
   integrity sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==
 
-array-uniq@^1.0.3:
+array-uniq@1.0.3, array-uniq@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/array-uniq/-/array-uniq-1.0.3.tgz#af6ac877a25cc7f74e058894753858dfdb24fdb6"
   integrity sha1-r2rId6Jcx/dOBYiUdThY39sk/bY=
@@ -5456,7 +5456,7 @@ eth-ens-namehash@2.0.8, eth-ens-namehash@^2.0.0:
     idna-uts46-hx "^2.3.1"
     js-sha3 "^0.5.7"
 
-eth-gas-reporter@^0.2.22:
+eth-gas-reporter@^0.2.22, eth-gas-reporter@^0.2.24:
   version "0.2.24"
   resolved "https://registry.yarnpkg.com/eth-gas-reporter/-/eth-gas-reporter-0.2.24.tgz#768721fec7de02b566e4ebfd123466d275d7035c"
   integrity sha512-RbXLC2bnuPHzIMU/rnLXXlb6oiHEEKu7rq2UrAX/0mfo0Lzrr/kb9QTjWjfz8eNvc+uu6J8AuBwI++b+MLNI2w==
@@ -6923,6 +6923,15 @@ hardhat-dependency-compiler@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/hardhat-dependency-compiler/-/hardhat-dependency-compiler-1.1.2.tgz#02867b7c6dd3de4924d9d3d6593feab8408f1eeb"
   integrity sha512-LVnsPSZnGvzWVvlpewlkPKlPtFP/S9V41RC1fd/ygZc4jkG8ubNlfE82nwiGw5oPueHSmFi6TACgmyrEOokK8w==
+
+hardhat-gas-reporter@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/hardhat-gas-reporter/-/hardhat-gas-reporter-1.0.7.tgz#b0e06a4f5a4da2369354991b6fa32ff002170573"
+  integrity sha512-calJH1rbhUFwCnw0odJb3Cw+mDmBIsHdVyutsHhA3RY6JELyFVaVxCnITYGr/crkmHqt4tQCYROy7ty6DTLkuA==
+  dependencies:
+    array-uniq "1.0.3"
+    eth-gas-reporter "^0.2.24"
+    sha1 "^1.1.1"
 
 hardhat@^2.8.3:
   version "2.8.3"
