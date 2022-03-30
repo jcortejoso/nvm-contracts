@@ -9,7 +9,7 @@ import '../registry/DIDRegistry.sol';
 
 /**
  * @title Transfer DID Ownership Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of condition allowing to transfer the ownership
  *      between the original owner and a receiver

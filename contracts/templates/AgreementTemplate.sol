@@ -11,7 +11,7 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title Agreement Template
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of Agreement Template
  *

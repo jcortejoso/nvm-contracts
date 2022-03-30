@@ -11,7 +11,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
  * @title Aave Borrow Credit Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Aave Borrow Credit Condition
  */

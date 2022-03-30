@@ -10,7 +10,7 @@ import './NeverminedToken.sol';
 
 /**
  * @title Ocean Protocol Dispenser Contract
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  */
 contract Dispenser is OwnableUpgradeable {
 

@@ -18,7 +18,7 @@ import '../conditions/defi/aave/AaveCreditVault.sol';
 
 /**
  * @title Aaven Credit Agreement Template
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Aaven Credit Agreement Template
  *  0. Initialize the agreement

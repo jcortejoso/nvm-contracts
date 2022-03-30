@@ -9,7 +9,7 @@ import './ConditionStoreManager.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 /**
  * @title Condition
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of the Condition
  *

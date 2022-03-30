@@ -7,7 +7,7 @@ pragma solidity ^0.8.0;
 
 /**
  * @title Template Store Library
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of the Template Store Library.
  *      

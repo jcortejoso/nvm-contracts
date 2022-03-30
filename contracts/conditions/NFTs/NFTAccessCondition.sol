@@ -9,7 +9,7 @@ import './INFTAccess.sol';
 
 /**
  * @title NFT Access Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Access Condition specific for NFTs
  *

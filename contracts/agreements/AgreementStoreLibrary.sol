@@ -7,7 +7,7 @@ pragma solidity ^0.8.0;
 
 /**
  * @title Agreement Store Library
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of the Agreement Store Library.
  *      For more information: https://github.com/oceanprotocol/OEPs/issues/125    

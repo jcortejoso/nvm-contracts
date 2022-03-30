@@ -32,7 +32,7 @@ ENV KEEPER_RPC_PORT=8545
 RUN /nevermined-contracts/scripts/keeper_deploy_geth_dockerfile.sh
 
 FROM ethereum/client-go:latest
-LABEL maintainer="Keyko <root@keyko.io>"
+LABEL maintainer="Nevermined <root@nevermined.io>"
 
 COPY scripts/keeper_entrypoint_geth.sh /
 COPY --from=deploy /artifacts /artifacts

@@ -9,7 +9,7 @@ import '@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol';
 
 /**
  * @title Epoch Library
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of Epoch Library.
  *      For an arbitrary Epoch, this library manages the life

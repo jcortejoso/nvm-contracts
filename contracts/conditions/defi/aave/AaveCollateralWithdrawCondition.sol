@@ -13,7 +13,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
  * @title Aave Collateral Withdraw Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Collateral Withdraw Condition
  * This condition allows to credit delegator withdraw the collateral and fees

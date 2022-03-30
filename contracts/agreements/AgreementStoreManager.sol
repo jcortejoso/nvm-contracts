@@ -20,7 +20,7 @@ interface Template {
 
 /**
  * @title Agreement Store Manager
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of the Agreement Store.
  *

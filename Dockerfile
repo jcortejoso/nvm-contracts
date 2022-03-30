@@ -1,5 +1,5 @@
 FROM node:14-alpine
-LABEL maintainer="Keyko <root@keyko.io>"
+LABEL maintainer="Nevermined <root@nevermined.io>"
 
 RUN apk add --no-cache --update\
       bash\

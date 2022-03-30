@@ -12,7 +12,7 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol';
 /**
  * @title Escrow Payment Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Escrow Payment Condition
  *

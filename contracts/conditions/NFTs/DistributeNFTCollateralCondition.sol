@@ -11,7 +11,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol'
 
 /**
  * @title Distribute NFT Collateral Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of a condition allowing to transfer a NFT
  *      to an account or another depending on the final state of a lock condition

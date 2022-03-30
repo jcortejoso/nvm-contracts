@@ -10,7 +10,7 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title HashLists contract
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  * @dev Hash lists contract is a sample list contract in which uses 
  *      HashListLibrary.sol in order to store, retrieve, remove, and 
  *      update bytes32 values in hash lists.

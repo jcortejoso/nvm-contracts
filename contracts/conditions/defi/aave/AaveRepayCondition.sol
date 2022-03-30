@@ -12,7 +12,7 @@ import '@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol';
 
 /**
  * @title Lock Payment Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Aave Repay Condition
  * This condition allows to a borrower to repay a credit as part of a credit template

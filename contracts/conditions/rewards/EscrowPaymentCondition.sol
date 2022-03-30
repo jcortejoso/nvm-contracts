@@ -12,7 +12,7 @@ import '../../interfaces/IDynamicPricing.sol';
 
 /**
  * @title Escrow Payment Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Escrow Payment Condition
  *

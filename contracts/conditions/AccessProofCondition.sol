@@ -16,7 +16,7 @@ interface IDisputeManager {
 
 /**
  * @title Access Condition with transfer proof
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Access Condition with transfer proof.
  * The idea is that the hash of the decryption key is known before hand, and the key matching this hash

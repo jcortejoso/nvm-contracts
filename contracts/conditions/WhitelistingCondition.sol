@@ -11,7 +11,7 @@ import './ConditionStoreLibrary.sol';
 import '../interfaces/IList.sol';
 /**
  * @title Whitelisting Condition
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of the Whitelisting Condition
  */

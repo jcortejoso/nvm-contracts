@@ -7,7 +7,7 @@ import '@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol';
 
 /**
  * @title DID Registry Library
- * @author Keyko
+ * @author Nevermined
  *
  * @dev All function calls are currently implemented without side effects
  */

@@ -11,7 +11,7 @@ import '../conditions/Condition.sol';
 
 /**
  * @title Dynamic Access Template
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of Agreement Template
  * This is a dynamic template that allows to setup flexible conditions depending 

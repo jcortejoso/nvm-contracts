@@ -12,7 +12,7 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 
 /**
  * @title Test Token Contract
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of a Test Token.
  *      Test Token is an ERC20 token only for testing purposes

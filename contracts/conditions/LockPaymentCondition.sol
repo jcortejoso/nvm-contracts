@@ -15,7 +15,7 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 
 /**
  * @title Lock Payment Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Lock Payment Condition
  * This condition allows to lock payment for multiple receivers taking

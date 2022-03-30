@@ -10,7 +10,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
  * @title Reward
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Reward.
  *

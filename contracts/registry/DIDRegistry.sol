@@ -10,7 +10,7 @@ import '../token/erc721/NFT721Upgradeable.sol';
 
 /**
  * @title Mintable DID Registry
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of a Mintable DID Registry.
  */

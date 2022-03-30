@@ -10,7 +10,7 @@ import './ConditionStoreLibrary.sol';
 import '@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol';
 /**
  * @title Sign Condition
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of the Sign Condition
  */

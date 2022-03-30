@@ -12,7 +12,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradea
 
 /**
  * @title NFT (ERC-721) Lock Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the NFT Lock Condition for ERC-721 based NFTs 
  */

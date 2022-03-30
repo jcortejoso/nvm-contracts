@@ -9,7 +9,7 @@ import './Condition.sol';
 
 /**
  * @title Threshold Condition
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of the Threshold Condition
  *

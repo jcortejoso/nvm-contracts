@@ -11,7 +11,7 @@ import '../agreements/AgreementStoreManager.sol';
 
 /**
  * @title Compute Execution Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Compute Execution Condition
  *      This condition is meant to be a signal in which triggers

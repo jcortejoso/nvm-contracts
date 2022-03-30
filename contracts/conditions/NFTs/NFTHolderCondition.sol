@@ -11,7 +11,7 @@ import './INFTHolder.sol';
 /**
  * @title Nft Holder Condition
  * Allows to fulfill a condition to users holding some amount of NFTs for a specific DID
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Nft Holder Condition
  */

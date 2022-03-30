@@ -12,7 +12,7 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 
 /**
  * @title NFT Lock Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the NFT Lock Condition
  */

@@ -11,7 +11,7 @@ import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 
 /**
  * @title NFT Escrow Payment Interface
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Common interface for ERC-721 and ERC-1155
  *

@@ -12,7 +12,7 @@ import '../agreements/AgreementStoreManager.sol';
 
 /**
  * @title Access Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Access Condition
  *

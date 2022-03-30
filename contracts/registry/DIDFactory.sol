@@ -10,7 +10,7 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title DID Factory
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the DID Registry.
  */

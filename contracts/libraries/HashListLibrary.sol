@@ -9,7 +9,7 @@ import '@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol';
 
 /**
  * @title Hash List library
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  * @dev Implementation of the basic functionality of list of hash values.
  * This library allows other contracts to build and maintain lists
  * and also preserves the privacy of the data by accepting only hashed 

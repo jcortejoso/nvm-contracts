@@ -39,7 +39,7 @@ ENV KEEPER_RPC_PORT=8545
 RUN  /nevermined-contracts/scripts/keeper_deploy_dockerfile.sh
 
 FROM openethereum/openethereum:v3.3.2
-LABEL maintainer="Keyko <root@keyko.io>"
+LABEL maintainer="Nevermined <root@nevermined.io>"
 
 COPY scripts/keeper_entrypoint_nodeploy.sh /
 

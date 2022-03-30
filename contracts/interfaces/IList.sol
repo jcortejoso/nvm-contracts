@@ -7,7 +7,7 @@ pragma solidity ^0.8.0;
 
 /**
  * @title List Interface
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  */
 interface IList {
     

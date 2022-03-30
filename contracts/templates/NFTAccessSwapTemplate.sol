@@ -13,7 +13,7 @@ import '../conditions/AccessProofCondition.sol';
 
 /**
  * @title Agreement Template
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of NFT Sales Template
  *

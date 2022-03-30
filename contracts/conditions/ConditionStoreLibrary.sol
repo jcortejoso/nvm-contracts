@@ -7,7 +7,7 @@ pragma solidity ^0.8.0;
 
 /**
  * @title Condition Store Library
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of the Condition Store Library.
  *      

@@ -11,7 +11,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol'
 
 /**
  * @title Transfer NFT Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of condition allowing to transfer an NFT
  *      between the original owner and a receiver

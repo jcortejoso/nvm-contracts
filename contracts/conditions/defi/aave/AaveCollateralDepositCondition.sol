@@ -14,7 +14,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 
 /**
  * @title Aave Collateral Deposit Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Aave Collateral Deposit Condition
  * This condition allows a Lender to deposit the collateral that 

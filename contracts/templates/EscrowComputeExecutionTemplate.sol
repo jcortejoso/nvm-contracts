@@ -12,7 +12,7 @@ import '../conditions/ComputeExecutionCondition.sol';
 
 /**
  * @title Escrow Compute Template
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of a Compute Execution Agreement Template
  *

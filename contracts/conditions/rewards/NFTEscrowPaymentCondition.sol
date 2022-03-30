@@ -13,7 +13,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgrad
 import 'hardhat/console.sol';
 /**
  * @title Escrow Payment Condition
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of the Escrow Payment Condition
  *

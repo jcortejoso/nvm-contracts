@@ -8,7 +8,7 @@ import '@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol';
 
 /**
  * @title Common functions
- * @author Keyko
+ * @author Nevermined
  */
 contract Common {
 

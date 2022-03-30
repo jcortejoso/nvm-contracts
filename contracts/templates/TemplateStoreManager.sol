@@ -10,7 +10,7 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title Template Store Manager
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of the Template Store Manager.
  *      Templates are blueprints for modular SEAs. When creating an Agreement, 

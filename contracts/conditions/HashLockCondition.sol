@@ -9,7 +9,7 @@ import './Condition.sol';
 
 /**
  * @title Hash Lock Condition
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  *
  * @dev Implementation of the Hash Lock Condition
  */

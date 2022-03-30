@@ -7,7 +7,7 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 
 /**
  * @title Provenance Registry Library
- * @author Keyko
+ * @author Nevermined
  *
  * @dev All function calls are currently implemented without side effects
  */

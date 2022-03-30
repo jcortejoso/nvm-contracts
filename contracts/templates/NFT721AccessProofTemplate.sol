@@ -8,7 +8,7 @@ import './NFTAccessProofTemplate.sol';
 
 /**
  * @title Agreement Template
- * @author Keyko
+ * @author Nevermined
  *
  * @dev Implementation of NFT721 Access Proof Template
  */

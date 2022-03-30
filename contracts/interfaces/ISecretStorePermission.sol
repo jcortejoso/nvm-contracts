@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
 
 /**
  * @title Parity Secret Store Permission Interface
- * @author Keyko & Ocean Protocol
+ * @author Nevermined
  */
 interface ISecretStorePermission {
 
