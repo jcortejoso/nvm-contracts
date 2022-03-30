@@ -767,7 +767,7 @@ async function initializeContracts({
     }
 
     if (getAddress('AgreementStoreManager') &&
-        getAddress('NFTLockCondition') &&
+        getAddress('NFT721LockCondition') &&
         getAddress('AaveCollateralDepositCondition') &&
         getAddress('AaveBorrowCondition') &&
         getAddress('AaveRepayCondition') &&
@@ -780,7 +780,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('AgreementStoreManager'),
-                    getAddress('NFTLockCondition'),
+                    getAddress('NFT721LockCondition'),
                     getAddress('AaveCollateralDepositCondition'),
                     getAddress('AaveBorrowCondition'),
                     getAddress('AaveRepayCondition'),
