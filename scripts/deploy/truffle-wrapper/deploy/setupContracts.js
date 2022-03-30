@@ -307,7 +307,7 @@ async function setupContracts({
             'AccessTemplate',
             'DIDSalesTemplate',
             'DynamicAccessTemplate',
-            'EscrowComputeTemplate'
+            'EscrowComputeExecutionTemplate'
         ]
         for (const a of agreements) {
             if (addressBook[a] && addressBook.AgreementStoreManager) {
