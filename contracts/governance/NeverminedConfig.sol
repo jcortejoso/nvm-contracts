@@ -3,11 +3,13 @@ pragma solidity ^0.8.0;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "./ConfigStorageV1.sol";
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import './ConfigStorageV1.sol';
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 contract NeverminedConfig is 
-    Initializable, 
+    Initializable,
+    AccessControlUpgradeable,
     OwnableUpgradeable, 
     ConfigStorageV1 
 {
@@ -18,14 +20,18 @@ contract NeverminedConfig is
      * @param _feeReceiver The address receiving the fees
      */    
     function initialize(
-        uint8 _marketplaceFee, 
-        address _feeReceiver
+        address _owner,
+        address _governor
     )
     public
     override
     initializer
     {
         __Ownable_init();
+        transferOwnership(_owner);
+
+        AccessControlUpgradeable.__AccessControl_init();
+        AccessControlUpgradeable._setupRole(GOVERNOR_ROLE, _governor);
         
         marketplaceFee = _marketplaceFee;
         feeReceiver = _feeReceiver;
@@ -40,8 +46,8 @@ contract NeverminedConfig is
     ) 
     external 
     virtual 
-    override 
-    onlyOwner 
+    override
+    onlyGovernor(msg.sender) 
     {
         require(
             _marketplaceFee >=0 && _marketplaceFee <= 10000, 
@@ -61,7 +67,7 @@ contract NeverminedConfig is
     external
     virtual
     override
-    onlyOwner
+    onlyGovernor(msg.sender)
     {
         require(
             _feeReceiver != address(0),
@@ -69,6 +75,26 @@ contract NeverminedConfig is
         );
         feeReceiver = _feeReceiver;
         emit NeverminedConfigChange(msg.sender, keccak256('feeReceiver'));
+    }
+
+    function isGovernor(
+        address _address
+    )
+    external
+    pure
+    override
+    returns (bool)
+    {
+        return hasRole(GOVERNOR_ROLE, _address);
+    }    
+    
+    modifier onlyGovernor(address _address)
+    {
+        require(
+            isGovernor(_address),
+            'NeverminedConfig: Only governor'
+        );
+        _;
     }    
     
 }

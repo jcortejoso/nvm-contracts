@@ -5,14 +5,28 @@ pragma solidity ^0.8.0;
 
 abstract contract INeverminedConfig {
 
+    bytes32 public constant GOVERNOR_ROLE = keccak256('NVM_GOVERNOR_ROLE');
+    
     event NeverminedConfigChange(
         address indexed _whoChanged,
         bytes32 indexed _parameter
     );
 
-    function initialize(uint8 _marketplaceFee, address _feeReceiver) virtual external;
+    function initialize(
+        address _owner,
+        address _governor
+    ) virtual external;
     
-    function setMarketplaceFee(uint8 _marketplaceFee) virtual external;
+    function setMarketplaceFee(
+        uint8 _marketplaceFee
+    ) virtual external;
 
-    function setFeeReceiver(address _feeReceiver) virtual external;
+    function setFeeReceiver(
+        address _feeReceiver
+    ) virtual external;
+
+    function isGovernor(
+        address _address
+    ) external pure override returns (bool);   
+    
 }

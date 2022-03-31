@@ -150,6 +150,7 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             'Royalties are not satisfied'
         );
 
+        
         if (_tokenAddress != address(0))
             _transferERC20(_rewardAddress, _tokenAddress, calculateTotalAmount(_amounts));
         else

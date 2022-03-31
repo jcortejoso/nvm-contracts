@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+const ZeroAddress = '0x0000000000000000000000000000000000000000'
 
 async function approveTemplate({
     TemplateStoreManagerInstance,
@@ -433,6 +434,29 @@ async function setupContracts({
         )
         await tx.wait()
         addresses.stage = 14
+    }
+
+    if (addressBook.NeverminedConfig && addresses.stage < 15) {
+        const nvmConfig = artifacts.NeverminedConfig
+        console.log('NeverminedConfig : ' + addressBook.NeverminedConfig)
+
+        const configMarketplaceFee = Number(process.env.NVM_MARKETPLACE_FEE || '0')
+        const configFeeReceiver = process.env.NVM_RECEIVER_FEE || ZeroAddress
+
+        const isGovernor = await nvmConfig.isGovernor(roles.governorWallet)
+        console.log('Is governorWallet NeverminedConfig governor? ' + isGovernor)
+
+        const tx = await nvmConfig.setMarketplaceFee(
+            configMarketplaceFee, { from: roles.governorWallet }
+        )
+        await tx.wait()
+
+        const txReceiver = await nvmConfig.setFeeReceiver(
+            configFeeReceiver, { from: roles.governorWallet }
+        )
+        await txReceiver.wait()
+
+        addresses.stage = 15
     }
 }
 
