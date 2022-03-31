@@ -103,7 +103,7 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         sales[msg.sender][nftAddress][nftId] = amount;
     }
 
-    function checkParams1(bytes[] memory _params, bytes32 lockPaymentConditionId, bytes32 _did) internal view {
+    function checkParams1(bytes[] memory _params, bytes32 lockPaymentConditionId, bytes32 _did) internal view returns (address) {
         bytes32 _did0;
         address payable _rewardAddress;
         address _tokenAddress;
@@ -115,7 +115,7 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         uint256 _nftAmount;
         bytes32 _lockPaymentCondition;
         address _nftContractAddress;
-        (_did1, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress) = abi.decode(_params[1], (bytes32, address, uint256, bytes32, address));
+        (_did1,, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress) = abi.decode(_params[1], (bytes32, address, address, uint256, bytes32, address));
 
         require(_did0 == _did1 && _did == _did0, 'did mismatch');
         require(_lockPaymentCondition == lockPaymentConditionId, 'lock id mismatch');
@@ -125,6 +125,17 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         // _receivers[0] should be the seller of NFT
         require(sales[_receivers[0]][_nftContractAddress][_did] != 0, 'not on sale');
         require(sales[_receivers[0]][_nftContractAddress][_did] <= _amounts[0], 'too small price');
+        return _receivers[0];
+    }
+
+    function getSeller(bytes memory _param) internal view returns (address) {
+        bytes32 _did0;
+        address payable _rewardAddress;
+        address _tokenAddress;
+        uint256[] memory _amounts;
+        address[] memory _receivers;
+        (_did0, _rewardAddress, _tokenAddress, _amounts, _receivers) = abi.decode(_param, (bytes32, address, address, uint256[], address[]));
+        return _receivers[0];
     }
 
     function checkParams2(bytes[] memory _params, bytes32 lockPaymentId, bytes32 transferId) internal pure {
@@ -155,24 +166,28 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         ) = abi.decode(_params[2], (bytes32, uint256[], address[], address, address, address, bytes32, bytes32[]));
 
         require(_lockCondition == lockPaymentId, 'lock mismatch 2');
-        require(_releaseConditions.length == 0, 'bad release condition');
+        require(_releaseConditions.length == 1, 'bad release condition');
         require(keccak256(abi.encode(_did0, _tokenAddress, _amounts, _receivers)) == keccak256(abi.encode(_did2, _tokenAddress2, _amounts2, _receivers2)), 'escrow mismatch');
         require(_releaseConditions[0] == transferId, 'tranfer mismatch');
     } 
 
     // Need to check that the agreement is valid
-    function createAgreementAndFulfill(
+    function createAgreementFulfill(
         bytes32 _id,
         bytes32 _did,
         // bytes32[] memory _conditionIds,
         uint[] memory _timeLocks,
         uint[] memory _timeOuts,
+        address _accessConsumer,
         bytes[] memory _params
     ) external payable {
         bytes32 agreementId = keccak256(abi.encode(_id, msg.sender));
         bytes32[] memory conditionIds = new bytes32[](3);
         uint256[] memory indices = new uint256[](2);
+        address[] memory accounts = new address[](2);
         bytes[] memory params = new bytes[](2);
+        accounts[0] = msg.sender;
+        // accounts[1] = getSeller(_params[1]);
         for (uint i = 0; i < 2; i++) {
             indices[i] = i;
             params[i] = _params[i];
@@ -183,9 +198,9 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         bytes32 lockConditionId = keccak256(abi.encode(agreementId, conditionTypes[0], conditionIds[0]));
         bytes32 transferConditionId = keccak256(abi.encode(agreementId, conditionTypes[1], conditionIds[1]));
         // decode all params
-        checkParams1(_params, lockConditionId, _did);
+        accounts[1] = checkParams1(_params, lockConditionId, _did);
         checkParams2(_params, lockConditionId, transferConditionId);
 
-        super.createAgreementAndFulfill(_id, _did, conditionIds, _timeLocks, _timeOuts, indices, params);
+        super.createAgreementAndFulfill(_id, _did, conditionIds, _timeLocks, _timeOuts, _accessConsumer, indices, accounts, params);
     }
 }

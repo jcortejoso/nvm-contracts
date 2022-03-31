@@ -71,10 +71,11 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         erc1155 = NFTUpgradeable(
             _ercAddress
         );
-        
+
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         if (_nftContractAddress != address(0))
             grantRole(MARKET_ROLE, _nftContractAddress);
+        _setupRole(DEFAULT_ADMIN_ROLE, _owner);
     }
 
     function grantMarketRole(address _nftContractAddress)
@@ -156,12 +157,13 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
 
     function encodeParams(
         bytes32 _did,
+        address _nftHolder,
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition,
         address _nftContractAddress
     ) external pure returns (bytes memory) {
-        return abi.encode(_did, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress);
+        return abi.encode(_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress);
     }
 
     function fulfillProxy(
@@ -175,10 +177,11 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
     {
         bytes32 _did;
         address _nftReceiver;
+        address _nftHolder;
         uint256 _nftAmount;
         bytes32 _lockPaymentCondition;
         address _nftContractAddress;
-        (_did, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress) = abi.decode(params, (bytes32, address, uint256, bytes32, address));
+        (_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress) = abi.decode(params, (bytes32, address, address, uint256, bytes32, address));
 
         require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
         bytes32 _id = generateId(

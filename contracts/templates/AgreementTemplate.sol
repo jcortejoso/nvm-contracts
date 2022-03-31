@@ -88,6 +88,7 @@ contract AgreementTemplate is OwnableUpgradeable {
         uint[] memory _timeLocks,
         uint[] memory _timeOuts,
         uint[] memory _indices,
+        address[] memory _accounts,
         bytes[] memory _params
     )
         internal
@@ -99,7 +100,7 @@ contract AgreementTemplate is OwnableUpgradeable {
             _conditionIds,
             _timeLocks,
             _timeOuts,
-            msg.sender,
+            _accounts,
             _indices,
             _params
         );

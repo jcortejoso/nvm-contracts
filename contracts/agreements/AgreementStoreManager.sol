@@ -200,11 +200,13 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
     )
         public payable
     {
+        address[] memory _account = new address[](1);
+        _account[0] = _creator;
         uint[] memory indices = new uint[](1);
         indices[0] = _idx;
         bytes[] memory params = new bytes[](1);
         params[0] = abi.encode(_did, _rewardAddress, _tokenAddress, _amounts, _receivers);
-        createAgreementAndFulfill(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts, _creator, indices, params);
+        createAgreementAndFulfill(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts, _account, indices, params);
     }
 
     function createAgreementAndFulfill(
@@ -214,7 +216,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         bytes32[] memory _conditionIds,
         uint[] memory _timeLocks,
         uint[] memory _timeOuts,
-        address _creator,
+        address[] memory _account,
         uint[] memory _idx,
         bytes[] memory params
     )
@@ -223,7 +225,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
         createAgreement(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts);
         for (uint i = 0; i < _idx.length; i++) {
-            ICondition(_conditionTypes[_idx[i]]).fulfillProxy{value: msg.value}(_creator, _id, params[i]);
+            ICondition(_conditionTypes[_idx[i]]).fulfillProxy{value: msg.value}(_account[i], _id, params[i]);
         }
     }
 
