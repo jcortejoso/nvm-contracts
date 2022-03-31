@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 import './Condition.sol';
+import './ICondition.sol';
 import '../registry/DIDRegistry.sol';
 import '../Common.sol';
 import './ILockPayment.sol';
@@ -21,7 +22,7 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
  * This condition allows to lock payment for multiple receivers taking
  * into account the royalties to be paid to the original creators in a secondary market.  
  */
-contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condition, Common, AccessControlUpgradeable {
+contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condition, Common, AccessControlUpgradeable, ICondition {
 
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
@@ -244,21 +245,22 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         );
         return state;
     }    
-    
+
     function fulfillProxy(
         address _account,
         bytes32 _agreementId,
-        bytes32 _did,
-        address payable _rewardAddress,
-        address _tokenAddress,
-        uint256[] memory _amounts,
-        address[] memory _receivers
+        bytes memory params
     )
     external
     payable
     nonReentrant
-    returns (ConditionStoreLibrary.ConditionState)
     {
+        bytes32 _did;
+        address payable _rewardAddress;
+        address _tokenAddress;
+        uint256[] memory _amounts;
+        address[] memory _receivers;
+        (_did, _rewardAddress, _tokenAddress, _amounts, _receivers) = abi.decode(params, (bytes32, address, address, uint256[], address[]));
         require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
         require(
             _amounts.length == _receivers.length,
@@ -301,7 +303,6 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             _receivers, 
             _amounts
         );
-        return state;
     }
  
    /**

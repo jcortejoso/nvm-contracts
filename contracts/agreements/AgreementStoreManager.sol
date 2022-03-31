@@ -8,6 +8,7 @@ pragma solidity ^0.8.0;
 import './AgreementStoreLibrary.sol';
 import '../conditions/ConditionStoreManager.sol';
 import '../conditions/LockPaymentCondition.sol';
+import '../conditions/ICondition.sol';
 import '../registry/DIDRegistry.sol';
 import '../templates/TemplateStoreManager.sol';
 
@@ -183,6 +184,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         // return getAgreementListSize();
     }
 
+/*
     function createAgreementAndPay(
         bytes32 _id,
         bytes32 _did,
@@ -202,6 +204,50 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
         createAgreement(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts);
         LockPaymentCondition(_conditionTypes[_idx]).fulfillProxy{value: msg.value}(_creator, _id, _did, _rewardAddress, _tokenAddress, _amounts, _receivers);
+    }
+*/
+
+    function createAgreementAndPay(
+        bytes32 _id,
+        bytes32 _did,
+        address[] memory _conditionTypes,
+        bytes32[] memory _conditionIds,
+        uint[] memory _timeLocks,
+        uint[] memory _timeOuts,
+        address _creator,
+        uint _idx,
+        address payable _rewardAddress,
+        address _tokenAddress,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    )
+        public payable
+    {
+        uint[] memory indices = new uint[](1);
+        indices[0] = _idx;
+        bytes[] memory params = new bytes[](1);
+        params[0] = abi.encode(_did, _rewardAddress, _tokenAddress, _amounts, _receivers);
+        createAgreementAndFulfill(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts, _creator, indices, params);
+    }
+
+    function createAgreementAndFulfill(
+        bytes32 _id,
+        bytes32 _did,
+        address[] memory _conditionTypes,
+        bytes32[] memory _conditionIds,
+        uint[] memory _timeLocks,
+        uint[] memory _timeOuts,
+        address _creator,
+        uint[] memory _idx,
+        bytes[] memory params
+    )
+        public payable
+    {
+        require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
+        createAgreement(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts);
+        for (uint i = 0; i < _idx.length; i++) {
+            ICondition(_conditionTypes[_idx[i]]).fulfillProxy{value: msg.value}(_creator, _id, params[i]);
+        }
     }
 
     function getAgreementTemplate(bytes32 _id)
