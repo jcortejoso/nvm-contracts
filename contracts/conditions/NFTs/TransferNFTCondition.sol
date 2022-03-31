@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 
 
 import '../Condition.sol';
+import '../ICondition.sol';
 import '../../token/erc1155/NFTUpgradeable.sol';
 import './ITransferNFT.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
@@ -17,13 +18,23 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
  *      between the original owner and a receiver
  *
  */
-contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgradeable, AccessControlUpgradeable {
+contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgradeable, AccessControlUpgradeable, ICondition {
 
     bytes32 private constant CONDITION_TYPE = keccak256('TransferNFTCondition');
 
     bytes32 private constant MARKET_ROLE = keccak256('MARKETPLACE_ROLE');
     
     NFTUpgradeable private erc1155;
+
+    bytes32 private constant PROXY_ROLE = keccak256('PROXY_ROLE');
+
+    function grantProxyRole(address _address) public onlyOwner {
+        grantRole(PROXY_ROLE, _address);
+    }
+
+    function revokeProxyRole(address _address) public onlyOwner {
+        revokeRole(PROXY_ROLE, _address);
+    }
 
    /**
     * @notice initialize init the contract with the following parameters
@@ -141,6 +152,65 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         returns (ConditionStoreLibrary.ConditionState)
     {
         return fulfill(_agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, address(erc1155));
+    }
+
+    function encodeParams(
+        bytes32 _did,
+        address _nftReceiver,
+        uint256 _nftAmount,
+        bytes32 _lockPaymentCondition,
+        address _nftContractAddress
+    ) external pure returns (bytes memory) {
+        return abi.encode(_did, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress);
+    }
+
+    function fulfillProxy(
+        address _account,
+        bytes32 _agreementId,
+        bytes memory params
+    )
+    external
+    payable
+    nonReentrant
+    {
+        bytes32 _did;
+        address _nftReceiver;
+        uint256 _nftAmount;
+        bytes32 _lockPaymentCondition;
+        address _nftContractAddress;
+        (_did, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress) = abi.decode(params, (bytes32, address, uint256, bytes32, address));
+
+        require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
+        bytes32 _id = generateId(
+            _agreementId,
+            hashValues(_did, _account, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress)
+        );
+
+        address lockConditionTypeRef;
+        ConditionStoreLibrary.ConditionState lockConditionState;
+        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
+        .getCondition(_lockPaymentCondition);
+
+        require(
+            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
+            'LockCondition needs to be Fulfilled'
+        );
+
+        IERC1155Upgradeable token = IERC1155Upgradeable(_nftContractAddress);
+
+        if (_nftAmount > 0)
+            token.safeTransferFrom(_account, _nftReceiver, uint256(_did), _nftAmount, '');
+
+        super.fulfill(_id, ConditionStoreLibrary.ConditionState.Fulfilled);
+
+        emit Fulfilled(
+            _agreementId,
+            _did,
+            _nftReceiver,
+            _nftAmount,
+            _id,
+            _nftContractAddress
+        );
     }
 
     /**

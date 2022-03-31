@@ -184,29 +184,6 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         // return getAgreementListSize();
     }
 
-/*
-    function createAgreementAndPay(
-        bytes32 _id,
-        bytes32 _did,
-        address[] memory _conditionTypes,
-        bytes32[] memory _conditionIds,
-        uint[] memory _timeLocks,
-        uint[] memory _timeOuts,
-        address _creator,
-        uint _idx,
-        address payable _rewardAddress,
-        address _tokenAddress,
-        uint256[] memory _amounts,
-        address[] memory _receivers
-    )
-        public payable
-    {
-        require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
-        createAgreement(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts);
-        LockPaymentCondition(_conditionTypes[_idx]).fulfillProxy{value: msg.value}(_creator, _id, _did, _rewardAddress, _tokenAddress, _amounts, _receivers);
-    }
-*/
-
     function createAgreementAndPay(
         bytes32 _id,
         bytes32 _did,

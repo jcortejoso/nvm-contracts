@@ -81,6 +81,30 @@ contract AgreementTemplate is OwnableUpgradeable {
         );
     }
 
+    function createAgreementAndFulfill(
+        bytes32 _id,
+        bytes32 _did,
+        bytes32[] memory _conditionIds,
+        uint[] memory _timeLocks,
+        uint[] memory _timeOuts,
+        uint[] memory _indices,
+        bytes[] memory _params
+    )
+        public payable
+    {
+        agreementStoreManager.createAgreementAndFulfill{value: msg.value}(
+            keccak256(abi.encode(_id, msg.sender)),
+            _did,
+            getConditionTypes(),
+            _conditionIds,
+            _timeLocks,
+            _timeOuts,
+            msg.sender,
+            _indices,
+            _params
+        );
+    }
+
     /**
      * @notice getConditionTypes gets the conditions addresses list
      * @dev for the current template returns list of condition contracts 

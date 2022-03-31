@@ -244,7 +244,17 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             _amounts
         );
         return state;
-    }    
+    }
+
+    function encodeParams(
+        bytes32 _did,
+        address payable _rewardAddress,
+        address _tokenAddress,
+        uint256[] memory _amounts,
+        address[] memory _receivers
+    ) external pure returns (bytes memory) {
+        return abi.encode(_did, _rewardAddress, _tokenAddress, _amounts, _receivers);
+    }
 
     function fulfillProxy(
         address _account,
