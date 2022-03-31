@@ -7,26 +7,62 @@ abstract contract INeverminedConfig {
 
     bytes32 public constant GOVERNOR_ROLE = keccak256('NVM_GOVERNOR_ROLE');
     
+    /**
+    * @notice Event that is emitted when a parameter is changed
+    * @param _whoChanged the address of the governor changing the parameter
+    * @param _parameter the hash of the name of the parameter changed
+    */
     event NeverminedConfigChange(
         address indexed _whoChanged,
         bytes32 indexed _parameter
     );
 
+    /**
+     * @notice Used to initialize the contract during delegator constructor
+     * @param _owner The owner of the contract
+     * @param _governor The address to be granted with the `GOVERNOR_ROLE`
+     */
     function initialize(
         address _owner,
         address _governor
     ) virtual external;
-    
+
+    /**
+     * @notice The governor can update the Nevermined Marketplace fee
+     * @param _marketplaceFee new marketplace fee 
+     */    
     function setMarketplaceFee(
         uint8 _marketplaceFee
     ) virtual external;
 
+    /**
+     * @notice The governor can update the account receiving the Marketplace fees
+     * @param _feeReceiver The address receiving the fee 
+     */
     function setFeeReceiver(
         address _feeReceiver
     ) virtual external;
 
+    /**
+     * @notice Indicates if an address is a having the GOVERNOR role
+     * @param _address The address to validate
+     * @return true if is a governor 
+     */    
     function isGovernor(
         address _address
-    ) external pure override returns (bool);   
-    
+    ) external view virtual returns (bool);
+
+    /**
+     * @notice Returns the marketplace fee
+     * @return the marketplace fee
+     */
+    function getMarketplaceFee()
+    external view virtual returns (uint8);
+
+    /**
+     * @notice Returns the receiver address of the marketplace fee
+     * @return the receiver address
+     */    
+    function getFeeReceiver()
+    external view virtual returns (address);
 }

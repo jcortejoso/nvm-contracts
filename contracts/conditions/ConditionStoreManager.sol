@@ -8,6 +8,7 @@ pragma solidity ^0.8.0;
 import '../Common.sol';
 import '../libraries/EpochLibrary.sol';
 import './ConditionStoreLibrary.sol';
+import '../governance/INeverminedConfig.sol';
 
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
@@ -38,6 +39,8 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
     ConditionStoreLibrary.ConditionList internal conditionList;
     EpochLibrary.EpochList internal epochList;
 
+    INeverminedConfig internal nvmConfig;
+    
     event ConditionCreated(
         bytes32 indexed _id,
         address indexed _typeRef,
@@ -84,12 +87,15 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
 
     /**
      * @dev initialize ConditionStoreManager Initializer
-     *      Initialize Ownable. Only on contract creation, 
-     * @param _owner refers to the owner of the contract
+     *      Initialize Ownable. Only on contract creation,
+     * @param _creator refers to the creator of the contract
+     * @param _owner refers to the owner of the contract           
+     * @param _nvmConfigAddress refers to the contract address of `NeverminedConfig`
      */
     function initialize(
         address _creator,
-        address _owner
+        address _owner,
+        address _nvmConfigAddress
     )
         public
         initializer
@@ -103,10 +109,17 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
             'Role already assigned'
         );
 
+        require(
+            _nvmConfigAddress != address(0), 
+                'Invalid Address'
+        );
+        
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
         createRole = _creator;
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
+        
+        nvmConfig= INeverminedConfig(_nvmConfigAddress);
     }
 
     /**

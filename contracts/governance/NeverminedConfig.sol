@@ -13,12 +13,7 @@ contract NeverminedConfig is
     OwnableUpgradeable, 
     ConfigStorageV1 
 {
-
-    /**
-     * @notice Used to initialize the contract during delegator constructor
-     * @param _marketplaceFee The fee to be charged by Nevermined
-     * @param _feeReceiver The address receiving the fees
-     */    
+    
     function initialize(
         address _owner,
         address _governor
@@ -32,15 +27,8 @@ contract NeverminedConfig is
 
         AccessControlUpgradeable.__AccessControl_init();
         AccessControlUpgradeable._setupRole(GOVERNOR_ROLE, _governor);
-        
-        marketplaceFee = _marketplaceFee;
-        feeReceiver = _feeReceiver;
     }
-
-    /**
-     * @notice The owner can update the Nevermined Marketplace fee
-     * @param _marketplaceFee new marketplace fee 
-     */
+    
     function setMarketplaceFee(
         uint8 _marketplaceFee
     ) 
@@ -56,11 +44,7 @@ contract NeverminedConfig is
         marketplaceFee = _marketplaceFee;
         emit NeverminedConfigChange(msg.sender, keccak256('marketplaceFee'));
     }
-
-    /**
-     * @notice The account receiving the Marketplace fees
-     * @param _feeReceiver The address receiving thefee 
-     */
+    
     function setFeeReceiver(
         address _feeReceiver
     )
@@ -76,22 +60,40 @@ contract NeverminedConfig is
         feeReceiver = _feeReceiver;
         emit NeverminedConfigChange(msg.sender, keccak256('feeReceiver'));
     }
-
+    
     function isGovernor(
         address _address
     )
     external
-    pure
+    view
     override
     returns (bool)
     {
         return hasRole(GOVERNOR_ROLE, _address);
-    }    
+    }
+
+    function getMarketplaceFee()
+    external
+    view
+    override 
+    returns (uint8) 
+    {
+        return marketplaceFee;
+    }
+
+    function getFeeReceiver()
+    external
+    view
+    override 
+    returns (address)
+    {
+        return feeReceiver;
+    }
     
     modifier onlyGovernor(address _address)
     {
         require(
-            isGovernor(_address),
+            hasRole(GOVERNOR_ROLE, _address),
             'NeverminedConfig: Only governor'
         );
         _;
