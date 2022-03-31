@@ -26,11 +26,12 @@ contract NeverminedConfig is
         transferOwnership(_owner);
 
         AccessControlUpgradeable.__AccessControl_init();
+        AccessControlUpgradeable._setupRole(DEFAULT_ADMIN_ROLE, _owner);
         AccessControlUpgradeable._setupRole(GOVERNOR_ROLE, _governor);
     }
     
     function setMarketplaceFee(
-        uint8 _marketplaceFee
+        uint16 _marketplaceFee
     ) 
     external 
     virtual 
@@ -76,7 +77,7 @@ contract NeverminedConfig is
     external
     view
     override 
-    returns (uint8) 
+    returns (uint16) 
     {
         return marketplaceFee;
     }

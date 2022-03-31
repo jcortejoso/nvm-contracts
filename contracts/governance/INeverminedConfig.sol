@@ -32,7 +32,7 @@ abstract contract INeverminedConfig {
      * @param _marketplaceFee new marketplace fee 
      */    
     function setMarketplaceFee(
-        uint8 _marketplaceFee
+        uint16 _marketplaceFee
     ) virtual external;
 
     /**
@@ -57,7 +57,7 @@ abstract contract INeverminedConfig {
      * @return the marketplace fee
      */
     function getMarketplaceFee()
-    external view virtual returns (uint8);
+    external view virtual returns (uint16);
 
     /**
      * @notice Returns the receiver address of the marketplace fee

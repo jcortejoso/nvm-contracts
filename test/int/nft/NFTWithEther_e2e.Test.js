@@ -10,6 +10,7 @@ chai.use(chaiAsPromised)
 const NFTAccessTemplate = artifacts.require('NFTAccessTemplate')
 const NFTSalesTemplate = artifacts.require('NFTSalesTemplate')
 
+const NeverminedConfig = artifacts.require('NeverminedConfig')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const TransferNFTCondition = artifacts.require('TransferNFTCondition')
 const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
@@ -54,7 +55,8 @@ contract('End to End NFT Scenarios (with Ether)', (accounts) => {
         collector2,
         gallery,
         market,
-        someone
+        someone,
+        governor
     ] = accounts
 
     // Configuration of First Sale:
@@ -100,6 +102,9 @@ contract('End to End NFT Scenarios (with Ether)', (accounts) => {
         nft = await NFT.new()
         await nft.initialize('')
 
+        const nvmConfig = await NeverminedConfig.new({ from: deployer })
+        await nvmConfig.initialize(owner, governor, { from: deployer })
+
         didRegistry = await DIDRegistry.new()
         await didRegistry.initialize(owner, nft.address, constants.address.zero)
         await nft.addMinter(didRegistry.address)
@@ -121,6 +126,7 @@ contract('End to End NFT Scenarios (with Ether)', (accounts) => {
         await conditionStoreManager.initialize(
             agreementStoreManager.address,
             owner,
+            nvmConfig.address,
             { from: deployer }
         )
 

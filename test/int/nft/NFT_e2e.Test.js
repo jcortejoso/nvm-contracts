@@ -10,6 +10,7 @@ chai.use(chaiAsPromised)
 const NFTAccessTemplate = artifacts.require('NFTAccessTemplate')
 const NFTSalesTemplate = artifacts.require('NFTSalesTemplate')
 
+const NeverminedConfig = artifacts.require('NeverminedConfig')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const TransferNFTCondition = artifacts.require('TransferNFTCondition')
 const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
@@ -34,10 +35,7 @@ contract('End to End NFT Scenarios', (accounts) => {
     const didSeed = testUtils.generateId()
     let did
     let agreementId
-    /*
-    const agreementAccessId = testUtils.generateId()
-    const agreementId2 = testUtils.generateId()
-    */
+
     const checksum = testUtils.generateId()
     const url = 'https://raw.githubusercontent.com/nevermined-io/assets/main/images/logo/banner_logo.png'
 
@@ -92,6 +90,9 @@ contract('End to End NFT Scenarios', (accounts) => {
         token = await NeverminedToken.new()
         await token.initialize(owner, owner)
 
+        const nvmConfig = await NeverminedConfig.new()
+        await nvmConfig.initialize(owner, owner)
+
         nft = await NFT.new()
         await nft.initialize('')
 
@@ -116,6 +117,7 @@ contract('End to End NFT Scenarios', (accounts) => {
         await conditionStoreManager.initialize(
             agreementStoreManager.address,
             owner,
+            nvmConfig.address,
             { from: deployer }
         )
 
