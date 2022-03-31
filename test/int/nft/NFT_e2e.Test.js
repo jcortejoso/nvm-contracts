@@ -253,7 +253,7 @@ contract('End to End NFT Scenarios', (accounts) => {
         const fullIdEscrow = await escrowCondition.generateId(agreementId, conditionIdEscrow)
 
         const lockParams = await lockPaymentCondition.encodeParams(did, escrowCondition.address, token.address, _amounts, _receivers)
-        console.log("address", nft.address)
+        console.log('address', nft.address)
         const transferParams = await transferCondition.encodeParams(did, _seller, _buyer, _numberNFTs, fullIdLockPayment, nft.address)
         const escrowParams = await escrowCondition.encodeParams(did, _amounts, _receivers, _buyer, escrowCondition.address, token.address, fullIdLockPayment, [fullIdTransferNFT])
 
