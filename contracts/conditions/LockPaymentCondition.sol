@@ -141,41 +141,7 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
     nonReentrant
     returns (ConditionStoreLibrary.ConditionState)
     {
-        require(
-            _amounts.length == _receivers.length,
-            'Amounts and Receivers arguments have wrong length'
-        );
-
-        require(
-            didRegistry.areRoyaltiesValid(_did, _amounts, _receivers),
-            'Royalties are not satisfied'
-        );
-
-        if (_tokenAddress != address(0))
-            _transferERC20(_rewardAddress, _tokenAddress, calculateTotalAmount(_amounts));
-        else
-            _transferETH(_rewardAddress, calculateTotalAmount(_amounts));
-
-        bytes32 _id = generateId(
-            _agreementId,
-            hashValues(_did, _rewardAddress, _tokenAddress, _amounts, _receivers)
-        );
-        
-        ConditionStoreLibrary.ConditionState state = super.fulfill(
-            _id,
-            ConditionStoreLibrary.ConditionState.Fulfilled
-        );
-
-        emit Fulfilled(
-            _agreementId, 
-            _did,
-            _id,
-            _rewardAddress,
-            _tokenAddress,
-            _receivers, 
-            _amounts
-        );
-        return state;
+        return fulfillInternal(msg.sender, _agreementId, _did, _rewardAddress, _tokenAddress, _amounts, _receivers);
     }
 
     /**
@@ -256,22 +222,18 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         return abi.encode(_did, _rewardAddress, _tokenAddress, _amounts, _receivers);
     }
 
-    function fulfillProxy(
+    function fulfillInternal(
         address _account,
         bytes32 _agreementId,
-        bytes memory params
+        bytes32 _did,
+        address payable _rewardAddress,
+        address _tokenAddress,
+        uint256[] memory _amounts,
+        address[] memory _receivers
     )
-    external
-    payable
-    nonReentrant
+    internal
+    returns (ConditionStoreLibrary.ConditionState)
     {
-        bytes32 _did;
-        address payable _rewardAddress;
-        address _tokenAddress;
-        uint256[] memory _amounts;
-        address[] memory _receivers;
-        (_did, _rewardAddress, _tokenAddress, _amounts, _receivers) = abi.decode(params, (bytes32, address, address, uint256[], address[]));
-        require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
         require(
             _amounts.length == _receivers.length,
             'Amounts and Receivers arguments have wrong length'
@@ -313,6 +275,26 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             _receivers, 
             _amounts
         );
+        return state;
+    }
+
+    function fulfillProxy(
+        address _account,
+        bytes32 _agreementId,
+        bytes memory params
+    )
+    external
+    payable
+    nonReentrant
+    {
+        bytes32 _did;
+        address payable _rewardAddress;
+        address _tokenAddress;
+        uint256[] memory _amounts;
+        address[] memory _receivers;
+        (_did, _rewardAddress, _tokenAddress, _amounts, _receivers) = abi.decode(params, (bytes32, address, address, uint256[], address[]));
+        require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
+        fulfillInternal(_account, _agreementId, _did, _rewardAddress, _tokenAddress, _amounts, _receivers);
     }
  
    /**

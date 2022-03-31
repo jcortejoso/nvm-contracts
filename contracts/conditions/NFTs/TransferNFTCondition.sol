@@ -184,36 +184,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         (_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress) = abi.decode(params, (bytes32, address, address, uint256, bytes32, address));
 
         require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
-        bytes32 _id = generateId(
-            _agreementId,
-            hashValues(_did, _account, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress)
-        );
-
-        address lockConditionTypeRef;
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
-        .getCondition(_lockPaymentCondition);
-
-        require(
-            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
-            'LockCondition needs to be Fulfilled'
-        );
-
-        IERC1155Upgradeable token = IERC1155Upgradeable(_nftContractAddress);
-
-        if (_nftAmount > 0)
-            token.safeTransferFrom(_account, _nftReceiver, uint256(_did), _nftAmount, '');
-
-        super.fulfill(_id, ConditionStoreLibrary.ConditionState.Fulfilled);
-
-        emit Fulfilled(
-            _agreementId,
-            _did,
-            _nftReceiver,
-            _nftAmount,
-            _id,
-            _nftContractAddress
-        );
+        fulfillInternal(_account, _agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress);
     }
 
     /**
@@ -242,9 +213,24 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         nonReentrant
         returns (ConditionStoreLibrary.ConditionState)
     {
+        return fulfillInternal(msg.sender, _agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress);
+    }    
+    
+    function fulfillInternal(
+        address _account,
+        bytes32 _agreementId,
+        bytes32 _did,
+        address _nftReceiver,
+        uint256 _nftAmount,
+        bytes32 _lockPaymentCondition,
+        address _nftContractAddress
+    )
+        internal
+        returns (ConditionStoreLibrary.ConditionState)
+    {
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, msg.sender, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress)
+            hashValues(_did, _account, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress)
         );
 
         address lockConditionTypeRef;
@@ -260,7 +246,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         IERC1155Upgradeable token = IERC1155Upgradeable(_nftContractAddress);
 
         if (_nftAmount > 0)
-            token.safeTransferFrom(msg.sender, _nftReceiver, uint256(_did), _nftAmount, '');
+            token.safeTransferFrom(_account, _nftReceiver, uint256(_did), _nftAmount, '');
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
