@@ -90,7 +90,7 @@ contract AgreementTemplate is OwnableUpgradeable {
         uint[] memory _indices,
         bytes[] memory _params
     )
-        public payable
+        internal
     {
         agreementStoreManager.createAgreementAndFulfill{value: msg.value}(
             keccak256(abi.encode(_id, msg.sender)),
