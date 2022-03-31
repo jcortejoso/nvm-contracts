@@ -164,7 +164,6 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
     function createAgreementFulfill(
         bytes32 _id,
         bytes32 _did,
-        // bytes32[] memory _conditionIds,
         uint[] memory _timeLocks,
         uint[] memory _timeOuts,
         address _accessConsumer,

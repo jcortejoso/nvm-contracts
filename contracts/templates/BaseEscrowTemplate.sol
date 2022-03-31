@@ -113,8 +113,7 @@ contract BaseEscrowTemplate is AgreementTemplate {
         address[] memory _accounts,
         bytes[] memory _params
     )
-        public
-        payable
+        internal
     {
         super.createAgreementAndFulfill(_id, _did, _conditionIds, _timeLocks, _timeOuts, _indices, _accounts, _params);
         _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
