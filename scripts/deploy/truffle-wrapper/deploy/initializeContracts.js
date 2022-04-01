@@ -93,7 +93,7 @@ async function initializeContracts({
     }
 
     if (contracts.indexOf('NeverminedConfig') > -1) {
-        addressBook.DIDRegistry = await zosCreate({
+        addressBook.NeverminedConfig = await zosCreate({
             contract: 'NeverminedConfig',
             ctx,
             args: [roles.ownerWallet, roles.governorWallet],
@@ -166,7 +166,7 @@ async function initializeContracts({
             contract: 'ConditionStoreManager',
             ctx,
             libraries: { EpochLibrary: epochLibrary },
-            args: [roles.deployer, roles.deployer],
+            args: [roles.deployer, roles.deployer, roles.governorWallet],
             verbose
         })
     }

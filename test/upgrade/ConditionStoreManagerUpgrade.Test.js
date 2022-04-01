@@ -100,27 +100,6 @@ contract('ConditionStoreManager', (accounts) => {
                 await ConditionStoreChangeFunctionSignature.at(conditionStoreManagerAddress)
 
             await ConditionStoreChangeFunctionSignatureInstance.delegateCreateRole(conditionCreater, { from: accounts[0] })
-            // call delegateCreateRole over multi sig wallet
-            /*
-            const txId = await submitTransaction(
-                ownerWallet,
-                conditionStoreManagerAddress,
-                [
-                    'delegateCreateRole',
-                    ['address'],
-                    [conditionCreater]
-                ],
-                upgrader,
-                verbose
-            )
-
-            await confirmTransaction(
-                ownerWallet,
-                txId,
-                approver,
-                verbose
-            )
-            */
 
             // assert
             assert.strictEqual(
@@ -191,25 +170,6 @@ contract('ConditionStoreManager', (accounts) => {
                 await ConditionStoreChangeInStorageAndLogic.at(conditionStoreManagerAddress)
 
             await ConditionStoreChangeInStorageAndLogicInstance.delegateCreateRole(conditionCreater, { from: accounts[0] })
-            /*
-                const txId = await submitTransaction(
-                ownerWallet,
-                conditionStoreManagerAddress,
-                [
-                    'delegateCreateRole',
-                    ['address'],
-                    [conditionCreater]
-                ],
-                upgrader,
-                verbose
-            )
-
-            await confirmTransaction(
-                ownerWallet,
-                txId,
-                approver,
-                verbose
-            ) */
 
             assert.strictEqual(
                 (await ConditionStoreChangeInStorageAndLogicInstance.conditionCount()).toNumber(),
