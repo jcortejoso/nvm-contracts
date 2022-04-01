@@ -36,7 +36,6 @@ contract('DIDRegistry', (accounts) => {
         checksum = testUtils.generateId(),
         value = 'https://nevermined.io/did/test.txt'
     } = {}) {
-
         const DIDRegistryInstance = await DIDRegistry.at(DIDRegistryProxyAddress)
         const did = await DIDRegistryInstance.hashDID(didSeed, didOwner)
         const result = await DIDRegistryInstance.registerAttribute(
