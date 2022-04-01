@@ -32,30 +32,27 @@ contract('NeverminedConfig', (accounts) => {
     describe('We can apply some configuration', () => {
         it('Configuration only can be changed by the Governor', async () => {
             await assert.isRejected(
-                nvmConfig.setMarketplaceFee(5, { from: owner }),
+                nvmConfig.setMarketplaceFees(5, accounts[3], { from: owner }),
                 'NeverminedConfig: Only governor'
             )
         })
 
         it('We setup the marketplace fees configuration', async () => {
-            await nvmConfig.setMarketplaceFee(5, { from: governor })
+            await nvmConfig.setMarketplaceFees(5, accounts[3], { from: governor })
             const marketplaceFee = await nvmConfig.getMarketplaceFee()
-
-            assert.strictEqual(5, marketplaceFee.toNumber())
-
-            await nvmConfig.setFeeReceiver(accounts[3], { from: governor })
             const feeReceiver = await nvmConfig.getFeeReceiver()
 
+            assert.strictEqual(5, marketplaceFee.toNumber())
             assert.strictEqual(accounts[3], feeReceiver)
         })
 
         it('Marketplace fees should be in the right range', async () => {
             await assert.isRejected(
-                nvmConfig.setMarketplaceFee(10001, { from: governor }),
+                nvmConfig.setMarketplaceFees(10001, accounts[3], { from: governor }),
                 'NeverminedConfig: Fee must be between 0 and 100 percent'
             )
             await assert.isRejected(
-                nvmConfig.setFeeReceiver(constants.address.zero, { from: governor }),
+                nvmConfig.setMarketplaceFees(5, constants.address.zero, { from: governor }),
                 'NeverminedConfig: Receiver can not be 0x0'
             )
         })

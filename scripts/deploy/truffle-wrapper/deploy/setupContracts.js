@@ -446,15 +446,10 @@ async function setupContracts({
         const isGovernor = await nvmConfig.isGovernor(roles.governorWallet)
         console.log('Is governorWallet NeverminedConfig governor? ' + isGovernor)
 
-        const tx = await nvmConfig.setMarketplaceFee(
-            configMarketplaceFee, { from: roles.governorWallet }
+        const tx = await nvmConfig.setMarketplaceFees(
+            configMarketplaceFee, configFeeReceiver, { from: roles.governorWallet }
         )
         await tx.wait()
-
-        const txReceiver = await nvmConfig.setFeeReceiver(
-            configFeeReceiver, { from: roles.governorWallet }
-        )
-        await txReceiver.wait()
 
         addresses.stage = 15
     }

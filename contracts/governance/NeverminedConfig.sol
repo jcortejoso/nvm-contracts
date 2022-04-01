@@ -30,23 +30,8 @@ contract NeverminedConfig is
         AccessControlUpgradeable._setupRole(GOVERNOR_ROLE, _governor);
     }
     
-    function setMarketplaceFee(
-        uint16 _marketplaceFee
-    ) 
-    external 
-    virtual 
-    override
-    onlyGovernor(msg.sender) 
-    {
-        require(
-            _marketplaceFee >=0 && _marketplaceFee <= 10000, 
-                'NeverminedConfig: Fee must be between 0 and 100 percent'
-        );
-        marketplaceFee = _marketplaceFee;
-        emit NeverminedConfigChange(msg.sender, keccak256('marketplaceFee'));
-    }
-    
-    function setFeeReceiver(
+    function setMarketplaceFees(
+        uint256 _marketplaceFee,
         address _feeReceiver
     )
     external
@@ -55,10 +40,20 @@ contract NeverminedConfig is
     onlyGovernor(msg.sender)
     {
         require(
-            _feeReceiver != address(0),
-            'NeverminedConfig: Receiver can not be 0x0'
+            _marketplaceFee >=0 && _marketplaceFee <= 10000,
+            'NeverminedConfig: Fee must be between 0 and 100 percent'
         );
+        
+        if (_marketplaceFee > 0)    {
+            require(
+                _feeReceiver != address(0),
+                'NeverminedConfig: Receiver can not be 0x0'
+            );            
+        }
+
+        marketplaceFee = _marketplaceFee;
         feeReceiver = _feeReceiver;
+        emit NeverminedConfigChange(msg.sender, keccak256('marketplaceFee'));
         emit NeverminedConfigChange(msg.sender, keccak256('feeReceiver'));
     }
     
@@ -77,7 +72,7 @@ contract NeverminedConfig is
     external
     view
     override 
-    returns (uint16) 
+    returns (uint256) 
     {
         return marketplaceFee;
     }

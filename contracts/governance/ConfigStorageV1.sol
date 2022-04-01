@@ -16,7 +16,7 @@ abstract contract ConfigStorageV1 is INeverminedConfig {
     
     // @notice The fee charged by Nevermined for using the Service Agreements.
     // Integer representing a 2 decimal number. i.e 350 means a 3.5% fee
-    uint16 public marketplaceFee;
+    uint256 public marketplaceFee;
 
     // @notice The address that will receive the fee charged by Nevermined per transaction
     // See `marketplaceFee`

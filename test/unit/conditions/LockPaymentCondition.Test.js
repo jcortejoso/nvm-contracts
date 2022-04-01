@@ -464,5 +464,78 @@ contract('LockPaymentCondition', (accounts) => {
                 20 + balanceBefore
             )
         })
+
+        it('should fail if market fees are not correct', async () => {
+            const agreementId = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
+            const marketplaceFee = 2000 // 20%
+            const rewardAddress = accounts[3]
+            const marketplaceAddress = accounts[4]
+            const amounts = [9, 1]
+            const receivers = [rewardAddress, marketplaceAddress]
+
+            await nvmConfig.setMarketplaceFees(marketplaceFee, marketplaceAddress, { from: owner })
+
+            // register DID
+            await didRegistry.registerMintableDID(
+                didSeed, checksum, [], url, 10, 0, constants.activities.GENERATED, '')
+
+            const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
+            const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
+
+            await conditionStoreManager.createCondition(
+                conditionId,
+                lockPaymentCondition.address)
+
+            await assert.isRejected(
+                lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers),
+                /Invalid marketplace fees/
+            )
+        })
+
+        it('should fulfill if marketplace fees are correct', async () => {
+            const agreementId = testUtils.generateId()
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, accounts[0])
+
+            const buyer = accounts[0]
+            const marketplaceFee = 1000 // 10%
+            const rewardAddress = accounts[3]
+            const marketplaceAddress = accounts[4]
+            const amounts = [18, 2]
+            const receivers = [rewardAddress, marketplaceAddress]
+
+            await nvmConfig.setMarketplaceFees(marketplaceFee, marketplaceAddress, { from: owner })
+
+            // register DID
+            await didRegistry.registerMintableDID(
+                didSeed, checksum, [], url, 10, 0, constants.activities.GENERATED, '', { from: rewardAddress })
+
+            const hashValues = await lockPaymentCondition.hashValues(did, rewardAddress, token.address, amounts, receivers)
+            const conditionId = await lockPaymentCondition.generateId(agreementId, hashValues)
+
+            await conditionStoreManager.createCondition(
+                conditionId,
+                lockPaymentCondition.address)
+
+            const balanceBefore = await getBalance(token, rewardAddress)
+
+            await token.mint(buyer, 20, { from: owner })
+            await token.approve(lockPaymentCondition.address, 20, { from: buyer })
+
+            await lockPaymentCondition.fulfill(agreementId, did, rewardAddress, token.address, amounts, receivers, { from: buyer })
+
+            assert.strictEqual(
+                (await conditionStoreManager.getConditionState(conditionId)).toNumber(),
+                constants.condition.state.fulfilled
+            )
+
+            assert.strictEqual(
+                await getBalance(token, rewardAddress),
+                20 + balanceBefore
+            )
+        })
     })
 })

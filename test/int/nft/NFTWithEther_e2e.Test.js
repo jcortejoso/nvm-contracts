@@ -63,19 +63,21 @@ contract('End to End NFT Scenarios (with Ether)', (accounts) => {
     // Artist -> Collector1, the gallery get a cut (25%)
     const numberNFTs = 1
 
+    const marketplaceFee = 2000
+    const marketplaceAddress = owner
     let nftPrice = 2
-    let amounts = [1.5, 0.5]
+    let amounts = [1.1, 0.5, 0.4]
 
-    const receivers = [artist, gallery]
+    const receivers = [artist, gallery, owner]
 
     // Configuration of Sale in secondary market:
     // Collector1 -> Collector2, the artist get 10% royalties
     const numberNFTs2 = 1
 
     let nftPrice2 = 5
-    let amounts2 = [4, 1]
+    let amounts2 = [3, 1, 1]
 
-    const receivers2 = [collector1, artist]
+    const receivers2 = [collector1, artist, owner]
 
     before(async () => {
         const epochLibrary = await EpochLibrary.new()
@@ -128,6 +130,12 @@ contract('End to End NFT Scenarios (with Ether)', (accounts) => {
             owner,
             nvmConfig.address,
             { from: deployer }
+        )
+
+        await nvmConfig.setMarketplaceFees(
+            marketplaceFee,
+            marketplaceAddress,
+            { from: governor }
         )
 
         lockPaymentCondition = await LockPaymentCondition.new()

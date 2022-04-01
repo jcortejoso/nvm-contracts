@@ -39,7 +39,7 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
     ConditionStoreLibrary.ConditionList internal conditionList;
     EpochLibrary.EpochList internal epochList;
 
-    INeverminedConfig internal nvmConfig;
+    address internal nvmConfigAddress;
     
     event ConditionCreated(
         bytes32 indexed _id,
@@ -119,7 +119,7 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
         createRole = _creator;
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
         
-        nvmConfig= INeverminedConfig(_nvmConfigAddress);
+        nvmConfigAddress= _nvmConfigAddress;
     }
 
     /**
@@ -135,6 +135,18 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
         return createRole;
     }
 
+    /**
+     * @dev getNvmConfigAddress get the address of the NeverminedConfig contract
+     * @return NeverminedConfig contract address
+     */
+    function getNvmConfigAddress()
+    external
+    view
+    returns (address)
+    {
+        return nvmConfigAddress;
+    }    
+    
     /**
      * @dev delegateCreateRole only owner can delegate the 
      *      create condition role to a different address

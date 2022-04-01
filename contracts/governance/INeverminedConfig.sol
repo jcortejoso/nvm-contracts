@@ -28,18 +28,12 @@ abstract contract INeverminedConfig {
     ) virtual external;
 
     /**
-     * @notice The governor can update the Nevermined Marketplace fee
+     * @notice The governor can update the Nevermined Marketplace fees
      * @param _marketplaceFee new marketplace fee 
-     */    
-    function setMarketplaceFee(
-        uint16 _marketplaceFee
-    ) virtual external;
-
-    /**
-     * @notice The governor can update the account receiving the Marketplace fees
-     * @param _feeReceiver The address receiving the fee 
+     * @param _feeReceiver The address receiving the fee      
      */
-    function setFeeReceiver(
+    function setMarketplaceFees(
+        uint256 _marketplaceFee,
         address _feeReceiver
     ) virtual external;
 
@@ -57,7 +51,7 @@ abstract contract INeverminedConfig {
      * @return the marketplace fee
      */
     function getMarketplaceFee()
-    external view virtual returns (uint16);
+    external view virtual returns (uint256);
 
     /**
      * @notice Returns the receiver address of the marketplace fee
