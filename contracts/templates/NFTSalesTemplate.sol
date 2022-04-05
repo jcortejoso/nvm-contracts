@@ -97,10 +97,11 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         conditionTypes.push(address(rewardCondition));
     }
 
-    mapping(address => mapping(address => mapping(bytes32 => uint256))) public sales;
+    // price for nft. First address is the seller, second is nft contract, third is token for setting the price
+    mapping(address => mapping(address => mapping(address => mapping(bytes32 => uint256)))) public nftPrice;
 
-    function nftSale(address nftAddress, bytes32 nftId, uint256 amount) external {
-        sales[msg.sender][nftAddress][nftId] = amount;
+    function nftSale(address nftAddress, bytes32 nftId, address token, uint256 amount) external {
+        nftPrice[msg.sender][nftAddress][token][nftId] = amount;
     }
 
     function checkParamsTransfer(bytes[] memory _params, bytes32 lockPaymentConditionId, bytes32 _did) internal view returns (address) {
@@ -122,8 +123,8 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
         require(_rewardAddress == conditionTypes[2], 'reward not escrow');
 
         // _receivers[0] should be the seller of NFT
-        require(sales[_receivers[0]][_nftContractAddress][_did] != 0, 'not on sale');
-        require(sales[_receivers[0]][_nftContractAddress][_did]*_nftAmount <= _amounts[0], 'too small price');
+        require(nftPrice[_receivers[0]][_nftContractAddress][_tokenAddress][_did] != 0, 'not on sale');
+        require(nftPrice[_receivers[0]][_nftContractAddress][_tokenAddress][_did]*_nftAmount <= _amounts[0], 'too small price');
         return _receivers[0];
     }
 

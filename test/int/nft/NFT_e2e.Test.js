@@ -433,7 +433,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
 
             await nft.setApprovalForAll(transferCondition.address, true, { from: collector1 })
-            await nftSalesTemplate.nftSale(nft.address, did, amounts2[0], { from: collector1 })
+            await nftSalesTemplate.nftSale(nft.address, did, token.address, amounts2[0], { from: collector1 })
 
             const result = await nftSalesTemplate.createAgreementFulfill(...Object.values(agreementFullfill), { from: collector2 })
 
