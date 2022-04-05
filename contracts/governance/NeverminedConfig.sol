@@ -4,15 +4,31 @@ pragma solidity ^0.8.0;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
-import './ConfigStorageV1.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
+import './INeverminedConfig.sol';
 
 contract NeverminedConfig is 
-    Initializable,
+    OwnableUpgradeable,
     AccessControlUpgradeable,
-    OwnableUpgradeable, 
-    ConfigStorageV1 
+    INeverminedConfig
 {
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    /////// NEVERMINED GOVERNABLE VARIABLES ////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    
+    // @notice The fee charged by Nevermined for using the Service Agreements.
+    // Integer representing a 2 decimal number. i.e 350 means a 3.5% fee
+    uint256 public marketplaceFee;
+
+    // @notice The address that will receive the fee charged by Nevermined per transaction
+    // See `marketplaceFee`
+    address public feeReceiver;
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
+    
     
     function initialize(
         address _owner,

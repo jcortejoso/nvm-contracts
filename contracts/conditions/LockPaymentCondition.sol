@@ -406,15 +406,6 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         if (!marketplaceReceiverIsIncluded) // Marketplace receiver not included as part of the fees
             return false;
         
-//        uint256 marketplaceAmount = nvmConfig.getMarketplaceFee().mul(calculateTotalAmount(_amounts)).div(10000);
-        // totalAmount = 1500
-        // marketplaceFee = 500 (5%)
-        // so marketplaceAmount = 75
-        // amounts [ 1425, 75 ]
-        //console.log('Total Amount = %d', totalAmount);
-//        console.log('Marketplace Fee = %d', nvmConfig.getMarketplaceFee());
-//        console.log('Marketplace Amount = %d', marketplaceAmount);
-        
         // Return if fee calculation is correct
         return nvmConfig.getMarketplaceFee().mul(calculateTotalAmount(_amounts)).div(10000) == _amounts[receiverIndex];
     }
