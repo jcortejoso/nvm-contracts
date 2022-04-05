@@ -8,6 +8,7 @@ const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 const BigNumber = require('bignumber.js')
 
+const NeverminedConfig = artifacts.require('NeverminedConfig')
 const AaveCreditTemplate = artifacts.require('AaveCreditTemplate')
 const NFTLockCondition = artifacts.require('NFT721LockCondition')
 const TransferNFTCondition = artifacts.require('DistributeNFTCollateralCondition')
@@ -44,6 +45,7 @@ contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
     const agreementFee = '15'
     const INTEREST_RATE_MODE = 1
 
+    const governor = accounts[2]
     const owner = accounts[9]
     const deployer = accounts[8]
     const treasuryAddress = accounts[5]
@@ -73,6 +75,9 @@ contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
         token = await NeverminedToken.new()
         await token.initialize(owner, owner)
 
+        const nvmConfig = await NeverminedConfig.new()
+        await nvmConfig.initialize(owner, governor)
+
         const didRegistryLibrary = await DIDRegistryLibrary.new()
         await DIDRegistry.link(didRegistryLibrary)
         didRegistry = await DIDRegistry.new()
@@ -97,6 +102,7 @@ contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
         await conditionStoreManager.initialize(
             agreementStoreManager.address,
             owner,
+            nvmConfig.address,
             { from: deployer }
         )
 

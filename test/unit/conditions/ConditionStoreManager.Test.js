@@ -6,6 +6,7 @@ const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
+const NeverminedConfig = artifacts.require('NeverminedConfig')
 const HashLockCondition = artifacts.require('HashLockCondition')
 const EpochLibrary = artifacts.require('EpochLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
@@ -17,12 +18,16 @@ const testUtils = require('../../helpers/utils.js')
 contract('ConditionStoreManager', (accounts) => {
     let hashLockCondition
     let conditionStoreManager
+    let nvmConfig
     const web3 = global.web3
     const conditionId = constants.bytes32.one
     const createRole = accounts[0]
     const owner = accounts[0]
+    const governor = accounts[0]
 
     before(async () => {
+        nvmConfig = await NeverminedConfig.new()
+        await nvmConfig.initialize(owner, governor)
         const epochLibrary = await EpochLibrary.new()
         await ConditionStoreManager.link(epochLibrary)
     })
@@ -38,6 +43,7 @@ contract('ConditionStoreManager', (accounts) => {
             await conditionStoreManager.initialize(
                 owner,
                 owner,
+                nvmConfig.address,
                 { from: owner }
             )
 
@@ -70,7 +76,7 @@ contract('ConditionStoreManager', (accounts) => {
             )
 
             // address should be set after correct setup
-            await conditionStoreManager.initialize(owner, owner)
+            await conditionStoreManager.initialize(owner, owner, nvmConfig.address)
 
             assert.strictEqual(
                 await conditionStoreManager.getCreateRole(),
@@ -89,7 +95,7 @@ contract('ConditionStoreManager', (accounts) => {
             const conditionStoreManager = await ConditionStoreManager.new()
 
             // act
-            await conditionStoreManager.initialize(owner, owner)
+            await conditionStoreManager.initialize(owner, owner, nvmConfig.address)
             await conditionStoreManager.delegateCreateRole(createRole, { from: owner })
 
             // assert
@@ -106,7 +112,7 @@ contract('ConditionStoreManager', (accounts) => {
 
             // setup with zero fails
             await assert.isRejected(
-                conditionStoreManager.initialize(owner, owner),
+                conditionStoreManager.initialize(owner, owner, owner),
                 constants.address.error.invalidAddress0x0
             )
         })
@@ -118,7 +124,7 @@ contract('ConditionStoreManager', (accounts) => {
 
             // setup with zero fails
             await assert.isRejected(
-                conditionStoreManager.initialize(owner, owner),
+                conditionStoreManager.initialize(owner, owner, owner),
                 constants.address.error.invalidAddress0x0
             )
         })
@@ -129,7 +135,7 @@ contract('ConditionStoreManager', (accounts) => {
             // setup with zero fails
             await assert.isRejected(
                 conditionStoreManager.initialize(),
-                constants.initialize.error.invalidNumberParamsGot0Expected2
+                constants.initialize.error.invalidNumberParamsGot0Expected3
             )
         })
 
@@ -139,7 +145,7 @@ contract('ConditionStoreManager', (accounts) => {
             // setup correctly
             const conditionStoreManager = await ConditionStoreManager.new()
 
-            await conditionStoreManager.initialize(owner, owner)
+            await conditionStoreManager.initialize(owner, owner, nvmConfig.address)
 
             assert.strictEqual(
                 await conditionStoreManager.getCreateRole(),
@@ -152,7 +158,8 @@ contract('ConditionStoreManager', (accounts) => {
             await assert.isRejected(
                 conditionStoreManager.initialize(
                     otherCreateRole,
-                    owner
+                    owner,
+                    nvmConfig.address
                 )
             )
             assert.strictEqual(
