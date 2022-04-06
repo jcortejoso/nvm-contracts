@@ -39,6 +39,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/nevermined-io/contracts',
-    version='1.99.0',
+    version='1.99.6',
     zip_safe=False,
 )
