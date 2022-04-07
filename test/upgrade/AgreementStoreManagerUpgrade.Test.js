@@ -57,6 +57,7 @@ contract('AgreementStoreManager', (accounts) => {
                 web3,
                 artifacts,
                 contracts: [
+                    'NeverminedConfig',
                     'DIDRegistry',
                     'ConditionStoreManager',
                     'TemplateStoreManager',
