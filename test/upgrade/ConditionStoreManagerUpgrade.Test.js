@@ -34,7 +34,7 @@ contract('ConditionStoreManager', (accounts) => {
         const addressBook = await deploy({
             web3,
             artifacts,
-            contracts: ['ConditionStoreManager'],
+            contracts: ['ConditionStoreManager', 'NeverminedConfig'],
             verbose
         })
 
