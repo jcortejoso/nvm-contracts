@@ -92,15 +92,11 @@ contract('Access Proof Template integration test', (accounts) => {
         url = constants.registry.url,
         checksum = constants.bytes32.one
     } = {}) {
-        // const orig1 = 222n
-        // const orig2 = 333n
-        const orig1 = 104206607015726662433686511170425485682n 
-        const orig2 = 140105864704875079533685643515230121760n
+        const orig1 = 222n
+        const orig2 = 333n
 
-        const buyerK = 0x89cdad7dcde9f3134e66560d1ab3b86d3ed245d94000b37c7ac677278an
-        const providerK = 0x4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa1n
-//        const buyerK = 123
-//        const providerK = 234
+        const buyerK = 123
+        const providerK = 234
 
         const data = await makeProof(orig1, orig2, buyerK, providerK)
 
