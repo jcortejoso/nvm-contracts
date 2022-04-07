@@ -161,12 +161,12 @@ async function initializeContracts({
         })
     }
 
-    if (contracts.indexOf('ConditionStoreManager') > -1) {
+    if (contracts.indexOf('ConditionStoreManager') > -1 && contracts.indexOf('NeverminedConfig') > -1) {
         addressBook.ConditionStoreManager = await zosCreate({
             contract: 'ConditionStoreManager',
             ctx,
             libraries: { EpochLibrary: epochLibrary },
-            args: [roles.deployer, roles.deployer, roles.governorWallet],
+            args: [roles.deployer, roles.deployer, getAddress('NeverminedConfig')],
             verbose
         })
     }
