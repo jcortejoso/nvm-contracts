@@ -451,6 +451,8 @@ async function setupContracts({
         )
         await tx.wait()
 
+        console.log('[NeverminedConfig] Marketplace Fees set to : ' + configMarketplaceFee)
+
         addresses.stage = 15
     }
 }

@@ -28,7 +28,7 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
     using SafeMathUpgradeable for uint256;
     
     DIDRegistry internal didRegistry;
-    INeverminedConfig internal nvmConfig;
+    INVMConfig internal nvmConfig;
     
     bytes32 constant public CONDITION_TYPE = keccak256('LockPaymentCondition');
     bytes32 constant public KEY_ASSET_RECEIVER = keccak256('_assetReceiverAddress');
@@ -82,7 +82,7 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         didRegistry = DIDRegistry(
             _didRegistryAddress
         );
-        nvmConfig = INeverminedConfig(
+        nvmConfig = INVMConfig(
             conditionStoreManager.getNvmConfigAddress()
         );
         

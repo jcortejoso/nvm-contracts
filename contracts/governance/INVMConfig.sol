@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
-abstract contract INeverminedConfig {
+abstract contract INVMConfig {
 
     bytes32 public constant GOVERNOR_ROLE = keccak256('NVM_GOVERNOR_ROLE');
     

@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
 import '../Common.sol';
 import '../libraries/EpochLibrary.sol';
 import './ConditionStoreLibrary.sol';
-import '../governance/INeverminedConfig.sol';
+import '../governance/INVMConfig.sol';
 
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';

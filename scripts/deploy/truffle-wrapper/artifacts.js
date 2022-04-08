@@ -63,6 +63,7 @@ async function exportArtifacts(contracts, addressBook, libraries) {
         const file = files.find(a => a.match(c))
         const contract = JSON.parse(fs.readFileSync(file))
         const artifact = createArtifact(c, contract, addressBook[c], implAddress, `v${version}`, libraries[c] || {})
+
         fs.writeFileSync(`artifacts/${c}.${network}.json`, JSON.stringify(artifact, null, 2))
     }
     fs.writeFileSync('artifacts/ready', '')

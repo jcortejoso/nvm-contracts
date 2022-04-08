@@ -5,12 +5,12 @@ pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import './INeverminedConfig.sol';
+import './INVMConfig.sol';
 
 contract NeverminedConfig is 
     OwnableUpgradeable,
     AccessControlUpgradeable,
-    INeverminedConfig
+INVMConfig
 {
 
     ///////////////////////////////////////////////////////////////////////////////////////
