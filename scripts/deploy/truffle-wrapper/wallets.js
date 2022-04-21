@@ -1,9 +1,7 @@
 const { hardhatArguments, web3, ethers } = require('hardhat')
 const network = hardhatArguments.network || 'hardhat'
-const { /* EthersAdapter, */ SafeFactory } = require('@gnosis.pm/safe-core-sdk')
+const { SafeFactory } = require('@gnosis.pm/safe-core-sdk')
 const EthersAdapter = require('@gnosis.pm/safe-ethers-lib').default
-
-console.log(EthersAdapter)
 
 const fs = require('fs')
 

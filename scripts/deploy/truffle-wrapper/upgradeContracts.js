@@ -75,17 +75,23 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet }) 
                 ]
                 const admin = new ethers.Contract(adminAddress, adminABI)
                 const tx = await admin.populateTransaction.upgrade(afact.address, address)
+                console.log(tx)
 
-                const ethAdapterOwner1 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(0), contractNetworks })
-                const ethAdapterOwner2 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(1), contractNetworks })
-                const safeSdk1 = await Safe.default.create({ ethAdapter: ethAdapterOwner1, safeAddress: roles.upgraderWallet, contractNetworks })
-                const safeTx = await safeSdk1.createTransaction({ ...tx, value: 0 })
-                const txHash = await safeSdk1.getTransactionHash(safeTx)
-                const res1 = await safeSdk1.approveTransactionHash(txHash)
-                await res1.transactionResponse?.wait()
-                const safeSdk2 = await Safe.default.create({ ethAdapter: ethAdapterOwner2, safeAddress: roles.upgraderWallet, contractNetworks })
-                const res2 = await safeSdk2.executeTransaction(safeTx)
-                await res2.transactionResponse?.wait()
+                try {
+                    const ethAdapterOwner1 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(0), contractNetworks })
+                    const ethAdapterOwner2 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(1), contractNetworks })
+                    const safeSdk1 = await Safe.default.create({ ethAdapter: ethAdapterOwner1, safeAddress: roles.upgraderWallet, contractNetworks })
+                    const safeTx = await safeSdk1.createTransaction({ ...tx, value: 0 })
+                    const txHash = await safeSdk1.getTransactionHash(safeTx)
+                    const res1 = await safeSdk1.approveTransactionHash(txHash)
+                    await res1.transactionResponse?.wait()
+                    const safeSdk2 = await Safe.default.create({ ethAdapter: ethAdapterOwner2, safeAddress: roles.upgraderWallet, contractNetworks })
+                    const res2 = await safeSdk2.executeTransaction(safeTx)
+                    await res2.transactionResponse?.wait()
+                    console.log('Succesfully executed multisig tx')
+                } catch (err) {
+
+                }
             }
         }
     }
