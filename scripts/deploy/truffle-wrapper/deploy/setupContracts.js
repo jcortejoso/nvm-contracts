@@ -443,15 +443,14 @@ async function setupContracts({
         const configMarketplaceFee = Number(process.env.NVM_MARKETPLACE_FEE || '0')
         const configFeeReceiver = process.env.NVM_RECEIVER_FEE || ZeroAddress
 
-        const isGovernor = await nvmConfig.isGovernor(roles.governorWallet)
-        console.log('Is governorWallet NeverminedConfig governor? ' + isGovernor)
-
         const tx = await nvmConfig.setMarketplaceFees(
-            configMarketplaceFee, configFeeReceiver, { from: roles.governorWallet }
+            configMarketplaceFee, configFeeReceiver, { from: roles.deployer }
         )
         await tx.wait()
 
         console.log('[NeverminedConfig] Marketplace Fees set to : ' + configMarketplaceFee)
+        const isGovernor = await nvmConfig.isGovernor(roles.governorWallet)
+        console.log('Is governorWallet NeverminedConfig governor? ' + isGovernor)
 
         addresses.stage = 15
     }

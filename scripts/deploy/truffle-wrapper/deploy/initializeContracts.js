@@ -96,7 +96,7 @@ async function initializeContracts({
         addressBook.NeverminedConfig = await zosCreate({
             contract: 'NeverminedConfig',
             ctx,
-            args: [roles.ownerWallet, roles.governorWallet],
+            args: [roles.ownerWallet, roles.deployer],
             verbose
         })
     }

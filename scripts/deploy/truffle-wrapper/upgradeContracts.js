@@ -1,9 +1,9 @@
 const { upgrades, ethers } = require('hardhat')
 const { readArtifact, updateArtifact, writeArtifact } = require('./artifacts')
 const evaluateContracts = require('./evaluateContracts.js')
-const { EthersAdapter } = require('@gnosis.pm/safe-core-sdk')
 const Safe = require('@gnosis.pm/safe-core-sdk')
 const { loadWallet } = require('./wallets')
+const EthersAdapter = require('@gnosis.pm/safe-ethers-lib').default
 
 async function upgradeContracts({ contracts: origContracts, verbose, testnet }) {
     const table = {}
