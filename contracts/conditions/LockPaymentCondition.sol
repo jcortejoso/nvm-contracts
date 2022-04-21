@@ -261,7 +261,7 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         );
 
         if (_tokenAddress != address(0))
-            _transferERC20(_rewardAddress, _tokenAddress, calculateTotalAmount(_amounts));
+            _transferERC20Proxy(_account, _rewardAddress, _tokenAddress, calculateTotalAmount(_amounts));
         else
             _transferETH(_rewardAddress, calculateTotalAmount(_amounts));
 
