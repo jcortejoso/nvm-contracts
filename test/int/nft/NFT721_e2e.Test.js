@@ -122,6 +122,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
             didRegistry.address,
             { from: deployer }
         )
+        await lockPaymentCondition.grantProxyRole(agreementStoreManager.address, { from: owner })
 
         transferCondition = await TransferNFTCondition.new()
         await transferCondition.methods['initialize(address,address,address,address)'](
@@ -131,6 +132,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
             lockPaymentCondition.address,
             { from: deployer }
         )
+        await transferCondition.grantProxyRole(agreementStoreManager.address, { from: owner })
 
         escrowCondition = await EscrowPaymentCondition.new()
         await escrowCondition.initialize(
@@ -244,6 +246,10 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         const conditionIdEscrow = await escrowCondition.hashValues(did, _amounts, _receivers, _buyer, escrowCondition.address, token.address, fullIdLockPayment, fullIdTransferNFT)
         const fullIdEscrow = await escrowCondition.generateId(agreementId, conditionIdEscrow)
 
+        const lockParams = await lockPaymentCondition.encodeParams(did, escrowCondition.address, token.address, _amounts, _receivers)
+        const transferParams = await transferCondition.encodeParams(did, _seller, _buyer, _numberNFTs, fullIdLockPayment, nft.address)
+        const escrowParams = await escrowCondition.encodeParams(did, _amounts, _receivers, _buyer, escrowCondition.address, token.address, fullIdLockPayment, [fullIdTransferNFT])
+
         const nftSalesAgreement = {
             initAgreementId,
             did,
@@ -256,6 +262,14 @@ contract('End to End NFT721 Scenarios', (accounts) => {
             timeOuts: [0, 0, 0],
             accessConsumer: _buyer
         }
+        const agreementFullfill = {
+            initAgreementId,
+            did,
+            timeLocks: [0, 0, 0],
+            timeOuts: [0, 0, 0],
+            accessConsumer: _buyer,
+            params: [lockParams, transferParams, escrowParams]
+        }
         return {
             conditionIds: [
                 fullIdLockPayment,
@@ -263,6 +277,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                 fullIdEscrow
             ],
             agreementId,
+            agreementFullfill,
             nftSalesAgreement
         }
     }
@@ -392,7 +407,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         describe('As collector1 I want to sell my NFT to a different collector2 for a higher price', () => {
             it('As collector2 I setup an agreement for buying an NFT to collector1', async () => {
                 // Collector2: Create NFT sales agreement
-                const { nftSalesAgreement, conditionIds, agreementId: agreementId2 } = await prepareNFTSaleAgreement({
+                const { agreementFullfill, conditionIds, agreementId: agreementId2 } = await prepareNFTSaleAgreement({
                     did: did,
                     _amounts: amounts2,
                     _receivers: receivers2,
@@ -406,42 +421,26 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                 await token.mint(collector2, nftPrice2, { from: owner })
                 await token.approve(lockPaymentCondition.address, nftPrice2, { from: collector2 })
                 await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
+                await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
 
-                const extendedAgreement = {
-                    ...nftSalesAgreement,
-                    _idx: 0,
-                    _receiverAddress: escrowCondition.address,
-                    _tokenAddress: token.address,
-                    _amounts: amounts2,
-                    _receivers: receivers2
-                }
+                await nft.setApprovalForAll(transferCondition.address, true, { from: collector1 })
+                await nftSalesTemplate.nftSale(nft.address, did, token.address, amounts2[0], { from: collector1 })
 
-                const result = await nftSalesTemplate.createAgreementAndPayEscrow(...Object.values(extendedAgreement), { from: collector2 })
+                const result = await nftSalesTemplate.createAgreementFulfill(...Object.values(agreementFullfill), { from: collector2 })
 
                 testUtils.assertEmitted(result, 1, 'AgreementCreated')
 
                 const { state } = await conditionStoreManager.getCondition(conditionIds[0])
                 assert.strictEqual(state.toNumber(), constants.condition.state.fulfilled)
-                const collector1Balance = await getBalance(token, collector2)
-                assert.strictEqual(collector1Balance, 0)
-
-                await nft.setApprovalForAll(transferCondition.address, true, { from: collector1 })
-                // Collector1: Transfer the NFT
-                await transferCondition.fulfill(
-                    agreementId2,
-                    did,
-                    collector2,
-                    numberNFTs2,
-                    conditionIds[0],
-                    nft.address,
-                    { from: collector1 })
-                await nft.setApprovalForAll(transferCondition.address, false, { from: collector1 })
 
                 let condition = await conditionStoreManager.getCondition(conditionIds[1])
                 assert.strictEqual(condition[1].toNumber(), constants.condition.state.fulfilled)
 
                 const nftOwner = await nft.ownerOf(did)
                 assert.strictEqual(nftOwner, collector2)
+
+                const collector1Balance = await getBalance(token, collector2)
+                assert.strictEqual(collector1Balance, 0)
 
                 // Collector1 & Artist: Get the payment
                 await escrowCondition.fulfill(
@@ -455,7 +454,6 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                     conditionIds[0],
                     conditionIds[1],
                     { from: collector1 })
-
                 condition = await conditionStoreManager.getCondition(conditionIds[2])
                 assert.strictEqual(condition[1].toNumber(), constants.condition.state.fulfilled)
 

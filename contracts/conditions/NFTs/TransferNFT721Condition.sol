@@ -26,6 +26,16 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
     NFT721Upgradeable private erc721;
     address private _lockConditionAddress;
 
+    bytes32 public constant PROXY_ROLE = keccak256('PROXY_ROLE');
+
+    function grantProxyRole(address _address) public onlyOwner {
+        grantRole(PROXY_ROLE, _address);
+    }
+
+    function revokeProxyRole(address _address) public onlyOwner {
+        revokeRole(PROXY_ROLE, _address);
+    }
+
    /**
     * @notice initialize init the contract with the following parameters
     * @dev this function is called only once during the contract
@@ -62,6 +72,10 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
             _ercAddress
         );
         _lockConditionAddress = _lockNFTConditionAddress;
+
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(DEFAULT_ADMIN_ROLE, _owner);
+
     }
 
    /**
@@ -90,6 +104,17 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         return keccak256(abi.encode(_did, _nftHolder, _nftReceiver, _nftAmount, _lockCondition, _contract));
     }
 
+    function encodeParams(
+        bytes32 _did,
+        address _nftHolder,
+        address _nftReceiver,
+        uint256 _nftAmount,
+        bytes32 _lockPaymentCondition,
+        address _nftContractAddress
+    ) external pure returns (bytes memory) {
+        return abi.encode(_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress);
+    }
+
     /**
      * @notice fulfill the transfer NFT condition
      * @dev Fulfill method transfer a certain amount of NFTs 
@@ -116,10 +141,46 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
         nonReentrant
         returns (ConditionStoreLibrary.ConditionState)
     {
+        return fulfillInternal(msg.sender, _agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, _contract);
+    }
+
+    function fulfillProxy(
+        address _account,
+        bytes32 _agreementId,
+        bytes memory params
+    )
+    external
+    payable
+    nonReentrant
+    {
+        bytes32 _did;
+        address _nftReceiver;
+        address _nftHolder;
+        uint256 _nftAmount;
+        bytes32 _lockPaymentCondition;
+        address _nftContractAddress;
+        (_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress) = abi.decode(params, (bytes32, address, address, uint256, bytes32, address));
+
+        require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
+        fulfillInternal(_account, _agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress);
+    }
+
+    function fulfillInternal(
+        address _account,
+        bytes32 _agreementId,
+        bytes32 _did,
+        address _nftReceiver,
+        uint256 _nftAmount,
+        bytes32 _lockPaymentCondition,
+        address _contract
+    )
+        internal
+        returns (ConditionStoreLibrary.ConditionState)
+    {
 
         bytes32 _id = generateId(
             _agreementId,
-            hashValues(_did, msg.sender, _nftReceiver, _nftAmount, _lockPaymentCondition, _contract)
+            hashValues(_did, _account, _nftReceiver, _nftAmount, _lockPaymentCondition, _contract)
         );
 
         address lockConditionTypeRef;
@@ -132,19 +193,10 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
             'LockCondition needs to be Fulfilled'
         );
 
-        // Check that nft receiver is the same enabled in the lock payment condition
-        /*
-        require(
-            conditionStoreManager.bytes32ToAddress(
-                conditionStoreManager.getMappingValue(_lockPaymentCondition, keccak256('_assetReceiverAddress'))
-            ) == _nftReceiver,
-            'Invalid receiver'
-        );*/
-        
         IERC721Upgradeable token = IERC721Upgradeable(_contract);
         address nftOwner = token.ownerOf(uint256(_did));
         require(
-            _nftAmount == 0 || (_nftAmount == 1 && nftOwner == msg.sender),        
+            _nftAmount == 0 || (_nftAmount == 1 && nftOwner == _account),
             'Not enough balance'
         );
 
