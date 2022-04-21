@@ -1,6 +1,10 @@
 const { hardhatArguments, web3, ethers } = require('hardhat')
 const network = hardhatArguments.network || 'hardhat'
-const { EthersAdapter, SafeFactory } = require('@gnosis.pm/safe-core-sdk')
+const { /* EthersAdapter, */ SafeFactory } = require('@gnosis.pm/safe-core-sdk')
+const EthersAdapter = require('@gnosis.pm/safe-ethers-lib').default
+
+console.log(EthersAdapter)
+
 const fs = require('fs')
 
 async function loadWallet({ makeWallet }) {
@@ -33,18 +37,13 @@ async function loadWallet({ makeWallet }) {
 
         const ethAdapterOwner1 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(0), contractNetworks })
         const safeFactory = await SafeFactory.create({ ethAdapter: ethAdapterOwner1, contractNetworks })
-        const safe1 = await safeFactory.deploySafe({
+        const config1 = {
             owners: [accounts[0], accounts[1]],
             threshold: 2
-        })
-        const safe2 = await safeFactory.deploySafe({
-            owners: [accounts[0], accounts[1]],
-            threshold: 2
-        })
-        const safe3 = await safeFactory.deploySafe({
-            owners: [accounts[0], accounts[1]],
-            threshold: 2
-        })
+        }
+        const safe1 = await safeFactory.deploySafe({safeAccountConfig: config1})
+        const safe2 = await safeFactory.deploySafe({safeAccountConfig: config1})
+        const safe3 = await safeFactory.deploySafe({safeAccountConfig: config1})
         wallets = [
             { name: 'owner', account: safe1.getAddress() },
             { name: 'upgrader', account: safe2.getAddress() },
