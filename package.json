@@ -103,7 +103,7 @@
     "@nomiclabs/hardhat-truffle5": "^2.0.3",
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@openzeppelin/contracts-upgradeable": "^4.3.0",
-    "@openzeppelin/hardhat-upgrades": "^1.13.0",
+    "@openzeppelin/hardhat-upgrades": "^1.17.0",
     "bignumber.js": "^9.0.0",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",

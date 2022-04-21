@@ -38,6 +38,10 @@ contract NFTAccessSwapTemplate is BaseEscrowTemplate {
     INFTEscrow internal rewardCondition;
     AccessProofCondition internal accessCondition;
 
+    function id() public returns (uint) {
+        return 0;
+    }
+
 
    /**
     * @notice initialize init the 
@@ -97,4 +101,5 @@ contract NFTAccessSwapTemplate is BaseEscrowTemplate {
         conditionTypes.push(address(rewardCondition));
         conditionTypes.push(address(accessCondition));
     }
+
 }
