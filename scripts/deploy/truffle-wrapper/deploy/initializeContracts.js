@@ -68,9 +68,37 @@ async function initializeContracts({
         // Token: '0xc778417e063141139fce010982780140aa0cd5ab'
     }
 
+    // We load some environment variables that affect the configuration of a Nevermined deployment
+    // This configuration can be modified later via interaction with the NeverminedConfig contract
+    const configMarketplaceFee = Number(process.env.NVM_MARKETPLACE_FEE || '0')
+    const configFeeReceiver = process.env.NVM_RECEIVER_FEE || ZeroAddress
+
+    if (configMarketplaceFee < 0 || configMarketplaceFee > 10000) {
+        console.error('NVM_MARKETPLACE_FEE can not be lower than 0 or higher than 10000 (100%)\nPlease refer to the ReleaseProcess.md documentation')
+        process.exit(1)
+    }
+
+    if (configMarketplaceFee > 0 && configFeeReceiver === ZeroAddress) {
+        console.error('If NVM_MARKETPLACE_FEE is higher than 0 you need to specify a valid address to receive the marketplace fees')
+        process.exit(1)
+    }
+
+    console.log('NVM Config: [governorAddress] = ' + roles.governorWallet)
+    console.log('NVM Config: [marketplaceFee] = ' + configMarketplaceFee)
+    console.log('NVM Config: [feeReceiver] = ' + configFeeReceiver)
+
     // returns either the address from the address book or the address of the manual set proxies
     const getAddress = (contract) => {
         return addressBook[contract] || proxies[contract]
+    }
+
+    if (contracts.indexOf('NeverminedConfig') > -1) {
+        addressBook.NeverminedConfig = await zosCreate({
+            contract: 'NeverminedConfig',
+            ctx,
+            args: [roles.ownerWallet, roles.governorWallet],
+            verbose
+        })
     }
 
     if (contracts.indexOf('NFTUpgradeable') > -1) {
@@ -133,12 +161,12 @@ async function initializeContracts({
         })
     }
 
-    if (contracts.indexOf('ConditionStoreManager') > -1) {
+    if (contracts.indexOf('ConditionStoreManager') > -1 && contracts.indexOf('NeverminedConfig') > -1) {
         addressBook.ConditionStoreManager = await zosCreate({
             contract: 'ConditionStoreManager',
             ctx,
             libraries: { EpochLibrary: epochLibrary },
-            args: [roles.deployer, roles.deployer],
+            args: [roles.deployer, roles.deployer, getAddress('NeverminedConfig')],
             verbose
         })
     }

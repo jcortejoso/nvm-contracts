@@ -13,6 +13,7 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
+import 'hardhat/console.sol';
 
 /**
  * @title Lock Payment Condition
@@ -25,9 +26,11 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condition, Common, AccessControlUpgradeable, ICondition {
 
     using SafeERC20Upgradeable for IERC20Upgradeable;
-
+    using SafeMathUpgradeable for uint256;
+    
     DIDRegistry internal didRegistry;
-
+    INVMConfig internal nvmConfig;
+    
     bytes32 constant public CONDITION_TYPE = keccak256('LockPaymentCondition');
     bytes32 constant public KEY_ASSET_RECEIVER = keccak256('_assetReceiverAddress');
 
@@ -79,6 +82,9 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         
         didRegistry = DIDRegistry(
             _didRegistryAddress
+        );
+        nvmConfig = INVMConfig(
+            conditionStoreManager.getNvmConfigAddress()
         );
         
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
@@ -180,6 +186,11 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             'Royalties are not satisfied'
         );
 
+        require(
+            areMarketplaceFeesIncluded(_amounts, _receivers),
+            'Invalid marketplace fees'
+        );        
+        
         (IDynamicPricing.DynamicPricingState externalState, uint256 externalAmount, address whoCanClaim) =
             IDynamicPricing(_externalContract).getStatus(_remoteId);
 
@@ -243,9 +254,14 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             didRegistry.areRoyaltiesValid(_did, _amounts, _receivers),
             'Royalties are not satisfied'
         );
+        
+        require(
+            areMarketplaceFeesIncluded(_amounts, _receivers), 
+            'Invalid marketplace fees'
+        );
 
         if (_tokenAddress != address(0))
-            _transferERC20Proxy(_account, _rewardAddress, _tokenAddress, calculateTotalAmount(_amounts));
+            _transferERC20(_rewardAddress, _tokenAddress, calculateTotalAmount(_amounts));
         else
             _transferETH(_rewardAddress, calculateTotalAmount(_amounts));
 
@@ -253,19 +269,12 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
             _agreementId,
             hashValues(_did, _rewardAddress, _tokenAddress, _amounts, _receivers)
         );
+        
         ConditionStoreLibrary.ConditionState state = super.fulfill(
             _id,
             ConditionStoreLibrary.ConditionState.Fulfilled
         );
 
-        if (state == ConditionStoreLibrary.ConditionState.Fulfilled)    {
-            conditionStoreManager.updateConditionMapping(
-                _id,
-                KEY_ASSET_RECEIVER,
-                Common.addressToBytes32(_account)
-            );
-        }
-        
         emit Fulfilled(
             _agreementId, 
             _did,
@@ -353,6 +362,33 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
                 'Invalid external contract'
         );
         _;
-    }    
-    
+    }
+
+    function areMarketplaceFeesIncluded(
+        uint256[] memory _amounts, 
+        address[] memory _receivers
+    )
+    internal
+    view
+    returns (bool)
+    {
+        if (nvmConfig.getMarketplaceFee() == 0)
+            return true;
+
+        bool marketplaceReceiverIsIncluded = false;
+        uint receiverIndex = 0;
+        
+        for(uint i = 0; i < _receivers.length; i++)    {
+            if (_receivers[i] == nvmConfig.getFeeReceiver())    {
+                marketplaceReceiverIsIncluded = true;
+                receiverIndex = i;
+            }
+        }
+        if (!marketplaceReceiverIsIncluded) // Marketplace receiver not included as part of the fees
+            return false;
+        
+        // Return if fee calculation is correct
+        return nvmConfig.getMarketplaceFee().mul(calculateTotalAmount(_amounts)).div(10000) == _amounts[receiverIndex];
+    }
+
 }

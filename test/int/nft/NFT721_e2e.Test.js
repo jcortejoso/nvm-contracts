@@ -10,6 +10,7 @@ chai.use(chaiAsPromised)
 const NFTAccessTemplate = artifacts.require('NFTAccessTemplate')
 const NFTSalesTemplate = artifacts.require('NFTSalesTemplate')
 
+const NeverminedConfig = artifacts.require('NeverminedConfig')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const TransferNFTCondition = artifacts.require('TransferNFT721Condition')
 const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
@@ -87,6 +88,9 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         token = await NeverminedToken.new()
         await token.initialize(owner, owner)
 
+        const nvmConfig = await NeverminedConfig.new()
+        await nvmConfig.initialize(owner, owner)
+
         nft = await TestERC721.new({ from: deployer })
         await nft.initialize({ from: owner })
 
@@ -112,6 +116,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         await conditionStoreManager.initialize(
             agreementStoreManager.address,
             owner,
+            nvmConfig.address,
             { from: deployer }
         )
 

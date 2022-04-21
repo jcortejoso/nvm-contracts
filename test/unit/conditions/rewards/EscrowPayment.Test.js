@@ -11,6 +11,7 @@ const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
 const NeverminedToken = artifacts.require('NeverminedToken')
+const NeverminedConfig = artifacts.require('NeverminedConfig')
 const LockPaymentCondition = artifacts.require('LockPaymentCondition')
 const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
 
@@ -37,6 +38,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, nf
         let lockPaymentCondition
         let escrowPayment
         let didRegistry
+        let nvmConfig
 
         const createRole = accounts[0]
         const owner = accounts[9]
@@ -62,10 +64,14 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, nf
             conditionType = testUtils.generateId()
         } = {}) {
             if (!escrowPayment) {
+                nvmConfig = await NeverminedConfig.new()
+                await nvmConfig.initialize(owner, owner)
+
                 conditionStoreManager = await ConditionStoreManager.new()
                 await conditionStoreManager.initialize(
                     createRole,
                     owner,
+                    nvmConfig.address,
                     { from: owner }
                 )
 
@@ -113,6 +119,7 @@ function escrowTest(EscrowPaymentCondition, LockPaymentCondition, Token, nft, nf
                 await conditionStoreManager.initialize(
                     createRole,
                     owner,
+                    nvmConfig.address,
                     { from: owner }
                 )
 

@@ -21,11 +21,27 @@ We define four roles:
 - `upgrader`: represented as `accounts[1]`
 - `upgraderWallet`: represented as the `upgrader` from `wallets.json`
 - `ownerWallet`: represented as the `owner` from `wallets.json`
+- `governorWallet`: represented as the `governor` from `wallets.json`
 
 ### Flags
 
 - `--testnet` Deploys the Dispenser, the NeverminedToken and the contracts from `contracts.json`
 - `--with-token` Deploys the NeverminedToken and the contracts from `contracts.json`
+
+### Nevermined Configuration
+
+The set of Nevermined contracts can be deployed in different networks and interact with several use cases.
+Each of these different scenarios could require different configurations so to facilitate that Nevermined provides an
+on-chain configuration mechanism allowing the governance (via DAO or similar) of a Nevermined deployment.
+To see all the available possibilities please see the `INeverminedConfig` interface.
+
+During the deployment of Nevermined all of these parameters can be specified allowing a bespoke environment configuration.
+This can be done via the definition of the following environment variables:
+
+* `NVM_MARKETPLACE_FEE`. It refers to the fee charged by Nevermined for using the Service Agreements. It uses an integer number representing a 2 decimal number. It means 1450 means 14.50% fee. The value must be beteen 0 and 10000 (100%). See `marketplaceFee` variable.
+* `NVM_RECEIVER_FEE`. It refers to the address that will receive the fee charged by Nevermined per transaction. See `feeReceiver` variable
+
+
 
 #### Deployer
 

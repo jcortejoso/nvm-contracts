@@ -1,4 +1,5 @@
 /* global artifacts */
+const NeverminedConfig = artifacts.require('NeverminedConfig')
 const EpochLibrary = artifacts.require('EpochLibrary')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 const DIDRegistry = artifacts.require('DIDRegistry')
@@ -24,6 +25,9 @@ const deployManagers = async function(deployer, owner) {
 
     const token = await NeverminedToken.new({ from: deployer })
     await token.initialize(owner, owner)
+
+    const nvmConfig = await NeverminedConfig.new({ from: deployer })
+    await nvmConfig.initialize(owner, owner, { from: deployer })
 
     const nft = await NFT.new()
     await nft.initialize('')
@@ -53,6 +57,7 @@ const deployManagers = async function(deployer, owner) {
     await conditionStoreManager.initialize(
         agreementStoreManager.address,
         owner,
+        nvmConfig.address,
         { from: deployer }
     )
 

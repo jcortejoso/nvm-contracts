@@ -1,6 +1,6 @@
 pragma solidity ^0.8.0;
 // Copyright 2022 Nevermined AG.
-// This product includes software developed at BigchainDB GmbH and Ocean Protocol
+
 // SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
@@ -8,6 +8,7 @@ pragma solidity ^0.8.0;
 import '../Common.sol';
 import '../libraries/EpochLibrary.sol';
 import './ConditionStoreLibrary.sol';
+import '../governance/INVMConfig.sol';
 
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
@@ -38,6 +39,8 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
     ConditionStoreLibrary.ConditionList internal conditionList;
     EpochLibrary.EpochList internal epochList;
 
+    address internal nvmConfigAddress;
+    
     event ConditionCreated(
         bytes32 indexed _id,
         address indexed _typeRef,
@@ -84,12 +87,15 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
 
     /**
      * @dev initialize ConditionStoreManager Initializer
-     *      Initialize Ownable. Only on contract creation, 
-     * @param _owner refers to the owner of the contract
+     *      Initialize Ownable. Only on contract creation,
+     * @param _creator refers to the creator of the contract
+     * @param _owner refers to the owner of the contract           
+     * @param _nvmConfigAddress refers to the contract address of `NeverminedConfig`
      */
     function initialize(
         address _creator,
-        address _owner
+        address _owner,
+        address _nvmConfigAddress
     )
         public
         initializer
@@ -103,10 +109,17 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
             'Role already assigned'
         );
 
+        require(
+            _nvmConfigAddress != address(0), 
+                'Invalid Address'
+        );
+        
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
         createRole = _creator;
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
+        
+        nvmConfigAddress= _nvmConfigAddress;
     }
 
     /**
@@ -122,6 +135,18 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
         return createRole;
     }
 
+    /**
+     * @dev getNvmConfigAddress get the address of the NeverminedConfig contract
+     * @return NeverminedConfig contract address
+     */
+    function getNvmConfigAddress()
+    external
+    view
+    returns (address)
+    {
+        return nvmConfigAddress;
+    }    
+    
     /**
      * @dev delegateCreateRole only owner can delegate the 
      *      create condition role to a different address

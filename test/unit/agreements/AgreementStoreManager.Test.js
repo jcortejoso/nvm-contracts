@@ -7,6 +7,7 @@ const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
+const NeverminedConfig = artifacts.require('NeverminedConfig')
 const Common = artifacts.require('Common')
 const EpochLibrary = artifacts.require('EpochLibrary')
 const ConditionStoreManager = artifacts.require('ConditionStoreManager')
@@ -48,6 +49,9 @@ contract('AgreementStoreManager', (accounts) => {
             token = await NeverminedToken.new({ from: deployer })
             await token.initialize(owner, owner)
 
+            const nvmConfig = await NeverminedConfig.new()
+            await nvmConfig.initialize(owner, owner)
+
             const didRegistryLibrary = await DIDRegistryLibrary.new()
             await DIDRegistry.link(didRegistryLibrary)
             didRegistry = await DIDRegistry.new()
@@ -75,6 +79,7 @@ contract('AgreementStoreManager', (accounts) => {
             await conditionStoreManager.initialize(
                 agreementStoreManager.address,
                 owner,
+                nvmConfig.address,
                 { from: deployer }
             )
             common = await Common.new()

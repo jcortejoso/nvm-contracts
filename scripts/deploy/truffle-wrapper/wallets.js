@@ -8,7 +8,8 @@ async function loadWallet({ makeWallet }) {
     console.log('Account', accounts)
     let wallets = [
         { name: 'owner', account: accounts[0] },
-        { name: 'upgrader', account: accounts[0] }
+        { name: 'upgrader', account: accounts[0] },
+        { name: 'governor', account: accounts[0] }
     ]
     let contractNetworks = {}
     if (makeWallet) {
@@ -40,9 +41,14 @@ async function loadWallet({ makeWallet }) {
             owners: [accounts[0], accounts[1]],
             threshold: 2
         })
+        const safe3 = await safeFactory.deploySafe({
+            owners: [accounts[0], accounts[1]],
+            threshold: 2
+        })
         wallets = [
             { name: 'owner', account: safe1.getAddress() },
-            { name: 'upgrader', account: safe2.getAddress() }
+            { name: 'upgrader', account: safe2.getAddress() },
+            { name: 'governor', account: safe3.getAddress() }
         ]
         fs.writeFileSync(`wallets_${network}.json`, JSON.stringify({ wallets, contractNetworks }, null, 2))
     } else {
@@ -58,8 +64,10 @@ async function loadWallet({ makeWallet }) {
     const roles = {
         deployer: accounts[0],
         upgrader: accounts[1],
+        governor: accounts[2],
         ownerWallet: (wallets.find(a => a.name === 'owner') || { account: accounts[0] }).account,
         upgraderWallet: (wallets.find(a => a.name === 'upgrader') || { account: accounts[1] }).account,
+        governorWallet: (wallets.find(a => a.name === 'governor') || { account: accounts[2] }).account,
         contractNetworks
     }
     return { roles, contractNetworks }
