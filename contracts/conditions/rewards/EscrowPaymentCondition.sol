@@ -112,6 +112,35 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         );
     }
     
+    function encodeParams(
+        bytes32 _did,
+        uint256[] memory _amounts,
+        address[] memory _receivers,
+        address _returnAddress,
+        address _lockPaymentAddress,
+        address _tokenAddress,
+        bytes32 _lockCondition,
+        bytes32[] memory _releaseConditions
+    )
+    public pure
+    returns (bytes memory)
+    {
+        require(
+            _amounts.length == _receivers.length,
+            'Amounts and Receivers arguments have wrong length'
+        );
+        return abi.encode(
+            _did,
+            _amounts,
+            _receivers,
+            _returnAddress,
+            _lockPaymentAddress, 
+            _tokenAddress,
+            _lockCondition,
+            _releaseConditions
+        );
+    }
+    
     function hashValues(
         bytes32 _did,
         uint256[] memory _amounts,
