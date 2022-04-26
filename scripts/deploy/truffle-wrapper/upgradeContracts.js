@@ -88,7 +88,6 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet, fa
                 transactions.push(tx)
 
                 try {
-                    /*
                     const ethAdapterOwner1 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(0), contractNetworks })
                     const ethAdapterOwner2 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(1), contractNetworks })
                     const safeSdk1 = await Safe.default.create({ ethAdapter: ethAdapterOwner1, safeAddress: roles.upgraderWallet, contractNetworks })
@@ -100,7 +99,6 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet, fa
                     const res2 = await safeSdk2.executeTransaction(safeTx)
                     await res2.transactionResponse?.wait()
                     console.log('Succesfully executed multisig tx')
-                    */
                 } catch (err) {
                     console.log('Multisig tx to execute for signers')
                     console.log(tx)

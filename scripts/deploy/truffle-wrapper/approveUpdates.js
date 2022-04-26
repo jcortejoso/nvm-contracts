@@ -7,14 +7,14 @@ const { ethers } = require('hardhat')
 async function main() {
     const { roles, contractNetworks } = await loadWallet({})
     const transactions = JSON.parse(fs.readFileSync('transactions.json'))
-    for (let tx of transactions) {
+    for (const tx of transactions) {
         const ethAdapterOwner = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(0), contractNetworks })
         const safeSdk = await Safe.default.create({ ethAdapter: ethAdapterOwner, safeAddress: roles.upgraderWallet, contractNetworks })
         const safeTx = await safeSdk.createTransaction({ ...tx, value: 0 })
         const txHash = await safeSdk.getTransactionHash(safeTx)
         const res = await safeSdk.approveTransactionHash(txHash)
         await res.transactionResponse?.wait()
-        console.log(`Executed transaction`)
+        console.log('Executed transaction')
     }
 }
 
