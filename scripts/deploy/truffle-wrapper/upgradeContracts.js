@@ -48,6 +48,9 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet }) 
             taskBook[c] = await writeArtifact(c, contract, afact.libraries)
         } catch (e) {
             console.log('Cannot upgrade', e)
+            if (fail) {
+                process.exit(-1)
+            }
             const address = await upgrades.prepareUpgrade(afact.address, C, { unsafeAllowLinkedLibraries: true })
             taskBook[c] = await updateArtifact(c, afact.address, address, afact.libraries)
             const prevAddress = await upgrades.erc1967.getImplementationAddress(afact.address)

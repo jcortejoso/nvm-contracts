@@ -17,5 +17,7 @@ npx hardhat run ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js --net
 git checkout $BRANCH
 yarn
 
+export FAIL=true
+
 npx hardhat run ./scripts/deploy/truffle-wrapper/upgradeContractsWrapper.js --network external || exit 1
 npx hardhat run ./scripts/deploy/truffle-wrapper/upgradePlonkVerifier.js --network external || exit 1
