@@ -3,6 +3,7 @@
 export BASE=v1.3.6
 export BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
+rm -rf artifacts/*.external.json deploy-cache.json
 rm -f .openzeppelin/unknown-31337.json
 git checkout $BASE
 yarn
