@@ -4,6 +4,7 @@ const evaluateContracts = require('./evaluateContracts.js')
 const Safe = require('@gnosis.pm/safe-core-sdk')
 const { loadWallet } = require('./wallets')
 const EthersAdapter = require('@gnosis.pm/safe-ethers-lib').default
+const fs = require('fs')
 
 async function upgradeContracts({ contracts: origContracts, verbose, testnet, fail }) {
     const table = {}
@@ -25,6 +26,8 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet, fa
     })
 
     const taskBook = {}
+
+    const transactions = []
 
     const { roles, contractNetworks } = await loadWallet({})
 
@@ -82,8 +85,10 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet, fa
                 ]
                 const admin = new ethers.Contract(adminAddress, adminABI)
                 const tx = await admin.populateTransaction.upgrade(afact.address, address)
+                transactions.push(tx)
 
                 try {
+                    /*
                     const ethAdapterOwner1 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(0), contractNetworks })
                     const ethAdapterOwner2 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(1), contractNetworks })
                     const safeSdk1 = await Safe.default.create({ ethAdapter: ethAdapterOwner1, safeAddress: roles.upgraderWallet, contractNetworks })
@@ -95,6 +100,7 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet, fa
                     const res2 = await safeSdk2.executeTransaction(safeTx)
                     await res2.transactionResponse?.wait()
                     console.log('Succesfully executed multisig tx')
+                    */
                 } catch (err) {
                     console.log('Multisig tx to execute for signers')
                     console.log(tx)
@@ -102,6 +108,7 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet, fa
             }
         }
     }
+    fs.writeFileSync('transactions.json', JSON.stringify(transactions, null, 2))
     return taskBook
 }
 
