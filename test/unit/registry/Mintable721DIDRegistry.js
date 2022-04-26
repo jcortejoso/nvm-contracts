@@ -106,8 +106,6 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             const nftOwner = await nft.ownerOf(did)
             assert.strictEqual(owner, nftOwner)
 
-            const nftBalance = await nft.balanceOf(owner)
-
             await didRegistry.burn721(did, { from: owner })
             await assert.isRejected(nft.ownerOf(did))
 
