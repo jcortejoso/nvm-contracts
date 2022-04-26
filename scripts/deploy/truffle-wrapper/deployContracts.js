@@ -21,18 +21,20 @@ async function deployLibrary(name, addresses) {
     }
 }
 
-async function deployContracts({ contracts: origContracts, verbose, testnet, makeWallet, addresses }) {
+async function deployContracts({ contracts: origContracts, verbose, testnet, makeWallet, addresses, deeperClean }) {
     const contracts = evaluateContracts({
         contracts: origContracts,
         verbose,
         testnet
     })
 
-    for (const el of contracts.concat(['DIDRegistryLibrary', 'EpochLibrary'])) {
-        const afact = readArtifact(el)
-        if (afact.address) {
-            console.log(`Using existing artifact for ${el}`)
-            addresses[el] = afact.address
+    if (!deeperClean) {
+        for (const el of contracts.concat(['DIDRegistryLibrary', 'EpochLibrary'])) {
+            const afact = readArtifact(el)
+            if (afact.address) {
+                console.log(`Using existing artifact for ${el}`)
+                addresses[el] = afact.address
+            }
         }
     }
 
