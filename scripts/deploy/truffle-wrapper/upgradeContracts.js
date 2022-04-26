@@ -5,7 +5,7 @@ const Safe = require('@gnosis.pm/safe-core-sdk')
 const { loadWallet } = require('./wallets')
 const EthersAdapter = require('@gnosis.pm/safe-ethers-lib').default
 
-async function upgradeContracts({ contracts: origContracts, verbose, testnet }) {
+async function upgradeContracts({ contracts: origContracts, verbose, testnet, fail }) {
     const table = {}
     let contracts = []
     for (const e of origContracts) {
@@ -38,6 +38,10 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet }) 
             continue
         }
         const afact = readArtifact(c)
+        if (!afact.address) {
+            console.log(`contract ${c} didn't exist`)
+            continue
+        }
         const C = await ethers.getContractFactory(table[c] || c, { libraries: afact.libraries })
         if (verbose) {
             console.log(`upgrading ${c} at ${afact.address}`)
@@ -78,7 +82,6 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet }) 
                 ]
                 const admin = new ethers.Contract(adminAddress, adminABI)
                 const tx = await admin.populateTransaction.upgrade(afact.address, address)
-                console.log(tx)
 
                 try {
                     const ethAdapterOwner1 = new EthersAdapter({ ethers, signer: ethers.provider.getSigner(0), contractNetworks })
@@ -93,7 +96,8 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet }) 
                     await res2.transactionResponse?.wait()
                     console.log('Succesfully executed multisig tx')
                 } catch (err) {
-
+                    console.log('Multisig tx to execute for signers')
+                    console.log(tx)
                 }
             }
         }

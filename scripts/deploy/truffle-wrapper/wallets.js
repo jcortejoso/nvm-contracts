@@ -39,9 +39,9 @@ async function loadWallet({ makeWallet }) {
             owners: [accounts[0], accounts[1]],
             threshold: 2
         }
-        const safe1 = await safeFactory.deploySafe({safeAccountConfig: config1})
-        const safe2 = await safeFactory.deploySafe({safeAccountConfig: config1})
-        const safe3 = await safeFactory.deploySafe({safeAccountConfig: config1})
+        const safe1 = await safeFactory.deploySafe({ safeAccountConfig: config1 })
+        const safe2 = await safeFactory.deploySafe({ safeAccountConfig: config1 })
+        const safe3 = await safeFactory.deploySafe({ safeAccountConfig: config1 })
         wallets = [
             { name: 'owner', account: safe1.getAddress() },
             { name: 'upgrader', account: safe2.getAddress() },

@@ -32,10 +32,10 @@ import '../registry/DIDRegistry.sol';
  */
 contract DIDSalesTemplate is BaseEscrowTemplate {
 
-    DIDRegistry internal didRegistry1;
-    LockPaymentCondition internal lockPaymentCondition1;
-    TransferDIDOwnershipCondition internal transferCondition1;
-    EscrowPaymentCondition internal rewardCondition1;
+    DIDRegistry internal didRegistry;
+    LockPaymentCondition internal lockPaymentCondition;
+    TransferDIDOwnershipCondition internal transferCondition;
+    EscrowPaymentCondition internal rewardCondition;
 
     function id() public returns (uint) {
         return 2;
@@ -80,24 +80,24 @@ contract DIDSalesTemplate is BaseEscrowTemplate {
             _agreementStoreManagerAddress
         );
 
-        didRegistry1 = DIDRegistry(
+        didRegistry = DIDRegistry(
             agreementStoreManager.getDIDRegistryAddress()
         );
 
-        lockPaymentCondition1 = LockPaymentCondition(
+        lockPaymentCondition = LockPaymentCondition(
             _lockConditionAddress
         );
         
-        transferCondition1 = TransferDIDOwnershipCondition(
+        transferCondition = TransferDIDOwnershipCondition(
             _transferConditionAddress
         );
 
-        rewardCondition1 = EscrowPaymentCondition(
+        rewardCondition = EscrowPaymentCondition(
             _escrowPaymentAddress
         );
 
-        conditionTypes.push(address(lockPaymentCondition1));
-        conditionTypes.push(address(transferCondition1));
-        conditionTypes.push(address(rewardCondition1));
+        conditionTypes.push(address(lockPaymentCondition));
+        conditionTypes.push(address(transferCondition));
+        conditionTypes.push(address(rewardCondition));
     }
 }
