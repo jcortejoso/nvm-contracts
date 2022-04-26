@@ -8,7 +8,7 @@ git checkout $BASE
 yarn
 yarn compile
 
-npx hardhat node --port 18545 > /dev/null 2>&1 &
+# npx hardhat node --port 18545 > /dev/null 2>&1 &
 
 sleep 10
 
