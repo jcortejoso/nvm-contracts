@@ -92,7 +92,7 @@ INVMConfig
     {
         return marketplaceFee;
     }
-/*
+
     function getMarketplaceFee2()
     external
     view
@@ -100,7 +100,7 @@ INVMConfig
     {
         return marketplaceFee*2;
     }
-*/
+
     function getFeeReceiver()
     external
     view
