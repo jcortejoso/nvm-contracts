@@ -106,6 +106,8 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             const nftOwner = await nft.ownerOf(did)
             assert.strictEqual(owner, nftOwner)
 
+            const nftBalance = await nft.balanceOf(owner)
+
             await didRegistry.burn721(did, { from: owner })
             await assert.isRejected(nft.ownerOf(did))
 
@@ -196,7 +198,7 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
             assert.strictEqual(owner, nftOwner)
         })
 
-        it('Should not mint or burn if not DID Owner', async () => {
+        it('Should not mint if not DID Owner', async () => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, owner)
             const checksum = testUtils.generateId()
@@ -215,6 +217,30 @@ contract('Mintable DIDRegistry (ERC-721)', (accounts) => {
                 didRegistry.mint721(did, { from: other }),
                 'Only owner'
             )
+        })
+
+        it('Should not burn if not NFT Holder', async () => {
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
+            const checksum = testUtils.generateId()
+            await didRegistry.registerAttribute(
+                didSeed, checksum, [], value, { from: owner })
+
+            await didRegistry.enableAndMintDidNft721(did, 0, false, nftMetadataURL, { from: owner })
+
+            await didRegistry.methods['mint721(bytes32,address)'](
+                did,
+                other,
+                { from: owner }
+            )
+
+            await assert.isRejected(
+                // Must not allow to burn if not NFT holder
+                didRegistry.burn721(did, { from: consumer }),
+                'ERC721: burn amount exceeds balance'
+            )
+
+            await didRegistry.burn721(did, { from: other })
         })
 
         it('Checks the royalties are right', async () => {

@@ -120,6 +120,39 @@ contract('Mintable DIDRegistry', (accounts) => {
             assert.strictEqual(nftMetadataURL, _nftURI)
         })
 
+        it('Should only burn if is NFT holder', async () => {
+            const didSeed = testUtils.generateId()
+            const did = await didRegistry.hashDID(didSeed, owner)
+            const checksum = testUtils.generateId()
+
+            await didRegistry.registerMintableDID(
+                didSeed, checksum, [], value, 1, 0, constants.activities.GENERATED, nftMetadataURL, { from: owner })
+
+            await didRegistry.methods['mint(bytes32,uint256,address)'](
+                did,
+                1,
+                other,
+                { from: owner }
+            )
+
+            let balance = await nft.balanceOf(other, did)
+            assert.strictEqual(1, balance.toNumber())
+
+            const balanceOwner = await nft.balanceOf(owner, did)
+            assert.strictEqual(0, balanceOwner.toNumber())
+
+            await assert.isRejected(
+                // Must not allow to burn because owner is not holder
+                didRegistry.burn(did, 1, { from: owner }),
+                'ERC1155: burn amount exceeds balance'
+            )
+
+            await didRegistry.burn(did, 1, { from: other })
+
+            balance = await nft.balanceOf(other, did)
+            assert.strictEqual(0, balance.toNumber())
+        })
+
         it('Should initialize the NFT in the registration', async () => {
             const didSeed = testUtils.generateId()
             const did = await didRegistry.hashDID(didSeed, owner)

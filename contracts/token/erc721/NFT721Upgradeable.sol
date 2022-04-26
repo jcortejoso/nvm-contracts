@@ -6,6 +6,7 @@ pragma solidity ^0.8.0;
 import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '../NFTBase.sol';
 
+
 /**
  *
  * @dev Implementation of the basic standard multi-token.
