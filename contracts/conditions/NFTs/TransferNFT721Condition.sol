@@ -206,6 +206,7 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
                 token.safeTransferFrom(nftOwner, _nftReceiver, uint256(_did));
             
         }   else {
+            require(nftOwner == _account, 'Not owner');
             token.mint(_nftReceiver, uint256(_did));
         }
 
