@@ -68,7 +68,6 @@ contract NFT721Upgradeable is ERC721Upgradeable, NFTBase {
     ) 
     public 
     {
-        require(hasRole(MINTER_ROLE, msg.sender), 'only minter can burn');
         _burn(id);
     }
     

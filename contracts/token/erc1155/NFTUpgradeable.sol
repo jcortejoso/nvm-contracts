@@ -38,7 +38,6 @@ contract NFTUpgradeable is ERC1155Upgradeable, NFTBase {
     }
 
     function burn(address to, uint256 id, uint256 amount) public {
-        require(hasRole(MINTER_ROLE, msg.sender), 'only minter can burn');
         _burn(to, id, amount);
     }
 
