@@ -255,14 +255,8 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
             hashValues(_did, _account, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress, _transfer)
         );
 
-        address lockConditionTypeRef;
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
-        .getCondition(_lockPaymentCondition);
-
         require(
-            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
-            'LockCondition needs to be Fulfilled'
+            conditionStoreManager.getConditionState(_lockPaymentCondition) == ConditionStoreLibrary.ConditionState.Fulfilled,            'LockCondition needs to be Fulfilled'
         );
 
         NFTUpgradeable token = NFTUpgradeable(_nftContractAddress);
@@ -325,13 +319,8 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
             hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition)
         );
 
-        address lockConditionTypeRef;
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
-        .getCondition(_lockPaymentCondition);
-
         require(
-            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
+            conditionStoreManager.getConditionState(_lockPaymentCondition) == ConditionStoreLibrary.ConditionState.Fulfilled,
             'LockCondition needs to be Fulfilled'
         );
         

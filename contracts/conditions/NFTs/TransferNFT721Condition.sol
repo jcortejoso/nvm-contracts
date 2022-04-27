@@ -189,13 +189,8 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
             hashValues(_did, _account, _nftReceiver, _nftAmount, _lockPaymentCondition, _contract, _transfer)
         );
 
-        address lockConditionTypeRef;
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
-        .getCondition(_lockPaymentCondition);
-
         require(
-            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
+            conditionStoreManager.getConditionState(_lockPaymentCondition) == ConditionStoreLibrary.ConditionState.Fulfilled,
             'LockCondition needs to be Fulfilled'
         );
 
@@ -250,25 +245,24 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
             _agreementId,
             hashValues(_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, address(erc721), _transfer)
         );
-
-        address lockConditionTypeRef;
-        ConditionStoreLibrary.ConditionState lockConditionState;
-        (lockConditionTypeRef,lockConditionState,,,) = conditionStoreManager
-        .getCondition(_lockPaymentCondition);
-
+        
         require(
-            lockConditionState == ConditionStoreLibrary.ConditionState.Fulfilled,
+            conditionStoreManager.getConditionState(_lockPaymentCondition) == ConditionStoreLibrary.ConditionState.Fulfilled,
             'LockCondition needs to be Fulfilled'
         );
         
         address nftOwner = erc721.ownerOf(uint256(_did));
-        require(
-            _nftAmount == 0 || (_nftAmount == 1 && nftOwner == msg.sender),        
-            'Not enough balance'
-        );
+        
+        if (_transfer)  {
+            require(
+                _nftAmount == 0 || (_nftAmount == 1 && nftOwner == msg.sender),
+                'Not enough balance'
+            );
 
-        if (_nftAmount == 1) {
-            erc721.safeTransferFrom(nftOwner, _nftReceiver, uint256(_did));
+            if (_nftAmount == 1)
+                erc721.safeTransferFrom(nftOwner, _nftReceiver, uint256(_did));
+        }   else {
+            erc721.mint(_nftReceiver, uint256(_did));
         }
 
         ConditionStoreLibrary.ConditionState state = super.fulfill(
