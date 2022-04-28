@@ -107,11 +107,7 @@ contract('Mintable DIDRegistry', (accounts) => {
             let balance = await nft.balanceOf(owner, did)
             assert.strictEqual(20, balance.toNumber())
 
-            await didRegistry.burn(did, 5,
-                {
-                    from: owner
-                }
-            )
+            await didRegistry.burn(did, 5, { from: owner })
 
             balance = await nft.balanceOf(owner, did)
             assert.strictEqual(15, balance.toNumber())

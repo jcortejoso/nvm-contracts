@@ -68,6 +68,11 @@ contract NFT721Upgradeable is ERC721Upgradeable, NFTBase {
     ) 
     public 
     {
+        require(
+            hasRole(MINTER_ROLE, msg.sender) || // Or the DIDRegistry is burning the NFT 
+            balanceOf(msg.sender) > 0, // Or the msg.sender is owner and have balance
+            'ERC721: caller is not owner or not have balance'
+        );        
         _burn(id);
     }
     
