@@ -8,6 +8,7 @@
 # Example2: ./upload_artifacts_s3.sh contracts mumbai awesome_tag
 # Dependencies: awscli, zip, tar, jq. All in path. Run on Linux/macOS
 # Dependencies: No spaces in folder/file names
+# Dependencies: Contract names cannot start with -
 # Dependencies: AWS profile with access to $BUCKET configured
 ASSET=$1
 NETWORK=$2
@@ -71,6 +72,7 @@ function upload_contracts_s3 {
   local network_id version
   network_id=$(get_network_id_from_name)
   version=$(check_and_get_contract_version)
+  aws s3 cp "$OUTPUT_FOLDER/contracts_$version.json" "s3://$BUCKET/$network_id/$TAG/"
   aws s3 cp "$OUTPUT_FOLDER/contracts_$version.zip" "s3://$BUCKET/$network_id/$TAG/"
   aws s3 cp "$OUTPUT_FOLDER/contracts_$version.tar.gz" "s3://$BUCKET/$network_id/$TAG/"
 }
@@ -93,7 +95,8 @@ function get_network_contracts {
 function get_network_contracts_no_path {
   local filenames
   cd "$CONTRACTS_DIR" >/dev/null 2>&1 || exit 1
-  filenames=$(ls ./*."$NETWORK".json)
+  # 
+  filenames=$(ls *."$NETWORK".json)
   cd - >/dev/null 2>&1 || exit 1
   echo "$filenames"
 }
@@ -109,7 +112,7 @@ function get_network_abis_no_root_path {
 # Compare that the version of all contracts is the same.
 # TODO: Think if is better to skip if version does not match
 function check_and_get_contract_version {
-  local filenames
+  local filenames filenamesarray
   filenames=$(get_network_contracts)
   filenamesarray=($filenames)
   local ref_version
@@ -142,6 +145,32 @@ function get_network_id_from_name {
   echo "$network_id"
 }
 
+function generate_registry_json {
+  local filenames version filenamesarray address contract_name
+  filenames=$(get_network_contracts_no_path)
+  filenamesarray=($filenames)
+  # declare -A CONTRACT_REGISTRY_MAP
+
+  cd "$CONTRACTS_DIR" >/dev/null 2>&1 || exit 1
+  for artifact in "${filenamesarray[@]}"; do
+    address=$(jq -r .address "$artifact")
+    contract_name=${artifact%%.*}
+    # CONTRACT_REGISTRY_MAP["$contract_name"]="$address"
+    # echo "$contract_name -> $address"
+    echo "$contract_name"
+    echo "$address"
+  done |
+  jq -n -R 'reduce inputs as $i ({}; . + { ($i): (input|(tonumber? // .)) })'
+  cd - >/dev/null 2>&1 || exit 1
+}
+
+function generate_registry_json_file {
+  local version
+  version=$(check_and_get_contract_version)
+
+  generate_registry_json > "$OUTPUT_FOLDER/contracts_$version.json"
+}
+
 function main {
   check_dependencies
   if [[ "$ASSET" == "abis" ]]; then
@@ -158,7 +187,9 @@ function main_abis {
 
 function main_contracts {
   package_contracts
+  generate_registry_json_file
   upload_contracts_s3
 }
 
 main
+
