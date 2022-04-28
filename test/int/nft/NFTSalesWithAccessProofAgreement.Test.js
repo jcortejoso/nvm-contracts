@@ -91,6 +91,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
         await transferCondition.initialize(
             owner,
             conditionStoreManager.address,
+            didRegistry.address,
             nft.address,
             market,
             { from: deployer }

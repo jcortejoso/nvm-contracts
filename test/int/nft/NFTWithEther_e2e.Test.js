@@ -150,6 +150,7 @@ contract('End to End NFT Scenarios (with Ether)', (accounts) => {
         await transferCondition.initialize(
             owner,
             conditionStoreManager.address,
+            didRegistry.address,
             nft.address,
             owner,
             { from: deployer }

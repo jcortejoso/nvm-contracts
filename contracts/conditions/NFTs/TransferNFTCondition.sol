@@ -26,6 +26,8 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
     
     NFTUpgradeable private erc1155;
 
+    DIDRegistry internal didRegistry;
+
     bytes32 private constant PROXY_ROLE = keccak256('PROXY_ROLE');
 
     function grantProxyRole(address _address) public onlyOwner {
@@ -41,13 +43,15 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
     * @dev this function is called only once during the contract
     *       initialization.
     * @param _owner contract's owner account address
-    * @param _conditionStoreManagerAddress condition store manager address    
+    * @param _conditionStoreManagerAddress condition store manager address 
+    * @param _didRegistryAddress DID Registry address       
     * @param _ercAddress Nevermined ERC-1155 address
     * @param _nftContractAddress Market address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
+        address _didRegistryAddress,
         address _ercAddress,
         address _nftContractAddress
     )
@@ -67,7 +71,11 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-
+        
+        didRegistry = DIDRegistry(
+            _didRegistryAddress
+        );
+        
         erc1155 = NFTUpgradeable(
             _ercAddress
         );
@@ -262,10 +270,12 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         NFTUpgradeable token = NFTUpgradeable(_nftContractAddress);
 
         if (_nftAmount > 0) {
-            if (_transfer)
+            if (_transfer) // Transfer only works if `_account` (msg.sender) is holder
                 token.safeTransferFrom(_account, _nftReceiver, uint256(_did), _nftAmount, '');
-            else
+            else  {// Check that `account` (msg.sender) is DID owner or provider
+                require(didRegistry.isDIDProviderOrOwner(_did, _account), 'Only owner or provider');
                 token.mint(_nftReceiver, uint256(_did), _nftAmount, '');
+            }
         }
             
 
