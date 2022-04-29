@@ -1,0 +1,62 @@
+name: Upload Contracts and Artifacts to Repository
+
+# Manual workflow
+on: 
+  workflow_dispatch:
+    # Workflow inputs
+    inputs:
+      asset:
+        type: choice
+        description: Kind of the asset to upload
+        required: true
+        options:
+        - contracts
+        - abis
+      network:
+        type: choice
+        description: Blockchain network for uploading the contracts
+        required: false
+        options:
+        - aurora-testnet
+        - aurora
+        - celo-alfajores
+        - mainnet
+        - matic
+        - mumbai
+        - rinkeby
+      tag:
+        type: string
+        description: Identification tag for contracts. Default to 'common'
+        required: false
+        default: common
+        
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    container: amazon/aws-cli:latest
+    permissions:
+      id-token: write # required to use OIDC authentication
+      contents: read # required to checkout the code from the repo
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Install dependencies
+      - name: Install missing dependencies
+        run: |
+          yum install -y jq unzip
+
+      # Impersonate AWS role
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::059076247551:role/github-actions-s3-artifacts-nevermined-rocks
+          aws-region: us-east-1
+        
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo "asset: ${{ github.event.inputs.asset }}"
+          echo "network: ${{ github.event.inputs.network }}"
+          echo "tag: ${{ github.event.inputs.tag }}"
