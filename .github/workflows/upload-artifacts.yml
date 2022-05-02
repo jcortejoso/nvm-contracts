@@ -63,7 +63,7 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Run upload script
-        working_directory: ./
+        working-directory: ./
         run: |
           if [[ "${{ github.event.inputs.asset }}" == "abis" ]]; then
             bash ./scripts/upload_artifacts_s3.sh abis
