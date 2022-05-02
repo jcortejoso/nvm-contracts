@@ -42,7 +42,7 @@ jobs:
       # Install dependencies
       - name: Install missing dependencies
         run: |
-          yum install -y jq unzip git tar
+          yum install -y jq unzip git tar zip
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
