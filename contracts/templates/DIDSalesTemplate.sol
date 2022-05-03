@@ -38,7 +38,7 @@ contract DIDSalesTemplate is BaseEscrowTemplate {
     EscrowPaymentCondition internal rewardCondition;
 
     // Force to have different bytecode from other templates
-    function id() public returns (uint) {
+    function id() public pure returns (uint) {
         return 2;
     }
 

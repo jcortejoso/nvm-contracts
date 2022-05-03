@@ -26,7 +26,8 @@ interface ITransferNFT {
     * @param _did refers to the DID in which secret store will issue the decryption keys
     * @param _nftReceiver is the address of the granted user or the DID provider
     * @param _nftAmount amount of NFTs to transfer   
-    * @param _lockCondition lock condition identifier    
+    * @param _lockCondition lock condition identifier   
+    * @param _transfer Indicates if the NFT will be transferred (true) or minted (false)     
     * @return bytes32 hash of all these values 
     */
     function hashValues(
@@ -35,7 +36,8 @@ interface ITransferNFT {
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockCondition,
-        address _contract
+        address _contract,
+        bool _transfer
     )
         external
         pure
@@ -51,6 +53,7 @@ interface ITransferNFT {
      * @param _nftReceiver is the address of the account to receive the NFT
      * @param _nftAmount amount of NFTs to transfer  
      * @param _lockPaymentCondition lock payment condition identifier
+     * @param _transfer Indicates if the NFT will be transferred (true) or minted (false)     
      * @return condition state (Fulfilled/Aborted)
      */
     function fulfill(
@@ -59,7 +62,8 @@ interface ITransferNFT {
         address _nftReceiver,
         uint256 _nftAmount,
         bytes32 _lockPaymentCondition,
-        address _contract
+        address _contract,        
+        bool _transfer
     )
     external
     returns (ConditionStoreLibrary.ConditionState);

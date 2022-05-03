@@ -378,6 +378,10 @@ async function setupContracts({
         const tx = await NFTInstance.setProxyApproval(
             addressBook.DIDRegistry, true, { from: roles.deployer })
         await tx.wait()
+
+        const tx2 = await NFTInstance.addMinter(
+            addressBook.TransferNFTCondition, { from: roles.deployer })
+        await tx2.wait()
         addresses.stage = 11
     }
 
@@ -388,6 +392,10 @@ async function setupContracts({
         const tx = await NFT721Instance.setProxyApproval(
             addressBook.TransferNFT721Condition, true, { from: roles.deployer })
         await tx.wait()
+
+        const tx2 = await NFT721Instance.addMinter(
+            addressBook.TransferNFT721Condition, { from: roles.deployer })
+        await tx2.wait()
         addresses.stage = 12
     }
 

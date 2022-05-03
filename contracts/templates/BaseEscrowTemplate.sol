@@ -102,6 +102,23 @@ contract BaseEscrowTemplate is AgreementTemplate {
         _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
     }
 
+    function createAgreementAndFulfill(
+        bytes32 _id,
+        bytes32 _did,
+        bytes32[] memory _conditionIds,
+        uint[] memory _timeLocks,
+        uint[] memory _timeOuts,
+        address _accessConsumer,
+        uint[] memory _indices,
+        address[] memory _accounts,
+        bytes[] memory _params
+    )
+        internal
+    {
+        super.createAgreementAndFulfill(_id, _did, _conditionIds, _timeLocks, _timeOuts, _indices, _accounts, _params);
+        _initAgreement(_id, _did, _timeLocks, _timeOuts, _accessConsumer, _conditionIds);
+    }
+
     function _makeIds(
         bytes32 _idSeed,
         bytes32[] memory _conditionIds

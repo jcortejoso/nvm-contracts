@@ -52,6 +52,7 @@ contract('NFTSalesTemplate', (accounts) => {
         await transferCondition.initialize(
             owner,
             conditionStoreManager.address,
+            didRegistry.address,
             agreementStoreManager.address,
             owner,
             { from: deployer }

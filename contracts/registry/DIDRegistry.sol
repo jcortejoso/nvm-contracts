@@ -229,7 +229,7 @@ contract DIDRegistry is DIDFactory {
             erc721.setTokenRoyalty(uint256(_did), msg.sender, _royalties);
         
         if (_mint)
-            mint721(_did);
+            mint721(_did, msg.sender);
         
         return super.used(
             keccak256(abi.encode(_did, 1, _royalties, msg.sender)),
@@ -244,10 +244,12 @@ contract DIDRegistry is DIDFactory {
      *
      * @param _did refers to decentralized identifier (a bytes32 length ID).
      * @param _amount amount to mint
+     * @param _receiver the address that will receive the new nfts minted
      */    
     function mint(
         bytes32 _did,
-        uint256 _amount
+        uint256 _amount,
+        address _receiver
     )
     public
     onlyDIDOwner(_did)
@@ -266,11 +268,28 @@ contract DIDRegistry is DIDFactory {
             keccak256(abi.encode(_did, msg.sender, 'mint', _amount, block.number)),
             _did, msg.sender, keccak256('mint'), '', 'mint');
 
-        erc1155.mint(msg.sender, uint256(_did), _amount, '');
+        erc1155.mint(_receiver, uint256(_did), _amount, '');
     }
 
+    function mint(
+        bytes32 _did,
+        uint256 _amount
+    )
+    public
+    {
+        mint(_did, _amount, msg.sender);
+    }
+
+
+    /**
+     * @notice Mints a ERC-721 NFT associated to the DID
+     *
+     * @param _did refers to decentralized identifier (a bytes32 length ID).
+     * @param _receiver the address that will receive the new nfts minted
+     */
     function mint721(
-        bytes32 _did
+        bytes32 _did,
+        address _receiver
     )
     public
     onlyDIDOwner(_did)
@@ -280,9 +299,18 @@ contract DIDRegistry is DIDFactory {
             keccak256(abi.encode(_did, msg.sender, 'mint721', 1, block.number)),
             _did, msg.sender, keccak256('mint721'), '', 'mint721');
 
-        erc721.mint(msg.sender, uint256(_did));
+        erc721.mint(_receiver, uint256(_did));
     }
 
+    function mint721(
+        bytes32 _did
+    )
+    public
+    {
+        mint721(_did, msg.sender);
+    }
+    
+    
     /**
      * @notice Burns NFTs associated to the DID
      *
@@ -297,13 +325,12 @@ contract DIDRegistry is DIDFactory {
         uint256 _amount
     )
     public
-    onlyDIDOwner(_did)
     nftIsInitialized(_did)
     {
         erc1155.burn(msg.sender, uint256(_did), _amount);
         didRegisterList.didRegisters[_did].nftSupply -= _amount;
-
-        super.used(
+        
+        super._used(
             keccak256(abi.encode(_did, msg.sender, 'burn', _amount, block.number)),
             _did, msg.sender, keccak256('burn'), '', 'burn');
     }
@@ -312,12 +339,12 @@ contract DIDRegistry is DIDFactory {
         bytes32 _did
     )
     public
-    onlyDIDOwner(_did)
     nft721IsInitialized(_did)
     {
+        require(erc721.balanceOf(msg.sender) > 0, 'ERC721: burn amount exceeds balance');
         erc721.burn(uint256(_did));
 
-        super.used(
+        super._used(
             keccak256(abi.encode(_did, msg.sender, 'burn721', 1, block.number)),
             _did, msg.sender, keccak256('burn721'), '', 'burn721');
     }
