@@ -3,6 +3,7 @@
 export BASE=v1.3.6
 export BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
+# rm -rf artifacts/*.external.json deploy-cache.json
 rm -f .openzeppelin/unknown-31337.json
 git checkout $BASE
 yarn
@@ -17,5 +18,8 @@ npx hardhat run ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js --net
 git checkout $BRANCH
 yarn
 
+export FAIL=true
+
 npx hardhat run ./scripts/deploy/truffle-wrapper/upgradeContractsWrapper.js --network external || exit 1
+npx hardhat run ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js --network external || exit 1
 npx hardhat run ./scripts/deploy/truffle-wrapper/upgradePlonkVerifier.js --network external || exit 1

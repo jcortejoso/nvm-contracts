@@ -37,6 +37,12 @@ contract NFTSalesTemplate is BaseEscrowTemplate {
     ITransferNFT internal transferCondition;
     EscrowPaymentCondition internal rewardCondition;
 
+    // Force to have different bytecode from other templates
+    function id() public pure returns (uint) {
+        return 1;
+    }
+
+
    /**
     * @notice initialize init the 
     *       contract with the following parameters.

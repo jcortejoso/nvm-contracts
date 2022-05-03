@@ -4,6 +4,7 @@ const evaluateContracts = require('./evaluateContracts.js')
 const { ethers, upgrades, web3 } = require('hardhat')
 const { exportArtifacts, exportLibraryArtifacts } = require('./artifacts')
 const { loadWallet } = require('./wallets.js')
+const { readArtifact } = require('./artifacts')
 
 async function deployLibrary(name, addresses) {
     if (addresses[name]) {
@@ -20,12 +21,22 @@ async function deployLibrary(name, addresses) {
     }
 }
 
-async function deployContracts({ contracts: origContracts, verbose, testnet, makeWallet, addresses }) {
+async function deployContracts({ contracts: origContracts, verbose, testnet, makeWallet, addresses, deeperClean }) {
     const contracts = evaluateContracts({
         contracts: origContracts,
         verbose,
         testnet
     })
+
+    if (!deeperClean) {
+        for (const el of contracts.concat(['DIDRegistryLibrary', 'EpochLibrary'])) {
+            const afact = readArtifact(el)
+            if (afact.address) {
+                console.log(`Using existing artifact for ${el}`)
+                addresses[el] = afact.address
+            }
+        }
+    }
 
     const { roles } = await loadWallet({ makeWallet })
 
