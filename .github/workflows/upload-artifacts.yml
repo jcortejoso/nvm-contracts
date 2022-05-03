@@ -66,7 +66,7 @@ jobs:
         working-directory: ./
         run: |
           if [[ "${{ github.event.inputs.asset }}" == "abis" ]]; then
-            bash ./scripts/upload_artifacts_s3.sh abis
+            bash -x ./scripts/upload_artifacts_s3.sh abis
           elif [[ "${{ github.event.inputs.asset }}" == "contracts" ]]; then
-            bash ./scripts/upload_artifacts_s3.sh contracts "${{ github.event.inputs.network }}" "${{ github.event.inputs.tag }}"
+            bash -x ./scripts/upload_artifacts_s3.sh contracts "${{ github.event.inputs.network }}" "${{ github.event.inputs.tag }}"
           fi
