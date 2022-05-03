@@ -485,6 +485,7 @@ async function initializeContracts({
     }
 
     if (getAddress('ConditionStoreManager') &&
+        getAddress('DIDRegistry') &&
         getAddress('NFT721Upgradeable') &&
         getAddress('LockPaymentCondition')) {
         if (contracts.indexOf('TransferNFT721Condition') > -1) {
@@ -494,6 +495,7 @@ async function initializeContracts({
                 args: [
                     roles.ownerWallet,
                     getAddress('ConditionStoreManager'),
+                    getAddress('DIDRegistry'),
                     getAddress('NFT721Upgradeable'),
                     getAddress('LockPaymentCondition')
                 ],

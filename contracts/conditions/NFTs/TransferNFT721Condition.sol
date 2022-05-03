@@ -24,6 +24,9 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
     bytes32 private constant MARKET_ROLE = keccak256('MARKETPLACE_ROLE');
 
     NFT721Upgradeable private erc721;
+
+    DIDRegistry internal didRegistry;
+
     address private _lockConditionAddress;
 
     bytes32 public constant PROXY_ROLE = keccak256('PROXY_ROLE');
@@ -42,11 +45,13 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
     *       initialization.
     * @param _owner contract's owner account address
     * @param _conditionStoreManagerAddress condition store manager address    
+    * @param _didRegistryAddress DID Registry address           
     * @param _ercAddress Nevermined ERC-721 address
     */
     function initialize(
         address _owner,
         address _conditionStoreManagerAddress,
+        address _didRegistryAddress,
         address _ercAddress,
         address _lockNFTConditionAddress
     )
@@ -68,6 +73,10 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
             _conditionStoreManagerAddress
         );
 
+        didRegistry = DIDRegistry(
+            _didRegistryAddress
+        );
+        
         erc721 = NFT721Upgradeable(
             _ercAddress
         );
@@ -193,20 +202,27 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
             conditionStoreManager.getConditionState(_lockPaymentCondition) == ConditionStoreLibrary.ConditionState.Fulfilled,
             'LockCondition needs to be Fulfilled'
         );
-
+        
         NFT721Upgradeable token = NFT721Upgradeable(_contract);
-        address nftOwner = token.ownerOf(uint256(_did));
+        
         if (_transfer)  {
             require(
-                _nftAmount == 0 || (_nftAmount == 1 && nftOwner == _account),
+                _nftAmount == 0 || (_nftAmount == 1 && token.ownerOf(uint256(_did)) == _account),
                 'Not enough balance'
             );
 
             if (_nftAmount == 1)
-                token.safeTransferFrom(nftOwner, _nftReceiver, uint256(_did));
+                token.safeTransferFrom(
+                    token.ownerOf(uint256(_did)), 
+                    _nftReceiver, 
+                    uint256(_did)
+                );
             
         }   else {
-            require(nftOwner == _account, 'Not owner');
+            require(
+                didRegistry.isDIDProviderOrOwner(_did, _account), 
+                'Only owner or provider'
+            );
             token.mint(_nftReceiver, uint256(_did));
         }
 
@@ -252,17 +268,23 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
             'LockCondition needs to be Fulfilled'
         );
         
-        address nftOwner = erc721.ownerOf(uint256(_did));
-        
         if (_transfer)  {
             require(
-                _nftAmount == 0 || (_nftAmount == 1 && nftOwner == msg.sender),
+                _nftAmount == 0 || (_nftAmount == 1 && erc721.ownerOf(uint256(_did)) == msg.sender),
                 'Not enough balance'
             );
 
             if (_nftAmount == 1)
-                erc721.safeTransferFrom(nftOwner, _nftReceiver, uint256(_did));
+                erc721.safeTransferFrom(
+                    erc721.ownerOf(uint256(_did)), 
+                    _nftReceiver, 
+                    uint256(_did)
+                );
         }   else {
+            require(
+                didRegistry.isDIDProviderOrOwner(_did, msg.sender), 
+                'Only owner or provider'
+            );
             erc721.mint(_nftReceiver, uint256(_did));
         }
 
