@@ -51,6 +51,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
+          cache: 'yarn'
       - name: Pre-install
         run: |
           rm -rf node_modules
