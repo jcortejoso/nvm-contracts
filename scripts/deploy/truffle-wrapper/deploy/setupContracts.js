@@ -448,9 +448,19 @@ async function setupContracts({
         )
         await tx.wait()
 
+        const tx2 = await nvmConfig.setGovernor(roles.governorWallet, { from: roles.owner })
+        await tx2.wait()
+
         console.log('[NeverminedConfig] Marketplace Fees set to : ' + configMarketplaceFee)
         const isGovernor = await nvmConfig.isGovernor(roles.governorWallet)
         console.log('Is governorWallet NeverminedConfig governor? ' + isGovernor)
+
+        await transferOwnership({
+            ContractInstance: nvmConfig,
+            name: 'NeverminedConfig',
+            roles,
+            verbose
+        })
 
         addresses.stage = 15
     }

@@ -72,7 +72,11 @@ INVMConfig
         emit NeverminedConfigChange(msg.sender, keccak256('marketplaceFee'));
         emit NeverminedConfigChange(msg.sender, keccak256('feeReceiver'));
     }
-    
+
+    function setGovernor(address _address) external onlyOwner {
+        _grantRole(GOVERNOR_ROLE, _address);
+    }
+
     function isGovernor(
         address _address
     )
@@ -91,14 +95,6 @@ INVMConfig
     returns (uint256) 
     {
         return marketplaceFee;
-    }
-
-    function getMarketplaceFee2()
-    external
-    view
-    returns (uint256) 
-    {
-        return marketplaceFee*2;
     }
 
     function getFeeReceiver()

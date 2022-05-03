@@ -38,6 +38,7 @@ contract NFTAccessSwapTemplate is BaseEscrowTemplate {
     INFTEscrow internal rewardCondition;
     AccessProofCondition internal accessCondition;
 
+    // Force to have different bytecode from other templates
     function id() public returns (uint) {
         return 0;
     }
