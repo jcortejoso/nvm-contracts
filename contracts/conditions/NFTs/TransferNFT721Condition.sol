@@ -25,11 +25,11 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
 
     NFT721Upgradeable private erc721;
 
-    DIDRegistry internal didRegistry;
-
     address private _lockConditionAddress;
 
     bytes32 public constant PROXY_ROLE = keccak256('PROXY_ROLE');
+
+    DIDRegistry internal didRegistry;
 
     function grantProxyRole(address _address) public onlyOwner {
         grantRole(PROXY_ROLE, _address);
