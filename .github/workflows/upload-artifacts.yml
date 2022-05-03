@@ -46,6 +46,31 @@ jobs:
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+    
+      # Setup env for compiling and testing contracts
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - name: Pre-install
+        run: |
+          rm -rf node_modules
+          yarn install --frozen-lockfile
+          git submodule init
+          git submodule update
+      - name: Compile and Lint
+        run: |
+          yarn lint
+          yarn clean
+          sh ./scripts/build.sh
+          yarn compile
+      - name: Run Unit Tests
+        run: |
+          yarn test:unit
+      - name: Run Integration Tests
+        run: |
+          yarn test:integration
+        env:
+          NODE_OPTIONS: "--max-old-space-size=7500"
 
       # Impersonate AWS role
       - name: Configure AWS credentials from Test account
