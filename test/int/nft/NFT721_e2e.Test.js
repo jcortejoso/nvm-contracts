@@ -130,10 +130,11 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         await lockPaymentCondition.grantProxyRole(agreementStoreManager.address, { from: owner })
 
         transferCondition = await TransferNFTCondition.new()
-        await transferCondition.methods['initialize(address,address,address,address)'](
+        await transferCondition.methods['initialize(address,address,address,address,address)'](
             owner,
             conditionStoreManager.address,
             didRegistry.address,
+            nft.address,
             lockPaymentCondition.address,
             { from: deployer }
         )
@@ -245,14 +246,14 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         const agreementId = await agreementStoreManager.agreementId(initAgreementId, _from)
         const conditionIdLockPayment = await lockPaymentCondition.hashValues(did, escrowCondition.address, token.address, _amounts, _receivers)
         const fullIdLockPayment = await lockPaymentCondition.generateId(agreementId, conditionIdLockPayment)
-        const conditionIdTransferNFT = await transferCondition.hashValues(did, _seller, _buyer, _numberNFTs, fullIdLockPayment, nft.address)
+        const conditionIdTransferNFT = await transferCondition.hashValues(did, _seller, _buyer, _numberNFTs, fullIdLockPayment, nft.address, true)
         const fullIdTransferNFT = await transferCondition.generateId(agreementId, conditionIdTransferNFT)
 
         const conditionIdEscrow = await escrowCondition.hashValues(did, _amounts, _receivers, _buyer, escrowCondition.address, token.address, fullIdLockPayment, fullIdTransferNFT)
         const fullIdEscrow = await escrowCondition.generateId(agreementId, conditionIdEscrow)
 
         const lockParams = await lockPaymentCondition.encodeParams(did, escrowCondition.address, token.address, _amounts, _receivers)
-        const transferParams = await transferCondition.encodeParams(did, _seller, _buyer, _numberNFTs, fullIdLockPayment, nft.address)
+        const transferParams = await transferCondition.encodeParams(did, _seller, _buyer, _numberNFTs, fullIdLockPayment, nft.address, true)
         const escrowParams = await escrowCondition.encodeParams(did, _amounts, _receivers, _buyer, escrowCondition.address, token.address, fullIdLockPayment, [fullIdTransferNFT])
 
         const nftSalesAgreement = {
@@ -336,6 +337,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                     numberNFTs,
                     conditionIds[0],
                     nft.address,
+                    true,
                     { from: artist })
                 await nft.setApprovalForAll(transferCondition.address, false, { from: artist })
 
