@@ -44,19 +44,18 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y jq unzip zip git tar
-
       # Install awscli
       - name: install-aws-cli-action
         uses: unfor19/install-aws-cli-action@v1.0.3
+      # Install nodejs v14
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
 
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checks-out your repository under $GITHUB_WORKSPACE, so the job can access it
       - uses: actions/checkout@v3
-    
-      # # Setup env for compiling and testing contracts
-      # - name: Install nondejs and yarn dependencies on AWS Linux
-      #   run: |
-      #     yum install -y jq unzip git tar zip
 
+      # Compile contracts and run basic tests
       - name: Pre-install
         run: |
           rm -rf node_modules
@@ -69,14 +68,14 @@ jobs:
           yarn clean
           sh ./scripts/build.sh
           yarn compile
-      - name: Run Unit Tests
-        run: |
-          yarn test:unit
-      - name: Run Integration Tests
-        run: |
-          yarn test:integration
-        env:
-          NODE_OPTIONS: "--max-old-space-size=7500"
+      # - name: Run Unit Tests
+      #   run: |
+      #     yarn test:unit
+      # - name: Run Integration Tests
+      #   run: |
+      #     yarn test:integration
+      #   env:
+      #     NODE_OPTIONS: "--max-old-space-size=7500"
 
       # Impersonate AWS role
       - name: Configure AWS credentials from Test account
