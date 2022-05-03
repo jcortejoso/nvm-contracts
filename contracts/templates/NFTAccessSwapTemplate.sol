@@ -39,7 +39,7 @@ contract NFTAccessSwapTemplate is BaseEscrowTemplate {
     AccessProofCondition internal accessCondition;
 
     // Force to have different bytecode from other templates
-    function id() public returns (uint) {
+    function id() public pure returns (uint) {
         return 0;
     }
 
