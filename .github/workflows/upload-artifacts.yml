@@ -33,7 +33,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    container: amazon/aws-cli:latest
+    # container: amazon/aws-cli:latest
     permissions:
       id-token: write # required to use OIDC authentication
       contents: read # required to checkout the code from the repo
@@ -42,16 +42,21 @@ jobs:
       # Install dependencies
       - name: Install missing dependencies
         run: |
-          yum install -y jq unzip git tar zip
+          apt update
+          apt install -y jq unzip git tar zip
+
+      # Install awscli
+      - name: install-aws-cli-action
+        uses: unfor19/install-aws-cli-action@v1.0.3
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
     
-      # Setup env for compiling and testing contracts
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '14.x'
-          cache: 'yarn'
+      # # Setup env for compiling and testing contracts
+      # - name: Install nondejs and yarn dependencies on AWS Linux
+      #   run: |
+      #     yum install -y jq unzip git tar zip
+
       - name: Pre-install
         run: |
           rm -rf node_modules
