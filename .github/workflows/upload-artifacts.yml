@@ -42,8 +42,8 @@ jobs:
       # Install dependencies
       - name: Install missing dependencies
         run: |
-          apt update
-          apt install -y jq unzip git tar zip
+          sudo apt update
+          sudo apt install -y jq unzip zip git tar
 
       # Install awscli
       - name: install-aws-cli-action
