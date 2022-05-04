@@ -291,7 +291,7 @@ async function setupContracts({
         addresses.stage = 4
     }
 
-    if (addresses.stage < 5 && addresses.stage < 5) {
+    if (addressBook.AgreementStoreManager && addresses.stage < 5) {
         const agreements = [
             'NFTAccessTemplate',
             'NFTSalesTemplate',
@@ -474,6 +474,37 @@ async function setupContracts({
 
         addresses.stage = 15
     }
+
+    if (addressBook.TransferNFTCondition && addressBook.AgreementStoreManager && addresses.stage < 16) {
+        console.log('Set transfer nft condition proxy : ' + addressBook.TransferNFTCondition)
+        const tx = await artifacts.TransferNFTCondition.connect(ethers.provider.getSigner(roles.deployer)).grantProxyRole(
+            addressBook.AgreementStoreManager, { from: roles.deployer })
+        await tx.wait()
+
+        await transferOwnership({
+            ContractInstance: artifacts.TransferNFTCondition,
+            name: 'TransferNFTCondition',
+            roles,
+            verbose
+        })
+    
+        addresses.stage = 16
+    }
+
+    if (addressBook.TransferNFT721Condition && addressBook.AgreementStoreManager && addresses.stage < 17) {
+        console.log('Set transfer nft721 condition proxy : ' + addressBook.TransferNFT721Condition)
+        const tx = await artifacts.TransferNFT721Condition.connect(ethers.provider.getSigner(roles.deployer)).grantProxyRole(
+            addressBook.AgreementStoreManager, { from: roles.deployer })
+        await tx.wait()
+        await transferOwnership({
+            ContractInstance: artifacts.TransferNFT721Condition,
+            name: 'TransferNFT721Condition',
+            roles,
+            verbose
+        })
+        addresses.stage = 17
+    }
+
 }
 
 module.exports = setupContracts

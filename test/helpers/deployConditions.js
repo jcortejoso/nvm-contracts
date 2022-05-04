@@ -51,6 +51,7 @@ const deployConditions = async function(
         accessCondition,
         accessProofCondition,
         escrowPaymentCondition,
+        escrowCondition: escrowPaymentCondition,
         lockPaymentCondition,
         computeExecutionCondition
     }

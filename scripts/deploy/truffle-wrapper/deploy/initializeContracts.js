@@ -445,7 +445,7 @@ async function initializeContracts({
                 contract: 'TransferNFTCondition',
                 ctx,
                 args: [
-                    roles.ownerWallet,
+                    roles.deployer,
                     getAddress('ConditionStoreManager'),
                     getAddress('DIDRegistry'),
                     getAddress('NFTUpgradeable'),
@@ -493,7 +493,7 @@ async function initializeContracts({
                 contract: 'TransferNFT721Condition',
                 ctx,
                 args: [
-                    roles.ownerWallet,
+                    roles.deployer,
                     getAddress('ConditionStoreManager'),
                     getAddress('DIDRegistry'),
                     getAddress('NFT721Upgradeable'),
