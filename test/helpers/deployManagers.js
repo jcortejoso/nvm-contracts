@@ -31,8 +31,8 @@ const deployManagers = async function(deployer, owner) {
     )
 
     if (testUtils.deploying) {
-        await nft.addMinter(didRegistry.address, {from: deployer})
-        await nft.setProxyApproval(didRegistry.address, true, {from: deployer})
+        await nft.addMinter(didRegistry.address, { from: deployer })
+        await nft.setProxyApproval(didRegistry.address, true, { from: deployer })
         await conditionStoreManager.delegateCreateRole(
             agreementStoreManager.address,
             { from: owner }

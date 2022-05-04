@@ -9,7 +9,6 @@ chai.use(chaiAsPromised)
 const testUtils = require('../../helpers/utils')
 
 const DynamicAccessTemplate = artifacts.require('DynamicAccessTemplate')
-const AccessCondition = artifacts.require('AccessCondition')
 const NFTHolderCondition = artifacts.require('NFTHolderCondition')
 
 const constants = require('../../helpers/constants.js')
@@ -49,8 +48,7 @@ contract('Dynamic Access Template integration test', (accounts) => {
         ));
 
         ({
-            accessCondition,
-            nftHolderCondition
+            accessCondition
         } = await deployConditions(
             deployer,
             owner,
@@ -66,15 +64,6 @@ contract('Dynamic Access Template integration test', (accounts) => {
             agreementStoreManager.address,
             didRegistry.address,
             { from: deployer }
-        )
-
-        accessCondition = await AccessCondition.new()
-
-        await accessCondition.methods['initialize(address,address,address)'](
-            owner,
-            conditionStoreManager.address,
-            agreementStoreManager.address,
-            { from: owner }
         )
 
         nftHolderCondition = await NFTHolderCondition.new()

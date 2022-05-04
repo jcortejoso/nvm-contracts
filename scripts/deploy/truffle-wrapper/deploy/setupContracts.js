@@ -1,12 +1,14 @@
 /* eslint-disable no-console */
 const ZeroAddress = '0x0000000000000000000000000000000000000000'
 
+const { ethers } = require('hardhat')
+
 async function approveTemplate({
     TemplateStoreManagerInstance,
     roles,
     templateAddress
 } = {}) {
-    const contractOwner = await TemplateStoreManagerInstance.owner()
+    // const contractOwner = await TemplateStoreManagerInstance.owner()
     try {
         const tx = await TemplateStoreManagerInstance.connect(ethers.provider.getSigner(roles.deployer)).approveTemplate(
             templateAddress,
@@ -433,14 +435,13 @@ async function setupContracts({
             { from: roles.deployer }
         )
         await tx.wait()
-        
+
         const tx2 = await token.connect(ethers.provider.getSigner(roles.deployer)).grantRole(
             web3.utils.toHex('minter').padEnd(66, '0'),
             roles.ownerWallet,
             { from: roles.deployer }
         )
         await tx2.wait()
-
 
         addresses.stage = 14
     }

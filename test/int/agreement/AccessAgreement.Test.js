@@ -1,13 +1,11 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it, expect */
+/* global contract, describe, it, expect */
 
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
-
-const AccessTemplate = artifacts.require('AccessTemplate')
 
 const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
@@ -25,8 +23,7 @@ contract('Access Template integration test', (accounts) => {
         accessTemplate,
         accessCondition,
         lockPaymentCondition,
-        escrowPaymentCondition,
-        checkpoint
+        escrowPaymentCondition
 
     const web3 = global.web3
 
@@ -64,7 +61,7 @@ contract('Access Template integration test', (accounts) => {
             didRegistry.address,
             accessCondition.address,
             lockPaymentCondition.address,
-            escrowPaymentCondition.address,
+            escrowPaymentCondition.address
         ], deployer)
 
         const templateId = accessTemplate.address
@@ -147,7 +144,7 @@ contract('Access Template integration test', (accounts) => {
             const receiver = receivers[0]
 
             const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
-            const getBal = async (a,b) => getBalance(a,b,checkpoint) 
+            const getBal = async (a, b) => getBalance(a, b, checkpoint)
 
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
@@ -217,7 +214,7 @@ contract('Access Template integration test', (accounts) => {
             const receiver = receivers[0]
 
             const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
-            const getBal = async (a,b) => getBalance(a,b,checkpoint)
+            const getBal = async (a, b) => getBalance(a, b, checkpoint)
 
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
@@ -273,7 +270,7 @@ contract('Access Template integration test', (accounts) => {
             const receiver = receivers[0]
 
             const checkpoint = await getCheckpoint(token, [sender, receiver, lockPaymentCondition.address, escrowPaymentCondition.address])
-            const getBal = async (a,b) => getBalance(a,b,checkpoint) 
+            const getBal = async (a, b) => getBalance(a, b, checkpoint)
 
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
@@ -340,7 +337,7 @@ contract('Access Template integration test', (accounts) => {
                 const receiver = receivers[0]
 
                 const checkpoint = await getCheckpoint(token, [sender, receiver, lockPaymentCondition.address, escrowPaymentCondition.address])
-                const getBal = async (a,b) => getBalance(a,b,checkpoint) 
+                const getBal = async (a, b) => getBalance(a, b, checkpoint)
 
                 // register DID
                 await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })

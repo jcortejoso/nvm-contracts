@@ -1,18 +1,16 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it, expect */
+/* global contract, describe, it, expect */
 
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
-const AccessProofTemplate = artifacts.require('AccessProofTemplate')
-
 const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
-const { getBalance } = require('../../helpers/getBalance.js')
+const { getTokenBalance, getCheckpoint } = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils')
 const mimcdecrypt = require('../../helpers/mimcdecrypt').decrypt
@@ -59,21 +57,23 @@ contract('Access Proof Template integration test', (accounts) => {
             token
         ))
 
-        accessTemplate = await AccessProofTemplate.new()
-        await accessTemplate.methods['initialize(address,address,address,address,address,address)'](
-            owner,
-            agreementStoreManager.address,
-            didRegistry.address,
-            accessProofCondition.address,
-            lockPaymentCondition.address,
-            escrowPaymentCondition.address,
-            { from: deployer }
+        accessTemplate = await testUtils.deploy('AccessProofTemplate',
+            [owner,
+                agreementStoreManager.address,
+                didRegistry.address,
+                accessProofCondition.address,
+                lockPaymentCondition.address,
+                escrowPaymentCondition.address],
+            deployer
         )
 
         // propose and approve template
         const templateId = accessTemplate.address
-        await templateStoreManager.proposeTemplate(templateId)
-        await templateStoreManager.approveTemplate(templateId, { from: owner })
+
+        if (testUtils.deploying) {
+            await templateStoreManager.proposeTemplate(templateId)
+            await templateStoreManager.approveTemplate(templateId, { from: owner })
+        }
 
         return {
             templateId,
@@ -166,6 +166,9 @@ contract('Access Proof Template integration test', (accounts) => {
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
+            const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
+            const getBalance = async (a, b) => getTokenBalance(a, b, checkpoint)
+
             // create agreement
             await accessTemplate.createAgreement(...Object.values(agreement))
 
@@ -244,6 +247,9 @@ contract('Access Proof Template integration test', (accounts) => {
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
 
+            const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
+            const getBalance = async (a, b) => getTokenBalance(a, b, checkpoint)
+
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
@@ -295,6 +301,9 @@ contract('Access Proof Template integration test', (accounts) => {
             const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeLockAccess, conditionIds } = await prepareEscrowAgreementMultipleEscrow({ timeLockAccess: 10 })
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
+
+            const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
+            const getBalance = async (a, b) => getTokenBalance(a, b, checkpoint)
 
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
@@ -360,6 +369,9 @@ contract('Access Proof Template integration test', (accounts) => {
                 const { agreementId, data, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, conditionIds } = await prepareEscrowAgreementMultipleEscrow()
                 const totalAmount = escrowAmounts[0] + escrowAmounts[1]
                 const receiver = receivers[0]
+
+                const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
+                const getBalance = async (a, b) => getTokenBalance(a, b, checkpoint)
 
                 // register DID
                 await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
