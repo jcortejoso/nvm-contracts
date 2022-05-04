@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* global assert, web3 */
+/* global artifacts, assert, web3 */
 
 const utils = {
     generateId: () => {
@@ -53,7 +53,17 @@ const utils = {
         const messageBuffer = Buffer.from(messageHex.substring(2), 'hex')
         const prefix = Buffer.from(`\u0019Ethereum Signed Message:\n${messageBuffer.length}`)
         return web3.utils.sha3(Buffer.concat([prefix, messageBuffer]))
-    }
+    },
+
+    deploy: async (name, args, deployer, libs=[]) => {
+        const afact = artifacts.require(name)
+        for (let e of libs) {
+            afact.link(e)
+        }
+        const c = await afact.new()
+        await c.initialize(...args, {from: deployer})
+        return c
+    },
 
 }
 

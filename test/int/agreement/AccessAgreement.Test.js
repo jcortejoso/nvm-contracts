@@ -57,16 +57,14 @@ contract('Access Template integration test', (accounts) => {
             token
         ))
 
-        accessTemplate = await AccessTemplate.new()
-        await accessTemplate.methods['initialize(address,address,address,address,address,address)'](
+        accessTemplate = await testUtils.deploy('AccessTemplate', [
             owner,
             agreementStoreManager.address,
             didRegistry.address,
             accessCondition.address,
             lockPaymentCondition.address,
             escrowPaymentCondition.address,
-            { from: deployer }
-        )
+        ], deployer)
 
         // propose and approve template
         const templateId = accessTemplate.address
