@@ -66,10 +66,12 @@ contract('Access Template integration test', (accounts) => {
             escrowPaymentCondition.address,
         ], deployer)
 
-        // propose and approve template
         const templateId = accessTemplate.address
-        await templateStoreManager.proposeTemplate(templateId)
-        await templateStoreManager.approveTemplate(templateId, { from: owner })
+        // propose and approve template
+        if (testUtils.deploying) {
+            await templateStoreManager.proposeTemplate(templateId)
+            await templateStoreManager.approveTemplate(templateId, { from: owner })
+        }
 
         return {
             templateId,

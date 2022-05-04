@@ -1,7 +1,13 @@
 /* eslint-env mocha */
 /* global artifacts, assert, web3 */
 
+const { hardhatArguments } = require('hardhat')
+const network = hardhatArguments.network || 'hardhat'
+const deploying = network === 'hardhat'
+
 const utils = {
+    deploying,
+
     generateId: () => {
         return web3.utils.sha3(Math.random().toString())
     },
