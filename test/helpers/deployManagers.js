@@ -8,6 +8,7 @@ const testUtils = require('./utils')
 const deployManagers = async function(deployer, owner) {
     const didRegistryLibrary = await DIDRegistryLibrary.new()
     const epochLibrary = await EpochLibrary.new({ from: deployer })
+    console.log('owner', owner, 'deployer', deployer)
 
     const token = await testUtils.deploy('NeverminedToken', [owner, owner], deployer)
     const nvmConfig = await testUtils.deploy('NeverminedConfig', [owner, owner], deployer)

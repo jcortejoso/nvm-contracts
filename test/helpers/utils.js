@@ -62,13 +62,19 @@ const utils = {
     },
 
     deploy: async (name, args, deployer, libs=[]) => {
-        const afact = artifacts.require(name)
-        for (let e of libs) {
-            afact.link(e)
+        if (deploying) {
+            const afact = artifacts.require(name)
+            for (let e of libs) {
+                afact.link(e)
+            }
+            const c = await afact.new()
+            await c.initialize(...args, {from: deployer})
+            return c
+        } else {
+            const afact = artifacts.require(name)
+            const addr = require(`../../artifacts/${name}.external.json`).address
+            return afact.at(addr)
         }
-        const c = await afact.new()
-        await c.initialize(...args, {from: deployer})
-        return c
     },
 
 }
