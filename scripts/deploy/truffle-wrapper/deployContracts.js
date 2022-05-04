@@ -68,7 +68,11 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
     })
 
     // Move proxy admin to upgrader wallet
-    await upgrades.admin.transferProxyAdminOwnership(roles.upgraderWallet)
+    try {
+        await upgrades.admin.transferProxyAdminOwnership(roles.upgraderWallet)
+    } catch (err) {
+        console.log('Cannot move proxy admin ownership')
+    }
 
     addressBook.DIDRegistryLibrary = didRegistryLibraryAddress
     addressBook.EpochLibrary = epochLibraryAddress

@@ -65,6 +65,7 @@ async function transferOwnership({
     }
 
     const contractOwner = await ContractInstance.owner()
+    console.log(contractOwner, roles.deployer)
     if (contractOwner === roles.deployer) {
         const tx = await ContractInstance.connect(ethers.provider.getSigner(roles.deployer)).transferOwnership(
             roles.ownerWallet,
@@ -432,6 +433,15 @@ async function setupContracts({
             { from: roles.deployer }
         )
         await tx.wait()
+        
+        const tx2 = await token.connect(ethers.provider.getSigner(roles.deployer)).grantRole(
+            web3.utils.toHex('minter').padEnd(66, '0'),
+            roles.ownerWallet,
+            { from: roles.deployer }
+        )
+        await tx2.wait()
+
+
         addresses.stage = 14
     }
 
