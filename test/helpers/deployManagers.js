@@ -30,6 +30,12 @@ const deployManagers = async function(deployer, owner, governor = owner) {
         deployer
     )
 
+    await nvmConfig.setMarketplaceFees(
+        0,
+        owner,
+        { from: governor }
+    )
+
     if (testUtils.deploying) {
         await nft.addMinter(didRegistry.address, { from: deployer })
         await nft.setProxyApproval(didRegistry.address, true, { from: deployer })

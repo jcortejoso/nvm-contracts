@@ -38,6 +38,7 @@ contract('NFT Access Proof Template integration test', (accounts) => {
 
     const owner = accounts[8]
     const deployer = accounts[8]
+    const governor = accounts[10]
 
     async function setupTest() {
         ({
@@ -49,7 +50,8 @@ contract('NFT Access Proof Template integration test', (accounts) => {
             templateStoreManager
         } = await deployManagers(
             deployer,
-            owner
+            owner,
+            governor
         ));
 
         ({
