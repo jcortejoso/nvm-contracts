@@ -2,7 +2,6 @@
 const EpochLibrary = artifacts.require('EpochLibrary')
 const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
 
-const constants = require('./constants')
 const testUtils = require('./utils')
 
 const deployManagers = async function(deployer, owner) {
@@ -12,8 +11,9 @@ const deployManagers = async function(deployer, owner) {
     const token = await testUtils.deploy('NeverminedToken', [owner, owner], deployer)
     const nvmConfig = await testUtils.deploy('NeverminedConfig', [owner, owner], deployer)
     const nft = await testUtils.deploy('NFTUpgradeable', [''], deployer)
+    const nft721 = await testUtils.deploy('NFT721Upgradeable', [], deployer)
 
-    const didRegistry = await testUtils.deploy('DIDRegistry', [owner, nft.address, constants.address.zero], deployer, [didRegistryLibrary])
+    const didRegistry = await testUtils.deploy('DIDRegistry', [owner, nft.address, nft721.address], deployer, [didRegistryLibrary])
 
     const templateStoreManager = await testUtils.deploy('TemplateStoreManager', [owner], deployer)
 
@@ -33,6 +33,8 @@ const deployManagers = async function(deployer, owner) {
     if (testUtils.deploying) {
         await nft.addMinter(didRegistry.address, { from: deployer })
         await nft.setProxyApproval(didRegistry.address, true, { from: deployer })
+        await nft721.addMinter(didRegistry.address, { from: deployer })
+        await nft721.setProxyApproval(didRegistry.address, true, { from: deployer })
         await conditionStoreManager.delegateCreateRole(
             agreementStoreManager.address,
             { from: owner }
@@ -46,6 +48,7 @@ const deployManagers = async function(deployer, owner) {
         conditionStoreManager,
         templateStoreManager,
         nft,
+        nft721,
         deployer,
         owner
     }

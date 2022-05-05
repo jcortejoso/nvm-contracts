@@ -487,7 +487,7 @@ async function setupContracts({
             roles,
             verbose
         })
-    
+
         addresses.stage = 16
     }
 
@@ -504,7 +504,6 @@ async function setupContracts({
         })
         addresses.stage = 17
     }
-
 }
 
 module.exports = setupContracts

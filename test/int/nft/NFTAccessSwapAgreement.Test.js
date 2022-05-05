@@ -1,15 +1,11 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it, expect */
+/* global contract, describe, it, expect */
 
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
-
-const NFTAccessSwapTemplate = artifacts.require('NFTAccessSwapTemplate')
-const NFTLockCondition = artifacts.require('NFTLockCondition')
-const NFTEscrowCondition = artifacts.require('NFTEscrowPaymentCondition')
 
 const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
@@ -71,31 +67,29 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
             didRegistry,
             token
         ))
-        escrowCondition = await NFTEscrowCondition.new({ from: deployer })
-        await escrowCondition.initialize(
+
+        escrowCondition = await testUtils.deploy('NFTEscrowPaymentCondition', [
+            owner,
+            conditionStoreManager.address], deployer
+        )
+
+        lockPaymentCondition = await testUtils.deploy('NFTLockCondition', [
             owner,
             conditionStoreManager.address,
-            { from: deployer }
+            nft.address], deployer
         )
-        lockPaymentCondition = await NFTLockCondition.new()
-        await lockPaymentCondition.initialize(
-            owner,
-            conditionStoreManager.address,
-            nft.address,
-            { from: deployer }
-        )
-        nftTemplate = await NFTAccessSwapTemplate.new()
-        await nftTemplate.methods['initialize(address,address,address,address,address)'](
+        nftTemplate = await testUtils.deploy('NFTAccessSwapTemplate', [
             owner,
             agreementStoreManager.address,
             lockPaymentCondition.address,
             escrowCondition.address,
-            accessProofCondition.address,
-            { from: deployer }
+            accessProofCondition.address], deployer
         )
 
-        await templateStoreManager.proposeTemplate(nftTemplate.address)
-        await templateStoreManager.approveTemplate(nftTemplate.address, { from: owner })
+        if (testUtils.deploying) {
+            await templateStoreManager.proposeTemplate(nftTemplate.address)
+            await templateStoreManager.approveTemplate(nftTemplate.address, { from: owner })
+        }
     }
 
     async function prepareAgreement({

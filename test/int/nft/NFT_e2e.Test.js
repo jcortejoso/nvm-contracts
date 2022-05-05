@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it */
+/* global contract, describe, it */
 
 const chai = require('chai')
 const { assert } = chai
@@ -96,7 +96,7 @@ contract('End to End NFT Scenarios', (accounts) => {
             conditionStoreManager.address,
             didRegistry.address,
             nft.address,
-            market,], deployer)
+            market], deployer)
 
         accessCondition = await testUtils.deploy('NFTAccessCondition', [
             owner,
@@ -113,14 +113,14 @@ contract('End to End NFT Scenarios', (accounts) => {
             agreementStoreManager.address,
             lockPaymentCondition.address,
             transferCondition.address,
-            escrowCondition.address,], deployer)
+            escrowCondition.address], deployer)
 
         // Setup NFT Access Template
         nftAccessTemplate = await testUtils.deploy('NFTAccessTemplate', [
             owner,
             agreementStoreManager.address,
             nftHolderCondition.address,
-            accessCondition.address,], deployer)
+            accessCondition.address], deployer)
 
         if (testUtils.deploying) {
             await lockPaymentCondition.grantProxyRole(agreementStoreManager.address, { from: owner })

@@ -1,14 +1,11 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it, expect */
+/* global contract, describe, it, expect */
 
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
-
-const NFTAccessProofTemplate = artifacts.require('NFTAccessProofTemplate')
-const NFTHolderCondition = artifacts.require('NFTHolderCondition')
 
 const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
@@ -34,12 +31,14 @@ contract('NFT Access Proof Template integration test', (accounts) => {
         nftHolderCondition,
         accessProofCondition
     const [
-        owner,
-        deployer,
         artist,
         receiver,
         someone
     ] = accounts
+
+    const owner = accounts[9]
+    const deployer = accounts[8]
+
     async function setupTest() {
         ({
             token,
@@ -63,27 +62,24 @@ contract('NFT Access Proof Template integration test', (accounts) => {
             didRegistry,
             token
         ))
-        nftHolderCondition = await NFTHolderCondition.new({ from: deployer })
-        await nftHolderCondition.initialize(
+
+        nftHolderCondition = await testUtils.deploy('NFTHolderCondition', [
             owner,
             conditionStoreManager.address,
-            nft.address,
-            { from: deployer }
-        )
+            nft.address], deployer)
 
-        nftAccessTemplate = await NFTAccessProofTemplate.new()
-        await nftAccessTemplate.methods['initialize(address,address,address,address)'](
+        nftAccessTemplate = await testUtils.deploy('NFTAccessProofTemplate', [
             owner,
             agreementStoreManager.address,
             nftHolderCondition.address,
-            accessProofCondition.address,
-            { from: deployer }
-        )
+            accessProofCondition.address], deployer)
 
         // propose and approve template
         const templateId = nftAccessTemplate.address
-        await templateStoreManager.proposeTemplate(templateId)
-        await templateStoreManager.approveTemplate(templateId, { from: owner })
+        if (testUtils.deploying) {
+            await templateStoreManager.proposeTemplate(templateId)
+            await templateStoreManager.approveTemplate(templateId, { from: owner })
+        }
 
         return {
             templateId,
