@@ -25,3 +25,5 @@ export FAIL=true
 npx hardhat run ./scripts/deploy/truffle-wrapper/upgradeContractsWrapper.js --network external || exit 1
 npx hardhat run ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js --network external || exit 1
 npx hardhat run ./scripts/deploy/truffle-wrapper/upgradePlonkVerifier.js --network external || exit 1
+
+npx hardhat test --network external test/int/agreement/(AccessAgreement|AccessProofAgreement|EscrowComputeExecutionAgreement|NFTAccessAgreement).Test.js test/int/nft/*.js || exit 1
