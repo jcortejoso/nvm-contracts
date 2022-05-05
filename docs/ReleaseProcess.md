@@ -160,6 +160,8 @@ All upgrades of the contracts have to be approved by the `upgrader` wallet confi
 
 Once the contracts are deployed to a public network or a new contract version whose contract abis has to been uploaded, use the Github Action `Upload Contracts and Artifacts to Repository`:
 
+![Github Workflow Upload Contracts and Artifacts Repository example](./assets/gi-workflow-upload-artifacts.png)
+
 - `branch` is the branch from where the workflow and artifacts will be used.
 - `asset` can be `abis`/`contracts`. Use abis if you want to upload the contract ABIs that not contain deployment information. Contracts for uploading abis with deployment information to `network`.
 - `network` refers to network name, based on filename/hardhat config. Not used if `abis` is selected.
