@@ -47,8 +47,7 @@ contract('NFT Access integration test', (accounts) => {
         nftAccessTemplate = await testUtils.deploy('NFTAccessTemplate', [owner,
             agreementStoreManager.address,
             nftHolderCondition.address,
-            accessCondition.address,
-            nft.address], deployer)
+            accessCondition.address], deployer)
 
         // propose and approve template
         const templateId = nftAccessTemplate.address

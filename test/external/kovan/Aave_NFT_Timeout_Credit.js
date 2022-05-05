@@ -46,7 +46,7 @@ contract('End to End NFT Collateral Scenario (timeout)', (accounts) => {
     const INTEREST_RATE_MODE = 1
 
     const governor = accounts[2]
-    const owner = accounts[98]
+    const owner = accounts[8]
     const deployer = accounts[8]
     const treasuryAddress = accounts[5]
     const didSeed = testUtils.generateId()
