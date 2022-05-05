@@ -156,6 +156,21 @@ All upgrades of the contracts have to be approved by the `upgrader` wallet confi
 - Select the transaction you want to confirm (the upgrade script will tell you which transactions have to be approved in which wallets)
 - Click Confirm
 
+## Upload the artifacts (abis/contracts) to Contract Repository
+
+Once the contracts are deployed to a public network or a new contract version whose contract abis has to been uploaded, use the Github Action `Upload Contracts and Artifacts to Repository`:
+
+- `branch` is the branch from where the workflow and artifacts will be used.
+- `asset` can be `abis`/`contracts`. Use abis if you want to upload the contract ABIs that not contain deployment information. Contracts for uploading abis with deployment information to `network`.
+- `network` refers to network name, based on filename/hardhat config. Not used if `abis` is selected.
+- `tag` refers to deployment tag. Defaults to common. Not used if `abis` is selected.
+
+This workflows uses the script `scripts/upload_artifacts_s3.sh` that can be used using the next syntax:
+
+```bash
+./upload_artifacts_s3.sh abis
+./upload_artifacts_s3.sh contracts mumbai awesome_tag
+```
 
 ## Document
 
