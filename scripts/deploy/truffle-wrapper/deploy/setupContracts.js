@@ -26,8 +26,7 @@ async function callContract(instance, f) {
     try {
         const tx = await f(instance.connect(ethers.provider.getSigner(contractOwner)))
         await tx.wait()
-    } 
-    catch (err) {
+    } catch (err) {
         console.log('Warning: TX fail')
         console.log(err)
     }
@@ -528,7 +527,6 @@ async function setupContracts({
         await callContract(artifacts.AccessCondition, a => a.reinit())
         addresses.stage = 18
     }
-
 }
 
 module.exports = setupContracts
