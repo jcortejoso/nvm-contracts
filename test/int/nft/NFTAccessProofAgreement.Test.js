@@ -36,7 +36,7 @@ contract('NFT Access Proof Template integration test', (accounts) => {
         someone
     ] = accounts
 
-    const owner = accounts[9]
+    const owner = accounts[8]
     const deployer = accounts[8]
 
     async function setupTest() {

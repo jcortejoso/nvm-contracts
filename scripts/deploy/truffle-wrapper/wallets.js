@@ -9,7 +9,7 @@ async function loadWallet({ makeWallet }) {
     const accounts = await web3.eth.getAccounts()
     console.log('Account', accounts)
     let wallets = [
-        { name: 'owner', account: accounts[9] },
+        { name: 'owner', account: accounts[8] },
         { name: 'upgrader', account: accounts[8] },
         { name: 'governor', account: accounts[10] }
     ]
@@ -60,9 +60,9 @@ async function loadWallet({ makeWallet }) {
 
     const roles = {
         deployer: accounts[8],
-        upgrader: accounts[9],
+        upgrader: accounts[8],
         governor: accounts[10],
-        ownerWallet: (wallets.find(a => a.name === 'owner') || { account: accounts[9] }).account,
+        ownerWallet: (wallets.find(a => a.name === 'owner') || { account: accounts[8] }).account,
         upgraderWallet: (wallets.find(a => a.name === 'upgrader') || { account: accounts[8] }).account,
         governorWallet: (wallets.find(a => a.name === 'governor') || { account: accounts[10] }).account,
         contractNetworks

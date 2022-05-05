@@ -40,7 +40,7 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
         gallery,
         market
     ] = accounts
-    const owner = accounts[9]
+    const owner = accounts[8]
     const deployer = accounts[8]
 
     const collector1 = receiver

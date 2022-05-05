@@ -8,9 +8,9 @@ async function approveTemplate({
     roles,
     templateAddress
 } = {}) {
-    // const contractOwner = await TemplateStoreManagerInstance.owner()
+    const contractOwner = await TemplateStoreManagerInstance.owner()
     try {
-        const tx = await TemplateStoreManagerInstance.connect(ethers.provider.getSigner(roles.deployer)).approveTemplate(
+        const tx = await TemplateStoreManagerInstance.connect(ethers.provider.getSigner(contractOwner)).approveTemplate(
             templateAddress,
             { gasLimit: 100000 }
         )
@@ -18,6 +18,18 @@ async function approveTemplate({
     } catch (e) {
         console.log(e)
         console.log('Approve failed for', templateAddress, roles.deployer, TemplateStoreManagerInstance.address)
+    }
+}
+
+async function callContract(instance, f) {
+    const contractOwner = await instance.owner()
+    try {
+        const tx = await f(instance.connect(ethers.provider.getSigner(contractOwner)))
+        await tx.wait()
+    } 
+    catch (err) {
+        console.log('Warning: TX fail')
+        console.log(err)
     }
 }
 
@@ -240,11 +252,21 @@ async function setupContracts({
                 )
             }
 
-            const tx = await ConditionStoreManagerInstance.connect(ethers.provider.getSigner(roles.deployer)).delegateCreateRole(
-                addressBook.AgreementStoreManager,
-                { from: roles.deployer }
-            )
-            await tx.wait()
+            await callContract(ConditionStoreManagerInstance, a => a.delegateCreateRole(
+                addressBook.AgreementStoreManager
+            ))
+        }
+
+        if (addressBook.NeverminedConfig) {
+            if (verbose) {
+                console.log(
+                    `Setting nevermined config ${addressBook.NeverminedConfig}`
+                )
+            }
+
+            await callContract(ConditionStoreManagerInstance, a => a.setNvmConfigAddress(
+                addressBook.NeverminedConfig
+            ))
         }
 
         if (addressBook.EscrowPaymentCondition) {
@@ -254,11 +276,9 @@ async function setupContracts({
                 )
             }
 
-            const tx = await ConditionStoreManagerInstance.connect(ethers.provider.getSigner(roles.deployer)).grantProxyRole(
-                addressBook.EscrowPaymentCondition,
-                { from: roles.deployer }
-            )
-            await tx.wait()
+            await callContract(ConditionStoreManagerInstance, a => a.grantProxyRole(
+                addressBook.EscrowPaymentCondition
+            ))
         }
 
         await transferOwnership({
@@ -285,9 +305,7 @@ async function setupContracts({
 
     if (addressBook.LockPaymentCondition && addressBook.AgreementStoreManager && addresses.stage < 4) {
         console.log('Set lock payment condition proxy : ' + addressBook.LockPaymentCondition)
-        const tx = await artifacts.LockPaymentCondition.connect(ethers.provider.getSigner(roles.deployer)).grantProxyRole(
-            addressBook.AgreementStoreManager, { from: roles.deployer })
-        await tx.wait()
+        await callContract(artifacts.LockPaymentCondition, a => a.grantProxyRole(addressBook.AgreementStoreManager))
         addresses.stage = 4
     }
 
@@ -307,15 +325,15 @@ async function setupContracts({
         for (const a of agreements) {
             if (addressBook[a] && addressBook.AgreementStoreManager) {
                 console.log('Set agreement manager proxy : ' + addressBook[a])
-                const tx = await artifacts.AgreementStoreManager.connect(ethers.provider.getSigner(roles.deployer)).grantProxyRole(
-                    addressBook[a], { from: roles.deployer })
-                await tx.wait()
+                await callContract(artifacts.AgreementStoreManager, c => c.grantProxyRole(addressBook[a]))
             }
         }
         addresses.stage = 5
     }
 
     if (addressBook.LockPaymentCondition && addresses.stage < 6) {
+        const tx = await artifacts.LockPaymentCondition.connect(ethers.provider.getSigner(roles.deployer)).resetConfig()
+        await tx.wait()
         await transferOwnership({
             ContractInstance: artifacts.LockPaymentCondition,
             name: 'LockPaymentCondition',
@@ -504,6 +522,13 @@ async function setupContracts({
         })
         addresses.stage = 17
     }
+
+    if (addressBook.AccessCondition && addresses.stage < 18) {
+        console.log('Reinit Access condition: ' + addressBook.AccessCondition)
+        await callContract(artifacts.AccessCondition, a => a.reinit())
+        addresses.stage = 18
+    }
+
 }
 
 module.exports = setupContracts

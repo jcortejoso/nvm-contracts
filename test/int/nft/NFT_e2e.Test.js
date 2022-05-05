@@ -34,7 +34,7 @@ contract('End to End NFT Scenarios', (accounts) => {
         someone
     ] = accounts
 
-    const owner = accounts[9]
+    const owner = accounts[8]
     const deployer = accounts[8]
 
     // Configuration of First Sale:

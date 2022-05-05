@@ -23,7 +23,7 @@ contract('NFT Access integration test', (accounts) => {
 
     async function setupTest({
         deployer = accounts[8],
-        owner = accounts[9]
+        owner = accounts[8]
     } = {}) {
         ({
             nft,
