@@ -27,8 +27,6 @@
       * [Rinkeby (Ethereum) Testnet](#rinkeby-ethereum-testnet)
       * [Mumbai (Polygon) Testnet](#mumbai-polygon-testnet)
       * [Aurora Testnet](#aurora-testnet)
-      * [Integration Testnet](#integration-testnet)
-      * [Staging Testnet](#staging-testnet)
     * [Mainnets](#mainnets)
       * [Ethereum Mainnet](#ethereum-mainnet)
       * [Aurora Mainnet](#aurora-mainnet)
@@ -337,22 +335,6 @@ The contract addresses deployed on `Aurora` Test Network:
 | TransferNFTCondition              | v1.1.6 | `0x1F66d913AB40095700dbB1a5a1D369996E3Dcb9e` |
 | WhitelistingCondition             | v1.1.6 | `0x10C7501d55228EE102f403410a9b40f6330669CE` |
 
-#### Integration Testnet
-
-The contract addresses deployed on Nevermined `Integration` Test Network:
-
-| Contract                          | Version | Address                                      |
-|-----------------------------------|---------|----------------------------------------------|
-| -                                 | -       | -                                            |
-
-#### Staging Testnet
-
-The contract addresses deployed on Nevermined `Staging` Test Network:
-
-| Contract                          | Version | Address                                      |
-|-----------------------------------|---------|----------------------------------------------|
-| -                                 | -       | -                                            |
-
 ### Mainnets
 
 ### Ethereum Mainnet
@@ -548,10 +530,10 @@ Install the `nevermined-contracts` `npm` package.
 npm install @nevermined-io/contracts
 ```
 
-Load the ABI of the `NeverminedToken` contract on the `staging` network:
+Load the ABI of the `NeverminedToken` contract on the `Rinkeby` network:
 
 ```javascript
-const NeverminedToken = require('@nevermined-io/contracts/artifacts/NeverminedToken.staging.json')
+const NeverminedToken = require('@nevermined-io/contracts/artifacts/NeverminedToken.rinkeby.json')
 ```
 
 The structure of the `artifacts` is:
