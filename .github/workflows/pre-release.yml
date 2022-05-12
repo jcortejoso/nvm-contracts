@@ -7,34 +7,6 @@ on:
       - "main"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '14.x'
-      - name: Pre-install
-        run: |
-          rm -rf node_modules
-          yarn install --frozen-lockfile
-          git submodule init
-          git submodule update
-      - name: Compile and Lint
-        run: |
-          yarn lint
-          yarn clean
-          sh ./scripts/build.sh
-          yarn compile
-      - name: Run Unit Tests
-        run: |
-          yarn test:unit
-      - name: Run Integration Tests
-        run: |
-          yarn test:integration
-        env:
-          NODE_OPTIONS: "--max-old-space-size=7500"
-
   pre-release:
     name: "Pre Release"
     runs-on: "ubuntu-latest"
@@ -79,6 +51,14 @@ jobs:
         run: |
           tar cvzf contracts-${{ env.RELEASE_VERSION }}.tar.gz contracts/
 
+      - name: Update CHANGELOG.md
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          outputFile: "CHANGELOG.md"
+
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -88,4 +68,3 @@ jobs:
           files: |
             contracts-${{ env.RELEASE_VERSION }}.tar.gz
             CHANGELOG.md
-
