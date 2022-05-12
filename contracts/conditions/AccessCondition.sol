@@ -89,7 +89,10 @@ ISecretStore, ISecretStorePermission {
         
     }
 
-    function reinit() external {
+    /**
+     * Should be called when the contract has been upgraded.
+     */
+    function reinitialize() external reinitializer(2) {
         didRegistry = DIDRegistry(
             agreementStoreManager.getDIDRegistryAddress()
         );

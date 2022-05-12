@@ -331,7 +331,7 @@ async function setupContracts({
     }
 
     if (addressBook.LockPaymentCondition && addresses.stage < 6) {
-        const tx = await artifacts.LockPaymentCondition.connect(ethers.provider.getSigner(roles.deployer)).resetConfig()
+        const tx = await artifacts.LockPaymentCondition.connect(ethers.provider.getSigner(roles.deployer)).reinitialize()
         await tx.wait()
         await transferOwnership({
             ContractInstance: artifacts.LockPaymentCondition,
@@ -524,7 +524,7 @@ async function setupContracts({
 
     if (addressBook.AccessCondition && addresses.stage < 18) {
         console.log('Reinit Access condition: ' + addressBook.AccessCondition)
-        await callContract(artifacts.AccessCondition, a => a.reinit())
+        await callContract(artifacts.AccessCondition, a => a.reinitialize())
         addresses.stage = 18
     }
 }
