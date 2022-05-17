@@ -87,8 +87,6 @@
   "files": [
     "artifacts/**/*development.json",
     "docs/**/*",
-    "circuits/*.zkey",
-    "circuits/*.wasm",
     "README.md"
   ],
   "repository": {
