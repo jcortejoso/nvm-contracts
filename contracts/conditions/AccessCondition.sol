@@ -89,6 +89,15 @@ ISecretStore, ISecretStorePermission {
         
     }
 
+    /**
+     * Should be called when the contract has been upgraded.
+     */
+    function reinitialize() external reinitializer(2) {
+        didRegistry = DIDRegistry(
+            agreementStoreManager.getDIDRegistryAddress()
+        );
+    }
+
    /**
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters

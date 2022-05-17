@@ -1,15 +1,11 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it, expect */
+/* global contract, describe, it, expect */
 
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
-
-const NFTSalesTemplate = artifacts.require('NFTSalesWithAccessTemplate')
-const NFTHolderCondition = artifacts.require('NFTHolderCondition')
-const TransferNFTCondition = artifacts.require('TransferNFTCondition')
 
 const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
@@ -17,8 +13,7 @@ const deployManagers = require('../../helpers/deployManagers.js')
 const testUtils = require('../../helpers/utils')
 
 const { makeProof } = require('../../helpers/proofHelper')
-
-const { getBalance } = require('../../helpers/getBalance.js')
+const { getTokenBalance, getCheckpoint } = require('../../helpers/getBalance.js')
 
 contract('NFT Sales with Access Proof Template integration test', (accounts) => {
     const didSeed = testUtils.generateId()
@@ -37,16 +32,18 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
         nftSalesTemplate,
         escrowCondition,
         lockPaymentCondition,
-        nftHolderCondition,
-        accessProofCondition
+        accessProofCondition,
+        getBalance
     const [
-        owner,
-        deployer,
         artist,
         receiver,
         gallery,
         market
     ] = accounts
+    const owner = accounts[8]
+    const deployer = accounts[8]
+    const governor = accounts[10]
+
     const collector1 = receiver
 
     const numberNFTs = 1
@@ -64,7 +61,8 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
             templateStoreManager
         } = await deployManagers(
             deployer,
-            owner
+            owner,
+            governor
         ));
 
         ({
@@ -80,36 +78,28 @@ contract('NFT Sales with Access Proof Template integration test', (accounts) => 
             didRegistry,
             token
         ))
-        nftHolderCondition = await NFTHolderCondition.new({ from: deployer })
-        await nftHolderCondition.initialize(
-            owner,
-            conditionStoreManager.address,
-            nft.address,
-            { from: deployer }
-        )
-        transferCondition = await TransferNFTCondition.new()
-        await transferCondition.initialize(
-            owner,
+        transferCondition = await testUtils.deploy('TransferNFTCondition', [owner,
             conditionStoreManager.address,
             didRegistry.address,
             nft.address,
-            market,
-            { from: deployer }
+            market], deployer
         )
-        nftSalesTemplate = await NFTSalesTemplate.new()
-        await nftSalesTemplate.methods['initialize(address,address,address,address,address,address)'](
+        nftSalesTemplate = await testUtils.deploy('NFTSalesWithAccessTemplate', [
             owner,
             agreementStoreManager.address,
             lockPaymentCondition.address,
             transferCondition.address,
             escrowCondition.address,
-            accessProofCondition.address,
-            { from: deployer }
+            accessProofCondition.address], deployer
         )
-        await nft.setProxyApproval(transferCondition.address, true, { from: owner })
 
-        await templateStoreManager.proposeTemplate(nftSalesTemplate.address)
-        await templateStoreManager.approveTemplate(nftSalesTemplate.address, { from: owner })
+        if (testUtils.deploying) {
+            await nft.setProxyApproval(transferCondition.address, true, { from: deployer })
+            await templateStoreManager.proposeTemplate(nftSalesTemplate.address)
+            await templateStoreManager.approveTemplate(nftSalesTemplate.address, { from: owner })
+        }
+        const checkpoint = await getCheckpoint(token, [artist, collector1, market, gallery, lockPaymentCondition.address, escrowCondition.address])
+        getBalance = async (a, b) => getTokenBalance(a, b, checkpoint)
     }
 
     async function prepareAgreement({

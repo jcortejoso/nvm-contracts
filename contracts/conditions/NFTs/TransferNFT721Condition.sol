@@ -32,11 +32,11 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
     DIDRegistry internal didRegistry;
 
     function grantProxyRole(address _address) public onlyOwner {
-        grantRole(PROXY_ROLE, _address);
+        _grantRole(PROXY_ROLE, _address);
     }
 
     function revokeProxyRole(address _address) public onlyOwner {
-        revokeRole(PROXY_ROLE, _address);
+        _revokeRole(PROXY_ROLE, _address);
     }
 
    /**

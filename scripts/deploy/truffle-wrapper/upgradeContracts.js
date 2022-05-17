@@ -45,7 +45,7 @@ async function upgradeContracts({ contracts: origContracts, verbose, testnet, fa
             console.log(`contract ${c} didn't exist`)
             continue
         }
-        const C = await ethers.getContractFactory(table[c] || c, { libraries: afact.libraries })
+        const C = await (await ethers.getContractFactory(table[c] || c, { libraries: afact.libraries })).connect(ethers.provider.getSigner(roles.deployer))
         if (verbose) {
             console.log(`upgrading ${c} at ${afact.address}`)
         }

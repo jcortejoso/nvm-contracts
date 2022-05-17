@@ -147,6 +147,13 @@ contract ConditionStoreManager is OwnableUpgradeable, AccessControlUpgradeable, 
         return nvmConfigAddress;
     }    
     
+    function setNvmConfigAddress(address _addr)
+    external
+    onlyOwner
+    {
+        nvmConfigAddress = _addr;
+    }    
+    
     /**
      * @dev delegateCreateRole only owner can delegate the 
      *      create condition role to a different address

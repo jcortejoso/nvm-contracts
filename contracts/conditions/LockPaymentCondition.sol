@@ -88,7 +88,16 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
         );
         
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
-  }
+    }
+
+    /**
+     * Should be called when the contract has been upgraded.
+     */
+    function reinitialize() external reinitializer(2) {
+        nvmConfig = INVMConfig(
+            conditionStoreManager.getNvmConfigAddress()
+        );
+    }
 
    /**
     * @notice hashValues generates the hash of condition inputs 

@@ -1,34 +1,18 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it */
+/* global contract, describe, it */
 
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
-const NFTAccessTemplate = artifacts.require('NFTAccessTemplate')
-const NFTSalesTemplate = artifacts.require('NFTSalesTemplate')
-
-const NeverminedConfig = artifacts.require('NeverminedConfig')
-const LockPaymentCondition = artifacts.require('LockPaymentCondition')
-const TransferNFTCondition = artifacts.require('TransferNFT721Condition')
-const EscrowPaymentCondition = artifacts.require('EscrowPaymentCondition')
-const EpochLibrary = artifacts.require('EpochLibrary')
-const DIDRegistryLibrary = artifacts.require('DIDRegistryLibrary')
-const DIDRegistry = artifacts.require('DIDRegistry')
-const ConditionStoreManager = artifacts.require('ConditionStoreManager')
-const TemplateStoreManager = artifacts.require('TemplateStoreManager')
-const AgreementStoreManager = artifacts.require('AgreementStoreManager')
-const NeverminedToken = artifacts.require('NeverminedToken')
-const NFTAccessCondition = artifacts.require('NFTAccessCondition')
-const NFTHolderCondition = artifacts.require('NFT721HolderCondition')
-
-const TestERC721 = artifacts.require('NFT721Upgradeable')
-
 const constants = require('../../helpers/constants.js')
-const { getBalance } = require('../../helpers/getBalance.js')
 const testUtils = require('../../helpers/utils.js')
+
+const { getTokenBalance, getCheckpoint } = require('../../helpers/getBalance.js')
+const deployManagers = require('../../helpers/deployManagers.js')
+const deployConditions = require('../../helpers/deployConditions.js')
 
 contract('End to End NFT721 Scenarios', (accounts) => {
     const royalties = 10 // 10% of royalties in the secondary market
@@ -39,14 +23,17 @@ contract('End to End NFT721 Scenarios', (accounts) => {
     const url = 'https://raw.githubusercontent.com/nevermined-io/assets/main/images/logo/banner_logo.png'
 
     const [
-        owner,
-        deployer,
         artist,
         collector1,
         collector2,
         gallery,
+        market,
         someone
     ] = accounts
+
+    const owner = accounts[8]
+    const deployer = accounts[8]
+    const governor = accounts[10]
 
     // Configuration of First Sale:
     // Artist -> Collector1, the gallery get a cut (25%)
@@ -62,13 +49,6 @@ contract('End to End NFT721 Scenarios', (accounts) => {
     const amounts2 = [90, 10]
     const receivers2 = [collector1, artist]
 
-    before(async () => {
-        const epochLibrary = await EpochLibrary.new()
-        await ConditionStoreManager.link(epochLibrary)
-        const didRegistryLibrary = await DIDRegistryLibrary.new()
-        await DIDRegistry.link(didRegistryLibrary)
-    })
-
     let
         didRegistry,
         token,
@@ -82,120 +62,84 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         transferCondition,
         escrowCondition,
         nftHolderCondition,
-        accessCondition
+        accessCondition,
+        getBalance
 
     async function setupTest() {
-        token = await NeverminedToken.new()
-        await token.initialize(owner, owner)
-
-        const nvmConfig = await NeverminedConfig.new()
-        await nvmConfig.initialize(owner, owner)
-
-        nft = await TestERC721.new({ from: deployer })
-        await nft.initialize({ from: owner })
-
-        didRegistry = await DIDRegistry.new()
-        await didRegistry.initialize(owner, constants.address.zero, nft.address)
-
-        await nft.addMinter(didRegistry.address)
-
-        conditionStoreManager = await ConditionStoreManager.new()
-
-        templateStoreManager = await TemplateStoreManager.new()
-        await templateStoreManager.initialize(owner, { from: deployer })
-
-        agreementStoreManager = await AgreementStoreManager.new()
-        await agreementStoreManager.methods['initialize(address,address,address,address)'](
+        let nft721
+        ({
+            token,
+            didRegistry,
+            agreementStoreManager,
+            conditionStoreManager,
+            templateStoreManager,
+            nft721
+        } = await deployManagers(
+            deployer,
             owner,
-            conditionStoreManager.address,
-            templateStoreManager.address,
-            didRegistry.address,
-            { from: deployer }
-        )
-
-        await conditionStoreManager.initialize(
-            agreementStoreManager.address,
+            governor
+        ))
+        nft = nft721;
+        ({
+            lockPaymentCondition,
+            escrowCondition
+        } = await deployConditions(
+            deployer,
             owner,
-            nvmConfig.address,
-            { from: deployer }
-        )
+            agreementStoreManager,
+            conditionStoreManager,
+            didRegistry,
+            token
+        ))
 
-        lockPaymentCondition = await LockPaymentCondition.new()
-        await lockPaymentCondition.initialize(
-            owner,
-            conditionStoreManager.address,
-            didRegistry.address,
-            { from: deployer }
-        )
-        await lockPaymentCondition.grantProxyRole(agreementStoreManager.address, { from: owner })
-
-        transferCondition = await TransferNFTCondition.new()
-        await transferCondition.methods['initialize(address,address,address,address,address)'](
-            owner,
+        transferCondition = await testUtils.deploy('TransferNFT721Condition', [owner,
             conditionStoreManager.address,
             didRegistry.address,
             nft.address,
-            lockPaymentCondition.address,
-            { from: deployer }
-        )
-        await transferCondition.grantProxyRole(agreementStoreManager.address, { from: owner })
+            market], deployer)
 
-        escrowCondition = await EscrowPaymentCondition.new()
-        await escrowCondition.initialize(
+        accessCondition = await testUtils.deploy('NFTAccessCondition', [
             owner,
             conditionStoreManager.address,
-            { from: deployer }
-        )
+            didRegistry.address], deployer)
 
-        accessCondition = await NFTAccessCondition.new()
-        await accessCondition.methods['initialize(address,address,address)'](
+        nftHolderCondition = await testUtils.deploy('NFT721HolderCondition', [
             owner,
-            conditionStoreManager.address,
-            didRegistry.address,
-            { from: deployer }
-        )
+            conditionStoreManager.address
+        ], deployer)
 
-        nftHolderCondition = await NFTHolderCondition.new({ from: deployer })
-        await nftHolderCondition.initialize(
-            owner,
-            conditionStoreManager.address,
-            { from: deployer }
-        )
-
-        nftSalesTemplate = await NFTSalesTemplate.new()
-        await nftSalesTemplate.methods['initialize(address,address,address,address,address)'](
+        nftSalesTemplate = await testUtils.deploy('NFT721SalesTemplate', [
             owner,
             agreementStoreManager.address,
             lockPaymentCondition.address,
             transferCondition.address,
-            escrowCondition.address,
-            { from: deployer }
-        )
-        await agreementStoreManager.grantProxyRole(nftSalesTemplate.address, { from: owner })
-        await lockPaymentCondition.grantProxyRole(agreementStoreManager.address, { from: owner })
-        await conditionStoreManager.grantProxyRole(
-            escrowCondition.address,
-            { from: owner }
-        )
+            escrowCondition.address], deployer)
 
         // Setup NFT Access Template
-        nftAccessTemplate = await NFTAccessTemplate.new()
-        await nftAccessTemplate.methods['initialize(address,address,address,address)'](
+        nftAccessTemplate = await testUtils.deploy('NFT721AccessTemplate', [
             owner,
             agreementStoreManager.address,
             nftHolderCondition.address,
-            accessCondition.address,
-            { from: deployer }
-        )
+            accessCondition.address], deployer)
 
-        // IMPORTANT: Here we give ERC1155 transfer grants to the TransferNFTCondition condition
-        // await didRegistry.setProxyApproval(transferCondition.address, true, { from: owner })
+        if (testUtils.deploying) {
+            await lockPaymentCondition.grantProxyRole(agreementStoreManager.address, { from: owner })
+            await transferCondition.grantProxyRole(agreementStoreManager.address, { from: owner })
+            await agreementStoreManager.grantProxyRole(nftSalesTemplate.address, { from: owner })
+            await conditionStoreManager.grantProxyRole(escrowCondition.address, { from: owner })
 
-        await templateStoreManager.proposeTemplate(nftSalesTemplate.address)
-        await templateStoreManager.approveTemplate(nftSalesTemplate.address, { from: owner })
+            await templateStoreManager.proposeTemplate(nftSalesTemplate.address)
+            await templateStoreManager.approveTemplate(nftSalesTemplate.address, { from: owner })
 
-        await templateStoreManager.proposeTemplate(nftAccessTemplate.address)
-        await templateStoreManager.approveTemplate(nftAccessTemplate.address, { from: owner })
+            await templateStoreManager.proposeTemplate(nftAccessTemplate.address)
+            await templateStoreManager.approveTemplate(nftAccessTemplate.address, { from: owner })
+
+            // IMPORTANT: Here we give ERC1155 transfer grants to the TransferNFTCondition condition
+            await nft.setProxyApproval(transferCondition.address, true, { from: deployer })
+        }
+
+        const checkpoint = await getCheckpoint(token, [artist, collector1, collector2, gallery, someone, lockPaymentCondition.address, escrowCondition.address])
+        getBalance = async (a, b) => getTokenBalance(a, b, checkpoint)
 
         return {
             didRegistry
