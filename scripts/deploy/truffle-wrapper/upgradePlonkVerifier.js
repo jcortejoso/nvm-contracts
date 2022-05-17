@@ -30,7 +30,8 @@ async function main() {
         const afactCond = readArtifact('AccessProofCondition')
         const AccessProofCondition = await ethers.getContractFactory('AccessProofCondition')
         const cond = AccessProofCondition.attach(afactCond.address)
-        const tx = await cond.changeDisputeManager(plonkAddress, { from: roles.owner })
+        // console.log('owner', await cond.owner(), roles.owner, roles)
+        const tx = await cond.connect(ethers.provider.getSigner(roles.ownerWallet)).changeDisputeManager(plonkAddress)
         await tx.wait()
     }
 
@@ -42,7 +43,7 @@ async function main() {
         const afactCond = readArtifact('AaveCreditTemplate')
         const AaveCreditTemplate = await ethers.getContractFactory('AaveCreditTemplate')
         const cond = AaveCreditTemplate.attach(afactCond.address)
-        const tx = await cond.changeCreditVaultLibrary(vaultAddress, { from: roles.owner })
+        const tx = await cond.connect(ethers.provider.getSigner(roles.ownerWallet)).changeCreditVaultLibrary(vaultAddress)
         await tx.wait()
     }
 }

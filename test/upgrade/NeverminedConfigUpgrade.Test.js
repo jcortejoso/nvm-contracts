@@ -27,6 +27,7 @@ contract('NeverminedConfig', (accounts) => {
     const verbose = false
 
     const approver = accounts[2]
+    const owner = accounts[8]
 
     beforeEach('Load wallet each time', async function() {
         const addressBook = await deploy({
@@ -58,7 +59,7 @@ contract('NeverminedConfig', (accounts) => {
             const NeverminedConfigWithBugInstance =
                 await NeverminedConfigWithBug.at(nvmConfigAddress)
 
-            await NeverminedConfigWithBugInstance.setMarketplaceFees(100, constants.address.zero)
+            await NeverminedConfigWithBugInstance.setMarketplaceFees(100, constants.address.zero, { from: owner })
             // assert
             assert.strictEqual(
                 await NeverminedConfigWithBugInstance.getFeeReceiver(),
@@ -85,7 +86,7 @@ contract('NeverminedConfig', (accounts) => {
             const NeverminedConfigChangeFunctionSignatureInstance =
                 await NeverminedConfigChangeFunctionSignature.at(nvmConfigAddress)
 
-            await NeverminedConfigChangeFunctionSignatureInstance.setMarketplaceFees(100, accounts[0], 1)
+            await NeverminedConfigChangeFunctionSignatureInstance.setMarketplaceFees(100, accounts[0], 1, { from: owner })
             // assert
             assert.strictEqual(
                 await NeverminedConfigChangeFunctionSignatureInstance.getFeeReceiver(),
@@ -141,7 +142,7 @@ contract('NeverminedConfig', (accounts) => {
                 0
             )
 
-            await NeverminedConfigChangeInStorageAndLogicInstance.setMarketplaceFees(100, accounts[0], 1)
+            await NeverminedConfigChangeInStorageAndLogicInstance.setMarketplaceFees(100, accounts[0], 1, { from: owner })
             // assert
             assert.strictEqual(
                 await NeverminedConfigChangeInStorageAndLogicInstance.getFeeReceiver(),

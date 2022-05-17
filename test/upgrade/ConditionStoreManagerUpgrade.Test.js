@@ -29,6 +29,7 @@ contract('ConditionStoreManager', (accounts) => {
 
     const approver = accounts[2]
     const conditionCreater = accounts[5]
+    const owner = accounts[8]
 
     beforeEach('Load wallet each time', async function() {
         const addressBook = await deploy({
@@ -99,7 +100,7 @@ contract('ConditionStoreManager', (accounts) => {
             const ConditionStoreChangeFunctionSignatureInstance =
                 await ConditionStoreChangeFunctionSignature.at(conditionStoreManagerAddress)
 
-            await ConditionStoreChangeFunctionSignatureInstance.delegateCreateRole(conditionCreater, { from: accounts[0] })
+            await ConditionStoreChangeFunctionSignatureInstance.delegateCreateRole(conditionCreater, { from: owner })
 
             // assert
             assert.strictEqual(
@@ -169,7 +170,7 @@ contract('ConditionStoreManager', (accounts) => {
             const ConditionStoreChangeInStorageAndLogicInstance =
                 await ConditionStoreChangeInStorageAndLogic.at(conditionStoreManagerAddress)
 
-            await ConditionStoreChangeInStorageAndLogicInstance.delegateCreateRole(conditionCreater, { from: accounts[0] })
+            await ConditionStoreChangeInStorageAndLogicInstance.delegateCreateRole(conditionCreater, { from: owner })
 
             assert.strictEqual(
                 (await ConditionStoreChangeInStorageAndLogicInstance.conditionCount()).toNumber(),

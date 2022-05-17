@@ -1,24 +1,18 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it, BigInt */
+/* global contract, describe, it, BigInt */
 
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
-const NFTAccessTemplate = artifacts.require('NFTAccessTemplate')
-
 const testUtils = require('../../helpers/utils.js')
 const constants = require('../../helpers/constants.js')
-const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
-const NFTHolderCondition = artifacts.require('NFTHolderCondition')
-const NFTAccessCondition = artifacts.require('NFTAccessCondition')
 
 contract('NFT Access integration test', (accounts) => {
-    let token,
-        nft,
+    let nft,
         didRegistry,
         agreementStoreManager,
         conditionStoreManager,
@@ -29,10 +23,9 @@ contract('NFT Access integration test', (accounts) => {
 
     async function setupTest({
         deployer = accounts[8],
-        owner = accounts[9]
+        owner = accounts[8]
     } = {}) {
         ({
-            token,
             nft,
             didRegistry,
             agreementStoreManager,
@@ -41,48 +34,28 @@ contract('NFT Access integration test', (accounts) => {
         } = await deployManagers(
             deployer,
             owner
-        ));
-
-        ({
-            accessCondition
-        } = await deployConditions(
-            deployer,
-            owner,
-            agreementStoreManager,
-            conditionStoreManager,
-            didRegistry,
-            token
         ))
 
-        accessCondition = await NFTAccessCondition.new({ from: deployer })
-        await accessCondition.methods['initialize(address,address,address)'](
-            owner,
+        accessCondition = await testUtils.deploy('NFTAccessCondition', [owner,
             conditionStoreManager.address,
-            didRegistry.address,
-            { from: deployer }
-        )
+            didRegistry.address], deployer)
 
-        nftHolderCondition = await NFTHolderCondition.new({ from: deployer })
-        await nftHolderCondition.initialize(
-            owner,
+        nftHolderCondition = await testUtils.deploy('NFTHolderCondition', [owner,
             conditionStoreManager.address,
-            nft.address,
-            { from: deployer }
-        )
+            nft.address], deployer)
 
-        nftAccessTemplate = await NFTAccessTemplate.new()
-        await nftAccessTemplate.methods['initialize(address,address,address,address)'](
-            owner,
+        nftAccessTemplate = await testUtils.deploy('NFTAccessTemplate', [owner,
             agreementStoreManager.address,
             nftHolderCondition.address,
-            accessCondition.address,
-            { from: deployer }
-        )
+            accessCondition.address], deployer)
 
         // propose and approve template
         const templateId = nftAccessTemplate.address
-        await templateStoreManager.proposeTemplate(templateId)
-        await templateStoreManager.approveTemplate(templateId, { from: owner })
+
+        if (testUtils.deploying) {
+            await templateStoreManager.proposeTemplate(templateId)
+            await templateStoreManager.approveTemplate(templateId, { from: owner })
+        }
 
         return {
             templateId,
