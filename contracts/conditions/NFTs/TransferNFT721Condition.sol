@@ -87,6 +87,15 @@ contract TransferNFT721Condition is Condition, ITransferNFT, ReentrancyGuardUpgr
 
     }
 
+    function getNFTDefaultAddress()
+        override
+        external
+        view
+        returns (address)
+    {
+        return address(erc721);
+    }
+    
    /**
     * @notice hashValues generates the hash of condition inputs 
     *        with the following parameters

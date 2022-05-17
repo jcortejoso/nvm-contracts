@@ -87,19 +87,28 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
     }
 
     function grantMarketRole(address _nftContractAddress)
-    public 
-    onlyOwner 
+        public 
+        onlyOwner 
     {
         grantRole(MARKET_ROLE, _nftContractAddress);
     }
 
 
     function revokeMarketRole(address _nftContractAddress)
-    public
-    onlyOwner 
+        public
+        onlyOwner 
     {
         revokeRole(MARKET_ROLE, _nftContractAddress);
     }
+
+    function getNFTDefaultAddress()
+        override
+        external
+        view
+        returns (address)
+    {
+        return address(erc1155);
+    }    
     
    /**
     * @notice hashValues generates the hash of condition inputs 
