@@ -124,6 +124,14 @@ yarn lint
 
 ## Networks
 
+When Nevermined contracts are deployed into different networks, the ABIs referring to the specific
+version deployed are copied into the [Artifacts repository](https://artifacts.nevermined.rocks/). 
+You can find more information about the this into the [Release Process documentation](docs/ReleaseProcess.md).
+
+You can browse the different artifacts deployed here: http://artifacts-nevermined-rocks.s3-website-us-east-1.amazonaws.com/
+Also you can find a complete list here: https://artifacts.nevermined.rocks/
+
+
 ### Testnets
 
 The contract addresses deployed on `Alfajores` Celo Test Network:
