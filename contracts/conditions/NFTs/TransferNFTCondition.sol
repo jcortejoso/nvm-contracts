@@ -200,7 +200,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
     function fulfillProxy(
         address _account,
         bytes32 _agreementId,
-        bytes memory params
+        bytes memory _params
     )
     external
     payable
@@ -213,7 +213,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         bytes32 _lockPaymentCondition;
         address _nftContractAddress;
         bool _transfer;
-        (_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress, _transfer) = abi.decode(params, (bytes32, address, address, uint256, bytes32, address, bool));
+        (_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress, _transfer) = abi.decode(_params, (bytes32, address, address, uint256, bytes32, address, bool));
 
         require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
         fulfillInternal(_account, _agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress, _transfer);
