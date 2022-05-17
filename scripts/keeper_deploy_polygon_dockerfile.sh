@@ -11,15 +11,12 @@ if [ "${DEPLOY_CONTRACTS}" = "true" ]
 then
     cd /polygon-sdk
     rm -rf test-chain
-    cat genesis.json
     polygon-sdk server --dev --chain genesis.json &
 
     until curl --data '{"method":"web3_clientVersion","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
     do
         sleep 1
     done
-
-    cat genesis.json
 
     # remove ready flag if we deploy contracts
     rm -f /nevermined-contracts/artifacts/*
