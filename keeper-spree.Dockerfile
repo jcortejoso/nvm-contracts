@@ -25,8 +25,6 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 COPY --from=openethereum /home/openethereum /home/openethereum
-RUN ldd /home/openethereum/openethereum
-COPY --from=openethereum /lib/ld-musl-x86_64.so.1  /lib/ld-musl-x86_64.so.1
 
 COPY . /nevermined-contracts
 WORKDIR /nevermined-contracts
