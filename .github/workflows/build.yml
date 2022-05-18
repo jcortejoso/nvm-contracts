@@ -85,7 +85,7 @@ jobs:
           sh ./scripts/build.sh
       - name: Run Upgrade Tests
         run: |
-          sh ./scripts/test-upgradeability.sh
+          bash ./scripts/test-upgradeability.sh
         env:
           NODE_OPTIONS: "--max-old-space-size=7500"
 

@@ -1,18 +1,16 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it, expect */
+/* global contract, describe, it, expect */
 
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
-const EscrowComputeExecutionTemplate = artifacts.require('EscrowComputeExecutionTemplate')
-
 const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
-const { getBalance } = require('../../helpers/getBalance.js')
+const { getTokenBalance, getCheckpoint } = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils')
 
@@ -30,7 +28,7 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
 
     async function setupTest({
         deployer = accounts[8],
-        owner = accounts[9]
+        owner = accounts[8]
     } = {}) {
         ({
             token,
@@ -56,21 +54,22 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             token
         ))
 
-        escrowComputeExecutionTemplate = await EscrowComputeExecutionTemplate.new()
-        await escrowComputeExecutionTemplate.methods['initialize(address,address,address,address,address,address)'](
+        escrowComputeExecutionTemplate = await testUtils.deploy('EscrowComputeExecutionTemplate', [
             owner,
             agreementStoreManager.address,
             didRegistry.address,
             computeExecutionCondition.address,
             lockPaymentCondition.address,
-            escrowPaymentCondition.address,
-            { from: deployer }
-        )
+            escrowPaymentCondition.address
+        ], deployer)
 
         // propose and approve template
         const templateId = escrowComputeExecutionTemplate.address
-        await templateStoreManager.proposeTemplate(templateId)
-        await templateStoreManager.approveTemplate(templateId, { from: owner })
+
+        if (testUtils.deploying) {
+            await templateStoreManager.proposeTemplate(templateId)
+            await templateStoreManager.approveTemplate(templateId, { from: owner })
+        }
 
         return {
             templateId,
@@ -143,6 +142,9 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
 
+            const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
+            const getBalance = async (a, b) => getTokenBalance(a, b, checkpoint)
+
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
@@ -209,6 +211,9 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
 
+            const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
+            const getBalance = async (a, b) => getTokenBalance(a, b, checkpoint)
+
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
@@ -259,6 +264,9 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
             const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeLockAccess, conditionIds } = await prepareEscrowAgreement({ timeLockAccess: 10 })
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
+
+            const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
+            const getBalance = async (a, b) => getTokenBalance(a, b, checkpoint)
 
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
@@ -320,6 +328,9 @@ contract('Escrow Compute Execution Template integration test', (accounts) => {
                 const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, conditionIds } = await prepareEscrowAgreement()
                 const totalAmount = escrowAmounts[0] + escrowAmounts[1]
                 const receiver = receivers[0]
+
+                const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
+                const getBalance = async (a, b) => getTokenBalance(a, b, checkpoint)
 
                 // register DID
                 await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })

@@ -1,18 +1,16 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it, expect */
+/* global contract, describe, it, expect */
 
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
-const AccessTemplate = artifacts.require('AccessTemplate')
-
 const constants = require('../../helpers/constants.js')
 const deployConditions = require('../../helpers/deployConditions.js')
 const deployManagers = require('../../helpers/deployManagers.js')
-const { getBalance } = require('../../helpers/getBalance.js')
+const { getBalance, getCheckpoint } = require('../../helpers/getBalance.js')
 const increaseTime = require('../../helpers/increaseTime.js')
 const testUtils = require('../../helpers/utils')
 
@@ -31,7 +29,7 @@ contract('Access Template integration test', (accounts) => {
 
     async function setupTest({
         deployer = accounts[8],
-        owner = accounts[9]
+        owner = accounts[8]
     } = {}) {
         ({
             token,
@@ -57,21 +55,21 @@ contract('Access Template integration test', (accounts) => {
             token
         ))
 
-        accessTemplate = await AccessTemplate.new()
-        await accessTemplate.methods['initialize(address,address,address,address,address,address)'](
+        accessTemplate = await testUtils.deploy('AccessTemplate', [
             owner,
             agreementStoreManager.address,
             didRegistry.address,
             accessCondition.address,
             lockPaymentCondition.address,
-            escrowPaymentCondition.address,
-            { from: deployer }
-        )
+            escrowPaymentCondition.address
+        ], deployer)
 
-        // propose and approve template
         const templateId = accessTemplate.address
-        await templateStoreManager.proposeTemplate(templateId)
-        await templateStoreManager.approveTemplate(templateId, { from: owner })
+        // propose and approve template
+        if (testUtils.deploying) {
+            await templateStoreManager.proposeTemplate(templateId)
+            await templateStoreManager.approveTemplate(templateId, { from: owner })
+        }
 
         return {
             templateId,
@@ -144,6 +142,10 @@ contract('Access Template integration test', (accounts) => {
             const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, conditionIds } = await prepareEscrowAgreementMultipleEscrow()
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
+
+            const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
+            const getBal = async (a, b) => getBalance(a, b, checkpoint)
+
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
@@ -163,19 +165,19 @@ contract('Access Template integration test', (accounts) => {
             // fill up wallet
             await token.mint(sender, totalAmount, { from: owner })
 
-            assert.strictEqual(await getBalance(token, sender), totalAmount)
-            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, receiver), 0)
+            assert.strictEqual(await getBal(token, sender), totalAmount)
+            assert.strictEqual(await getBal(token, lockPaymentCondition.address), 0)
+            assert.strictEqual(await getBal(token, escrowPaymentCondition.address), 0)
+            assert.strictEqual(await getBal(token, receiver), 0)
 
             // fulfill lock reward
             await token.approve(lockPaymentCondition.address, totalAmount, { from: sender })
             await lockPaymentCondition.fulfill(agreementId, did, escrowPaymentCondition.address, token.address, escrowAmounts, receivers, { from: sender })
 
-            assert.strictEqual(await getBalance(token, sender), 0)
-            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), totalAmount)
-            assert.strictEqual(await getBalance(token, receiver), 0)
+            assert.strictEqual(await getBal(token, sender), 0)
+            assert.strictEqual(await getBal(token, lockPaymentCondition.address), 0)
+            assert.strictEqual(await getBal(token, escrowPaymentCondition.address), totalAmount)
+            assert.strictEqual(await getBal(token, receiver), 0)
 
             assert.strictEqual(
                 (await conditionStoreManager.getConditionState(conditionIds[1])).toNumber(),
@@ -196,11 +198,11 @@ contract('Access Template integration test', (accounts) => {
                 constants.condition.state.fulfilled
             )
 
-            assert.strictEqual(await getBalance(token, sender), 0)
-            assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, receivers[0]), escrowAmounts[0])
-            assert.strictEqual(await getBalance(token, receivers[1]), escrowAmounts[1])
+            assert.strictEqual(await getBal(token, sender), 0)
+            assert.strictEqual(await getBal(token, lockPaymentCondition.address), 0)
+            assert.strictEqual(await getBal(token, escrowPaymentCondition.address), 0)
+            assert.strictEqual(await getBal(token, receivers[0]), escrowAmounts[0])
+            assert.strictEqual(await getBal(token, receivers[1]), escrowAmounts[1])
         })
 
         it('should create escrow agreement and abort after timeout', async () => {
@@ -210,6 +212,9 @@ contract('Access Template integration test', (accounts) => {
             const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeOutAccess, conditionIds } = await prepareEscrowAgreementMultipleEscrow({ timeOutAccess: 10 })
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
+
+            const checkpoint = await getCheckpoint(token, [sender, receiver, receivers[1], lockPaymentCondition.address, escrowPaymentCondition.address])
+            const getBal = async (a, b) => getBalance(a, b, checkpoint)
 
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
@@ -248,10 +253,10 @@ contract('Access Template integration test', (accounts) => {
                 (await conditionStoreManager.getConditionState(conditionIds[2])).toNumber(),
                 constants.condition.state.fulfilled
             )
-            assert.strictEqual(await getBalance(token, receivers[0]), 0)
-            assert.strictEqual(await getBalance(token, receivers[1]), 0)
-            assert.strictEqual(await getBalance(token, escrowPaymentCondition.address), 0)
-            assert.strictEqual(await getBalance(token, sender), totalAmount)
+            assert.strictEqual(await getBal(token, receivers[0]), 0)
+            assert.strictEqual(await getBal(token, receivers[1]), 0)
+            assert.strictEqual(await getBal(token, escrowPaymentCondition.address), 0)
+            assert.strictEqual(await getBal(token, sender), totalAmount)
         })
     })
 
@@ -263,6 +268,9 @@ contract('Access Template integration test', (accounts) => {
             const { agreementId, did, didSeed, agreement, sender, receivers, escrowAmounts, checksum, url, timeLockAccess, conditionIds } = await prepareEscrowAgreementMultipleEscrow({ timeLockAccess: 10 })
             const totalAmount = escrowAmounts[0] + escrowAmounts[1]
             const receiver = receivers[0]
+
+            const checkpoint = await getCheckpoint(token, [sender, receiver, lockPaymentCondition.address, escrowPaymentCondition.address])
+            const getBal = async (a, b) => getBalance(a, b, checkpoint)
 
             // register DID
             await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
@@ -315,8 +323,8 @@ contract('Access Template integration test', (accounts) => {
                 (await conditionStoreManager.getConditionState(conditionIds[2])).toNumber(),
                 constants.condition.state.fulfilled
             )
-            assert.strictEqual(await getBalance(token, sender), 0)
-            assert.strictEqual(await getBalance(token, receiver), escrowAmounts[0])
+            assert.strictEqual(await getBal(token, sender), 0)
+            assert.strictEqual(await getBal(token, receiver), escrowAmounts[0])
         })
 
         describe('drain escrow reward', () => {
@@ -328,6 +336,9 @@ contract('Access Template integration test', (accounts) => {
                 const totalAmount = escrowAmounts[0] + escrowAmounts[1]
                 const receiver = receivers[0]
 
+                const checkpoint = await getCheckpoint(token, [sender, receiver, lockPaymentCondition.address, escrowPaymentCondition.address])
+                const getBal = async (a, b) => getBalance(a, b, checkpoint)
+
                 // register DID
                 await didRegistry.registerAttribute(didSeed, checksum, [], url, { from: receiver })
 
@@ -335,7 +346,7 @@ contract('Access Template integration test', (accounts) => {
                 await accessTemplate.createAgreement(...Object.values(agreement))
 
                 const { agreementId: agreementId2, agreement: agreement2, conditionIds: conditionIds2 } = await prepareEscrowAgreementMultipleEscrow(
-                    { initAgreementId: constants.bytes32.two, didSeed: didSeed }
+                    { initAgreementId: testUtils.generateId(), didSeed: didSeed }
                 )
                 const agreement2Amounts = [escrowAmounts[0] * 2, escrowAmounts[1]]
                 const newEscrowId = await escrowPaymentCondition.hashValues(
@@ -382,9 +393,9 @@ contract('Access Template integration test', (accounts) => {
                     constants.condition.state.fulfilled
                 )
 
-                assert.strictEqual(await getBalance(token, sender), 0)
-                assert.strictEqual(await getBalance(token, lockPaymentCondition.address), 0)
-                assert.strictEqual(await getBalance(token, receivers[0]), escrowAmounts[0])
+                assert.strictEqual(await getBal(token, sender), 0)
+                assert.strictEqual(await getBal(token, lockPaymentCondition.address), 0)
+                assert.strictEqual(await getBal(token, receivers[0]), escrowAmounts[0])
             })
         })
     })

@@ -1,7 +1,13 @@
 /* eslint-env mocha */
-/* global assert, web3 */
+/* global artifacts, assert, web3 */
+
+const { hardhatArguments } = require('hardhat')
+const network = hardhatArguments.network || 'hardhat'
+const deploying = network === 'hardhat'
 
 const utils = {
+    deploying,
+
     generateId: () => {
         return web3.utils.sha3(Math.random().toString())
     },
@@ -53,6 +59,23 @@ const utils = {
         const messageBuffer = Buffer.from(messageHex.substring(2), 'hex')
         const prefix = Buffer.from(`\u0019Ethereum Signed Message:\n${messageBuffer.length}`)
         return web3.utils.sha3(Buffer.concat([prefix, messageBuffer]))
+    },
+
+    deploy: async (name, args, deployer, libs = []) => {
+        if (deploying) {
+            const afact = artifacts.require(name)
+            for (const e of libs) {
+                afact.link(e)
+            }
+            const c = await afact.new()
+            await c.initialize(...args, { from: deployer })
+            return c
+        } else {
+            const afact = artifacts.require(name)
+            // eslint-disable-next-line security/detect-non-literal-require
+            const addr = require(`../../artifacts/${name}.external.json`).address
+            return afact.at(addr)
+        }
     }
 
 }

@@ -3,7 +3,7 @@ const ZeroAddress = '0x0000000000000000000000000000000000000000'
 const { ethers, upgrades, web3 } = require('hardhat')
 
 async function zosCreate({ contract, args, libraries, verbose, ctx }) {
-    const { cache, addresses } = ctx
+    const { cache, addresses, roles } = ctx
     if (addresses[contract]) {
         console.log(`Contract ${contract} found from cache`)
         const C = await ethers.getContractFactory(contract, { libraries })
@@ -11,7 +11,7 @@ async function zosCreate({ contract, args, libraries, verbose, ctx }) {
         return addresses[contract]
     } else {
         const C = await ethers.getContractFactory(contract, { libraries })
-        const c = await upgrades.deployProxy(C, args, { unsafeAllowLinkedLibraries: true })
+        const c = await upgrades.deployProxy(C.connect(ethers.provider.getSigner(roles.deployer)), args, { unsafeAllowLinkedLibraries: true })
         await c.deployed()
         cache[contract] = c
         if (verbose) {
@@ -58,7 +58,7 @@ async function initializeContracts({
     // instance=MyContract.at(proxyAddress)
     const addressBook = {}
     const cache = {}
-    const ctx = { cache, addresses }
+    const ctx = { cache, addresses, roles }
 
     // WARNING!
     // use this only when deploying a selective portion of the contracts
@@ -445,7 +445,7 @@ async function initializeContracts({
                 contract: 'TransferNFTCondition',
                 ctx,
                 args: [
-                    roles.ownerWallet,
+                    roles.deployer,
                     getAddress('ConditionStoreManager'),
                     getAddress('DIDRegistry'),
                     getAddress('NFTUpgradeable'),
@@ -493,7 +493,7 @@ async function initializeContracts({
                 contract: 'TransferNFT721Condition',
                 ctx,
                 args: [
-                    roles.ownerWallet,
+                    roles.deployer,
                     getAddress('ConditionStoreManager'),
                     getAddress('DIDRegistry'),
                     getAddress('NFT721Upgradeable'),
