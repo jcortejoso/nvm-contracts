@@ -7,7 +7,7 @@ files
 test/verification/manticore/results/*
 
 # Artifacts are stored in https://artifacts-nevermined-rocks.s3.amazonaws.com/
-artifacts/
+!artifacts/placeholder
 
 # Build / Travis
 build/
