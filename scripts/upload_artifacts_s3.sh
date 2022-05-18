@@ -129,7 +129,7 @@ function get_network_abis_no_root_path {
   echo "$filenames"
 }
 
-function get_network_circuits_no_root_path {
+function get_network_circuits_no_path {
   local filenames
   cd "$CIRCUITS_DIR" >/dev/null 2>&1 || exit 1
   filenames=$(find .)
