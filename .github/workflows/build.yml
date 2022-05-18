@@ -98,7 +98,7 @@ jobs:
           node-version: '14.x'
       - name: Pre-install
         env:
-          ALCHEMY_TOKEN: ${{ secrets.KOVAN_ALCHEMY_TOKEN }}
+          ALCHEMY_TOKEN: ${{ secrets.ALCHEMY_TOKEN }}
         run: |
           yarn
           yarn run hardhat node --port 18545 --fork https://eth-kovan.alchemyapi.io/v2/-$ALCHEMY_TOKEN --fork-block-number 28000000 &

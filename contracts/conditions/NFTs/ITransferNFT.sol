@@ -68,5 +68,17 @@ interface ITransferNFT {
     external
     returns (ConditionStoreLibrary.ConditionState);
 
+    /**
+     * @notice returns if the default NFT contract address
+     * @dev The default NFT contract address was given to the Transfer Condition during
+     * the contract initialization
+     * 
+     * @return the NFT contract address used by default in the transfer condition 
+     */
+    function getNFTDefaultAddress()
+    external
+    view
+    returns (address);
+    
 }
 
