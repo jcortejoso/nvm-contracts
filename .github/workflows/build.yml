@@ -104,7 +104,7 @@ jobs:
           ALCHEMY_TOKEN: ${{ secrets.KOVAN_ALCHEMY_TOKEN }}
         run: |
           yarn
-          yarn run hardhat node --port 18545 --fork https://eth-kovan.alchemyapi.io/v2/-$ALCHEMY_TOKEN --fork-block-number 28000000 &
+          yarn run hardhat node --port 18545 --fork https://eth-kovan.alchemyapi.io/v2/$ALCHEMY_TOKEN --fork-block-number 28000000 &
       - name: Compile and Lint
         run: |
           yarn lint

@@ -87,19 +87,28 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
     }
 
     function grantMarketRole(address _nftContractAddress)
-    public 
-    onlyOwner 
+        public 
+        onlyOwner 
     {
         grantRole(MARKET_ROLE, _nftContractAddress);
     }
 
 
     function revokeMarketRole(address _nftContractAddress)
-    public
-    onlyOwner 
+        public
+        onlyOwner 
     {
         revokeRole(MARKET_ROLE, _nftContractAddress);
     }
+
+    function getNFTDefaultAddress()
+        override
+        external
+        view
+        returns (address)
+    {
+        return address(erc1155);
+    }    
     
    /**
     * @notice hashValues generates the hash of condition inputs 
@@ -165,6 +174,18 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         return fulfill(_agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, address(erc1155), true);
     }
 
+    /**
+     * @notice Encodes/serialize all the parameters received
+     *
+     * @param _did refers to the DID in which secret store will issue the decryption keys
+     * @param _nftHolder is the address of the account to receive the NFT
+     * @param _nftReceiver is the address of the account to receive the NFT
+     * @param _nftAmount amount of NFTs to transfer  
+     * @param _lockPaymentCondition lock payment condition identifier
+     * @param _nftContractAddress the NFT contract to use     
+     * @param _transfer if yes it does a transfer if false it mints the NFT
+     * @return the encoded parameters
+     */
     function encodeParams(
         bytes32 _did,
         address _nftHolder,
@@ -177,10 +198,18 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         return abi.encode(_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress, _transfer);
     }
 
+    /**
+     * @notice fulfill the transfer NFT condition by a proxy
+     * @dev Fulfill method transfer a certain amount of NFTs 
+     *
+     * @param _account NFT Holder
+     * @param _agreementId agreement identifier
+     * @param _params encoded parameters
+     */
     function fulfillProxy(
         address _account,
         bytes32 _agreementId,
-        bytes memory params
+        bytes memory _params
     )
     external
     payable
@@ -193,7 +222,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
         bytes32 _lockPaymentCondition;
         address _nftContractAddress;
         bool _transfer;
-        (_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress, _transfer) = abi.decode(params, (bytes32, address, address, uint256, bytes32, address, bool));
+        (_did, _nftHolder, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress, _transfer) = abi.decode(_params, (bytes32, address, address, uint256, bytes32, address, bool));
 
         require(hasRole(PROXY_ROLE, msg.sender), 'Invalid access role');
         fulfillInternal(_account, _agreementId, _did, _nftReceiver, _nftAmount, _lockPaymentCondition, _nftContractAddress, _transfer);
@@ -307,6 +336,7 @@ contract TransferNFTCondition is Condition, ITransferNFT, ReentrancyGuardUpgrade
      * @param _nftAmount amount of NFTs to transfer  
      * @param _lockPaymentCondition lock payment condition identifier
      * @param _nftHolder is the address of the account to receive the NFT
+     * @param _transfer if yes it does a transfer if false it mints the NFT
      * @return condition state (Fulfilled/Aborted)
      */
     function fulfillForDelegate(
