@@ -62,7 +62,7 @@
     "test:kovan-integration": "hardhat test --network external $(find test/external/kovan -name '*.*s')",
     "test:fast": "hardhat test $(find test/unit -name '*.*s') $(find test/int -name '*.*s')",
     "test:upgrade": "hardhat test $(find test/upgrade -name '*.*s')",
-    "test:cover": "hardhat coverage",
+    "test:cover": "hardhat coverage --testfiles 'test'",
     "test:manticore": "./test/verification/manticore/run.sh",
     "doc:contracts": "solidity-docgen -i contracts -o docs/contracts/ -t docs/docgen_template/ ",
     "doc:addresses": "node scripts/contracts/get-addresses.js",
