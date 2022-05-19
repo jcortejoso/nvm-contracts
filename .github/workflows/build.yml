@@ -25,15 +25,16 @@ jobs:
           yarn install --frozen-lockfile
           git submodule init
           git submodule update
+      - name: Lint
+        run: |
+          yarn lint
       - name: Generate circuits
         run: |
           sh ./scripts/build.sh
           git diff --exit-code
-      - name: Compile and Lint
+      - name: Compile
         run: |
-          yarn lint
           yarn clean
-          sh ./scripts/build.sh
           yarn compile
       - name: Run Unit Tests
         run: |
