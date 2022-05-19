@@ -17,4 +17,3 @@ yarn run snarkjs plonk setup circuits/keytransfer.r1cs powersOfTau28_hez_final_1
 yarn run snarkjs zkey export verificationkey circuits/keytransfer.zkey circuits/verification_key.json
 yarn run snarkjs zkey export solidityverifier circuits/keytransfer.zkey contracts/verifier.sol
 
-git status
