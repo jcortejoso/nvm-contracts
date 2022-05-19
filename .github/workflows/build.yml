@@ -106,7 +106,7 @@ jobs:
           node-version: '14.x'
       - name: Pre-install
         env:
-          ALCHEMY_TOKEN: ${{ secrets.KOVAN_ALCHEMY_TOKEN }}
+          KOVAN_ARCHIVE_RPC_ENDPOINT: ${{ secrets.KOVAN_KOVAN_ARCHIVE_RPC_ENDPOINT }}
         run: |
           yarn
           yarn run hardhat node --port 18545 --fork "$KOVAN_ARCHIVE_RPC_ENDPOINT" --fork-block-number 28000000 &
