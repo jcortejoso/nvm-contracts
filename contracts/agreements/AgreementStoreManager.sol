@@ -7,7 +7,6 @@ pragma solidity ^0.8.0;
 
 import './AgreementStoreLibrary.sol';
 import '../conditions/ConditionStoreManager.sol';
-import '../conditions/LockPaymentCondition.sol';
 import '../conditions/ICondition.sol';
 import '../registry/DIDRegistry.sol';
 import '../templates/TemplateStoreManager.sol';
@@ -184,6 +183,8 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         // return getAgreementListSize();
     }
 
+    /*
+
     function createAgreementAndPay(
         bytes32 _id,
         bytes32 _did,
@@ -207,7 +208,7 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
         bytes[] memory params = new bytes[](1);
         params[0] = abi.encode(_did, _rewardAddress, _tokenAddress, _amounts, _receivers);
         createAgreementAndFulfill(_id, _did, _conditionTypes, _conditionIds, _timeLocks, _timeOuts, _account, indices, params);
-    }
+    }*/
 
     function createAgreementAndFulfill(
         bytes32 _id,

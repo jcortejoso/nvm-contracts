@@ -68,6 +68,7 @@ contract AgreementTemplate is OwnableUpgradeable {
     )
         public payable
     {
+        /*
         agreementStoreManager.createAgreementAndPay{value: msg.value}(
             keccak256(abi.encode(_id, msg.sender)),
             _did,
@@ -78,7 +79,7 @@ contract AgreementTemplate is OwnableUpgradeable {
             msg.sender,
             _idx,
             _rewardAddress, _tokenAddress, _amounts, _receivers
-        );
+        );*/
     }
 
     function createAgreementAndFulfill(
