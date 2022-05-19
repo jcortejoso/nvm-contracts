@@ -12,6 +12,7 @@ on:
         options:
         - contracts
         - abis
+        - circuits
       network:
         type: choice
         description: Blockchain network for uploading the contracts
@@ -51,6 +52,9 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so the job can access it
       - uses: actions/checkout@v3
@@ -68,14 +72,6 @@ jobs:
           yarn clean
           sh ./scripts/build.sh
           yarn compile
-      # - name: Run Unit Tests
-      #   run: |
-      #     yarn test:unit
-      # - name: Run Integration Tests
-      #   run: |
-      #     yarn test:integration
-      #   env:
-      #     NODE_OPTIONS: "--max-old-space-size=7500"
 
       # Impersonate AWS role
       - name: Configure AWS credentials from Test account
@@ -99,4 +95,6 @@ jobs:
             bash -x ./scripts/upload_artifacts_s3.sh abis
           elif [[ "${{ github.event.inputs.asset }}" == "contracts" ]]; then
             bash -x ./scripts/upload_artifacts_s3.sh contracts "${{ github.event.inputs.network }}" "${{ github.event.inputs.tag }}"
+          elif [[ "${{ github.event.inputs.asset }}" == "circuits" ]]; then
+            bash -x ./scripts/upload_artifacts_s3.sh circuits
           fi
