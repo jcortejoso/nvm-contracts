@@ -6,9 +6,10 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-22.04
-    env:
-      DOCKER_TARGET_PLATFORM: linux/arm/v7,linux/amd64,linux/arm64
     steps:
+    - name: Sleep starting docker
+      run: |
+        sleep 20
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
