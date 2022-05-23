@@ -67,12 +67,10 @@ jobs:
           file_pattern: CHANGELOG.md
           branch: master
 
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      - name: Publish Github Release
+        uses: softprops/action-gh-release@v1
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
           files: |
             contracts-${{ env.RELEASE_VERSION }}.tar.gz
             CHANGELOG.md
+
