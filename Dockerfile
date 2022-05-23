@@ -15,7 +15,7 @@ RUN apk add --no-cache --update\
 COPY . /nevermined-contracts
 WORKDIR /nevermined-contracts
 
-RUN yarn --network-timeout 1000
+RUN yarn --network-timeout 10000
 RUN yarn clean
 RUN yarn compile
 
