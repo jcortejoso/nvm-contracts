@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 /* eslint-disable no-console */
-/* global artifacts, contract, describe, it, expect */
+/* global artifacts, contract, describe, it */
 
 const { expect } = require('chai')
 const chai = require('chai')
@@ -179,15 +179,15 @@ contract('AgreementStoreManager', (accounts) => {
     })
 
     describe('proxy', () => {
-        const proxyRole = web3.utils.soliditySha3("PROXY_ROLE")
+        const proxyRole = web3.utils.soliditySha3('PROXY_ROLE')
         it('setting proxy', async () => {
-            await agreementStoreManager.grantProxyRole(accounts[2], {from: owner})
+            await agreementStoreManager.grantProxyRole(accounts[2], { from: owner })
             expect(await agreementStoreManager.hasRole(proxyRole, accounts[2])).to.equal(true)
         })
         it('revoking proxy', async () => {
-            await agreementStoreManager.grantProxyRole(accounts[2], {from: owner})
+            await agreementStoreManager.grantProxyRole(accounts[2], { from: owner })
             expect(await agreementStoreManager.hasRole(proxyRole, accounts[2])).to.equal(true)
-            await agreementStoreManager.revokeProxyRole(accounts[2], {from: owner})
+            await agreementStoreManager.revokeProxyRole(accounts[2], { from: owner })
             expect(await agreementStoreManager.hasRole(proxyRole, accounts[2])).to.equal(false)
         })
     })
@@ -466,5 +466,4 @@ contract('AgreementStoreManager', (accounts) => {
             )
         })
     })
-
 })

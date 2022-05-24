@@ -16,7 +16,6 @@ const deployConditions = require('../../helpers/deployConditions.js')
 
 contract('End to End NFT721 Scenarios', (accounts) => {
     const royalties = 10 // 10% of royalties in the secondary market
-    const cappedAmount = 5
     const didSeed = testUtils.generateId()
     const didSeed2 = testUtils.generateId()
     let did
@@ -565,5 +564,4 @@ contract('End to End NFT721 Scenarios', (accounts) => {
             assert.strictEqual(await getBalance(token, receivers[1]), amounts[1])
         })
     })
-
 })
