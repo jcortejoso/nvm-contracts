@@ -12,6 +12,9 @@ RUN apk add --no-cache --update\
       make\
       python3
 
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
 COPY . /nevermined-contracts
 WORKDIR /nevermined-contracts
 
