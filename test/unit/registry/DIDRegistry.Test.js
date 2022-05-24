@@ -651,7 +651,6 @@ contract('DIDRegistry', (accounts) => {
                 didRegistry.used(testUtils.generateId(), did, owner, Activities.USED, [], '', { from: someone }),
                 ''
             )
-
         })
 
         it('should fail to use an entity from someone', async () => {
