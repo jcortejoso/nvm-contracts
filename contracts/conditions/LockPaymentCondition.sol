@@ -316,23 +316,13 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
     }
  
    /**
-    * @notice _transferERC20 transfer ERC20 tokens 
+    * @notice _transferERC20Proxy transfer ERC20 tokens 
+    * @param _senderAddress the address to send the tokens from
     * @param _rewardAddress the address to receive the tokens
     * @param _tokenAddress the ERC20 contract address to use during the payment
     * @param _amount token amount to be locked/released
     * @dev Will throw if transfer fails
     */
-    function _transferERC20(
-        address _rewardAddress,
-        address _tokenAddress,
-        uint256 _amount
-    )
-    internal
-    {
-        IERC20Upgradeable token = ERC20Upgradeable(_tokenAddress);
-        token.safeTransferFrom(msg.sender, _rewardAddress, _amount);
-    }
-
     function _transferERC20Proxy(
         address _senderAddress,
         address _rewardAddress,
