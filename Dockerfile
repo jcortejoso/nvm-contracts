@@ -16,6 +16,8 @@ COPY . /nevermined-contracts
 WORKDIR /nevermined-contracts
 
 RUN yarn
+RUN sh ./scripts/build.sh
+
 RUN yarn clean
 RUN yarn compile
 
