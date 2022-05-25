@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rm circuits/verifier.sol
+rm contracts/verifier.sol
 
 wget https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_14.ptau
 
