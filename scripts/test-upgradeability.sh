@@ -19,6 +19,7 @@ npx hardhat run ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js --net
 
 git checkout $BRANCH
 yarn
+./scripts/build-circuit.sh
 
 export FAIL=true
 

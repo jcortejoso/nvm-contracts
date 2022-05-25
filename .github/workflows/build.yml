@@ -30,7 +30,7 @@ jobs:
           yarn lint
       - name: Generate circuits
         run: |
-          sh ./scripts/build.sh
+          sh ./scripts/build-circuit.sh
           git diff --exit-code
       - name: Compile
         run: |
@@ -62,7 +62,7 @@ jobs:
         run: |
           yarn lint
           yarn clean
-          sh ./scripts/build.sh
+          sh ./scripts/build-circuit.sh
           yarn compile
       - name: Run Upgrade Tests
         run: |
@@ -88,9 +88,6 @@ jobs:
           yarn install --frozen-lockfile
           git submodule init
           git submodule update
-      - name: Compile and Lint
-        run: |
-          sh ./scripts/build.sh
       - name: Run Upgrade Tests
         run: |
           bash ./scripts/test-upgradeability.sh
