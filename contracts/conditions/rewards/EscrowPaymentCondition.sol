@@ -10,6 +10,7 @@ import '../../registry/DIDRegistry.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import '../../interfaces/IDynamicPricing.sol';
+import '../../interfaces/IRoyaltyRecipient.sol';
 
 /**
  * @title Escrow Payment Condition
@@ -381,7 +382,14 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
                 _receivers[i] != address(this),
                 'Escrow contract can not be a receiver'
             );
-            token.safeTransfer(_receivers[i], _amounts[i]);
+
+            token.approve(_receivers[i], _amounts[i]);
+            try IRoyaltyRecipient(_receivers[i]).transfer(_tokenAddress, _amounts[i]) {
+            } catch (bytes memory) {
+                token.safeTransfer(_receivers[i], _amounts[i]);
+            }
+            token.approve(_receivers[i], 0);
+
         }
 
         return super.fulfill(

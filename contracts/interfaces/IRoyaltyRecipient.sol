@@ -8,12 +8,14 @@ pragma solidity ^0.8.0;
  * @author Nevermined
  */
 interface IRoyaltyRecipient {
-    function tranfer(
+    function transfer(
+        address _tokenContract,
+        uint256 amount
+        /*
         address _contract,
         bytes32 id,
-        uint256 amount,
         uint256 price,
-        bytes memory param
+        bytes memory param */
     ) external view returns (uint256);
 }
 

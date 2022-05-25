@@ -654,6 +654,14 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         return didRegisterList.didRegisters[_did].owner;
     }
 
+    function getDIDRoyaltyRecipient(bytes32 _did)
+    public
+    view
+    returns (address)
+    {
+        return didRegisterList.didRegisters[_did].royaltyRecipient;
+    }
+
     /**
      * @dev _grantPermission grants access permission to grantee 
      * @param _did refers to decentralized identifier (a bytes32 length ID)
