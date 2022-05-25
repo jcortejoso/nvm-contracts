@@ -161,7 +161,7 @@ contract LockPaymentCondition is ILockPayment, ReentrancyGuardUpgradeable, Condi
 
     /**
      * @notice fulfill lock condition using the funds locked in an external contract 
-     *          (auction, bonding courve, lottery, etc) 
+     *          (auction, bonding curve, lottery, etc) 
     * @param _agreementId the agreement identifier
     * @param _did the asset decentralized identifier
     * @param _rewardAddress the contract address where the reward is locked

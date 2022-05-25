@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 // Code is Apache-2.0 and docs are CC-BY-4.0
 
 import '@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol';
+import '../interfaces/IRoyaltyScheme.sol';
 
 /**
  * @title DID Registry Library
@@ -43,6 +44,9 @@ library DIDRegistryLibrary {
         uint256 nftSupply;
         // The max number of NFTs associated to the DID that can be minted 
         uint256 mintCap;
+        address royaltyRecipient;
+        IRoyaltyScheme royaltyScheme;
+        bytes royaltyParam;
     }
 
     // List of DID's registered in the system
@@ -72,7 +76,6 @@ library DIDRegistryLibrary {
         
         if (didOwner == address(0)) {
             didOwner = msg.sender;
-            // _self.didRegisterIds.push(_did);
             creator = didOwner;
         }
 
@@ -170,10 +173,14 @@ library DIDRegistryLibrary {
         
         // If (_did.creator is not in _receivers) - It means the original creator is not included as part of the payment
         // return false;
+        address recipient = _self.didRegisters[_did].creator;
+        if (_self.didRegisters[_did].royaltyRecipient != address(0)) {
+            recipient = _self.didRegisters[_did].royaltyRecipient;
+        }
         bool found = false;
         uint256 index;
         for (index = 0; index < _receivers.length; index++) {
-            if (_self.didRegisters[_did].creator == _receivers[index])  {
+            if (recipient == _receivers[index])  {
                 found = true;
                 break;
             }
@@ -187,6 +194,9 @@ library DIDRegistryLibrary {
         // If the amount to receive by the creator is lower than royalties the calculation is not valid
         // return false;
         uint256 _requiredRoyalties = ((_totalAmount.mul(_self.didRegisters[_did].royalties)) / 100);
+        if (address(_self.didRegisters[_did].royaltyScheme) != address(0)) {
+            _requiredRoyalties = _self.didRegisters[_did].royaltyScheme.compute(_totalAmount, _self.didRegisters[_did].royaltyParam);
+        }
 
         // Check if royalties are enough
         // Are we paying enough royalties in the secondary market to the original creator?

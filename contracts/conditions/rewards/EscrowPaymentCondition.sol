@@ -6,6 +6,7 @@ pragma solidity ^0.8.0;
 import './Reward.sol';
 import '../../Common.sol';
 import '../ConditionStoreLibrary.sol';
+import '../../registry/DIDRegistry.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import '../../interfaces/IDynamicPricing.sol';
@@ -44,6 +45,8 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         emit Received(msg.sender, msg.value);
     }
 
+    DIDRegistry public didRegistry;
+
     /**
      * @notice initialize init the 
      *       contract with the following parameters
@@ -52,13 +55,18 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
      */
     function initialize(
         address _owner,
-        address _conditionStoreManagerAddress
+        address _conditionStoreManagerAddress,
+        address _didRegistry
     )
     external
     initializer()
     {
-        require(         
+        require(
             _conditionStoreManagerAddress != address(0),
+            'Invalid address'
+        );
+        require(
+            _didRegistry != address(0),
             'Invalid address'
         );
         OwnableUpgradeable.__Ownable_init();
@@ -66,9 +74,16 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
+        didRegistry = DIDRegistry(_didRegistry);
     }
 
-    
+    /**
+     * Should be called when the contract has been upgraded.
+     */
+    function reinitialize(address _didRegistry) external reinitializer(2) {
+        didRegistry = DIDRegistry(_didRegistry);
+    }
+
     /**
      * @notice hashValues generates the hash of condition inputs 
      *        with the following parameters
@@ -279,7 +294,6 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
 
         require(someAborted || allFulfilled, 'Release conditions unresolved');
 
-        // require(conditionStoreManager.getMappingValue(a._lockCondition, USED_PAYMENT_ID) == 0, 'Lock condition already used');
         bytes32 id = generateId(
             a._agreementId,
             hashValuesMulti(
@@ -296,7 +310,6 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         
         ConditionStoreLibrary.ConditionState state;
         if (allFulfilled) {
-            // conditionStoreManager.updateConditionMappingProxy(a._lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
             if (a._tokenAddress != address(0))
                 state = _transferAndFulfillERC20(id, a._tokenAddress, a._receivers, a._amounts);
             else
@@ -305,7 +318,6 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             emit Fulfilled(a._agreementId, a._tokenAddress, a._receivers, id, a._amounts);
 
         } else if (someAborted) {
-            // conditionStoreManager.updateConditionMappingProxy(a._lockCondition, USED_PAYMENT_ID, bytes32(uint256(1)));
             uint256[] memory _totalAmounts = new uint256[](1);
             _totalAmounts[0] = calculateTotalAmount(a._amounts);
             address[] memory _originalSender = new address[](1);
