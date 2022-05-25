@@ -1,6 +1,6 @@
 {
   "name": "@nevermined-io/contracts",
-  "version": "2.0.0-rc3",
+  "version": "2.0.0-rc4",
   "description": "Nevermined implementation of Nevermined in Solidity",
   "bugs": {
     "url": "https://github.com/nevermined-io/contracts/issues"
@@ -86,6 +86,8 @@
   },
   "files": [
     "artifacts/**/*development.json",
+	"artifacts/.keep",
+	"circuits/.keep",
     "docs/**/*",
     "README.md"
   ],
