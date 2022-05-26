@@ -47,8 +47,8 @@ LABEL maintainer="Nevermined <root@nevermined.io>"
 
 COPY scripts/keeper_entrypoint_nodeploy.sh /
 
-COPY --from=deploy /nevermined-contracts/artifacts2 /nevermined-contracts/artifacts2
-COPY --from=deploy /nevermined-contracts/circuits2 /nevermined-contracts/circuits2
+COPY --from=deploy /nevermined-contracts/artifacts2 /artifacts
+COPY --from=deploy /nevermined-contracts/circuits2 /circuits
 COPY --from=deploy /home/openethereum /home/openethereum
 
 ENTRYPOINT ["/keeper_entrypoint_nodeploy.sh"]
