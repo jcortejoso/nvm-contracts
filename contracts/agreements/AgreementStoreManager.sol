@@ -178,9 +178,6 @@ contract AgreementStoreManager is OwnableUpgradeable, AccessControlUpgradeable {
             msg.sender,
             _conditionIds
         );
-
-        // same as above
-        // return getAgreementListSize();
     }
 
     struct CreateAgreementArgs {
