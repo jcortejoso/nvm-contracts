@@ -16,7 +16,7 @@ const accounts = {
     mnemonic: MNEMONIC
 }
 
-const disable_dependencies = process.env['DISABLE_DEPENDENCIES'] === 'true'
+const disableDependencies = process.env.DISABLE_DEPENDENCIES === 'true'
 
 module.exports = {
     solidity: {
@@ -35,7 +35,7 @@ module.exports = {
     paths: {
         artifacts: 'build'
     },
-    dependencyCompiler: disable_dependencies ? undefined : {
+    dependencyCompiler: disableDependencies ? undefined : {
         paths: [
             '@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol',
             '@gnosis.pm/safe-contracts/contracts/libraries/MultiSend.sol',
