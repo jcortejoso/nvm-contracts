@@ -22,7 +22,9 @@ async function approveTemplate({
 }
 
 async function callContract(instance, f) {
+    console.log('Calling contract ...')
     const contractOwner = await instance.owner()
+    console.log('Contract Owner: ', contractOwner)
     try {
         const tx = await f(instance.connect(ethers.provider.getSigner(contractOwner)))
         await tx.wait()
@@ -77,7 +79,13 @@ async function transferOwnership({
         )
     }
 
-    const contractOwner = await ContractInstance.owner()
+    console.log('Getting Contract Owner from contract: ', name)
+    let contractOwner = ZeroAddress
+    try {
+         contractOwner = await ContractInstance.owner()
+    } catch {
+        console.log('Error getting contract owner from contract')
+    }
     console.log(contractOwner, roles.deployer)
     if (contractOwner === roles.deployer) {
         const tx = await ContractInstance.connect(ethers.provider.getSigner(roles.deployer)).transferOwnership(
@@ -491,15 +499,25 @@ async function setupContracts({
 
         addresses.stage = 15
     }
+//        const tx = await token.connect(ethers.provider.getSigner(roles.deployer)).revokeRole(
+//            web3.utils.toHex('minter').padEnd(66, '0'),
+//            roles.deployer,
+//            { from: roles.deployer }
+//        )
+//        await tx.wait()
+
 
     if (addressBook.TransferNFTCondition && addressBook.AgreementStoreManager && addresses.stage < 16) {
-        console.log('Set transfer nft condition proxy : ' + addressBook.TransferNFTCondition)
-        const tx = await artifacts.TransferNFTCondition.connect(ethers.provider.getSigner(roles.deployer)).grantProxyRole(
+        const TransferNFTCondition = artifacts.TransferNFTCondition
+        console.log('Set TransferNFTCondition proxy : ' + addressBook.TransferNFTCondition)
+        console.log('Grant proxy role to AgreementStoreManager: ' + addressBook.AgreementStoreManager)
+
+        const tx = await TransferNFTCondition.connect(ethers.provider.getSigner(roles.deployer)).grantProxyRole(
             addressBook.AgreementStoreManager, { from: roles.deployer })
         await tx.wait()
 
         await transferOwnership({
-            ContractInstance: artifacts.TransferNFTCondition,
+            ContractInstance: TransferNFTCondition,
             name: 'TransferNFTCondition',
             roles,
             verbose
