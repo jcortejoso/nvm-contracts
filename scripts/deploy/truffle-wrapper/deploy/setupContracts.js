@@ -82,7 +82,7 @@ async function transferOwnership({
     console.log('Getting Contract Owner from contract: ', name)
     let contractOwner = ZeroAddress
     try {
-         contractOwner = await ContractInstance.owner()
+        contractOwner = await ContractInstance.owner()
     } catch {
         console.log('Error getting contract owner from contract')
     }
@@ -499,13 +499,12 @@ async function setupContracts({
 
         addresses.stage = 15
     }
-//        const tx = await token.connect(ethers.provider.getSigner(roles.deployer)).revokeRole(
-//            web3.utils.toHex('minter').padEnd(66, '0'),
-//            roles.deployer,
-//            { from: roles.deployer }
-//        )
-//        await tx.wait()
-
+    //        const tx = await token.connect(ethers.provider.getSigner(roles.deployer)).revokeRole(
+    //            web3.utils.toHex('minter').padEnd(66, '0'),
+    //            roles.deployer,
+    //            { from: roles.deployer }
+    //        )
+    //        await tx.wait()
 
     if (addressBook.TransferNFTCondition && addressBook.AgreementStoreManager && addresses.stage < 16) {
         const TransferNFTCondition = artifacts.TransferNFTCondition
