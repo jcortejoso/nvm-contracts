@@ -48,7 +48,7 @@ contract DIDRegistryLibraryProxy {
     function initializeNftConfig(
         bytes32 _did,
         uint256 _cap,
-        address _royalties
+        uint8 _royalties
     )
     public
     {
@@ -57,7 +57,7 @@ contract DIDRegistryLibraryProxy {
 
     function initializeNft721Config(
         bytes32 _did,
-        address _royalties
+        uint8 _royalties
     )
     public
     {
