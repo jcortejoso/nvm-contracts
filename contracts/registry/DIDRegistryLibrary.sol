@@ -46,7 +46,6 @@ library DIDRegistryLibrary {
         uint256 mintCap;
         address royaltyRecipient;
         IRoyaltyScheme royaltyScheme;
-        bytes royaltyParam;
     }
 
     // List of DID's registered in the system
@@ -152,12 +151,16 @@ library DIDRegistryLibrary {
         DIDRegisterList storage _self,
         bytes32 _did,
         uint256[] memory _amounts,
-        address[] memory _receivers
+        address[] memory _receivers,
+        address _tokenAddress
     )
     internal
     view
     returns (bool)
     {
+        if (address(_self.didRegisters[_did].royaltyScheme) != address(0)) {
+            return _self.didRegisters[_did].royaltyScheme.check(_did, _amounts, _receivers, _tokenAddress);
+        }
         // If there are no royalties everything is good
         if (_self.didRegisters[_did].royalties == 0) {
             return true;
@@ -194,9 +197,6 @@ library DIDRegistryLibrary {
         // If the amount to receive by the creator is lower than royalties the calculation is not valid
         // return false;
         uint256 _requiredRoyalties = ((_totalAmount.mul(_self.didRegisters[_did].royalties)) / 100);
-        if (address(_self.didRegisters[_did].royaltyScheme) != address(0)) {
-            _requiredRoyalties = _self.didRegisters[_did].royaltyScheme.compute(_totalAmount, _self.didRegisters[_did].royaltyParam);
-        }
 
         // Check if royalties are enough
         // Are we paying enough royalties in the secondary market to the original creator?

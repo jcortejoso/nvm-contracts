@@ -278,13 +278,14 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     function areRoyaltiesValid(     
         bytes32 _did,
         uint256[] memory _amounts,
-        address[] memory _receivers
+        address[] memory _receivers,
+        address _tokenAddress
     )
     public
     view
     returns (bool)
     {
-        return didRegisterList.areRoyaltiesValid(_did, _amounts, _receivers);
+        return didRegisterList.areRoyaltiesValid(_did, _amounts, _receivers, _tokenAddress);
     }
     
     function wasGeneratedBy(
@@ -659,7 +660,19 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
     view
     returns (address)
     {
-        return didRegisterList.didRegisters[_did].royaltyRecipient;
+        address res = didRegisterList.didRegisters[_did].royaltyRecipient;
+        if (res == address(0)) {
+            return didRegisterList.didRegisters[_did].creator;
+        }
+        return res;
+    }
+
+    function getDIDCreator(bytes32 _did)
+    public
+    view
+    returns (address)
+    {
+        return didRegisterList.didRegisters[_did].creator;
     }
 
     /**

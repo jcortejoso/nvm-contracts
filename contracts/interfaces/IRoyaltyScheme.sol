@@ -8,7 +8,8 @@ pragma solidity ^0.8.0;
  * @author Nevermined
  */
 interface IRoyaltyScheme {
-    function compute(uint256 price, bytes memory param) external view returns (uint256);
+    function check(bytes32 _did,
+        uint256[] memory _amounts,
+        address[] memory _receivers,
+        address _tokenAddress) external view returns (bool);
 }
-
-
