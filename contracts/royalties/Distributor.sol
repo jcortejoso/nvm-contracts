@@ -5,18 +5,28 @@ pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '../registry/DIDRegistry.sol';
+import '../conditions/ConditionStoreLibrary.sol';
+import '../conditions/ConditionStoreManager.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 
 contract Distributor is Initializable {
-    // cond id, receiver, did
-    mapping (bytes32 => bool) public used;
-//    mapping (bytes32 => mapping(bytes32 => uint256)) public claimed;
 
+    using SafeERC20Upgradeable for IERC20Upgradeable;
+
+    // Used condition ids
+    mapping (bytes32 => bool) public used;
     mapping (bytes32 => address[]) public receivers;
 
     DIDRegistry public registry;
+    ConditionStoreManager public conditionStoreManager;
+    address public escrow;
 
-    function initialize(address _registry) public initializer {
+    function initialize(address _registry, address _conditionStoreManager, address _escrow) public initializer {
         registry = DIDRegistry(_registry);
+        conditionStoreManager = ConditionStoreManager(
+            _conditionStoreManager
+        );
+        escrow = _escrow;
     }
 
     // If receivers is changed, the unclaimed rewards will be divided only for first takers ...
@@ -25,8 +35,50 @@ contract Distributor is Initializable {
         receivers[_did] = _addr;
     }
 
-    function claimReward(address receiver, ) public {
-
+    function claimReward(
+        bytes32 _agreementId,
+        bytes32 _did,
+        uint256[] memory _amounts,
+        address[] memory _receivers,
+        address _returnAddress,
+        address _lockPaymentAddress,
+        address _tokenAddress,
+        bytes32 _lockCondition,
+        bytes32[] memory _releaseConditions
+    ) public {
+        {
+            bytes32 id = keccak256(abi.encode(_agreementId, escrow, keccak256(
+                abi.encode(
+                    _did,
+                    _amounts,
+                    _receivers,
+                    _returnAddress,
+                    _lockPaymentAddress, 
+                    _tokenAddress,
+                    _lockCondition,
+                    _releaseConditions
+                )))
+            );
+            require(conditionStoreManager.getConditionState(id) == ConditionStoreLibrary.ConditionState.Fulfilled, 'condition not fulfilled');
+            require(!used[id], 'already claimed');
+            used[id] = true;
+        }
+        uint256 rewardAmount = 0;
+        for (uint256 i = 0; i < _receivers.length; i++) {
+            if (_receivers[i] == address(this)) {
+                rewardAmount += _amounts[i];
+            }
+        }
+        uint256 receiversLen = receivers[_did].length;
+        for (uint256 i = 0; i < receiversLen; i++) {
+            if (i == 0) {
+                IERC20Upgradeable(_tokenAddress).safeTransfer(
+                    receivers[_did][i],
+                    rewardAmount - (rewardAmount / receiversLen) * (receiversLen-1)
+                );
+            } else {
+                IERC20Upgradeable(_tokenAddress).safeTransfer(receivers[_did][i], rewardAmount / receiversLen);
+            }
+        }
     }
-
 }
