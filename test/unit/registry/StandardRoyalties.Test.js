@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* global artifacts, contract, describe, it */
+/* global artifacts, contract, it */
 const chai = require('chai')
 const { assert } = chai
 const chaiAsPromised = require('chai-as-promised')
@@ -10,7 +10,6 @@ const DIDRegistry = artifacts.require('DIDRegistry')
 const testUtils = require('../../helpers/utils.js')
 const constants = require('../../helpers/constants.js')
 
-
 const StandardRoyalties = artifacts.require('StandardRoyalties')
 
 contract('StandardRoyalties', (accounts) => {
@@ -18,10 +17,8 @@ contract('StandardRoyalties', (accounts) => {
     const other = accounts[2]
     const consumer = accounts[3]
     const value = 'https://nevermined.io/did/nevermined/test-attr-example.txt'
-    const nftMetadataURL = 'https://nevermined.io/metadata.json'
     let didRegistry
     let didRegistryLibrary
-    let didRegistryLibraryProxy
     let royalties
 
     beforeEach(async () => {
@@ -39,8 +36,7 @@ contract('StandardRoyalties', (accounts) => {
             royalties = await StandardRoyalties.new()
             await royalties.initialize(didRegistry.address)
 
-            await didRegistry.registerRoyaltiesChecker(royalties.address, {from: owner})
-
+            await didRegistry.registerRoyaltiesChecker(royalties.address, { from: owner })
         }
     }
 
@@ -50,8 +46,8 @@ contract('StandardRoyalties', (accounts) => {
         const checksum = testUtils.generateId()
 
         await didRegistry.registerDID(didSeed, checksum, [], value, '0x0', '', { from: owner })
-        await didRegistry.setDIDRoyalties(did, royalties.address, {from: owner})
-        await royalties.setRoyalty(did, 10000, {from: owner})
+        await didRegistry.setDIDRoyalties(did, royalties.address, { from: owner })
+        await royalties.setRoyalty(did, 10000, { from: owner })
         assert.strictEqual(10000, (await royalties.royalties(did)).toNumber())
     })
 
@@ -61,8 +57,8 @@ contract('StandardRoyalties', (accounts) => {
         const checksum = testUtils.generateId()
 
         await didRegistry.registerDID(didSeed, checksum, [], value, '0x0', '', { from: owner })
-        await didRegistry.setDIDRoyalties(did, royalties.address, {from: owner})
-        await royalties.setRoyalty(did, 100000, {from: owner})
+        await didRegistry.setDIDRoyalties(did, royalties.address, { from: owner })
+        await royalties.setRoyalty(did, 100000, { from: owner })
         assert.isNotOk( // MUST BE FALSE. Royalties for original creator are too low
             await royalties.check(did, [91, 9], [consumer, owner], constants.address.zero))
 
@@ -77,7 +73,5 @@ contract('StandardRoyalties', (accounts) => {
 
         assert.isNotOk( // MUST BE FALSE. Original creator is not getting royalties
             await royalties.check(did, [100], [other], constants.address.zero))
-
     })
-
 })
