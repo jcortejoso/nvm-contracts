@@ -129,6 +129,15 @@ async function initializeContracts({
         })
     }
 
+    if (contracts.indexOf('StandardRoyalties') > -1 && contracts.indexOf('DIDRegistry') > -1) {
+        addressBook.StandardRoyalties = await zosCreate({
+            contract: 'StandardRoyalties',
+            ctx,
+            args: [addressBook.DIDRegistry],
+            verbose
+        })
+    }
+
     // testnet only!
     if (contracts.indexOf('NeverminedToken') > -1) {
         addressBook.NeverminedToken = await zosCreate({

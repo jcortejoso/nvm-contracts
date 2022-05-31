@@ -41,6 +41,7 @@
   "NFT721SalesTemplate",
   "EscrowComputeExecutionTemplate",
   "DistributeNFTCollateralCondition",
+  "StandardRoyalties",
   "AaveBorrowCondition",
   "AaveCollateralDepositCondition",
   "AaveCollateralWithdrawCondition",
