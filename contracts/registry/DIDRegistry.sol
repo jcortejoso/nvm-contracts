@@ -22,6 +22,8 @@ contract DIDRegistry is DIDFactory {
     NFTUpgradeable public erc1155;
     NFT721Upgradeable public erc721;
 
+    mapping (address => bool) public royaltiesCheckers;
+
     //////////////////////////////////////////////////////////////
     ////////  EVENTS  ////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
@@ -44,6 +46,28 @@ contract DIDRegistry is DIDFactory {
         erc721 = NFT721Upgradeable(_erc721);
         transferOwnership(_owner);
         manager = _owner;
+    }
+
+    function registerRoyaltiesChecker(address _addr) public onlyOwner {
+        royaltiesCheckers[_addr] = true;
+    }
+
+    event DIDRoyaltiesAdded(bytes32 indexed did, address indexed addr);
+
+    function setDIDRoyalties(
+        bytes32 _did,
+        address _royalties
+    )
+    public
+    {
+        require(didRegisterList.didRegisters[_did].creator == msg.sender, 'Only creator can set royalties');
+        require(address(didRegisterList.didRegisters[_did].royaltyScheme) == address(0), 'Cannot change royalties');
+        didRegisterList.didRegisters[_did].royaltyScheme = IRoyaltyScheme(_royalties);
+
+        emit DIDRoyaltiesAdded(
+            _did,
+            _royalties
+        );
     }
 
     /**
