@@ -7,7 +7,6 @@ import '../interfaces/IRoyaltyScheme.sol';
 import '../registry/DIDRegistry.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
-
 /**
  * @title Standard royalty scheme.
  * @author Nevermined
@@ -36,7 +35,7 @@ contract StandardRoyalties is IRoyaltyScheme, Initializable {
         uint256[] memory _amounts,
         address[] memory _receivers,
         address)
-    external view returns (bool) 
+    external view returns (bool)
     {
         // If there are no royalties everything is good
         uint256 rate = royalties[_did];
