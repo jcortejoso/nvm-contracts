@@ -248,7 +248,7 @@ contract('End to End NFT Scenarios', (accounts) => {
                 didSeed, checksum, [], url, cappedAmount, 0, constants.activities.GENERATED, '', { from: artist }
             )
             await didRegistry.setDIDRoyalties(did, royaltyManager.address, { from: artist })
-            await royaltyManager.setRoyalty(did, royalties, {from:artist})
+            await royaltyManager.setRoyalty(did, royalties, { from: artist })
             await didRegistry.mint(did, 5, { from: artist })
             await nft.setApprovalForAll(transferCondition.address, true, { from: artist })
 
