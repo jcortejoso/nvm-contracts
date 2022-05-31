@@ -20,7 +20,7 @@ COPY . /nevermined-contracts
 WORKDIR /nevermined-contracts
 
 RUN yarn
-RUN sh ./scripts/build.sh
+RUN sh ./scripts/build-circuit.sh
 
 RUN yarn clean
 RUN yarn compile

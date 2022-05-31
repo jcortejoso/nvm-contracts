@@ -70,7 +70,7 @@ jobs:
         run: |
           yarn lint
           yarn clean
-          sh ./scripts/build.sh
+          sh ./scripts/build-circuit.sh
           yarn compile
 
       # Impersonate AWS role
