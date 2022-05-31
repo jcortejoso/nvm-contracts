@@ -46,8 +46,6 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
         emit Received(msg.sender, msg.value);
     }
 
-    DIDRegistry public didRegistry;
-
     /**
      * @notice initialize init the 
      *       contract with the following parameters
@@ -56,8 +54,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
      */
     function initialize(
         address _owner,
-        address _conditionStoreManagerAddress,
-        address _didRegistry
+        address _conditionStoreManagerAddress
     )
     external
     initializer()
@@ -66,23 +63,11 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
             _conditionStoreManagerAddress != address(0),
             'Invalid address'
         );
-        require(
-            _didRegistry != address(0),
-            'Invalid address'
-        );
         OwnableUpgradeable.__Ownable_init();
         transferOwnership(_owner);
         conditionStoreManager = ConditionStoreManager(
             _conditionStoreManagerAddress
         );
-        didRegistry = DIDRegistry(_didRegistry);
-    }
-
-    /**
-     * Should be called when the contract has been upgraded.
-     */
-    function reinitialize(address _didRegistry) external reinitializer(2) {
-        didRegistry = DIDRegistry(_didRegistry);
     }
 
     /**
@@ -382,14 +367,7 @@ contract EscrowPaymentCondition is Reward, Common, ReentrancyGuardUpgradeable {
                 _receivers[i] != address(this),
                 'Escrow contract can not be a receiver'
             );
-
-            token.approve(_receivers[i], _amounts[i]);
-            try IRoyaltyRecipient(_receivers[i]).transfer(_tokenAddress, _amounts[i]) {
-            } catch (bytes memory) {
-                token.safeTransfer(_receivers[i], _amounts[i]);
-            }
-            token.approve(_receivers[i], 0);
-
+            token.safeTransfer(_receivers[i], _amounts[i]);
         }
 
         return super.fulfill(
