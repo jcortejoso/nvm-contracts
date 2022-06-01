@@ -3,7 +3,9 @@
 ganache-cli --port 18545 &
 sleep 5
 
-npx hardhat run ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js
+export NO_PROXY=true
+
+npx hardhat run ./scripts/deploy/truffle-wrapper/deployContractsWrapper.js --network external
 
 for i in artifacts/*.external.json; do
   echo $i
