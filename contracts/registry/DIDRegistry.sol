@@ -17,7 +17,6 @@ import '../token/erc721/NFT721Upgradeable.sol';
 contract DIDRegistry is DIDFactory {
 
     using DIDRegistryLibrary for DIDRegistryLibrary.DIDRegisterList;
-    using SafeMathUpgradeable for uint256;
 
     NFTUpgradeable public erc1155;
     NFT721Upgradeable public erc721;
@@ -297,12 +296,12 @@ contract DIDRegistry is DIDFactory {
     {
         if (didRegisterList.didRegisters[_did].mintCap > 0) {
             require(
-                didRegisterList.didRegisters[_did].nftSupply.add(_amount) <= didRegisterList.didRegisters[_did].mintCap,
+                didRegisterList.didRegisters[_did].nftSupply + _amount <= didRegisterList.didRegisters[_did].mintCap,
                 'Cap exceeded'
             );
         }
         
-        didRegisterList.didRegisters[_did].nftSupply = didRegisterList.didRegisters[_did].nftSupply.add(_amount);
+        didRegisterList.didRegisters[_did].nftSupply = didRegisterList.didRegisters[_did].nftSupply + _amount;
         
         super.used(
             keccak256(abi.encode(_did, msg.sender, 'mint', _amount, block.number)),

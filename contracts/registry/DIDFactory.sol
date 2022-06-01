@@ -630,6 +630,20 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         mintCap = didRegisterList.didRegisters[_did].mintCap;
         royalties = didRegisterList.didRegisters[_did].royalties;
     }
+
+    function getDIDSupply(
+        bytes32 _did
+    )
+    public
+    view
+    returns (
+        uint256 nftSupply,
+        uint256 mintCap
+    )
+    {
+        nftSupply = didRegisterList.didRegisters[_did].nftSupply;
+        mintCap = didRegisterList.didRegisters[_did].mintCap;
+    }
     
     /**
      * @param _did refers to decentralized identifier (a bytes32 length ID).
