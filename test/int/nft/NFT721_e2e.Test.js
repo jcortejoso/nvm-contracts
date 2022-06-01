@@ -101,7 +101,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
             didRegistry.address,
             conditionStoreManager.address,
             escrowCondition.address], deployer)
-        
+
         receivers2 = [collector1, distributor.address]
 
         transferCondition = await testUtils.deploy('TransferNFT721Condition', [owner,
@@ -405,8 +405,8 @@ contract('End to End NFT721 Scenarios', (accounts) => {
             })
 
             it('Artist sets up royalty recipients', async () => {
-                await distributor.setReceivers(did, recipients, {from: artist})
-                await didRegistry.setDIDRoyaltyRecipient(did, distributor.address, {from: artist})
+                await distributor.setReceivers(did, recipients, { from: artist })
+                await didRegistry.setDIDRoyaltyRecipient(did, distributor.address, { from: artist })
             })
             it('As collector2 I setup an agreement for buying an NFT to collector1', async () => {
                 // Collector2: Create NFT sales agreement
@@ -419,7 +419,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                     _buyer: collector2,
                     _numberNFTs: numberNFTs2,
                     _from: collector2
-                }));
+                }))
 
                 // Collector2: Lock the payment
                 await token.mint(collector2, nftPrice2, { from: owner })
@@ -482,10 +482,9 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                     conditionIds[0],
                     [conditionIds[1]]
                 )
-                assert.strictEqual(await getBalance(token, recipient1), amounts2[1]/2)
-                assert.strictEqual(await getBalance(token, recipient2), amounts2[1]/2)
+                assert.strictEqual(await getBalance(token, recipient1), amounts2[1] / 2)
+                assert.strictEqual(await getBalance(token, recipient2), amounts2[1] / 2)
             })
-
         })
     }
 
