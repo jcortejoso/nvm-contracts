@@ -53,6 +53,7 @@ contract DIDRegistry is DIDFactory {
     }
 
     event DIDRoyaltiesAdded(bytes32 indexed did, address indexed addr);
+    event DIDRoyaltyRecipientChanged(bytes32 indexed did, address indexed addr);
 
     function setDIDRoyalties(
         bytes32 _did,
@@ -67,6 +68,21 @@ contract DIDRegistry is DIDFactory {
         emit DIDRoyaltiesAdded(
             _did,
             _royalties
+        );
+    }
+
+    function setDIDRoyaltyRecipient(
+        bytes32 _did,
+        address _recipient
+    )
+    public
+    {
+        require(didRegisterList.didRegisters[_did].creator == msg.sender, 'Only creator can set royalties');
+        didRegisterList.didRegisters[_did].royaltyRecipient = _recipient;
+
+        emit DIDRoyaltyRecipientChanged(
+            _did,
+            _recipient
         );
     }
 

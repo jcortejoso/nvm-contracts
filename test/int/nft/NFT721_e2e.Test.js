@@ -29,7 +29,9 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         collector2,
         gallery,
         market,
-        someone
+        someone,
+        recipient1,
+        recipient2
     ] = accounts
 
     const owner = accounts[8]
@@ -48,7 +50,8 @@ contract('End to End NFT721 Scenarios', (accounts) => {
     const numberNFTs2 = 1
     const nftPrice2 = 100
     const amounts2 = [90, 10]
-    const receivers2 = [collector1, artist]
+    let receivers2
+    const recipients = [recipient1, recipient2]
 
     let
         didRegistry,
@@ -64,6 +67,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         escrowCondition,
         nftHolderCondition,
         accessCondition,
+        distributor,
         getBalance
 
     async function setupTest() {
@@ -92,6 +96,13 @@ contract('End to End NFT721 Scenarios', (accounts) => {
             didRegistry,
             token
         ))
+
+        distributor = await testUtils.deploy('Distributor', [
+            didRegistry.address,
+            conditionStoreManager.address,
+            escrowCondition.address], deployer)
+        
+        receivers2 = [collector1, distributor.address]
 
         transferCondition = await testUtils.deploy('TransferNFT721Condition', [owner,
             conditionStoreManager.address,
@@ -360,9 +371,47 @@ contract('End to End NFT721 Scenarios', (accounts) => {
         })
 
         describe('As collector1 I want to sell my NFT to a different collector2 for a higher price', () => {
+            let agreementId2, conditionIds
+            it('A sale without proper royalties can not happen', async () => {
+                const agreementIdNoRoyalties = testUtils.generateId()
+                const amountsNoRoyalties = [99, 1]
+                const receiversNoRoyalties = [collector1, artist]
+
+                // Collector2: Create NFT sales agreement
+                const { nftSalesAgreement } = await prepareNFTSaleAgreement({
+                    did: did,
+                    agreementId: agreementIdNoRoyalties,
+                    _amounts: amountsNoRoyalties,
+                    _receivers: receiversNoRoyalties,
+                    _seller: collector1,
+                    _buyer: collector2,
+                    _numberNFTs: numberNFTs2
+                })
+
+                const result = await nftSalesTemplate.createAgreement(...Object.values(nftSalesAgreement))
+
+                testUtils.assertEmitted(result, 1, 'AgreementCreated')
+
+                // Collector2: Lock the payment
+                await token.mint(collector2, nftPrice2, { from: owner })
+                await token.approve(lockPaymentCondition.address, nftPrice2, { from: collector2 })
+                await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
+
+                await assert.isRejected(
+                    lockPaymentCondition.fulfill(agreementIdNoRoyalties, did, escrowCondition.address, token.address, amountsNoRoyalties, receiversNoRoyalties, { from: collector2 }),
+                    /Royalties are not satisfied/
+                )
+                await token.transfer(didRegistry.address, nftPrice2, { from: collector2 })
+            })
+
+            it('Artist sets up royalty recipients', async () => {
+                await distributor.setReceivers(did, recipients, {from: artist})
+                await didRegistry.setDIDRoyaltyRecipient(did, distributor.address, {from: artist})
+            })
             it('As collector2 I setup an agreement for buying an NFT to collector1', async () => {
                 // Collector2: Create NFT sales agreement
-                const { agreementFullfill, conditionIds, agreementId: agreementId2 } = await prepareNFTSaleAgreement({
+                let agreementFullfill
+                ({ agreementFullfill, conditionIds, agreementId: agreementId2 } = await prepareNFTSaleAgreement({
                     did: did,
                     _amounts: amounts2,
                     _receivers: receivers2,
@@ -370,7 +419,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
                     _buyer: collector2,
                     _numberNFTs: numberNFTs2,
                     _from: collector2
-                })
+                }));
 
                 // Collector2: Lock the payment
                 await token.mint(collector2, nftPrice2, { from: owner })
@@ -419,41 +468,24 @@ contract('End to End NFT721 Scenarios', (accounts) => {
             })
 
             it('As artist I want to receive royalties for the NFT I created and was sold in the secondary market', async () => {
-                // Artist check the balance and has the royalties
-                assert.strictEqual(await getBalance(token, artist), amounts[0] + amounts2[1])
-            })
-
-            //
-            it('A sale without proper royalties can not happen', async () => {
-                const agreementIdNoRoyalties = testUtils.generateId()
-                const amountsNoRoyalties = [99, 1]
-                const receiversNoRoyalties = [collector1, artist]
-
-                // Collector2: Create NFT sales agreement
-                const { nftSalesAgreement } = await prepareNFTSaleAgreement({
-                    did: did,
-                    agreementId: agreementIdNoRoyalties,
-                    _amounts: amountsNoRoyalties,
-                    _receivers: receiversNoRoyalties,
-                    _seller: collector1,
-                    _buyer: collector2,
-                    _numberNFTs: numberNFTs2
-                })
-
-                const result = await nftSalesTemplate.createAgreement(...Object.values(nftSalesAgreement))
-
-                testUtils.assertEmitted(result, 1, 'AgreementCreated')
-
-                // Collector2: Lock the payment
-                await token.mint(collector2, nftPrice2, { from: owner })
-                await token.approve(lockPaymentCondition.address, nftPrice2, { from: collector2 })
-                await token.approve(escrowCondition.address, nftPrice2, { from: collector2 })
-
-                await assert.isRejected(
-                    lockPaymentCondition.fulfill(agreementIdNoRoyalties, did, escrowCondition.address, token.address, amountsNoRoyalties, receiversNoRoyalties, { from: collector2 }),
-                    /Royalties are not satisfied/
+                // Distributor check the balance and has the royalties
+                assert.strictEqual(await getBalance(token, distributor.address), amounts2[1])
+                // Distribute royalties
+                await distributor.claimReward(
+                    agreementId2,
+                    did,
+                    amounts2,
+                    receivers2,
+                    collector2,
+                    escrowCondition.address,
+                    token.address,
+                    conditionIds[0],
+                    [conditionIds[1]]
                 )
+                assert.strictEqual(await getBalance(token, recipient1), amounts2[1]/2)
+                assert.strictEqual(await getBalance(token, recipient2), amounts2[1]/2)
             })
+
         })
     }
 

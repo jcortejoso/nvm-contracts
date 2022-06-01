@@ -31,7 +31,7 @@ contract Distributor is Initializable {
 
     // If receivers is changed, the unclaimed rewards will be divided only for first takers ...
     function setReceivers(bytes32 _did, address[] memory _addr) public {
-        require(msg.sender == registry.getDIDCreator(_did), 'only owner can change');
+        require(msg.sender == registry.getDIDCreator(_did), 'only creator can change');
         receivers[_did] = _addr;
     }
 

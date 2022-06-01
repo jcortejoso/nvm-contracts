@@ -366,6 +366,23 @@ async function initializeContracts({
     }
 
     if (getAddress('ConditionStoreManager') &&
+        getAddress('EscrowPaymentCondition') &&
+        getAddress('DIDRegistry')) {
+        if (contracts.indexOf('Distributor') > -1) {
+            addressBook.Distributor = await zosCreate({
+                contract: 'Distributor',
+                ctx,
+                args: [
+                    getAddress('DIDRegistry'),
+                    getAddress('ConditionStoreManager'),
+                    getAddress('EscrowPaymentCondition')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('ConditionStoreManager') &&
         getAddress('DIDRegistry')) {
         if (contracts.indexOf('LockPaymentCondition') > -1) {
             addressBook.LockPaymentCondition = await zosCreate({

@@ -42,6 +42,7 @@
   "EscrowComputeExecutionTemplate",
   "DistributeNFTCollateralCondition",
   "StandardRoyalties",
+  "Distributor",
   "AaveBorrowCondition",
   "AaveCollateralDepositCondition",
   "AaveCollateralWithdrawCondition",
