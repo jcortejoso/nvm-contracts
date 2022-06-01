@@ -34,7 +34,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
 
     const owner = accounts[8]
     const deployer = accounts[8]
-    const governor = accounts[7]
+    const governor = accounts[9]
 
     // Configuration of First Sale:
     // Artist -> Collector1, the gallery get a cut (25%)
