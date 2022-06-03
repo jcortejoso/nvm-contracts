@@ -1,8 +1,8 @@
-FROM 0xpolygon/polygon-sdk:0.1.0 as polygon
+FROM 0xpolygon/polygon-edge:0.4.1 as polygon
 
 FROM node:14-alpine as deploy
 
-COPY --from=polygon /usr/local/bin/polygon-sdk /usr/local/bin/polygon-sdk
+COPY --from=polygon /usr/local/bin/polygon-edge /usr/local/bin/polygon-edge
 
 RUN apk add --no-cache --update\
       bash\

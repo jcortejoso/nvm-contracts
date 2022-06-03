@@ -11,7 +11,7 @@ if [ "${DEPLOY_CONTRACTS}" = "true" ]
 then
     cd /polygon-sdk
     rm -rf test-chain
-    polygon-sdk server --dev --chain genesis.json &
+    polygon-edge server --dev --chain genesis.json --data-dir test-chain &
 
     until curl --data '{"method":"web3_clientVersion","params":[],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
     do
