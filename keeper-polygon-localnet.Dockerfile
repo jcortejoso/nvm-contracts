@@ -37,7 +37,7 @@ ENV KEEPER_RPC_PORT=8545
 
 RUN /nevermined-contracts/scripts/keeper_deploy_polygon_dockerfile.sh
 
-FROM 0xpolygon/polygon-sdk:0.1.0
+FROM 0xpolygon/polygon-edge:0.4.1
 LABEL maintainer="Nevermined <root@nevermined.io>"
 
 COPY scripts/keeper_entrypoint_polygon.sh /

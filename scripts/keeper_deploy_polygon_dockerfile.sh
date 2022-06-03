@@ -32,6 +32,9 @@ then
     touch /nevermined-contracts/artifacts/ready
 fi
 
+# more gracefully shutdown the node
+pkill polygon-edge
+
 # Fix file permissions
 EXECUTION_UID=$(id -u)
 EXECUTION_GID=$(id -g)
