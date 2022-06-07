@@ -22,9 +22,9 @@ async function approveTemplate({
 }
 
 async function callContract(instance, f) {
-    console.log('Calling contract ...')
+    // console.log('Calling contract ...')
     const contractOwner = await instance.owner()
-    console.log('Contract Owner: ', contractOwner)
+    // console.log('Contract Owner: ', contractOwner)
     try {
         const tx = await f(instance.connect(ethers.provider.getSigner(contractOwner)))
         await tx.wait()
@@ -543,6 +543,12 @@ async function setupContracts({
         console.log('Reinit Access condition: ' + addressBook.AccessCondition)
         await callContract(artifacts.AccessCondition, a => a.reinitialize())
         addresses.stage = 18
+    }
+
+    if (addressBook.DIDRegistry && addressBook.StandardRoyalties && addresses.stage < 19) {
+        console.log('Setup royalty manager: ' + addressBook.StandardRoyalties)
+        await callContract(artifacts.DIDRegistry, a => a.registerRoyaltiesChecker(addressBook.StandardRoyalties))
+        addresses.stage = 19
     }
 }
 
