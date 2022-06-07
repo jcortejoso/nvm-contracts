@@ -58,8 +58,6 @@ async function deployContracts({ contracts: origContracts, verbose, testnet, mak
         addresses
     })
 
-    console.log('dssdsdsd')
-
     await setupContracts({
         web3,
         addressBook,
