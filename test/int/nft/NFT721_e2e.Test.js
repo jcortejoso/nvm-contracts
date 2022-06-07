@@ -97,7 +97,7 @@ contract('End to End NFT721 Scenarios', (accounts) => {
             token
         ))
 
-        distributor = await testUtils.deploy('Distributor', [
+        distributor = await testUtils.deploy('RewardsDistributor', [
             didRegistry.address,
             conditionStoreManager.address,
             escrowCondition.address], deployer)

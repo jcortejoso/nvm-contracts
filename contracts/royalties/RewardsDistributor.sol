@@ -9,7 +9,7 @@ import '../conditions/ConditionStoreLibrary.sol';
 import '../conditions/ConditionStoreManager.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 
-contract Distributor is Initializable {
+contract RewardsDistributor is Initializable {
 
     using SafeERC20Upgradeable for IERC20Upgradeable;
 

@@ -381,9 +381,9 @@ async function initializeContracts({
     if (getAddress('ConditionStoreManager') &&
         getAddress('EscrowPaymentCondition') &&
         getAddress('DIDRegistry')) {
-        if (contracts.indexOf('Distributor') > -1) {
-            addressBook.Distributor = await zosCreate({
-                contract: 'Distributor',
+        if (contracts.indexOf('RewardsDistributor') > -1) {
+            addressBook.RewardsDistributor = await zosCreate({
+                contract: 'RewardsDistributor',
                 ctx,
                 args: [
                     getAddress('DIDRegistry'),
