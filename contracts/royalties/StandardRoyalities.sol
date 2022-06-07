@@ -24,6 +24,12 @@ contract StandardRoyalties is IRoyaltyScheme, Initializable {
         registry = DIDRegistry(_registry);
     }
 
+    /**
+     * @notice Set royalties for a DID
+     * @dev Can only be called by creator of the DID
+     * @param _did DID for which the royalties are set
+     * @param _royalty Royalty, the actual royalty will be _royalty / 10000 percent
+     */
     function setRoyalty(bytes32 _did, uint256 _royalty) public {
         require(_royalty <= DENOMINATOR, 'royalty cannot be more than 100%');
         require(msg.sender == registry.getDIDCreator(_did), 'only owner can change');

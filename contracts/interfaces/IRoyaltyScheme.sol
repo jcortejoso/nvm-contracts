@@ -8,6 +8,13 @@ pragma solidity ^0.8.0;
  * @author Nevermined
  */
 interface IRoyaltyScheme {
+    /**
+     * @notice check that royalties are correct
+     * @param _did compute royalties for this DID
+     * @param _amounts amounts in payment
+     * @param _receivers receivers of payments
+     * @param _tokenAddress payment token. zero address means native token (ether)
+     */
     function check(bytes32 _did,
         uint256[] memory _amounts,
         address[] memory _receivers,
