@@ -4,18 +4,20 @@ const ZeroAddress = '0x0000000000000000000000000000000000000000'
 const { ethers } = require('hardhat')
 
 async function callContract(instance, f) {
-    console.log('Calling contract ...')
+    // console.log('Calling contract ...')
     const contractOwner = await instance.owner()
-    console.log('Contract Owner: ', contractOwner)
+    // console.log('Contract Owner: ', contractOwner)
+    let tx
     try {
         const signer = await ethers.provider.getSigner(contractOwner)
-        const tx = await f(instance.connect(signer).populateTransaction)
-        console.log('Got tx', tx)
+        tx = await f(instance.connect(signer).populateTransaction)
+        // console.log('Got tx', tx)
         const res = await signer.sendTransaction(tx)
         await res.wait()
     } catch (err) {
         console.log('Warning: TX fail')
         console.log(err)
+        console.log(tx)
     }
 }
 
@@ -24,19 +26,6 @@ async function approveTemplate({
     templateAddress
 } = {}) {
     await callContract(TemplateStoreManagerInstance, a => a.approveTemplate(templateAddress, { gasLimit: 100000 }))
-    /*
-    const contractOwner = await TemplateStoreManagerInstance.owner()
-    try {
-        const tx = await TemplateStoreManagerInstance.connect(ethers.provider.getSigner(contractOwner)).approveTemplate(
-            templateAddress,
-            { gasLimit: 100000 }
-        )
-        await tx.wait()
-    } catch (e) {
-        console.log(e)
-        console.log('Approve failed for', templateAddress, roles.deployer, TemplateStoreManagerInstance.address)
-    }
-    */
 }
 
 async function setupTemplate({ verbose, TemplateStoreManagerInstance, templateName, addressBook, roles } = {}) {
@@ -500,6 +489,12 @@ async function setupContracts({
         console.log('Reinit Access condition: ' + addressBook.AccessCondition)
         await callContract(artifacts.AccessCondition, a => a.reinitialize())
         addresses.stage = 18
+    }
+
+    if (addressBook.DIDRegistry && addressBook.StandardRoyalties && addresses.stage < 19) {
+        console.log('Setup royalty manager: ' + addressBook.StandardRoyalties)
+        await callContract(artifacts.DIDRegistry, a => a.registerRoyaltiesChecker(addressBook.StandardRoyalties))
+        addresses.stage = 19
     }
 }
 

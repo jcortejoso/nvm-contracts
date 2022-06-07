@@ -142,6 +142,15 @@ async function initializeContracts({
         })
     }
 
+    if (contracts.indexOf('StandardRoyalties') > -1 && contracts.indexOf('DIDRegistry') > -1) {
+        addressBook.StandardRoyalties = await zosCreate({
+            contract: 'StandardRoyalties',
+            ctx,
+            args: [addressBook.DIDRegistry],
+            verbose
+        })
+    }
+
     // testnet only!
     if (contracts.indexOf('NeverminedToken') > -1) {
         addressBook.NeverminedToken = await zosCreate({
@@ -363,6 +372,23 @@ async function initializeContracts({
                     getAddress('ConditionStoreManager'),
                     getAddress('TemplateStoreManager'),
                     getAddress('DIDRegistry')
+                ],
+                verbose
+            })
+        }
+    }
+
+    if (getAddress('ConditionStoreManager') &&
+        getAddress('EscrowPaymentCondition') &&
+        getAddress('DIDRegistry')) {
+        if (contracts.indexOf('RewardsDistributor') > -1) {
+            addressBook.RewardsDistributor = await zosCreate({
+                contract: 'RewardsDistributor',
+                ctx,
+                args: [
+                    getAddress('DIDRegistry'),
+                    getAddress('ConditionStoreManager'),
+                    getAddress('EscrowPaymentCondition')
                 ],
                 verbose
             })
