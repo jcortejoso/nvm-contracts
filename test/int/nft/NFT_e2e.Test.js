@@ -254,6 +254,7 @@ contract('End to End NFT Scenarios', (accounts) => {
 
             const balance = await nft.balanceOf(artist, did)
             assert.strictEqual(5, balance.toNumber())
+            assert.equal(royaltyManager.address, await didRegistry.getDIDRoyaltyScheme(did))
         })
     })
 
