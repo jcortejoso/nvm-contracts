@@ -681,6 +681,14 @@ contract DIDFactory is OwnableUpgradeable, ProvenanceRegistry {
         return res;
     }
 
+    function getDIDRoyaltyScheme(bytes32 _did)
+    public
+    view
+    returns (address)
+    {
+        return address(didRegisterList.didRegisters[_did].royaltyScheme);
+    }
+
     function getDIDCreator(bytes32 _did)
     public
     view
