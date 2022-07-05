@@ -52,6 +52,7 @@ jobs:
         id: branch-changelog
         run: |
           tagged_branches=$(git --no-pager branch --contains tags/${{ env.RELEASE_VERSION }} --no-column)
+          echo "$tagged_branches"
           if echo "$tagged_branches" | grep -E '^[[:space:]]*main$' > /dev/null; then
             commit_branch=main
           elif echo "$tagged_branches" | grep -E '^[[:space:]]*master$' > /dev/null; then
@@ -75,7 +76,7 @@ jobs:
       - name: Publish Github relase
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          repo_token: "${{ secrets.API_TOKEN_GITHUB }}"
           prerelease: false
           files: |
             contracts-${{ env.RELEASE_VERSION }}.tar.gz
