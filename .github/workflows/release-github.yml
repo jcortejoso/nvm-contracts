@@ -4,12 +4,6 @@ on:
   push:
     tags:
       - "v*.*.*"
-  workflow_dispatch:
-    inputs:
-      debug_enabled:
-        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'     
-        required: false
-        default: false
 
 jobs:
   release:
@@ -33,6 +27,9 @@ jobs:
           yarn install --frozen-lockfile
           git submodule init
           git submodule update
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Compile and Lint
         run: |
@@ -71,11 +68,6 @@ jobs:
             commit_branch=${commit_branch//[[:blank:]]/}
           fi
           echo "COMMIT_BRANCH=${commit_branch}" >> $GITHUB_ENV
-
-      # Enable tmate debugging of manually-triggered workflows if the input option was provided
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
 
       - name: Commit CHANGELOG.md
         uses: stefanzweifel/git-auto-commit-action@v4
