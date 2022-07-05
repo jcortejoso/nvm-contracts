@@ -14,6 +14,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.API_TOKEN_GITHUB }}
 
       # Build process
       - uses: actions/setup-node@v3
@@ -29,20 +30,9 @@ jobs:
 
       - name: Compile and Lint
         run: |
-          yarn lint
           yarn clean
-          sh ./scripts/build.sh
+          sh ./scripts/build-circuit.sh
           yarn compile
-
-      # - name: Run Unit Tests
-      #   run: |
-      #     yarn test:unit
-
-      # - name: Run Integration Tests
-      #   run: |
-      #     yarn test:integration
-      #   env:
-      #     NODE_OPTIONS: "--max-old-space-size=7500"
 
       # Add the artifacts to include in the release
       - name: Set version to env
@@ -82,11 +72,36 @@ jobs:
           file_pattern: CHANGELOG.md
           branch: ${{ env.COMMIT_BRANCH }}
 
-      - name: Publish Github Release
-        uses: softprops/action-gh-release@v1
+      - name: Publish Github relase
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
           files: |
             contracts-${{ env.RELEASE_VERSION }}.tar.gz
             CHANGELOG.md
 
+      # Upload contracts abis to S3 bucket
+      # Install dependencies
+      - name: Install missing dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y jq unzip zip git tar
+
+      # Install awscli
+      - name: install-aws-cli-action
+        uses: unfor19/install-aws-cli-action@v1.0.3
+
+      # Impersonate AWS role
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::059076247551:role/github-actions-s3-artifacts-nevermined-rocks
+          aws-region: us-east-1
+
+      # Runs a set of commands using the runners shell
+      - name: Run upload script
+        working-directory: ./
+        run: |
+          bash -x ./scripts/upload_artifacts_s3.sh abis
 
